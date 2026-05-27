@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'core/theme/theme.dart';
 import 'core/theme/theme_provider.dart';
+import 'core/api_service.dart';
 import 'features/splash/presentation/splash_screen.dart';
 
 void main() async {
@@ -48,6 +49,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: ApiService.navigatorKey,
       title: 'TripMate',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,

@@ -1,14 +1,15 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatSearchScreen extends StatefulWidget {
   final bool isDarkMode;
-  final VoidCallback onThemeToggle;
+  final VoidCallback? onThemeToggle;
 
   const ChatSearchScreen({
     super.key,
-    required this.isDarkMode,
-    required this.onThemeToggle,
+    this.isDarkMode = true,
+    this.onThemeToggle,
   });
 
   @override
@@ -18,38 +19,51 @@ class ChatSearchScreen extends StatefulWidget {
 class _ChatSearchScreenState extends State<ChatSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
+  final Set<int> _selectedFilters = {0}; // 0 = Chaos Mode selected by default
 
-  final List<Map<String, String>> _allMessages = [
+  // ── Colour tokens ─────────────────────────────────────────────────────────
+  static const _darkBg = Color(0xFF0B1326);
+  static const _darkSurface = Color(0xFF171F33);
+  static const _primaryDark = Color(0xFFD0BCFF);
+  static const _secondaryDark = Color(0xFF45DFA4);
+
+  static const _lightBg = Color(0xFFFCFAF6);
+  static const _primaryLight = Color(0xFF6D3BD7);
+  static const _secondaryLight = Color(0xFF059669);
+
+  static const List<Map<String, String>> _trendingItems = [
     {
-      'user': '@alex_escapes',
-      'avatar': '🦊',
-      'content': 'We should check out the Fushimi Inari vermilion gates early tomorrow! Who is down?',
-      'time': 'Yesterday • 4:15 PM',
+      'rank': '1',
+      'name': 'Night Market Chaos',
+      'location': 'Shilin',
     },
     {
-      'user': '@minh_nhat',
-      'avatar': '🐱',
-      'content': 'Guys, Nishiki Market street food is absolutely calling our name. Mochi first or takoyaki first?',
-      'time': 'Yesterday • 6:30 PM',
+      'rank': '2',
+      'name': 'Hill Station Cafe',
+      'location': 'Da Lat',
     },
     {
-      'user': '@thao_ly',
-      'avatar': '🦄',
-      'content': 'I just found this specialty cafe called Still Cafe, it has a gorgeous garden. Major Kyoto aesthetic!',
-      'time': 'Today • 9:20 AM',
+      'rank': '3',
+      'name': 'Hidden Gem Beach',
+      'location': 'Phu Quoc',
     },
     {
-      'user': '@nam_trung',
-      'avatar': '🦖',
-      'content': 'Fushimi Inari is amazing but let\'s make sure we bring plenty of water, that 10k gates climb is no joke.',
-      'time': 'Today • 10:45 AM',
+      'rank': '4',
+      'name': 'Rooftop Chaos',
+      'location': 'HCM',
     },
     {
-      'user': '@alex_escapes',
-      'avatar': '🦊',
-      'content': 'I am muting the channel if anyone argues about who gets which scooter again. Let\'s keep it chill!',
-      'time': 'Today • 11:15 AM',
-    }
+      'rank': '5',
+      'name': 'Lantern Night Walk',
+      'location': 'Hoi An',
+    },
+  ];
+
+  static const List<Map<String, String>> _filters = [
+    {'label': '🔥 Chaos Mode'},
+    {'label': 'Chill Mode ☕'},
+    {'label': '💎 Hidden Gem'},
+    {'label': '💸 Budget'},
   ];
 
   @override
@@ -61,309 +75,356 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bgGradStart = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDark ? const Color(0xFF151926) : const Color(0xFFF3EFE9);
-    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+
+    final bg = isDark ? _darkBg : _lightBg;
+    final surface = isDark ? _darkSurface : Colors.white;
+    final primary = isDark ? _primaryDark : _primaryLight;
+    final secondary = isDark ? _secondaryDark : _secondaryLight;
+
     final textPrimary = isDark ? Colors.white : Colors.black87;
-    final textSecondary = isDark ? Colors.white60 : Colors.black54;
+    final textMuted = isDark ? Colors.white54 : Colors.black45;
 
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-
-    // Search filter
-    final filtered = _allMessages.where((msg) {
-      if (_query.isEmpty) return false;
-      return msg['content']!.toLowerCase().contains(_query.toLowerCase()) ||
-          msg['user']!.toLowerCase().contains(_query.toLowerCase());
-    }).toList();
+    final hasQuery = _query.isNotEmpty;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
-          ),
+      backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: primary, size: 20),
+          onPressed: () => Navigator.maybePop(context),
         ),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Search Input Header Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: cardBg.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-                          ),
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          style: TextStyle(color: textPrimary),
-                          decoration: InputDecoration(
-                            hintText: 'Search chat history...',
-                            hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.5)),
-                            border: InputBorder.none,
-                            icon: Icon(Icons.search, color: primaryColor),
-                            suffixIcon: _query.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear, size: 18),
-                                    onPressed: () {
-                                      setState(() {
-                                        _searchController.clear();
-                                        _query = '';
-                                      });
-                                    },
-                                  )
-                                : null,
-                          ),
-                          onChanged: (val) {
-                            setState(() {
-                              _query = val;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Search results or pre-search state
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: _query.isEmpty
-                      ? _buildSearchSuggestions(textPrimary, textSecondary, primaryColor)
-                      : filtered.isEmpty
-                          ? _buildEmptyResults(textPrimary, textSecondary, primaryColor)
-                          : _buildResultsList(filtered, isDark, cardBg, textPrimary, textSecondary, primaryColor),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchSuggestions(
-    Color textPrimary,
-    Color textSecondary,
-    Color themeColor,
-  ) {
-    final suggestions = ['Kyoto Cafe', 'Nishiki Market', 'Fushimi Inari', 'Grab Booking'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 20),
-        Text(
-          '🔥 Recent Search Keywords',
-          style: GoogleFonts.outfit(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+        title: Text(
+          'Search 🔍',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
             color: textPrimary,
           ),
         ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: suggestions.map((sug) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _searchController.text = sug;
-                  _query = sug;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: themeColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: themeColor.withValues(alpha: 0.2)),
-                ),
-                child: Text(
-                  sug,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    color: themeColor,
-                    fontWeight: FontWeight.bold,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_outlined,
+                color: textMuted, size: 22),
+            onPressed: () {},
+          ),
+          if (widget.onThemeToggle != null)
+            IconButton(
+              icon: Icon(
+                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                color: textMuted,
+                size: 20,
+              ),
+              onPressed: widget.onThemeToggle,
+            ),
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Search bar ─────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: surface.withValues(alpha: isDark ? 0.5 : 0.75),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: primary.withValues(alpha: 0.3),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    style: GoogleFonts.inter(
+                        fontSize: 15, color: textPrimary),
+                    decoration: InputDecoration(
+                      hintText: 'search the chaos...',
+                      hintStyle: GoogleFonts.inter(
+                          fontSize: 15, color: textMuted),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 8),
+                        child: Icon(Icons.search_rounded,
+                            color: primary, size: 22),
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 48,
+                        minHeight: 48,
+                      ),
+                      suffixIcon: _query.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.close_rounded,
+                                  size: 18, color: textMuted),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _query = '';
+                                });
+                              },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 4),
+                    ),
+                    onChanged: (val) {
+                      setState(() {
+                        _query = val;
+                      });
+                    },
                   ),
                 ),
               ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
+            ),
+          ),
 
-  Widget _buildEmptyResults(
-    Color textPrimary,
-    Color textSecondary,
-    Color themeColor,
-  ) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            '🔍🤷‍♂️',
-            style: TextStyle(fontSize: 48),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No matches found in history',
-            style: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: textPrimary,
+          const SizedBox(height: 14),
+
+          // ── Filter chips ───────────────────────────────────────────────
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: List.generate(_filters.length, (i) {
+                final isSelected = _selectedFilters.contains(i);
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        _selectedFilters.remove(i);
+                      } else {
+                        _selectedFilters.add(i);
+                      }
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(right: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 9),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? secondary.withValues(alpha: 0.2)
+                          : surface.withValues(
+                              alpha: isDark ? 0.4 : 0.65),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: isSelected
+                            ? secondary
+                            : primary.withValues(alpha: 0.2),
+                        width: isSelected ? 1.5 : 1,
+                      ),
+                    ),
+                    child: Text(
+                      _filters[i]['label']!,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        color: isSelected ? secondary : textMuted,
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Try searching for another vibe or location.',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12,
-              color: textSecondary,
-            ),
+
+          const SizedBox(height: 20),
+
+          // ── Body: trending or empty state ─────────────────────────────
+          Expanded(
+            child: hasQuery
+                ? _EmptyState(
+                    textPrimary: textPrimary,
+                    textMuted: textMuted,
+                  )
+                : _TrendingSection(
+                    isDark: isDark,
+                    surface: surface,
+                    primary: primary,
+                    textPrimary: textPrimary,
+                    textMuted: textMuted,
+                    trendingItems: _trendingItems,
+                  ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildResultsList(
-    List<Map<String, String>> results,
-    bool isDark,
-    Color cardBg,
-    Color textPrimary,
-    Color textSecondary,
-    Color themeColor,
-  ) {
-    return ListView.builder(
+// ── Trending section ──────────────────────────────────────────────────────────
+class _TrendingSection extends StatelessWidget {
+  const _TrendingSection({
+    required this.isDark,
+    required this.surface,
+    required this.primary,
+    required this.textPrimary,
+    required this.textMuted,
+    required this.trendingItems,
+  });
+
+  final bool isDark;
+  final Color surface;
+  final Color primary;
+  final Color textPrimary;
+  final Color textMuted;
+  final List<Map<String, String>> trendingItems;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
       physics: const BouncingScrollPhysics(),
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        final msg = results[index];
-        final content = msg['content']!;
-        
-        // Highlight query match
-        final lowerContent = content.toLowerCase();
-        final lowerQuery = _query.toLowerCase();
-        final matchIdx = lowerContent.indexOf(lowerQuery);
-        
-        Widget textWidget;
-        if (matchIdx != -1) {
-          final prefix = content.substring(0, matchIdx);
-          final match = content.substring(matchIdx, matchIdx + _query.length);
-          final suffix = content.substring(matchIdx + _query.length);
-          textWidget = RichText(
-            text: TextSpan(
-              style: GoogleFonts.inter(fontSize: 13, color: textPrimary, height: 1.4),
-              children: [
-                TextSpan(text: prefix),
-                TextSpan(
-                  text: match,
-                  style: const TextStyle(
-                    backgroundColor: Colors.amber,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextSpan(text: suffix),
-              ],
-            ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      children: [
+        // Header
+        Text(
+          '🔥 Trending Now',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...trendingItems.asMap().entries.map((entry) {
+          final item = entry.value;
+          return _TrendingTile(
+            isDark: isDark,
+            surface: surface,
+            primary: primary,
+            textPrimary: textPrimary,
+            textMuted: textMuted,
+            rank: item['rank']!,
+            name: item['name']!,
+            location: item['location']!,
           );
-        } else {
-          textWidget = Text(
-            content,
-            style: GoogleFonts.inter(fontSize: 13, color: textPrimary, height: 1.4),
-          );
-        }
+        }),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+}
 
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: cardBg.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+class _TrendingTile extends StatelessWidget {
+  const _TrendingTile({
+    required this.isDark,
+    required this.surface,
+    required this.primary,
+    required this.textPrimary,
+    required this.textMuted,
+    required this.rank,
+    required this.name,
+    required this.location,
+  });
+
+  final bool isDark;
+  final Color surface;
+  final Color primary;
+  final Color textPrimary;
+  final Color textMuted;
+  final String rank;
+  final String name;
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: surface.withValues(alpha: isDark ? 0.5 : 0.75),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: primary.withValues(alpha: 0.12),
+        ),
+      ),
+      child: ListTile(
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        leading: Text(
+          rank,
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: primary,
+          ),
+        ),
+        title: Text(
+          name,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+          ),
+        ),
+        subtitle: Row(
+          children: [
+            const Text('📍', style: TextStyle(fontSize: 11)),
+            const SizedBox(width: 3),
+            Text(
+              location,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: textMuted,
+              ),
+            ),
+          ],
+        ),
+        trailing: Icon(Icons.trending_up_rounded,
+            color: primary.withValues(alpha: 0.6), size: 20),
+        onTap: () {},
+      ),
+    );
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({
+    required this.textPrimary,
+    required this.textMuted,
+  });
+
+  final Color textPrimary;
+  final Color textMuted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            '👻',
+            style: TextStyle(fontSize: 72),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'No chaos found.',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: textPrimary,
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        msg['avatar']!,
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        msg['user']!,
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    msg['time']!,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10,
-                      color: textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              textWidget,
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Jump to context',
-                      style: GoogleFonts.outfit(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: themeColor,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(Icons.arrow_forward_ios, size: 9, color: themeColor),
-                  ],
-                ),
-              ),
-            ],
+          const SizedBox(height: 8),
+          Text(
+            'Try something less specific, bestie.',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: textMuted,
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

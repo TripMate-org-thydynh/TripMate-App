@@ -2,33 +2,54 @@ import '../../core/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Pages
+// Existing Pages
 import 'pages/launch_campaign_screen.dart';
 import 'pages/investor_pitch_screen.dart';
 import 'pages/product_roadmap_screen.dart';
 import 'pages/team_introduction_screen.dart';
 import 'pages/community_showcase_screen.dart';
 
-class MarketingHubScreen extends StatelessWidget {
+// Newly added Batch 12 Screens
+import 'pages/premium_landing_screen.dart';
+import 'pages/case_studies_hub_screen.dart';
+import 'pages/motion_breakdowns_hub_screen.dart';
+import 'pages/social_promo_hub_screen.dart';
+import 'pages/reputation_campaign_screen.dart';
+import 'pages/launch_countdown_screen.dart';
+
+class MarketingHubScreen extends StatefulWidget {
   const MarketingHubScreen({super.key});
 
   @override
+  State<MarketingHubScreen> createState() => _MarketingHubScreenState();
+}
+
+class _MarketingHubScreenState extends State<MarketingHubScreen> {
+  bool _isDarkMode = true;
+
+  void _toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = _isDarkMode;
     
     // Brand design system tokens
     final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
     final secondaryColor = isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary;
     final backgroundColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
     final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
+    final textPrimary = isDark ? TripMateTheme.darkTextPrimary : TripMateTheme.lightTextPrimary;
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // Elegant Marketing Billboard Header
+          // Marketing Billboard Header
           SliverAppBar(
             expandedHeight: 220.0,
             floating: false,
@@ -39,6 +60,15 @@ class MarketingHubScreen extends StatelessWidget {
               icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
               onPressed: () => Navigator.pop(context),
             ),
+            actions: [
+              IconButton(
+                icon: Icon(
+                  isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  color: primaryColor,
+                ),
+                onPressed: _toggleTheme,
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
@@ -53,14 +83,8 @@ class MarketingHubScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: isDark
-                        ? [
-                            const Color(0xFF1E1B4B), // Indigo 950
-                            backgroundColor, // Obsidian
-                          ]
-                        : [
-                            const Color(0xFFEEF2FF), // Indigo 50
-                            backgroundColor, // Warm Ivory
-                          ],
+                      ? [const Color(0xFF1E1B4B), backgroundColor]
+                      : [const Color(0xFFEEF2FF), backgroundColor],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -100,9 +124,7 @@ class MarketingHubScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              colors: [primaryColor, secondaryColor],
-                            ),
+                            gradient: LinearGradient(colors: [primaryColor, secondaryColor]),
                             boxShadow: [
                               BoxShadow(
                                 color: primaryColor.withValues(alpha: 0.35),
@@ -121,7 +143,7 @@ class MarketingHubScreen extends StatelessWidget {
             ),
           ),
 
-          // Menu Options
+          // Menu Options List
           SliverPadding(
             padding: const EdgeInsets.all(20.0),
             sliver: SliverList(
@@ -133,15 +155,7 @@ class MarketingHubScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: surfaceColor,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isDark ? primaryColor.withValues(alpha: 0.2) : primaryColor.withValues(alpha: 0.1),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.02),
-                        blurRadius: 10,
-                      ),
-                    ],
+                    border: Border.all(color: borderCol(isDark, primaryColor)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +165,7 @@ class MarketingHubScreen extends StatelessWidget {
                         style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
-                          color: isDark ? Colors.white : Colors.black87,
+                          color: textPrimary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -168,11 +182,131 @@ class MarketingHubScreen extends StatelessWidget {
                 ),
 
                 Text(
-                  'Chiến Dịch & Tài Chính 📊',
+                  'Chiến Dịch Cao Cấp (Batch 12) 💎',
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
-                    color: isDark ? Colors.white : Colors.black87,
+                    color: textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                _buildOptionCard(
+                  title: 'Premium Landing Page 🛬',
+                  desc: 'Trang đáp giới thiệu Manifesto và Perks tối thượng của câu lạc bộ',
+                  icon: Icons.star_purple500,
+                  color: secondaryColor,
+                  isDark: isDark,
+                  surfaceColor: surfaceColor,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PremiumLandingScreen(
+                        isDarkMode: _isDarkMode,
+                        onThemeToggle: _toggleTheme,
+                      ),
+                    ),
+                  ),
+                ),
+
+                _buildOptionCard(
+                  title: 'Product Case Study 📖',
+                  desc: 'Tập hợp Case Study về Triết lý "Social Chaos" & các Cột trụ cốt lõi',
+                  icon: Icons.menu_book,
+                  color: primaryColor,
+                  isDark: isDark,
+                  surfaceColor: surfaceColor,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CaseStudiesHubScreen(
+                        isDarkMode: _isDarkMode,
+                        onThemeToggle: _toggleTheme,
+                      ),
+                    ),
+                  ),
+                ),
+
+                _buildOptionCard(
+                  title: 'Motion Language Showcase 🛸',
+                  desc: 'Không gian trải nghiệm Kinetic Motion, Easing spring và Snapping',
+                  icon: Icons.animation,
+                  color: secondaryColor,
+                  isDark: isDark,
+                  surfaceColor: surfaceColor,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MotionBreakdownsHubScreen(
+                        isDarkMode: _isDarkMode,
+                        onThemeToggle: _toggleTheme,
+                      ),
+                    ),
+                  ),
+                ),
+
+                _buildOptionCard(
+                  title: 'Social Ads Space 📢',
+                  desc: 'Tài nguyên quảng cáo đa nền tảng TikTok, Insta, Reels và Ghost Cam',
+                  icon: Icons.video_library_outlined,
+                  color: primaryColor,
+                  isDark: isDark,
+                  surfaceColor: surfaceColor,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SocialPromoHubScreen(
+                        isDarkMode: _isDarkMode,
+                        onThemeToggle: _toggleTheme,
+                      ),
+                    ),
+                  ),
+                ),
+
+                _buildOptionCard(
+                  title: 'Campaign Chaos Squad 👑',
+                  desc: 'Bình chọn Chaos King và định hình danh tiếng nhóm độc lạ',
+                  icon: Icons.emoji_events_outlined,
+                  color: secondaryColor,
+                  isDark: isDark,
+                  surfaceColor: surfaceColor,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReputationCampaignScreen(
+                        isDarkMode: _isDarkMode,
+                        onThemeToggle: _toggleTheme,
+                      ),
+                    ),
+                  ),
+                ),
+
+                _buildOptionCard(
+                  title: 'Launch Countdown Banner ⏳',
+                  desc: 'Đếm ngược ngày phát hành kèm tiến độ hoàn tất và đăng ký Beta',
+                  icon: Icons.hourglass_empty_outlined,
+                  color: primaryColor,
+                  isDark: isDark,
+                  surfaceColor: surfaceColor,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LaunchCountdownScreen(
+                        isDarkMode: _isDarkMode,
+                        onThemeToggle: _toggleTheme,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                Text(
+                  'Chiến Dịch & Tài Chính Cũ 📊',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -209,7 +343,7 @@ class MarketingHubScreen extends StatelessWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
-                    color: isDark ? Colors.white : Colors.black87,
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -260,6 +394,10 @@ class MarketingHubScreen extends StatelessWidget {
     );
   }
 
+  Color borderCol(bool isDark, Color color) {
+    return isDark ? color.withValues(alpha: 0.2) : color.withValues(alpha: 0.1);
+  }
+
   Widget _buildOptionCard({
     required String title,
     required String desc,
@@ -275,9 +413,7 @@ class MarketingHubScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.08),
-          ),
+          border: Border.all(color: borderCol(isDark, color)),
         ),
         child: ListTile(
           onTap: onTap,

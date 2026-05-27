@@ -494,6 +494,27 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                   height: 90,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 90,
+                    width: double.infinity,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image, color: Colors.grey),
+                  ),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 90,
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      child: const Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 6),

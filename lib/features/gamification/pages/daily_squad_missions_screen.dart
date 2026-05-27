@@ -1,172 +1,623 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DailySquadMissionsScreen extends StatefulWidget {
-  const DailySquadMissionsScreen({super.key});
+  final bool isDarkMode;
+  final VoidCallback? onThemeToggle;
+
+  const DailySquadMissionsScreen({
+    super.key,
+    this.isDarkMode = true,
+    this.onThemeToggle,
+  });
 
   @override
-  State<DailySquadMissionsScreen> createState() => _DailySquadMissionsScreenState();
+  State<DailySquadMissionsScreen> createState() =>
+      _DailySquadMissionsScreenState();
 }
 
-class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen> {
+class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnim;
+
   final List<Map<String, dynamic>> _missions = [
     {
-      'title': 'Ghi nhận 2 khoản thiệt hại 💸',
-      'desc': 'Cả nhóm đăng tối thiểu 2 hóa đơn chi tiêu lên Expense Tracker.',
-      'progress': 1,
-      'target': 2,
-      'reward': '+200 XP',
-    },
-    {
-      'title': 'Chia sẻ 3 khoảnh khắc dìm 📸',
-      'desc': 'Đăng 3 bức ảnh hoặc video ngắn lên Memory Wall.',
+      'emoji': '📸',
+      'title': 'Upload 5 memories',
       'progress': 3,
-      'target': 3,
-      'reward': '+300 XP',
+      'total': 5,
+      'xp': '+250 XP',
+      'tag': null,
+      'locked': false,
     },
     {
-      'title': 'Bắt đầu 1 ván bài sinh tử 🃏',
-      'desc': 'Khởi động 1 lượt chơi Truth or Dare hoặc Spin Wheel.',
+      'emoji': '☕',
+      'title': 'Visit 3 cafes',
+      'progress': 1,
+      'total': 3,
+      'xp': '+150 XP',
+      'tag': 'High Vibe Mission',
+      'tagIcon': Icons.local_cafe,
+      'locked': false,
+    },
+    {
+      'emoji': '🔥',
+      'title': 'Everyone reacts once',
+      'progress': 4,
+      'total': 5,
+      'xp': '+300 XP',
+      'tag': null,
+      'locked': false,
+    },
+    {
+      'emoji': '🚕',
+      'title': 'Take a random route',
       'progress': 0,
-      'target': 1,
-      'reward': '+150 XP',
+      'total': 1,
+      'xp': '??? XP',
+      'tag': null,
+      'locked': true,
     },
   ];
 
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+    _pulseAnim = Tween<double>(begin: 0.9, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
+    final bg = isDark ? const Color(0xFF0A0A1A) : const Color(0xFFF0F0FF);
+    final surface = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : Colors.white.withValues(alpha: 0.75);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A2E);
+    final textSecondary = isDark
+        ? Colors.white.withValues(alpha: 0.6)
+        : const Color(0xFF1A1A2E).withValues(alpha: 0.6);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('Nhiệm Vụ Squad Hằng Ngày 📆', style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Cooperative Daily Missions 🤝',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+      backgroundColor: bg,
+      body: Stack(
+        children: [
+          // Ambient blobs
+          Positioned(
+            top: -60,
+            right: -60,
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF45DFA4).withValues(alpha: 0.2),
+                    Colors.transparent,
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Cùng nhau hoàn thành nhiệm vụ để nhân đôi điểm thưởng XP cho cả đội!',
-              style: TextStyle(color: Colors.grey),
+          ),
+          Positioned(
+            bottom: 100,
+            left: -80,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFD0BCFF).withValues(alpha: 0.18),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 24),
+          ),
 
-            // Missions List
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _missions.length,
-              itemBuilder: (context, index) {
-                final item = _missions[index];
-                final double progressValue = (item['progress'] as int) / (item['target'] as int);
-                final isCompleted = progressValue >= 1.0;
+          SafeArea(
+            child: Column(
+              children: [
+                // AppBar
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Row(
+                    children: [
+                      Text(
+                        'trip.mate',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFFD0BCFF),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: widget.onThemeToggle,
+                        child: _buildNavIcon(
+                          icon: Icons.wb_sunny_outlined,
+                          isDark: isDark,
+                          isActive: false,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildNavIcon(
+                        icon: Icons.notifications_outlined,
+                        isDark: isDark,
+                        isActive: true,
+                        activeColor: const Color(0xFFD0BCFF),
+                      ),
+                    ],
+                  ),
+                ),
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Squad Energy Card
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFF45DFA4)
+                                        .withValues(alpha: isDark ? 0.15 : 0.12),
+                                    const Color(0xFF1DB954)
+                                        .withValues(alpha: isDark ? 0.1 : 0.08),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: const Color(0xFF45DFA4)
+                                      .withValues(alpha: 0.25),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Squad Energy',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            color: textPrimary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '84%',
+                                              style:
+                                                  GoogleFonts.plusJakartaSans(
+                                                fontSize: 38,
+                                                fontWeight: FontWeight.w900,
+                                                color: const Color(0xFF45DFA4),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          'collective chaos achieved ✨',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            color: textSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Circular energy ring
+                                  AnimatedBuilder(
+                                    animation: _pulseAnim,
+                                    builder: (context, child) =>
+                                        Transform.scale(
+                                      scale: _pulseAnim.value,
+                                      child: child,
+                                    ),
+                                    child: SizedBox(
+                                      width: 70,
+                                      height: 70,
+                                      child: CircularProgressIndicator(
+                                        value: 0.84,
+                                        strokeWidth: 6,
+                                        backgroundColor: const Color(0xFF45DFA4)
+                                            .withValues(alpha: 0.15),
+                                        valueColor:
+                                            const AlwaysStoppedAnimation(
+                                                Color(0xFF45DFA4)),
+                                        strokeCap: StrokeCap.round,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Countdown
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: surface,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: borderColor),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.schedule,
+                                      size: 16,
+                                      color: const Color(0xFFD0BCFF)),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '14:22:05 left',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFFD0BCFF),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    'daily reset',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        Text(
+                          'Daily Missions',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: textPrimary,
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Mission cards
+                        ...List.generate(_missions.length, (i) {
+                          final m = _missions[i];
+                          final locked = m['locked'] as bool;
+                          final prog = m['progress'] as int;
+                          final total = m['total'] as int;
+                          final pct = prog / total;
+                          final complete = pct >= 1.0;
+
+                          return _buildMissionCard(
+                            mission: m,
+                            isDark: isDark,
+                            surface: surface,
+                            borderColor: borderColor,
+                            textPrimary: textPrimary,
+                            textSecondary: textSecondary,
+                            locked: locked,
+                            pct: pct,
+                            complete: complete,
+                          );
+                        }),
+
+                        const SizedBox(height: 100),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Bottom Nav
+                _buildBottomNav(isDark: isDark, surface: surface),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMissionCard({
+    required Map<String, dynamic> mission,
+    required bool isDark,
+    required Color surface,
+    required Color borderColor,
+    required Color textPrimary,
+    required Color textSecondary,
+    required bool locked,
+    required double pct,
+    required bool complete,
+  }) {
+    final xp = mission['xp'] as String;
+    final Color progressColor = complete
+        ? const Color(0xFF45DFA4)
+        : locked
+            ? Colors.grey
+            : const Color(0xFFD0BCFF);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: locked
+                  ? (isDark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.black.withValues(alpha: 0.03))
+                  : surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: complete
+                    ? const Color(0xFF45DFA4).withValues(alpha: 0.3)
+                    : borderColor,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      mission['emoji'] as String,
+                      style: TextStyle(
+                        fontSize: 22,
+                        color: locked ? Colors.white.withValues(alpha: 0.3) : null,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  item['title'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                item['reward'] as String,
-                                style: const TextStyle(
-                                  color: Colors.purpleAccent,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            item['desc'] as String,
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: LinearProgressIndicator(
-                                    value: progressValue,
-                                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
-                                    minHeight: 8,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Text(
-                                '${item['progress']}/${item['target']}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: isCompleted ? Colors.green : Colors.purpleAccent,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (isCompleted) ...[
-                            const SizedBox(height: 12),
-                            const Row(
+                          if (mission['tag'] != null)
+                            Row(
                               children: [
-                                Icon(Icons.check_circle, color: Colors.green, size: 16),
-                                SizedBox(width: 6),
+                                Icon(
+                                  mission['tagIcon'] as IconData? ??
+                                      Icons.star,
+                                  size: 12,
+                                  color: const Color(0xFF45DFA4),
+                                ),
+                                const SizedBox(width: 4),
                                 Text(
-                                  'Hoàn thành! Nhân đôi XP thành công 🎉',
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
+                                  mission['tag'] as String,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF45DFA4),
                                   ),
                                 ),
                               ],
                             ),
-                          ],
+                          Text(
+                            mission['title'] as String,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: locked
+                                  ? textSecondary
+                                  : textPrimary,
+                            ),
+                          ),
                         ],
                       ),
                     ),
+                    if (locked)
+                      Icon(Icons.lock,
+                          size: 16, color: textSecondary)
+                    else
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: progressColor.withValues(alpha: 0.15),
+                        ),
+                        child: Text(
+                          xp,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: progressColor,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                if (!locked) ...[
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: LinearProgressIndicator(
+                            value: pct,
+                            minHeight: 6,
+                            backgroundColor:
+                                progressColor.withValues(alpha: 0.12),
+                            valueColor:
+                                AlwaysStoppedAnimation(progressColor),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Progress: ${mission['progress']}/${mission['total']}',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
+                ],
+                if (locked)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Mystery Mission',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: textSecondary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavIcon({
+    required IconData icon,
+    required bool isDark,
+    required bool isActive,
+    Color? activeColor,
+  }) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isActive && activeColor != null
+            ? activeColor.withValues(alpha: 0.15)
+            : Colors.transparent,
+      ),
+      child: Icon(
+        icon,
+        size: 22,
+        color: isActive && activeColor != null
+            ? activeColor
+            : isDark
+                ? Colors.white.withValues(alpha: 0.5)
+                : Colors.black.withValues(alpha: 0.4),
+      ),
+    );
+  }
+
+  Widget _buildBottomNav({required bool isDark, required Color surface}) {
+    final icons = [
+      Icons.explore_outlined,
+      Icons.group_outlined,
+      Icons.add_circle,
+      Icons.map_outlined,
+      Icons.person_outlined,
+    ];
+    final activeIdx = 1;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.white.withValues(alpha: 0.85),
+            border: Border(
+              top: BorderSide(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.06),
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(icons.length, (i) {
+              final isActive = i == activeIdx;
+              return GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isActive
+                        ? const Color(0xFF45DFA4).withValues(alpha: 0.2)
+                        : Colors.transparent,
+                    boxShadow: isActive
+                        ? [
+                            BoxShadow(
+                              color: const Color(0xFF45DFA4)
+                                  .withValues(alpha: 0.3),
+                              blurRadius: 12,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Icon(
+                    icons[i],
+                    size: 24,
+                    color: isActive
+                        ? const Color(0xFF45DFA4)
+                        : isDark
+                            ? Colors.white.withValues(alpha: 0.45)
+                            : Colors.black.withValues(alpha: 0.35),
+                  ),
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );

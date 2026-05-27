@@ -1,160 +1,650 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class ChaosChallengesScreen extends StatelessWidget {
-  const ChaosChallengesScreen({super.key});
+class ChaosChallengesScreen extends StatefulWidget {
+  final bool isDarkMode;
+  final VoidCallback? onThemeToggle;
 
-  final List<Map<String, dynamic>> _challenges = const [
-    {
-      'title': 'Nói tiếng Nhật cả buổi tối 🇯🇵',
-      'desc': 'Thách thức nói hoàn toàn bằng tiếng Nhật khi ăn tối ở Kyoto Ryokan.',
-      'reward': '+500 XP',
-      'danger': 'Hard 🔥',
-    },
-    {
-      'title': 'Thần Tài Gánh Team 💸',
-      'desc': 'Thực hiện 2 lần thanh toán nợ ngay lập tức trong Wallet.',
-      'reward': '+300 XP',
-      'danger': 'Medium ⚡',
-    },
-    {
-      'title': 'Chụp hình troll Lê Minh 📸',
-      'desc': 'Sử dụng Ghost Cam chộp được khoảnh khắc ngái ngủ của Lê Minh.',
-      'reward': '+400 XP',
-      'danger': 'Extreme 💀',
-    },
-  ];
+  const ChaosChallengesScreen({
+    super.key,
+    this.isDarkMode = true,
+    this.onThemeToggle,
+  });
+
+  @override
+  State<ChaosChallengesScreen> createState() => _ChaosChallengesScreenState();
+}
+
+class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  // Count-down timer state
+  late Timer _countdownTimer;
+  Duration _remainingTime = const Duration(hours: 4, minutes: 20, seconds: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeOut,
+    );
+    _fadeController.forward();
+
+    // Start ticking countdown
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          if (_remainingTime.inSeconds > 0) {
+            _remainingTime = _remainingTime - const Duration(seconds: 1);
+          } else {
+            _remainingTime = const Duration(hours: 24, minutes: 0, seconds: 0); // loop
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer.cancel();
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    String hours = d.inHours.toString().padLeft(2, '0');
+    String minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
+    String seconds = (d.inSeconds % 60).toString().padLeft(2, '0');
+    return '$hours:$minutes:$seconds';
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
+
+    // Design System colors
+    final bgStart = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
+    final bgEnd = isDark ? const Color(0xFF060E20) : const Color(0xFFF1EDE6);
+    final surface = isDark ? const Color(0xFF171F33) : Colors.white;
+    final primary = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final secondary = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
+    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
+    final textMuted = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.pop(context),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [bgStart, bgEnd],
+          ),
         ),
-        title: const Text('Thử Thách Hỗn Loạn ⚡', style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            // Header
-            Text(
-              'Squad Chaos Challenges 🎢',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+            // Ambient glow backdrops
+            if (isDark) ...[
+              Positioned(
+                top: -50,
+                right: -50,
+                child: Container(
+                  width: 250,
+                  height: 250,
+                  decoration: BoxDecoration(
+                    color: primary.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 85, sigmaY: 85),
+                    child: Container(color: Colors.transparent),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Thách thức lòng can đảm và độ lầy lội của cả hội bạn!',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
+              Positioned(
+                bottom: 100,
+                left: -100,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    color: secondary.withValues(alpha: 0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 85, sigmaY: 85),
+                    child: Container(color: Colors.transparent),
+                  ),
+                ),
+              ),
+            ],
 
-            // Challenges List
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _challenges.length,
-              itemBuilder: (context, index) {
-                final item = _challenges[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.redAccent.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  item['danger'] as String,
-                                  style: const TextStyle(
-                                    color: Colors.redAccent,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                item['reward'] as String,
-                                style: const TextStyle(
-                                  color: Colors.purpleAccent,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            item['title'] as String,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            item['desc'] as String,
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
-                              fontSize: 13,
-                              height: 1.4,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('🎉 Đã chấp nhận thử thách! Hãy chụp hình chứng minh lên feed nhé!'),
-                                    backgroundColor: Colors.purple,
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.purple,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text('Nhận thử thách ⚡', style: TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ],
+            SafeArea(
+              bottom: false,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Column(
+                  children: [
+                    // Top App Bar
+                    _buildTopAppBar(textPrimary),
+
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 12),
+
+                            // Header Text Blocks
+                            _buildHeaderSection(textPrimary, textMuted),
+
+                            const SizedBox(height: 24),
+
+                            // Highlighted Daily Chaos Card
+                            _buildDailyChaosCard(surface, primary, secondary, textPrimary, textMuted, isDark),
+
+                            const SizedBox(height: 28),
+
+                            // Viral Challenges Feed list
+                            _buildViralChallenges(surface, primary, secondary, textPrimary, textMuted, isDark),
+
+                            const SizedBox(height: 28),
+
+                            // Chaos Rewards Bento Grid
+                            _buildRewardsSection(surface, primary, secondary, textPrimary, textMuted, isDark),
+
+                            const SizedBox(height: 160), // Spacing for bottom navbar
+                          ],
+                        ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Floating Custom Navbar
+            _buildFloatingNavbar(surface, primary, secondary, textMuted),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopAppBar(Color textPrimary) {
+    final isDark = widget.isDarkMode;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20),
+            onPressed: () => Navigator.maybePop(context),
+            tooltip: 'Back',
+          ),
+          Text(
+            'trip.mate',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -1.0,
+              color: textPrimary,
+            ),
+          ),
+          if (widget.onThemeToggle != null)
+            IconButton(
+              icon: Icon(
+                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                color: textPrimary.withValues(alpha: 0.6),
+                size: 20,
+              ),
+              onPressed: widget.onThemeToggle,
+              tooltip: 'Toggle Theme',
+            )
+          else
+            const SizedBox(width: 48),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderSection(Color textPrimary, Color textMuted) {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            'embrace the chaos',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+              color: textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'bad decisions make good memories.',
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: textMuted,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDailyChaosCard(
+      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: primary.withValues(alpha: 0.25), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: primary.withValues(alpha: 0.05),
+                blurRadius: 20,
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Text('🎲', style: TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      Text(
+                        'DAILY CHAOS',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                          color: primary,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
+                  Row(
+                    children: [
+                      Icon(Icons.local_fire_department_rounded, color: secondary, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Active',
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Take a random bus',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Timer countdown display
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Remaining',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: textMuted,
+                    ),
+                  ),
+                  Text(
+                    _formatDuration(_remainingTime),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: primary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              // Accept Challenge button
+              GestureDetector(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Challenge Accepted! Time to hop on a random bus! 🚌✨'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [primary, primary.withRed(160)],
+                    ),
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primary.withValues(alpha: 0.3),
+                        blurRadius: 15,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Accept Challenge',
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildViralChallenges(
+      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.local_fire_department_rounded, color: Colors.orange, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Viral Challenges',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: textPrimary,
+              ),
             ),
           ],
         ),
+        const SizedBox(height: 12),
+
+        // Horizontal list / vertical items representing trending dares
+        // Item 1: Order mystery food
+        _buildViralChallengeCard(
+          isDark: isDark,
+          surface: surface,
+          primaryColor: primary,
+          secondaryColor: secondary,
+          textPrimary: textPrimary,
+          textMuted: textMuted,
+          avatarText: '🍜',
+          title: 'Order mystery food',
+          sub: 'Voted by Minh Nhật',
+          buttonLabel: 'Join',
+          buttonColor: secondary,
+          onTap: () {},
+        ),
+
+        const SizedBox(height: 12),
+
+        // Item 2: Recreate a movie scene
+        _buildViralChallengeCard(
+          isDark: isDark,
+          surface: surface,
+          primaryColor: primary,
+          secondaryColor: secondary,
+          textPrimary: textPrimary,
+          textMuted: textMuted,
+          avatarText: '📸',
+          title: 'Recreate a movie scene',
+          sub: '1 member ready',
+          buttonLabel: 'Join',
+          buttonColor: primary,
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  Widget _buildViralChallengeCard({
+    required bool isDark,
+    required Color surface,
+    required Color primaryColor,
+    required Color secondaryColor,
+    required Color textPrimary,
+    required Color textMuted,
+    required String avatarText,
+    required String title,
+    required String sub,
+    required String buttonLabel,
+    required Color buttonColor,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(avatarText, style: const TextStyle(fontSize: 20)),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  sub,
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: textMuted,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Join Button
+          GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: buttonColor),
+                color: buttonColor.withValues(alpha: 0.1),
+              ),
+              child: Text(
+                buttonLabel,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: buttonColor,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRewardsSection(
+      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    final List<Map<String, String>> rewards = [
+      {'emoji': '👑', 'label': 'Chaos King'},
+      {'emoji': '🎵', 'label': 'Vibe Savior'},
+      {'emoji': '🍕', 'label': 'Mystery Gourmet'},
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          'Chaos Rewards',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Horizontal list of Bento rewards
+        Row(
+          children: rewards.map((rew) {
+            return Expanded(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05)),
+                ),
+                child: Column(
+                  children: [
+                    Text(rew['emoji']!, style: const TextStyle(fontSize: 28)),
+                    const SizedBox(height: 10),
+                    Text(
+                      rew['label']!,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFloatingNavbar(Color surface, Color primary, Color secondary, Color textMuted) {
+    final isDark = widget.isDarkMode;
+    return Positioned(
+      bottom: 24,
+      left: 20,
+      right: 20,
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(40),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              width: double.infinity,
+              constraints: const BoxConstraints(maxWidth: 400),
+              decoration: BoxDecoration(
+                color: surface.withValues(alpha: isDark ? 0.65 : 0.8),
+                borderRadius: BorderRadius.circular(40),
+                border: Border.all(
+                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.1),
+                    blurRadius: 30,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavbarItem(Icons.home_rounded, false, textMuted, secondary),
+                  _buildNavbarItem(Icons.payments_outlined, false, textMuted, secondary),
+                  _buildNavbarItem(Icons.explore_rounded, true, textMuted, secondary),
+                  _buildNavbarItem(Icons.auto_awesome_rounded, false, textMuted, secondary),
+                  _buildNavbarItem(Icons.person_outline_rounded, false, textMuted, secondary),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavbarItem(IconData icon, bool isActive, Color textMuted, Color secondary) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: isActive
+          ? BoxDecoration(
+              color: secondary.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: secondary.withValues(alpha: 0.25),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ],
+            )
+          : null,
+      child: Icon(
+        icon,
+        color: isActive ? secondary : textMuted,
+        size: 24,
       ),
     );
   }

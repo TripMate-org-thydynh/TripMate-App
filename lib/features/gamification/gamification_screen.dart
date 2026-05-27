@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'pages/achievement_unlock_screen.dart';
 import 'pages/chaos_challenges_screen.dart';
 import 'pages/daily_squad_missions_screen.dart';
@@ -25,7 +26,7 @@ class GamificationScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Mini Game Lobby 🕹️',
+          'gamification.hub_title'.tr(),
           style: TextStyle(
             color: isDark ? Colors.white : Colors.black87,
             fontWeight: FontWeight.bold,
@@ -50,10 +51,10 @@ class GamificationScreen extends StatelessWidget {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'SQUAD CHAOS PLAYGROUND 🎮',
                     style: TextStyle(
                       color: Colors.white,
@@ -62,10 +63,10 @@ class GamificationScreen extends StatelessWidget {
                       letterSpacing: 1.2,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
-                    'Trạm giải trí độc quyền cho cả nhóm du lịch. Hãy quẩy hết nấc để tích điểm thăng hạng phượt thủ!',
-                    style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                    'gamification.hub_desc'.tr(),
+                    style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
                   ),
                 ],
               ),
@@ -74,7 +75,7 @@ class GamificationScreen extends StatelessWidget {
             const SizedBox(height: 28),
 
             Text(
-              'Trò Chơi Hỗn Loạn 🎡',
+              'gamification.hub_title'.tr(),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -93,7 +94,7 @@ class GamificationScreen extends StatelessWidget {
                 _buildGameCard(
                   context,
                   'Who Pays Wheel 🎡',
-                  'Vòng quay hỗn loạn',
+                  'gamification.chaotic_wheel'.tr(),
                   const WhoPaysWheelScreen(),
                   isDark,
                   Colors.redAccent,
@@ -101,7 +102,7 @@ class GamificationScreen extends StatelessWidget {
                 _buildGameCard(
                   context,
                   'Random Dare 🎲',
-                  'Bốc thử thách ngẫu nhiên',
+                  'gamification.random_challenge'.tr(),
                   const RandomDareGeneratorScreen(),
                   isDark,
                   Colors.orangeAccent,
@@ -109,7 +110,7 @@ class GamificationScreen extends StatelessWidget {
                 _buildGameCard(
                   context,
                   'Trip Bingo 🎯',
-                  'Bảng tích lũy Bingo',
+                  'gamification.bingo_board'.tr(),
                   const TripBingoScreen(),
                   isDark,
                   Colors.teal,
@@ -117,7 +118,7 @@ class GamificationScreen extends StatelessWidget {
                 _buildGameCard(
                   context,
                   'Chaos Challenges ⚡',
-                  'Các thử thách điên rồ',
+                  'gamification.crazy_challenges'.tr(),
                   const ChaosChallengesScreen(),
                   isDark,
                   Colors.purpleAccent,
@@ -128,7 +129,7 @@ class GamificationScreen extends StatelessWidget {
             const SizedBox(height: 28),
 
             Text(
-              'Hành Trình XP & Danh Hiệu 🏆',
+              'gamification.xp_ranks'.tr(),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -140,16 +141,16 @@ class GamificationScreen extends StatelessWidget {
             _buildListAction(
               context,
               Icons.leaderboard_outlined,
-              'Bảng Xếp Hạng Squad • Rankings 🏆',
-              'Xem xếp hạng lầy lội của cả hội bạn',
+              'gamification.squad_rankings'.tr(),
+              'gamification.squad_rankings_desc'.tr(),
               const SquadLeaderboardScreen(),
               isDark,
             ),
             _buildListAction(
               context,
               Icons.bolt_outlined,
-              'Hệ Thống Squad XP 🚀',
-              'Mở khóa đặc quyền du lịch cực chất',
+              'gamification.xp_system'.tr(),
+              'gamification.xp_system_desc'.tr(),
               const SquadXpSystemScreen(),
               isDark,
             ),
@@ -157,7 +158,7 @@ class GamificationScreen extends StatelessWidget {
               context,
               Icons.emoji_events_outlined,
               'Achievement Unlocked 🏆',
-              'Xem các cúp danh hiệu đã tích lũy',
+              'gamification.achievements_accumulated'.tr(),
               const AchievementUnlockScreen(),
               isDark,
             ),
@@ -165,31 +166,31 @@ class GamificationScreen extends StatelessWidget {
               context,
               Icons.card_giftcard_outlined,
               'End Trip Awards 🎭',
-              'Lễ trao giải vui nhộn cuối hành trình',
+              'gamification.end_awards'.tr(),
               const EndTripAwardsScreen(),
               isDark,
             ),
             _buildListAction(
               context,
               Icons.task_alt_outlined,
-              'Nhiệm Vụ Hằng Ngày 📆',
-              'Cùng cả nhóm làm nhiệm vụ nhận thưởng',
+              'gamification.daily_missions'.tr(),
+              'gamification.daily_missions_desc'.tr(),
               const DailySquadMissionsScreen(),
               isDark,
             ),
             _buildListAction(
               context,
               Icons.calendar_month_outlined,
-              'Sự Kiện Mùa Giải 🎏',
-              'Nhận các thử thách giới hạn thời gian',
+              'gamification.season_events'.tr(),
+              'gamification.season_events_desc'.tr(),
               const SeasonalEventsScreen(),
               isDark,
             ),
             _buildListAction(
               context,
               Icons.workspace_premium_outlined,
-              'Thử Thách Tuần 📆',
-              'Thử thách tuần mới thách thức kỹ năng',
+              'gamification.weekly_challenges'.tr(),
+              'gamification.weekly_challenges_desc'.tr(),
               const WeeklyChallengesScreen(),
               isDark,
             ),

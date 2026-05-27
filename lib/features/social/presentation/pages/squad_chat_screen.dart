@@ -23,55 +23,54 @@ class SquadChatScreen extends StatefulWidget {
 }
 
 class _SquadChatScreenState extends State<SquadChatScreen> {
-  int _activeConversation = 0; // 0: Kyoto Drift Squad, 1: Social Chaos Mode
+  int _activeConversation = 0; // 0: Phú Quốc Escape 🌴, 1: Social Chaos Mode 🔥
   bool _voiceOverlayVisible = false;
   bool _stickerTrayVisible = false;
   bool _showTypingIndicator = true;
   String _selectedMessageForSticker = '';
+  bool _pinnedLocationVisible = true;
 
   final TextEditingController _msgController = TextEditingController();
 
-  // Kyoto Drift messages
-  final List<Map<String, dynamic>> _kyotoMessages = [
+  // Poll state for Bún Quậy vs Seafood
+  int _bunQuayVotes = 8;
+  int _seafoodVotes = 5;
+  String? _myPollVote; // null, 'bun', 'seafood'
+
+  // Phú Quốc messages
+  late final List<Map<String, dynamic>> _phuQuocMessages = [
     {
-      'id': 'm1',
-      'user': '@alex_escapes',
-      'avatar': '🦊',
-      'content': 'Welcome to Kyoto Drift Squad crew space! Get ready for chaotic temples and matcha overload! 🍵',
+      'id': 'pq1',
+      'user': '@phuc_travels',
+      'avatar': '🚗',
+      'content': 'Guys, I just arrived at the resort! Phú Quốc is absolutely gorgeous today. 🌊',
       'time': '10:02 AM',
-      'reactions': ['🔥', '👾'],
+      'reactions': ['🔥', '💯'],
     },
     {
-      'id': 'm2',
-      'user': '@minh_nhat',
-      'avatar': '🐱',
-      'content': 'LOCATION_PING: Sharing location! Meet me at Gion Walk.',
-      'type': 'ping',
-      'location': 'Shijodori Gion-machi, Kyoto',
+      'id': 'pq2',
+      'user': '@lan_music',
+      'avatar': '🎵',
+      'content': 'Sao Beach Club is the move for tonight! Already hear the bass calling. 🔊',
       'time': '10:15 AM',
-      'reactions': ['👀'],
+      'reactions': ['🔥', '💀'],
     },
     {
-      'id': 'm3',
-      'user': '@sarah_wander',
-      'avatar': '🦊',
-      'content': 'POLL: Kyoto Squad Dinner Democracy 🗳️',
+      'id': 'pq_poll',
+      'user': '@minh_nomad',
+      'avatar': '👑',
       'type': 'poll',
-      'pollQuestion': 'What Ryokan Kyoto dining style fits our vibe?',
-      'pollOptions': [
-        {'text': 'Kaiseki Dinner (Traditional) 🍱', 'votes': 3, 'voted': true},
-        {'text': 'Ramen Crawl & Sake 🍜', 'votes': 1, 'voted': false},
-      ],
-      'time': '10:45 AM',
+      'pollQuestion': 'Dinner Democracy: Bún Quậy 🍜 vs Seafood 🦐?',
+      'time': '10:20 AM',
       'reactions': [],
     },
     {
-      'id': 'm4',
+      'id': 'pq3',
       'user': '@thao_ly',
       'avatar': '🦄',
-      'content': 'Wait, did someone check if we need Grab bike bookings or rental scooters?',
-      'time': '11:02 AM',
-      'reactions': ['🛵'],
+      'content': 'Are we renting bikes or taking a taxi to the beach club? It says 15m drive on the map.',
+      'time': '10:25 AM',
+      'reactions': ['👀'],
     }
   ];
 
@@ -109,7 +108,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       };
       
       if (_activeConversation == 0) {
-        _kyotoMessages.add(newMsg);
+        _phuQuocMessages.add(newMsg);
       } else {
         _chaosMessages.add(newMsg);
       }
@@ -134,29 +133,120 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
     );
   }
 
+  Widget _buildCrewStatusChip(String name, String status, Color accent, Color textCol, Color subTextCol) {
+    return Row(
+      children: [
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: accent,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        RichText(
+          text: TextSpan(
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              color: textCol,
+            ),
+            children: [
+              TextSpan(text: '$name: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(
+                text: status,
+                style: TextStyle(color: subTextCol),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickReactionChip(String label, Color accent, Color textCol, Color cardBg) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          final newMsg = {
+            'id': 'reaction_${DateTime.now().millisecondsSinceEpoch}',
+            'user': '@alex_escapes',
+            'avatar': '🦊',
+            'content': 'reacted: $label',
+            'time': 'Just now',
+            'reactions': <String>[],
+          };
+          if (_activeConversation == 0) {
+            _phuQuocMessages.add(newMsg);
+          } else {
+            _chaosMessages.add(newMsg);
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Squad reacted with $label! 🙌'),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: cardBg.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: accent.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: accent.withValues(alpha: 0.05),
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.outfit(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: textCol,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bgGradStart = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDark ? const Color(0xFF151926) : const Color(0xFFF3EFE9);
-    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
-    final textPrimary = isDark ? Colors.white : Colors.black87;
-    final textSecondary = isDark ? Colors.white60 : Colors.black54;
 
+    // Standard palette matching instructions
     final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
+    final tertiaryColor = isDark ? const Color(0xFFFB923C) : const Color(0xFFEBA83A);
+    final backgroundColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
+    final surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
+    final textSecondary = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
+
     final neonPink = const Color(0xFFFF2E93);
     final neonCyan = const Color(0xFF00F5FF);
 
-    final messages = _activeConversation == 0 ? _kyotoMessages : _chaosMessages;
-    final activeTitle = _activeConversation == 0 ? 'Kyoto Drift Squad 🛵' : 'Social Chaos Mode 🔥';
+    final messages = _activeConversation == 0 ? _phuQuocMessages : _chaosMessages;
+    final activeTitle = _activeConversation == 0 ? 'Phú Quốc Escape 🌴' : 'Social Chaos Mode 🔥';
 
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
+            colors: isDark 
+                ? [const Color(0xFF0B1326), const Color(0xFF171F33)] 
+                : [const Color(0xFFFCFAF6), const Color(0xFFF0EAE1)],
           ),
         ),
         child: SafeArea(
@@ -180,13 +270,16 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                 decoration: BoxDecoration(
                                   color: _activeConversation == 0 ? primaryColor : Colors.transparent,
                                   borderRadius: BorderRadius.circular(15),
+                                  boxShadow: _activeConversation == 0 && isDark
+                                      ? [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8)]
+                                      : null,
                                 ),
                                 child: Text(
-                                  '🛵 Kyoto',
+                                  '🌴 Phú Quốc',
                                   style: GoogleFonts.outfit(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -203,10 +296,13 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                 decoration: BoxDecoration(
                                   color: _activeConversation == 1 ? neonPink : Colors.transparent,
                                   borderRadius: BorderRadius.circular(15),
+                                  boxShadow: _activeConversation == 1 && isDark
+                                      ? [BoxShadow(color: neonPink.withValues(alpha: 0.3), blurRadius: 8)]
+                                      : null,
                                 ),
                                 child: Text(
                                   '🔥 Chaos',
@@ -224,7 +320,6 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                         // Right icons (Mentions & Search)
                         Row(
                           children: [
-                            // Mentions tag badge trigger
                             GestureDetector(
                               onTap: () => _navigateToPage(
                                 SocialMentionNotificationsScreen(
@@ -288,7 +383,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: cardBg.withValues(alpha: 0.7),
+                        color: surfaceColor.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
@@ -345,6 +440,153 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                     ),
                   ),
 
+                  // Crew status sub-header
+                  if (_activeConversation == 0)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: surfaceColor.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildCrewStatusChip('🚗 Phúc', 'traveling', primaryColor, textPrimary, textSecondary),
+                            _buildCrewStatusChip('🎵 Lan', 'listening', secondaryColor, textPrimary, textSecondary),
+                            _buildCrewStatusChip('Minh', 'away', textSecondary, textPrimary, textSecondary),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  // Pinned location card for Sao Beach Club
+                  if (_activeConversation == 0 && _pinnedLocationVisible)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: isDark 
+                                ? [const Color(0xFF1E293B).withValues(alpha: 0.9), const Color(0xFF0F172A).withValues(alpha: 0.9)]
+                                : [Colors.white.withValues(alpha: 0.9), const Color(0xFFF3EFE9).withValues(alpha: 0.9)],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: primaryColor.withValues(alpha: 0.3),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withValues(alpha: 0.15),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Text('🏖️', style: TextStyle(fontSize: 18)),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: primaryColor.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          'PINNED',
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.bold,
+                                            color: primaryColor,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          'Sao Beach Club',
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimary,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '15m drive • Tap for direction details',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11,
+                                      color: textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              ),
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Routing to Sao Beach Club... 🚙💨'),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Directions',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.close, size: 16, color: textSecondary),
+                              onPressed: () {
+                                setState(() {
+                                  _pinnedLocationVisible = false;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
                   // Sub-trigger quick activities alert bar
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -370,7 +612,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 const Text('✨', style: TextStyle(fontSize: 14)),
                                 const SizedBox(width: 6),
                                 Text(
-                                  '@minh_nhat checked off a task in Packing Checklist!',
+                                  '@phuc_travels verified Packing List checklist items!',
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
@@ -419,7 +661,6 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                               mainAxisAlignment: isSelf ? MainAxisAlignment.end : MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Long press triggers sticker reaction tray overlay
                                 GestureDetector(
                                   onLongPress: () {
                                     setState(() {
@@ -435,7 +676,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                     decoration: BoxDecoration(
                                       color: isSelf
                                           ? primaryColor
-                                          : cardBg.withValues(alpha: 0.8),
+                                          : surfaceColor.withValues(alpha: 0.8),
                                       borderRadius: BorderRadius.only(
                                         topLeft: const Radius.circular(20),
                                         topRight: const Radius.circular(20),
@@ -448,7 +689,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                             : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
                                       ),
                                     ),
-                                    child: _buildBubbleContent(type, msg, isSelf, textPrimary, textSecondary),
+                                    child: _buildBubbleContent(type, msg, isSelf, textPrimary, textSecondary, surfaceColor, primaryColor, secondaryColor, isDark),
                                   ),
                                 ),
                               ],
@@ -464,7 +705,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                     return Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: cardBg,
+                                        color: surfaceColor,
                                         borderRadius: BorderRadius.circular(10),
                                         border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
                                       ),
@@ -488,25 +729,56 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                   if (_showTypingIndicator)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(color: neonPink, shape: BoxShape.circle),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '@minh_nhat is typing... 💬',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: textSecondary,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: surfaceColor.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: primaryColor.withValues(alpha: 0.15),
                             ),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: secondaryColor,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '3 people typing... 💬',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
+
+                  // Gen Z Quick Reactions Row
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildQuickReactionChip('🔥 LIT', primaryColor, textPrimary, surfaceColor),
+                        _buildQuickReactionChip('😂 DEAD', secondaryColor, textPrimary, surfaceColor),
+                        _buildQuickReactionChip('💀 CHAOS', tertiaryColor, textPrimary, surfaceColor),
+                        _buildQuickReactionChip('💯 YASSS', primaryColor, textPrimary, surfaceColor),
+                      ],
+                    ),
+                  ),
 
                   // Message Input Tray
                   Padding(
@@ -536,11 +808,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             decoration: BoxDecoration(
-                              color: cardBg.withValues(alpha: 0.8),
+                              color: surfaceColor.withValues(alpha: 0.8),
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-                              ),
+                                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
                             ),
                             child: TextField(
                               controller: _msgController,
@@ -561,6 +832,12 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                             decoration: BoxDecoration(
                               color: primaryColor,
                               shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primaryColor.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                )
+                              ],
                             ),
                             child: const Icon(Icons.send, color: Colors.white, size: 18),
                           ),
@@ -573,11 +850,11 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
 
               // Glassmorphic Voice Chat Overlay (Supports simulated active voice)
               if (_voiceOverlayVisible)
-                _buildVoiceOverlay(isDark, cardBg, textPrimary, textSecondary, primaryColor, neonPink, neonCyan),
+                _buildVoiceOverlay(isDark, surfaceColor, textPrimary, textSecondary, primaryColor, neonPink, neonCyan),
 
               // Sticker Reaction Tray Overlay
               if (_stickerTrayVisible)
-                _buildStickerTray(isDark, cardBg, textPrimary, textSecondary, primaryColor, neonPink, neonCyan),
+                _buildStickerTray(isDark, surfaceColor, textPrimary, textSecondary, primaryColor, neonPink, neonCyan),
             ],
           ),
         ),
@@ -591,46 +868,21 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
     bool isSelf,
     Color textPrimary,
     Color textSecondary,
+    Color surfaceColor,
+    Color primaryColor,
+    Color secondaryColor,
+    bool isDark,
   ) {
     final textColor = isSelf ? Colors.white : textPrimary;
     final subColor = isSelf ? Colors.white70 : textSecondary;
 
-    if (type == 'ping') {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Text('📍', style: TextStyle(fontSize: 20)),
-              const SizedBox(width: 8),
-              Text(
-                'Shared Location Ping',
-                style: GoogleFonts.outfit(
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            msg['location'] as String,
-            style: GoogleFonts.plusJakartaSans(fontSize: 12, color: subColor),
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Opening Location coordinates on live map... 🗺️')),
-              );
-            },
-            child: const Text('Track Mates'),
-          ),
-        ],
-      );
-    } else if (type == 'poll') {
-      final question = msg['pollQuestion'] as String;
-      final options = msg['pollOptions'] as List;
+    if (type == 'poll') {
+      final double totalVotes = (_bunQuayVotes + _seafoodVotes).toDouble();
+      final double bunQuayPercent = totalVotes > 0 ? (_bunQuayVotes / totalVotes) * 100 : 50.0;
+      final double seafoodPercent = totalVotes > 0 ? (_seafoodVotes / totalVotes) * 100 : 50.0;
+
+      final bool votedBun = _myPollVote == 'bun';
+      final bool votedSeafood = _myPollVote == 'seafood';
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -641,10 +893,11 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Squad Democracy Poll',
+                  'Dinner Democracy',
                   style: GoogleFonts.outfit(
                     fontWeight: FontWeight.bold,
                     color: textColor,
+                    fontSize: 15,
                   ),
                 ),
               ),
@@ -652,51 +905,157 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            question,
-            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: textColor),
+            msg['pollQuestion'] as String,
+            style: GoogleFonts.outfit(fontSize: 13, color: textColor, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
-          ...options.map((opt) {
-            final isVoted = opt['voted'] as bool;
-            final text = opt['text'] as String;
-            final votes = opt['votes'] as int;
-
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: isVoted 
-                    ? Colors.blueAccent.withValues(alpha: 0.2) 
-                    : Colors.black.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isVoted ? Colors.blueAccent : Colors.transparent,
+          
+          // Bun Quay option card
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_myPollVote == 'bun') {
+                  _bunQuayVotes--;
+                  _myPollVote = null;
+                } else {
+                  if (_myPollVote == 'seafood') {
+                    _seafoodVotes--;
+                  }
+                  _bunQuayVotes++;
+                  _myPollVote = 'bun';
+                }
+              });
+            },
+            child: Stack(
+              children: [
+                // Live voting progress bar behind
+                Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0F172A) : Colors.black.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      text,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        color: textColor,
-                        fontWeight: isVoted ? FontWeight.bold : FontWeight.normal,
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: 48,
+                  width: (MediaQuery.of(context).size.width * 0.6) * (bunQuayPercent / 100),
+                  decoration: BoxDecoration(
+                    color: votedBun 
+                        ? primaryColor.withValues(alpha: 0.35) 
+                        : primaryColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                Container(
+                  height: 48,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: votedBun ? primaryColor : Colors.transparent,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Bún Quậy 🍜',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          color: textColor,
+                          fontWeight: votedBun ? FontWeight.bold : FontWeight.normal,
+                        ),
                       ),
+                      Text(
+                        '$_bunQuayVotes (${bunQuayPercent.toStringAsFixed(0)}%)',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: subColor,
+                          fontWeight: votedBun ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          
+          // Seafood option card
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_myPollVote == 'seafood') {
+                  _seafoodVotes--;
+                  _myPollVote = null;
+                } else {
+                  if (_myPollVote == 'bun') {
+                    _bunQuayVotes--;
+                  }
+                  _seafoodVotes++;
+                  _myPollVote = 'seafood';
+                }
+              });
+            },
+            child: Stack(
+              children: [
+                // Live voting progress bar behind
+                Container(
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF0F172A) : Colors.black.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: 48,
+                  width: (MediaQuery.of(context).size.width * 0.6) * (seafoodPercent / 100),
+                  decoration: BoxDecoration(
+                    color: votedSeafood 
+                        ? secondaryColor.withValues(alpha: 0.35) 
+                        : secondaryColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                Container(
+                  height: 48,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: votedSeafood ? secondaryColor : Colors.transparent,
+                      width: 1.5,
                     ),
                   ),
-                  Text(
-                    '$votes votes',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 11,
-                      color: subColor,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Seafood 🦐',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12,
+                          color: textColor,
+                          fontWeight: votedSeafood ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      Text(
+                        '$_seafoodVotes (${seafoodPercent.toStringAsFixed(0)}%)',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          color: subColor,
+                          fontWeight: votedSeafood ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          }),
+                ),
+              ],
+            ),
+          ),
         ],
       );
     } else {
@@ -714,7 +1073,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
   // SQUAD VOICE OVERLAY
   Widget _buildVoiceOverlay(
     bool isDark,
-    Color cardBg,
+    Color surfaceColor,
     Color textPrimary,
     Color textSecondary,
     Color themeColor,
@@ -728,7 +1087,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: cardBg.withValues(alpha: 0.9),
+          color: surfaceColor.withValues(alpha: 0.95),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: themeColor.withValues(alpha: 0.4), width: 1.5),
           boxShadow: [
@@ -768,7 +1127,6 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
               ],
             ),
             const SizedBox(height: 12),
-            // Active voice waves showing who is talking
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -847,7 +1205,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
   // STICKER REACTION TRAY
   Widget _buildStickerTray(
     bool isDark,
-    Color cardBg,
+    Color surfaceColor,
     Color textPrimary,
     Color textSecondary,
     Color themeColor,
@@ -862,7 +1220,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: cardBg.withValues(alpha: 0.95),
+          color: surfaceColor.withValues(alpha: 0.95),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: themeColor.withValues(alpha: 0.3)),
           boxShadow: [
@@ -905,10 +1263,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                     setState(() {
                       // Find message and add reaction
                       if (_activeConversation == 0) {
-                        final idx = _kyotoMessages.indexWhere((m) => m['id'] == _selectedMessageForSticker);
+                        final idx = _phuQuocMessages.indexWhere((m) => m['id'] == _selectedMessageForSticker);
                         if (idx != -1) {
-                          if (!(_kyotoMessages[idx]['reactions'] as List).contains(sticker)) {
-                            (_kyotoMessages[idx]['reactions'] as List).add(sticker);
+                          if (!(_phuQuocMessages[idx]['reactions'] as List).contains(sticker)) {
+                            (_phuQuocMessages[idx]['reactions'] as List).add(sticker);
                           }
                         }
                       } else {

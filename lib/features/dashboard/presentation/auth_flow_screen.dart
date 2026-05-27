@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'dashboard_screen.dart';
 import '../../../core/api_service.dart';
 
@@ -32,6 +33,8 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
 
   final List<String> _selectedVibes = [];
   bool _isForgotPasswordMode = false;
+  String? _tempSupabaseId;
+  String? _tempEmail;
   int _otpTimer = 30;
   Timer? _timer;
 
@@ -140,16 +143,20 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final primaryColor = widget.isDarkMode ? const Color(0xFFD0BCFF) : const Color(0xFF8B5CF6);
-    final secondaryColor = widget.isDarkMode ? const Color(0xFF45DFA4) : const Color(0xFF06B6D4);
+    final secondaryColor = widget.isDarkMode ? const Color(0xFF45DFA4) : const Color(0xFF34D399);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1326), // Premium deep obsidian background
+      backgroundColor: widget.isDarkMode ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: _currentStep > 0 && _currentStep < 5
             ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: widget.isDarkMode ? Colors.white : const Color(0xFF1E2022),
+                  size: 20,
+                ),
                 onPressed: _prevStep,
               )
             : null,
@@ -184,7 +191,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
               child: Text(
                 'Skip',
                 style: GoogleFonts.plusJakartaSans(
-                  color: Colors.white38,
+                  color: widget.isDarkMode ? Colors.white38 : Colors.black38,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -196,14 +203,30 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
           // Ambient Glowing Mesh Background for Step 0
           if (_currentStep == 0)
             Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _meshController,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: MeshBackgroundPainter(progress: _meshController.value),
-                  );
-                },
-              ),
+              child: widget.isDarkMode
+                  ? RepaintBoundary(
+                      child: AnimatedBuilder(
+                        animation: _meshController,
+                        builder: (context, child) {
+                          return CustomPaint(
+                            painter: MeshBackgroundPainter(progress: _meshController.value),
+                          );
+                        },
+                      ),
+                    )
+                  : Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xFFFFF8F0),
+                            Color(0xFFFCEDE0),
+                            Color(0xFFF3E8FF),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                    ),
             ),
 
           SafeArea(
@@ -260,16 +283,18 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: widget.isDarkMode ? Colors.white : const Color(0xFF1E2022),
                   letterSpacing: -1.2,
                   height: 1.25,
-                  shadows: [
-                    const Shadow(
-                      color: Colors.black54,
-                      offset: Offset(0, 4),
-                      blurRadius: 12,
-                    ),
-                  ],
+                  shadows: widget.isDarkMode
+                      ? [
+                          const Shadow(
+                            color: Colors.black54,
+                            offset: Offset(0, 4),
+                            blurRadius: 12,
+                          ),
+                        ]
+                      : [],
                 ),
               ),
               const SizedBox(height: 8),
@@ -277,7 +302,9 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
                 'Pick a vibe to help us tailor your trip to Vietnam.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
-                  color: const Color(0xFFCBC3D7), // on-surface-variant
+                  color: widget.isDarkMode
+                      ? const Color(0xFFCBC3D7)
+                      : const Color(0xFF6B7280),
                   fontSize: 15,
                 ),
               ),
@@ -361,10 +388,12 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
                               Positioned.fill(
                                 child: Opacity(
                                   opacity: isSelected ? 0.95 : 0.75,
-                                  child: Image.network(
-                                    vibeImage,
+                                  child: CachedNetworkImage(
+                                    imageUrl: vibeImage,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(color: Colors.black54),
+                                    fadeInDuration: const Duration(milliseconds: 400),
+                                    placeholder: (context, url) => Container(color: Colors.black12),
+                                    errorWidget: (context, url, error) => Container(color: Colors.black54),
                                   ),
                                 ),
                               ),
@@ -598,103 +627,209 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
       );
     }
 
+    final isDark = widget.isDarkMode;
+    final textColor = isDark ? Colors.white : const Color(0xFF1E2022);
+    final subTextColor = isDark ? Colors.white54 : const Color(0xFF6B7280);
+    final dividerColor = isDark ? Colors.white10 : Colors.black12;
+    final dividerTextColor = isDark ? Colors.white30 : const Color(0xFF9CA3AF);
+
     return Column(
       key: const ValueKey('auth_step'),
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Gradient title
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Color(0xFF8B5CF6), Color(0xFF34D399)],
+          ).createShader(bounds),
+          child: Text(
+            'trip.mate',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 40,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -1.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
         Text(
           'welcome to the squad.',
           style: GoogleFonts.plusJakartaSans(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-            letterSpacing: -1,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: textColor,
+            letterSpacing: -0.5,
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Join the ultimate Gen Z travel space. Let\'s sync the chaos.',
-          style: GoogleFonts.inter(color: Colors.white54, fontSize: 14),
         ),
         const SizedBox(height: 32),
-        _buildGlassField(_emailController, 'Email or Phone (+1 555...)', Icons.phone_android_outlined),
-        const SizedBox(height: 12),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                _isForgotPasswordMode = true;
-              });
-            },
-            child: Text(
-              'Forgot Password?',
-              style: GoogleFonts.plusJakartaSans(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 13),
+
+        // Phone input pill row
+        Container(
+          height: 58,
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.black.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.08),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: () async {
-            if (_emailController.text.isNotEmpty) {
-              final email = _emailController.text.trim();
-              final supabaseId = 'sb-${email.replaceAll('@', '-').replaceAll('.', '-')}';
-              
-              // Try to login via BE
-              final loginRes = await ApiService.post('/auth/login', {'supabaseId': supabaseId});
-              if (loginRes != null && loginRes['token'] != null) {
-                // User already exists! Caches bearer token in memory
-                ApiService.authToken = loginRes['token'];
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('🎉 Welcome back, ${loginRes['user']['name']}!'),
-                      backgroundColor: secondaryColor,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Icon(Icons.phone_android_outlined,
+                  size: 20,
+                  color: isDark ? Colors.white38 : Colors.black38),
+              const SizedBox(width: 8),
+              Text(
+                '+84',
+                style: GoogleFonts.plusJakartaSans(
+                  color: isDark ? Colors.white70 : const Color(0xFF374151),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 20,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                color: isDark
+                    ? Colors.white24
+                    : Colors.black.withValues(alpha: 0.15),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.phone,
+                  style: GoogleFonts.plusJakartaSans(
+                    color: textColor,
+                    fontSize: 14,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Phone number',
+                    hintStyle: TextStyle(
+                      color: isDark ? Colors.white24 : Colors.black26,
+                      fontSize: 14,
                     ),
-                  );
-                  // Skips onboarding flow to success page immediately
-                  setState(() {
-                    _currentStep = 5;
-                  });
-                }
-              } else {
-                // New user! Continues onboarding steps
-                _nextStep();
-              }
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            minimumSize: const Size(double.infinity, 56),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          ),
-          child: Text(
-            'Send Code',
-            style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () async {
+                  if (_emailController.text.isNotEmpty) {
+                    final phone = _emailController.text.trim();
+                    String formattedPhone = phone;
+                    if (formattedPhone.startsWith('0')) {
+                      formattedPhone = '+84${formattedPhone.substring(1)}';
+                    } else if (!formattedPhone.startsWith('+')) {
+                      formattedPhone = '+$formattedPhone';
+                    }
+
+                    final sendRes = await ApiService.post(
+                        '/auth/send-otp', {'phoneNumber': formattedPhone});
+
+                    if (sendRes != null && sendRes['success'] == true) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Mã OTP đã được gửi đến số điện thoại $formattedPhone!'),
+                            backgroundColor: secondaryColor,
+                          ),
+                        );
+                        _nextStep();
+                      }
+                    } else {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('❌ Gửi mã OTP thất bại. Vui lòng thử lại.'),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                      }
+                    }
+                  }
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF8B5CF6), Color(0xFF34D399)],
+                    ),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(
+                    'send code',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 24),
+
+        const SizedBox(height: 28),
+        // Divider
         Row(
           children: [
-            const Expanded(child: Divider(color: Colors.white10)),
+            Expanded(child: Divider(color: dividerColor)),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text('or continue with', style: GoogleFonts.inter(color: Colors.white30, fontSize: 12)),
+              child: Text(
+                'or continue with',
+                style: GoogleFonts.inter(color: dividerTextColor, fontSize: 12),
+              ),
             ),
-            const Expanded(child: Divider(color: Colors.white10)),
+            Expanded(child: Divider(color: dividerColor)),
           ],
         ),
-        const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSocialBtn('Google', Icons.g_mobiledata, () => _nextStep()),
+        const SizedBox(height: 20),
+
+        // Full-width Google button
+        _buildSocialBtn('Continue with Google', Icons.account_circle_outlined, () {
+          _showGoogleLoginSheet(context, primaryColor, secondaryColor);
+        }),
+        const SizedBox(height: 12),
+        // Full-width Apple button
+        _buildSocialBtn(
+            'Continue with Apple', Icons.apple, () => _nextStep()),
+
+        const SizedBox(height: 28),
+        // Footer
+        Text.rich(
+          TextSpan(
+            text: 'By continuing you agree to our ',
+            style: GoogleFonts.inter(
+              color: subTextColor,
+              fontSize: 11.5,
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildSocialBtn('Apple', Icons.apple, () => _nextStep()),
-            ),
-          ],
+            children: [
+              TextSpan(
+                text: 'terms',
+                style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600),
+              ),
+              const TextSpan(text: ' and '),
+              TextSpan(
+                text: 'privacy policy',
+                style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -771,9 +906,52 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
         ),
         const Spacer(),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_otpController.text.length == 4) {
-              _nextStep();
+              final phone = _emailController.text.trim();
+              String formattedPhone = phone;
+              if (formattedPhone.startsWith('0')) {
+                formattedPhone = '+84${formattedPhone.substring(1)}';
+              } else if (!formattedPhone.startsWith('+')) {
+                formattedPhone = '+$formattedPhone';
+              }
+              final code = _otpController.text.trim();
+
+              final verifyRes = await ApiService.post('/auth/verify-otp', {
+                'phoneNumber': formattedPhone,
+                'code': code,
+              });
+
+              if (verifyRes != null) {
+                if (verifyRes['exists'] == true) {
+                  ApiService.authToken = verifyRes['token'];
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            '🎉 Welcome back, ${verifyRes['user']['name']}!'),
+                        backgroundColor: secondaryColor,
+                      ),
+                    );
+                    setState(() {
+                      _currentStep = 5;
+                    });
+                  }
+                } else {
+                  _tempSupabaseId = verifyRes['supabaseId'] as String;
+                  _tempEmail = verifyRes['email'] as String;
+                  _nextStep();
+                }
+              } else {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('❌ Xác minh mã OTP thất bại. Mã không đúng hoặc đã hết hạn.'),
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  );
+                }
+              }
             }
           },
           style: ElevatedButton.styleFrom(
@@ -834,8 +1012,8 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
           ElevatedButton(
             onPressed: () async {
               if (_nameController.text.isNotEmpty && _usernameController.text.isNotEmpty) {
-                final email = _emailController.text.trim();
-                final supabaseId = 'sb-${email.replaceAll('@', '-').replaceAll('.', '-')}';
+                final email = _tempEmail ?? _emailController.text.trim();
+                final supabaseId = _tempSupabaseId ?? 'sb-${email.replaceAll('@', '-').replaceAll('.', '-')}';
                 
                 // Call Register API on the NestJS backend
                 final regRes = await ApiService.post('/auth/register', {
@@ -863,7 +1041,7 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
                   
                   _nextStep();
                 } else {
-                  if (context.mounted) {
+                  if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('❌ Alter Ego registration failed. Try a different username.'),
@@ -998,20 +1176,37 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
 
   // Helpers
   Widget _buildGlassField(TextEditingController controller, String placeholder, IconData icon) {
+    final isDark = widget.isDarkMode;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0x0FFFFFFF),
+        color: isDark
+            ? const Color(0x0FFFFFFF)
+            : Colors.black.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.08),
+        ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextField(
         controller: controller,
-        style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 14),
+        style: GoogleFonts.plusJakartaSans(
+          color: isDark ? Colors.white : Colors.black87,
+          fontSize: 14,
+        ),
         decoration: InputDecoration(
-          icon: Icon(icon, color: Colors.white30, size: 20),
+          icon: Icon(
+            icon,
+            color: isDark ? Colors.white30 : Colors.black38,
+            size: 20,
+          ),
           hintText: placeholder,
-          hintStyle: TextStyle(color: Colors.white24, fontSize: 14),
+          hintStyle: TextStyle(
+            color: isDark ? Colors.white24 : Colors.black26,
+            fontSize: 14,
+          ),
           border: InputBorder.none,
         ),
       ),
@@ -1019,28 +1214,198 @@ class _AuthFlowScreenState extends State<AuthFlowScreen> with TickerProviderStat
   }
 
   Widget _buildSocialBtn(String label, IconData icon, VoidCallback onTap) {
+    final isDark = widget.isDarkMode;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 52,
+        width: double.infinity,
+        height: 54,
         decoration: BoxDecoration(
-          color: const Color(0x0FFFFFFF),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.black.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.08),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white, size: 24),
-            const SizedBox(width: 8),
+            Icon(
+              icon,
+              color: isDark ? Colors.white : Colors.black87,
+              size: 22,
+            ),
+            const SizedBox(width: 10),
             Text(
               label,
               style: GoogleFonts.plusJakartaSans(
-                color: Colors.white,
+                color: isDark ? Colors.white : Colors.black87,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showGoogleLoginSheet(BuildContext context, Color primaryColor, Color secondaryColor) {
+    final isDark = widget.isDarkMode;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF0F172A);
+    final textMuted = isDark ? Colors.white60 : Colors.black54;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardBg,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white24 : Colors.black12,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Choose a Google account',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: textPrimary,
+                ),
+              ),
+              Text(
+                'to continue to trip.mate',
+                style: GoogleFonts.inter(fontSize: 13, color: textMuted),
+              ),
+              const SizedBox(height: 20),
+              _buildGoogleProfileRow(
+                context,
+                'Alex Nguyễn',
+                'alex.nguyen@gmail.com',
+                'https://lh3.googleusercontent.com/aida-public/AB6AXuDLEui7EjvkHqpOtxT75qvmlSCJ9wccTxZHFnkqbQ7m--E6HGrhKnsJtrL2GDihf2FhhrrhdSQNucxZbDJAO6aLatXSt85bB-l6x9IM5ATjoFNpWUBr8XexKHp-UAg1uq87dPwg4PWZ5YNCMSEEHcd0e_x7apUYsHB94fhhpnv3cua0_DqPuc2VvBOglqhzvDWgph7OzMrHd71mBP4_IYyAJES--uo8nLNq161e_1nhMmkf9ZNHQheEn4QZJGsbcFzUQrlWbUYmDTLA',
+                primaryColor,
+                secondaryColor,
+              ),
+              const Divider(height: 24),
+              _buildGoogleProfileRow(
+                context,
+                'Minh Thư',
+                'minhthu.travels@gmail.com',
+                'https://lh3.googleusercontent.com/aida-public/AB6AXuASmUw0WNmnNpHadDogcZUgXrjs6I-bWPczGA7YXzboabdRCE4x2ucpr-rlcHtJOqMkRPHvQ7jfuNOOyvolEQ3g9sD1pN0AIeKq5HQW1oaHU8Q_D__1RhpGFMthOsgU-gQntyeBysmb9GDwUrZtACvinE9dawLVs8qvHa3KORAfaz4DCFJzvbIafzVn7qCJgmXw7WDt2M4ExXkcbFBl8VJZj_3op0Z14zMOYLvkFW0UO2oqIDQ3ucy3HgbdpM-EUlKBSLVraywz-XJw',
+                primaryColor,
+                secondaryColor,
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildGoogleProfileRow(
+    BuildContext context,
+    String name,
+    String email,
+    String avatarUrl,
+    Color primaryColor,
+    Color secondaryColor,
+  ) {
+    final isDark = widget.isDarkMode;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF0F172A);
+    final textMuted = isDark ? Colors.white60 : Colors.black54;
+
+    return InkWell(
+      onTap: () async {
+        Navigator.pop(context); // Close bottom sheet
+        final response = await ApiService.post('/auth/google', {
+          'idToken': 'mock-google-token',
+          'email': email,
+          'name': name,
+          'avatarUrl': avatarUrl,
+        });
+
+        if (response != null) {
+          if (response['exists'] == true) {
+            ApiService.authToken = response['token'];
+            if (mounted) {
+              ScaffoldMessenger.of(this.context).showSnackBar(
+                SnackBar(
+                  content: Text('🎉 Google Login: Welcome back, $name!'),
+                  backgroundColor: secondaryColor,
+                ),
+              );
+              setState(() {
+                _currentStep = 5; // Dashboard transition step
+              });
+            }
+          } else {
+            // New Google user - store credentials, prefill and go to profile setup
+            _tempSupabaseId = response['supabaseId'] as String;
+            _tempEmail = response['email'] as String;
+            _nameController.text = response['name'] as String;
+            _nextStep(); // Goes to Profile setup
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(this.context).showSnackBar(
+              const SnackBar(
+                content: Text('❌ Đăng nhập bằng Google thất bại. Vui lòng thử lại.'),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
+        }
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage(avatarUrl),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: textPrimary,
+                    ),
+                  ),
+                  Text(
+                    email,
+                    style: GoogleFonts.inter(fontSize: 12, color: textMuted),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
           ],
         ),
       ),

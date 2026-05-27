@@ -508,7 +508,7 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                                                           context,
                                                           MaterialPageRoute(
                                                             builder: (context) => ThemePreviewScreen(
-                                                              themeName: themeName,
+                                                              initialTheme: themeName,
                                                             ),
                                                           ),
                                                         );

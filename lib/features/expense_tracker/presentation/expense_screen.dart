@@ -87,7 +87,13 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const BudgetAnalyticsScreen(),
+                  builder: (context) {
+                    final isDark = Theme.of(context).brightness == Brightness.dark;
+                    return BudgetAnalyticsScreen(
+                      isDarkMode: isDark,
+                      onThemeToggle: () {},
+                    );
+                  },
                 ),
               );
             },
@@ -281,7 +287,10 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                   context,
                   Icons.donut_large,
                   'Analytics 📊',
-                  const BudgetAnalyticsScreen(),
+                  BudgetAnalyticsScreen(
+                    isDarkMode: isDark,
+                    onThemeToggle: () {},
+                  ),
                   isDark,
                 ),
                 _buildQuickAction(

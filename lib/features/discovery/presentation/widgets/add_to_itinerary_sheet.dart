@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddToItinerarySheet extends StatefulWidget {
@@ -22,17 +21,25 @@ class AddToItinerarySheet extends StatefulWidget {
 
 class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTickerProviderStateMixin {
   int _selectedDay = 1;
-  String _selectedTime = '09:00 AM';
+  String _selectedTime = '10:30 AM';
   final TextEditingController _notesController = TextEditingController();
   bool _isSaving = false;
   bool _showSuccess = false;
+  String _activeTag = '🌿 Chill';
 
   late AnimationController _successController;
   late Animation<double> _scaleAnimation;
 
+  final List<String> _tags = [
+    '🌿 Chill',
+    '🔥 Party',
+    '🍜 Foodie',
+    '📸 Iconic',
+  ];
+
   final List<String> _timeOptions = [
     '08:00 AM',
-    '09:00 AM',
+    '09:30 AM',
     '10:30 AM',
     '12:00 PM',
     '02:00 PM',
@@ -67,16 +74,15 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
       _isSaving = true;
     });
 
-    // Simulate calling POST /itineraries on NestJS backend
-    Future.delayed(const Duration(milliseconds: 1200), () {
+    // Simulate NestJS POST request save action
+    Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) {
         setState(() {
           _isSaving = false;
           _showSuccess = true;
         });
         _successController.forward();
-        
-        // Pass details back
+
         widget.onAdded({
           'day': _selectedDay,
           'startTime': _selectedTime,
@@ -85,7 +91,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
           'notes': _notesController.text,
         });
 
-        // Auto-close sheet after success animation
+        // Close sheet after showing checkmark success animation
         Future.delayed(const Duration(milliseconds: 1500), () {
           if (mounted) {
             Navigator.pop(context);
@@ -98,329 +104,794 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final isDark = widget.isDarkMode;
 
     final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF06B6D4) : const Color(0xFFEBA83A);
+    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
+    final bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
+    final surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
+    final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
+    final subTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFFCFAF6),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(32),
-          topRight: Radius.circular(32),
-        ),
-        border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-        ),
-      ),
-      child: SafeArea(
-        child: AnimatedSize(
-          duration: const Duration(milliseconds: 300),
-          child: _showSuccess
-              ? _buildSuccessView(primaryColor)
-              : _buildFormView(theme, colorScheme, primaryColor, secondaryColor, isDark),
-        ),
-      ),
+    return DraggableScrollableSheet(
+      initialChildSize: 0.88,
+      minChildSize: 0.6,
+      maxChildSize: 0.95,
+      builder: (_, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(32),
+              topRight: Radius.circular(32),
+            ),
+            border: Border.all(
+              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
+                blurRadius: 30,
+                offset: const Offset(0, -10),
+              )
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(32),
+              topRight: Radius.circular(32),
+            ),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  child: _showSuccess
+                      ? _buildSuccessView(primaryColor, isDark, textColor)
+                      : _buildFormView(theme, primaryColor, secondaryColor, surfaceColor, textColor, subTextColor, isDark),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildSuccessView(Color primaryColor) {
+  Widget _buildSuccessView(Color primaryColor, bool isDark, Color textColor) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 30),
+        const SizedBox(height: 50),
         ScaleTransition(
           scale: _scaleAnimation,
           child: Container(
-            width: 80,
-            height: 80,
+            width: 88,
+            height: 88,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.green.withValues(alpha: 0.15),
-              border: Border.all(color: Colors.green, width: 2),
+              color: const Color(0xFF34D399).withValues(alpha: 0.15),
+              border: Border.all(color: const Color(0xFF34D399), width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF34D399).withValues(alpha: 0.25),
+                  blurRadius: 15,
+                )
+              ],
             ),
             child: const Icon(
               Icons.check_circle,
-              color: Colors.green,
-              size: 48,
+              color: Color(0xFF34D399),
+              size: 54,
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 28),
         Text(
-          'Added to Itinerary! 🎉',
+          'Added to Trip! ✨',
           style: GoogleFonts.plusJakartaSans(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: widget.isDarkMode ? Colors.white : Colors.black87,
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: textColor,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Text(
-          '${widget.placeName} is booked for Day $_selectedDay at $_selectedTime.',
+          '${widget.placeName} scheduled for Day $_selectedDay at $_selectedTime.',
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
-            fontSize: 13,
+            fontSize: 14,
             color: Colors.grey,
           ),
         ),
-        const SizedBox(height: 40),
+        const SizedBox(height: 60),
       ],
     );
   }
 
   Widget _buildFormView(
     ThemeData theme,
-    ColorScheme colorScheme,
     Color primaryColor,
     Color secondaryColor,
+    Color surfaceColor,
+    Color textColor,
+    Color subTextColor,
     bool isDark,
   ) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
+        // Slide drag handle
+        Center(
+          child: Container(
+            width: 44,
+            height: 5,
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Header Title
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'discovery.add_to_trip'.tr(),
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.placeName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: isDark ? Colors.white54 : Colors.black54,
-                    ),
-                  ),
-                ],
+            Text(
+              'Find your vibe',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 26,
+                fontWeight: FontWeight.w900,
+                color: textColor,
+                letterSpacing: -0.5,
               ),
             ),
             GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
                 ),
                 child: Icon(
                   Icons.close,
-                  size: 18,
-                  color: isDark ? Colors.white70 : Colors.black54,
+                  size: 16,
+                  color: textColor.withValues(alpha: 0.8),
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
 
-        // Day Select (Horizontal Pills)
-        Text(
-          'Select Day',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white70 : Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [1, 2, 3].map((day) {
-            final isSelected = _selectedDay == day;
-            return Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedDay = day;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? primaryColor.withValues(alpha: 0.15)
-                        : (isDark ? const Color(0xFF1E293B) : Colors.white),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isSelected ? primaryColor : (isDark ? Colors.white10 : Colors.black12),
-                      width: isSelected ? 1.5 : 1.0,
-                    ),
-                  ),
-                  child: Text(
-                    'Day $day',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? primaryColor : (isDark ? Colors.white70 : Colors.black87),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-
-        // Time Selector (Horizontal Dropdowns/List)
-        Text(
-          'Start Time',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white70 : Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 48,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: _timeOptions.length,
-            itemBuilder: (context, index) {
-              final time = _timeOptions[index];
-              final isSelected = _selectedTime == time;
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedTime = time;
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? secondaryColor.withValues(alpha: 0.15)
-                          : (isDark ? const Color(0xFF1E293B) : Colors.white),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isSelected ? secondaryColor : (isDark ? Colors.white10 : Colors.black12),
-                        width: isSelected ? 1.5 : 1.0,
-                      ),
-                    ),
-                    child: Text(
-                      time,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? secondaryColor : (isDark ? Colors.white70 : Colors.black87),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        // Custom Notes Field
-        Text(
-          'Notes / Alter Ego Plans',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white70 : Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 10),
+        // Voice Search Placeholder Bar
         Container(
+          height: 48,
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E293B) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
             ),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            controller: _notesController,
-            maxLines: 3,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: isDark ? Colors.white : Colors.black87,
-            ),
-            decoration: const InputDecoration(
-              hintText: 'Add notes... (e.g. "Sat by the window for golden hour photo op")',
-              hintStyle: TextStyle(color: Colors.grey, fontSize: 13),
-              border: InputBorder.none,
-            ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.search,
+                color: subTextColor,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Search spots, cafes, activities...',
+                  style: GoogleFonts.inter(
+                    color: Colors.grey,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              Container(
+                height: 24,
+                width: 1,
+                color: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.12),
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              Icon(
+                Icons.mic,
+                color: primaryColor,
+                size: 20,
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 16),
 
-        // Action Button
-        GestureDetector(
-          onTap: _isSaving ? null : _saveToItinerary,
-          child: Container(
-            width: double.infinity,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [primaryColor, secondaryColor],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: primaryColor.withValues(alpha: 0.25),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Center(
-              child: _isSaving
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        // Tag Filters List (Horizontal)
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: _tags.map((tag) {
+              final isActive = _activeTag == tag;
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _activeTag = tag;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isActive
+                          ? primaryColor.withValues(alpha: 0.15)
+                          : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white),
+                      borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: isActive ? primaryColor : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black12),
+                        width: isActive ? 1.5 : 1.0,
                       ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      boxShadow: isActive
+                          ? [
+                              BoxShadow(
+                                color: primaryColor.withValues(alpha: 0.2),
+                                blurRadius: 10,
+                              )
+                            ]
+                          : null,
+                    ),
+                    child: Text(
+                      tag,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: isActive ? primaryColor : textColor.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Section Title: Hidden Gems
+        Row(
+          children: [
+            Icon(Icons.auto_awesome, color: primaryColor, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              'Hidden Gems',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Detailed Cafe Card representing widget.placeName / The Hill Station
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: surfaceColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              )
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Cover Photo
+              Stack(
+                children: [
+                  Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(22),
+                        topRight: Radius.circular(22),
+                      ),
+                      image: DecorationImage(
+                        image: NetworkImage('https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&auto=format&fit=crop&q=80'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  // Darken overlay
+                  Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(22),
+                        topRight: Radius.circular(22),
+                      ),
+                      gradient: LinearGradient(
+                        colors: [Colors.black.withValues(alpha: 0.4), Colors.transparent],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                  // Tags Overlay
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.location_on, color: secondaryColor, size: 10),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Café & Deli',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: secondaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.white, size: 10),
+                          const SizedBox(width: 4),
+                          Text(
+                            '4.9',
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Card details + Schedule form parameters
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.placeName.isNotEmpty ? widget.placeName : 'The Hill Station',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
                       children: [
-                        const Icon(Icons.add_location_alt_outlined, color: Colors.white, size: 20),
-                        const SizedBox(width: 8),
+                        Icon(Icons.map_outlined, color: subTextColor, size: 12),
+                        const SizedBox(width: 4),
                         Text(
-                          'Add to Plan',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                          widget.placeAddress.isNotEmpty ? widget.placeAddress : 'Hội An, Vietnam',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: subTextColor,
                           ),
                         ),
                       ],
                     ),
-            ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'A moody, atmospheric spot known for artisanal deli cuts, local craft beers, and a perfectly chilled vibe.',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: subTextColor,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Divider(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06)),
+                    const SizedBox(height: 10),
+
+                    // Inline Schedule pickers
+                    Text(
+                      'Schedule Spot',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: textColor.withValues(alpha: 0.9),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Days selector
+                    Row(
+                      children: [1, 2, 3].map((day) {
+                        final isSelected = _selectedDay == day;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedDay = day;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? primaryColor.withValues(alpha: 0.15)
+                                    : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03)),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected ? primaryColor : Colors.transparent,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                'Day $day',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected ? primaryColor : subTextColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Time option picker
+                    SizedBox(
+                      height: 34,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: _timeOptions.length,
+                        itemBuilder: (context, index) {
+                          final time = _timeOptions[index];
+                          final isSelected = _selectedTime == time;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 6.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedTime = time;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? secondaryColor.withValues(alpha: 0.15)
+                                      : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03)),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: isSelected ? secondaryColor : Colors.transparent,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  time,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected ? secondaryColor : subTextColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Alter Ego Notes
+                    Container(
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.02),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: TextField(
+                        controller: _notesController,
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: textColor,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'Add aesthetic / photo notes... 📸✨',
+                          hintStyle: TextStyle(color: Colors.grey, fontSize: 11),
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Divider(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06)),
+                    const SizedBox(height: 10),
+
+                    // Crew also down to go + Gradient Add to Trip button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Also down to go crew stack
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Also down to go',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: subTextColor,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 48,
+                                  height: 24,
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        left: 0,
+                                        child: CircleAvatar(
+                                          radius: 10,
+                                          backgroundColor: Colors.amber.shade400,
+                                          child: Text('T', style: GoogleFonts.outfit(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        left: 10,
+                                        child: CircleAvatar(
+                                          radius: 10,
+                                          backgroundColor: Colors.blue.shade400,
+                                          child: Text('L', style: GoogleFonts.outfit(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        left: 20,
+                                        child: Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                                            border: Border.all(color: primaryColor, width: 1),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '+2',
+                                              style: GoogleFonts.outfit(
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.w900,
+                                                color: primaryColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        // Add to Trip Button (Kinetic Gradient)
+                        GestureDetector(
+                          onTap: _isSaving ? null : _saveToItinerary,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [primaryColor, secondaryColor],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primaryColor.withValues(alpha: 0.3),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                )
+                              ],
+                            ),
+                            child: _isSaving
+                                ? const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Row(
+                                    children: [
+                                      const Icon(Icons.add_circle_outline, color: Colors.white, size: 14),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Add to Trip',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
+        const SizedBox(height: 24),
+
+        // Section Title: More spots nearby
+        Text(
+          'More spots nearby',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Nearby spot card: Morning Glory Original
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: surfaceColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+            ),
+          ),
+          child: Row(
+            children: [
+              // Spot image mockup
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: const DecorationImage(
+                    image: NetworkImage('https://images.unsplash.com/photo-1541188111-1e0d58224f24?w=200&auto=format&fit=crop&q=80'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Morning Glory Original',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Iconic central Vietnamese street food. \$\$',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: subTextColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.directions_walk, color: secondaryColor, size: 12),
+                        const SizedBox(width: 2),
+                        Text(
+                          '8 min',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: secondaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Quick Add Circle Button
+              GestureDetector(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Selected Morning Glory! 🍲 Customise day and time to add."),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark ? Colors.white24 : Colors.black12,
+                    ),
+                    color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.02),
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    color: subTextColor,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }

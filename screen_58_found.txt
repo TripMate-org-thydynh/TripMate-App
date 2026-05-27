@@ -1,0 +1,1372 @@
+Found section:
+
+Document Title: Add Place / Activity
+
+--- KEY TEXT ELEMENTS ---
+[h1] Find your vibe
+[h2] auto_awesomeHidden Gems
+[h3] The Hill Station
+[h2] More spots nearby
+[h4] Morning Glory Original
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "notifications" (Href: '', Classes: ['text-primary', 'dark:text-primary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "🌿Chill" (Href: '', Classes: ['flex', 'items-center', 'gap-2', 'whitespace-nowrap', 'px-5', 'py-2.5', 'rounded-full', 'bg-secondary-container/20', 'border', 'border-secondary', 'text-secondary', 'font-label-lg', 'backdrop-blur-md', 'shadow-[0_0_15px_rgba(69,223,164,0.15)]', 'flex-shrink-0', 'transition-transform', 'active:scale-95'])
+[Button/Link] "🔥Party" (Href: '', Classes: ['flex', 'items-center', 'gap-2', 'whitespace-nowrap', 'px-5', 'py-2.5', 'rounded-full', 'bg-white/5', 'border', 'border-white/10', 'text-on-surface-variant', 'font-label-lg', 'backdrop-blur-md', 'hover:bg-white/10', 'flex-shrink-0', 'transition-all', 'active:scale-95'])
+[Button/Link] "🍜Foodie" (Href: '', Classes: ['flex', 'items-center', 'gap-2', 'whitespace-nowrap', 'px-5', 'py-2.5', 'rounded-full', 'bg-white/5', 'border', 'border-white/10', 'text-on-surface-variant', 'font-label-lg', 'backdrop-blur-md', 'hover:bg-white/10', 'flex-shrink-0', 'transition-all', 'active:scale-95'])
+[Button/Link] "📸Iconic" (Href: '', Classes: ['flex', 'items-center', 'gap-2', 'whitespace-nowrap', 'px-5', 'py-2.5', 'rounded-full', 'bg-white/5', 'border', 'border-white/10', 'text-on-surface-variant', 'font-label-lg', 'backdrop-blur-md', 'hover:bg-white/10', 'flex-shrink-0', 'transition-all', 'active:scale-95'])
+[Button/Link] "add_circleAdd to Trip" (Href: '', Classes: ['relative', 'group/btn', 'cursor-pointer'])
+[Button/Link] "add" (Href: '', Classes: ['w-10', 'h-10', 'shrink-0', 'rounded-full', 'border', 'border-white/10', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant', 'hover:text-primary', 'hover:border-primary/50', 'hover:bg-primary/10', 'transition-all', 'active:scale-90'])
+[Button/Link] "home" (Href: '', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/70', 'w-12', 'h-12', 'hover:text-secondary', 'transition-colors'])
+[Button/Link] "explore" (Href: '', Classes: ['flex', 'items-center', 'justify-center', 'bg-secondary-container/80', 'text-on-secondary-container', 'rounded-full', 'w-12', 'h-12', 'shadow-[0_0_15px_rgba(0,189,133,0.4)]', 'scale-110', 'transition-all', 'duration-300', 'ease-out'])
+[Button/Link] "add_circle" (Href: '', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/70', 'w-12', 'h-12', 'hover:text-secondary', 'transition-colors'])
+[Button/Link] "payments" (Href: '', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/70', 'w-12', 'h-12', 'hover:text-secondary', 'transition-colors'])
+[Button/Link] "person" (Href: '', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/70', 'w-12', 'h-12', 'hover:text-secondary', 'transition-colors'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'font-display-sm text-display-sm font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-prim' | Preview: "trip.mate..."
+[Div/Section] Class: 'flex flex-col gap-element-gap' | Preview: "Find your vibesearchmic🌿Chill🔥Party🍜Foodie📸Iconic..."
+[Div/Section] Class: 'relative flex items-center bg-surface-container-high rounded-[1.5rem] border border-white/5 px-4 py-3 group-focus-within' | Preview: "searchmic..."
+[Div/Section] Class: 'ml-2 pl-2 border-l border-white/10 flex items-center' | Preview: "mic..."
+[Div/Section] Class: 'flex overflow-x-auto hide-scrollbar gap-3 pb-2 pt-2 -mx-container-padding-mobile px-container-padding-mobile' | Preview: "🌿Chill🔥Party🍜Foodie📸Iconic..."
+[Div/Section] Class: 'flex flex-col gap-element-gap' | Preview: "auto_awesomeHidden Gemslocation_onCafé & Delistar4.9The Hill StationmapHội An, VietnamA moody, atmos..."
+[Div/Section] Class: 'flex justify-between items-end mb-1' | Preview: "auto_awesomeHidden Gems..."
+[Div/Section] Class: 'relative w-full rounded-xl overflow-hidden bg-surface-container-high/80 border-t border-l border-white/10 shadow-[0_20px' | Preview: "location_onCafé & Delistar4.9The Hill StationmapHội An, VietnamA moody, atmospheric spot known for a..."
+[Div/Section] Class: 'absolute inset-0 flex items-center justify-center' | Preview: "location_on..."
+[Div/Section] Class: 'w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center backdrop-blur-sm border border-secondary/50 animat' | Preview: "location_on..."
+[Div/Section] Class: 'absolute bottom-4 left-4 right-4 flex flex-col gap-1 z-20' | Preview: "Café & Delistar4.9The Hill StationmapHội An, Vietnam..."
+[Div/Section] Class: 'flex items-center gap-2 mb-1' | Preview: "Café & Delistar4.9..."
+[Div/Section] Class: 'p-5 flex flex-col gap-5 relative z-20' | Preview: "A moody, atmospheric spot known for artisanal deli cuts, local craft beers, and a perfectly chilled ..."
+[Div/Section] Class: 'flex justify-between items-end mt-2' | Preview: "Also down to go+2add_circleAdd to Trip..."
+[Div/Section] Class: 'flex flex-col gap-1.5' | Preview: "Also down to go+2..."
+[Div/Section] Class: 'flex -space-x-3' | Preview: "+2..."
+[Div/Section] Class: 'w-9 h-9 rounded-full border-2 border-surface-container-high bg-surface-bright flex items-center justify-center text-on-s' | Preview: "+2..."
+[Div/Section] Class: 'relative px-6 py-3.5 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center gap-2 text-surface-contai' | Preview: "add_circleAdd to Trip..."
+[Div/Section] Class: 'flex flex-col gap-element-gap mt-4' | Preview: "More spots nearbyMorning Glory OriginalIconic central Vietnamese street food.$$directions_walk8 mina..."
+[Div/Section] Class: 'flex items-center gap-4 p-3 rounded-xl bg-surface-container/40 border border-white/5 backdrop-blur-sm hover:bg-surface-c' | Preview: "Morning Glory OriginalIconic central Vietnamese street food.$$directions_walk8 minadd..."
+[Div/Section] Class: 'flex flex-col flex-grow justify-center py-1' | Preview: "Morning Glory OriginalIconic central Vietnamese street food.$$directions_walk8 min..."
+[Div/Section] Class: 'flex items-center gap-2 mt-2' | Preview: "$$directions_walk8 min..."
+
+
+
+
+
+Found section:
+
+Document Title: Payment Success - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] 420k sent ✨
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "Back to Chaos" (Href: '', Classes: ['w-full', 'bg-gradient-to-r', 'from-primary', 'via-primary-container', 'to-inverse-primary', 'text-white', 'font-label-lg', 'text-label-lg', 'py-4', 'rounded-full', 'shadow-[0_0_20px_rgba(208,188,255,0.3)]', 'hover:opacity-90', 'transition-all', 'hover:scale-[1.02]', 'active:scale-[0.98]'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'w-24 h-24 rounded-full bg-secondary-container/20 border-2 border-secondary flex items-center justify-center bloom-effect' | Preview: "check_circle..."
+[Div/Section] Class: 'glass-card w-full rounded-xl p-6 flex flex-col gap-element-gap mb-section-gap relative overflow-hidden' | Preview: "Paid toNam TrungCategory🍜bún bòAmount420,000 ₫TripDa Lat Weekend..."
+[Div/Section] Class: 'flex items-center justify-between border-b border-white/10 pb-4' | Preview: "Paid toNam Trung..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "Paid toNam Trung..."
+[Div/Section] Class: 'flex items-center justify-between pt-2' | Preview: "Category🍜bún bòAmount420,000 ₫..."
+[Div/Section] Class: 'flex items-center gap-2 mt-1' | Preview: "🍜bún bò..."
+[Div/Section] Class: 'mt-2 bg-surface-container/50 rounded-lg p-3 flex items-center justify-between border border-white/5' | Preview: "TripDa Lat Weekend..."
+
+
+
+
+
+Found section:
+
+Document Title: Add Expense Flow
+
+--- KEY TEXT ELEMENTS ---
+[h2] Choose the Victims
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "close" (Href: '', Classes: ['w-10', 'h-10', 'flex', 'items-center', 'justify-center', 'rounded-full', 'bg-white/5', 'backdrop-blur-md', 'border', 'border-white/10', 'hover:bg-white/10', 'transition-colors'])
+[Button/Link] "auto_awesomeSuggest" (Href: '', Classes: ['flex', 'items-center', 'gap-2', 'px-4', 'py-2', 'rounded-full', 'bg-white/5', 'backdrop-blur-md', 'border', 'border-white/10', 'hover:border-primary/50', 'transition-colors'])
+[Button/Link] "restaurantBBQ" (Href: '', Classes: ['flex', 'items-center', 'gap-2', 'px-4', 'py-2', 'rounded-full', 'bg-primary-container/20', 'border', 'border-primary/30', 'shadow-[0_0_15px_rgba(208,188,255,0.15)]', 'transition-all'])
+[Button/Link] "local_taxiGrab" (Href: '', Classes: ['flex', 'items-center', 'gap-2', 'px-4', 'py-2', 'rounded-full', 'bg-white/5', 'backdrop-blur-md', 'border', 'border-white/10', 'hover:border-white/30', 'transition-colors'])
+[Button/Link] "receipt_longScan Receipt" (Href: '', Classes: ['w-full', 'relative', 'group', 'overflow-hidden', 'rounded-[24px]', 'bg-secondary-container/10', 'border', 'border-secondary/30', 'p-4', 'flex', 'items-center', 'justify-center', 'gap-3', 'transition-all', 'duration-300', 'hover:bg-secondary-container/20', 'hover:scale-[0.98]', 'shadow-[0_0_25px_rgba(69,223,164,0.15)]'])
+[Button/Link] "Equal" (Href: '', Classes: ['px-3', 'py-1.5', 'rounded-full', 'font-label-sm', 'text-label-sm', 'text-on-surface-variant', 'transition-colors'])
+[Button/Link] "Custom" (Href: '', Classes: ['px-3', 'py-1.5', 'rounded-full', 'bg-primary/20', 'text-primary', 'border', 'border-primary/30', 'shadow-[0_0_10px_rgba(208,188,255,0.2)]', 'font-label-sm', 'text-label-sm', 'transition-colors'])
+[Button/Link] "Split it!arrow_forward" (Href: '', Classes: ['w-full', 'h-14', 'rounded-full', 'bg-gradient-to-r', 'from-primary', 'via-inverse-primary', 'to-primary-container', 'text-white', 'font-headline-md', 'text-headline-md', 'shadow-[0_10px_30px_rgba(208,188,255,0.3)]', 'hover:scale-[1.02]', 'transition-transform', 'duration-200', 'flex', 'items-center', 'justify-center', 'gap-2'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex flex-col items-center gap-element-gap' | Preview: "đauto_awesomeSuggestrestaurantBBQlocal_taxiGrab..."
+[Div/Section] Class: 'flex items-center justify-center gap-2 relative' | Preview: "đ..."
+[Div/Section] Class: 'flex flex-wrap justify-center gap-3 mt-4' | Preview: "auto_awesomeSuggestrestaurantBBQlocal_taxiGrab..."
+[Div/Section] Class: 'w-full flex flex-col gap-4' | Preview: "Choose the VictimsEqualCustomYou (Paid)150.000đAlex M.100.000đSSarah K.50.000đ..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "Choose the VictimsEqualCustom..."
+[Div/Section] Class: 'flex bg-surface-container-high rounded-full p-1 border border-white/5' | Preview: "EqualCustom..."
+[Div/Section] Class: 'bg-white/5 backdrop-blur-2xl border-t border-l border-white/10 rounded-[24px] p-5 flex flex-col gap-6 shadow-[0_8px_32px' | Preview: "You (Paid)150.000đAlex M.100.000đSSarah K.50.000đ..."
+[Div/Section] Class: 'flex flex-col gap-3' | Preview: "You (Paid)150.000đ..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "You (Paid)150.000đ..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "You (Paid)..."
+[Div/Section] Class: 'flex flex-col gap-3' | Preview: "Alex M.100.000đ..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "Alex M.100.000đ..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "Alex M...."
+[Div/Section] Class: 'flex flex-col gap-3' | Preview: "SSarah K.50.000đ..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "SSarah K.50.000đ..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "SSarah K...."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-tertiary-container/30 border border-tertiary/50 flex items-center justify-center text-tertiary' | Preview: "S..."
+[Div/Section] Class: 'fixed bottom-0 left-0 right-0 p-container-padding-mobile pb-[max(20px,env(safe-area-inset-bottom))] bg-gradient-to-t fro' | Preview: "Split it!arrow_forward..."
+
+
+
+
+
+Found section:
+
+Document Title: Social Chaos Chat - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] Phú Quốc Escape
+[h4] Where to eat next? 🍜
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "arrow_back" (Href: '', Classes: ['hover:bg-white/10', 'p-2', 'rounded-full', 'transition-colors', 'md:hidden'])
+[Button/Link] "more_vert" (Href: '', Classes: ['hover:bg-white/10', 'p-2', 'rounded-full', 'transition-colors'])
+[Button/Link] "Bún Quậy Kiến Xây60%" (Href: '', Classes: ['relative', 'w-full', 'bg-black/40', 'hover:bg-black/60', 'border', 'border-white/5', 'transition-all', 'rounded-xl', 'p-4', 'flex', 'justify-between', 'items-center', 'group', 'overflow-hidden', 'h-14'])
+[Button/Link] "Night Market Seafood40%" (Href: '', Classes: ['relative', 'w-full', 'bg-black/40', 'hover:bg-black/60', 'border', 'border-white/5', 'transition-all', 'rounded-xl', 'p-4', 'flex', 'justify-between', 'items-center', 'group', 'overflow-hidden', 'h-14'])
+[Button/Link] "🔥LIT" (Href: '', Classes: ['reaction-pill', 'px-4', 'py-1.5', 'rounded-full', 'font-headline-md', 'text-sm', 'text-white', 'flex', 'items-center', 'gap-1'])
+[Button/Link] "😂DEAD" (Href: '', Classes: ['reaction-pill', 'px-4', 'py-1.5', 'rounded-full', 'font-headline-md', 'text-sm', 'text-white', 'flex', 'items-center', 'gap-1'])
+[Button/Link] "💀CHAOS" (Href: '', Classes: ['reaction-pill', 'px-4', 'py-1.5', 'rounded-full', 'font-headline-md', 'text-sm', 'text-white', 'flex', 'items-center', 'gap-1'])
+[Button/Link] "💯YASSS" (Href: '', Classes: ['reaction-pill', 'px-4', 'py-1.5', 'rounded-full', 'font-headline-md', 'text-sm', 'text-white', 'flex', 'items-center', 'gap-1'])
+[Button/Link] "add" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'bg-white/5', 'flex', 'items-center', 'justify-center', 'hover:bg-white/10', 'transition-colors', 'text-primary', 'flex-shrink-0', 'border', 'border-white/5'])
+[Button/Link] "mic" (Href: '', Classes: ['absolute', 'right-3', 'top-1/2', '-translate-y-1/2', 'w-8', 'h-8', 'flex', 'items-center', 'justify-center', 'text-primary-fixed', 'hover:text-white', 'transition-colors'])
+[Button/Link] "send" (Href: '', Classes: ['w-12', 'h-12', 'rounded-full', 'bg-gradient-to-br', 'from-primary', 'to-inverse-primary', 'flex', 'items-center', 'justify-center', 'hover:scale-105', 'transition-transform', 'shadow-[0_0_20px_rgba(208,188,255,0.4)]', 'flex-shrink-0'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex justify-between items-center w-full max-w-3xl mx-auto' | Preview: "arrow_backPhú Quốc Escapemore_vert..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "arrow_backPhú Quốc Escape..."
+[Div/Section] Class: 'flex flex-col' | Preview: "Phú Quốc Escape..."
+[Div/Section] Class: 'flex items-center gap-4 overflow-x-auto pb-1 max-w-3xl mx-auto w-full no-scrollbar' | Preview: "🚗Phúc: traveling🎵Lan: listeningMinh: away..."
+[Div/Section] Class: 'flex flex-col items-center gap-1 min-w-max' | Preview: "🚗Phúc: traveling..."
+[Div/Section] Class: 'absolute bottom-0 right-0 bg-surface-container rounded-full p-0.5 text-[10px]' | Preview: "🚗..."
+[Div/Section] Class: 'flex flex-col items-center gap-1 min-w-max' | Preview: "🎵Lan: listening..."
+[Div/Section] Class: 'absolute bottom-0 right-0 bg-surface-container rounded-full p-0.5 text-[10px]' | Preview: "🎵..."
+[Div/Section] Class: 'flex flex-col items-center gap-1 min-w-max opacity-60' | Preview: "Minh: away..."
+[Div/Section] Class: 'flex justify-center my-2' | Preview: "Today..."
+[Div/Section] Class: 'flex items-end gap-3 w-full max-w-[85%] relative' | Preview: "Did anyone check the weather for tomorrow? 🌴10:42 AM🔥2..."
+[Div/Section] Class: 'absolute -bottom-3 right-4 bg-surface-container-highest border border-white/10 rounded-full px-2 py-0.5 text-sm shadow-l' | Preview: "🔥2..."
+[Div/Section] Class: 'flex items-end justify-end gap-3 w-full max-w-[85%] self-end mt-4' | Preview: "Yeah, looking perfect. 28°C and sunny. We should hit Sao Beach early.10:45 AMdone_all..."
+[Div/Section] Class: 'flex justify-end items-center gap-1 mt-2 opacity-80' | Preview: "10:45 AMdone_all..."
+[Div/Section] Class: 'flex items-end gap-3 w-full max-w-[95%] mt-6' | Preview: "pollPoll by AlexWhere to eat next? 🍜Bún Quậy Kiến Xây60%Night Market Seafood40%..."
+[Div/Section] Class: 'flex items-start justify-between mb-5 relative z-10' | Preview: "pollPoll by AlexWhere to eat next? 🍜..."
+[Div/Section] Class: 'flex items-center gap-2 text-primary-fixed mb-2' | Preview: "pollPoll by Alex..."
+[Div/Section] Class: 'flex flex-col gap-3 relative z-10' | Preview: "Bún Quậy Kiến Xây60%Night Market Seafood40%..."
+[Div/Section] Class: 'flex items-center gap-3 relative z-10' | Preview: "60%..."
+[Div/Section] Class: 'flex items-center gap-3 relative z-10' | Preview: "40%..."
+[Div/Section] Class: 'flex justify-center my-6' | Preview: "location_onAlex pinned a location..."
+[Div/Section] Class: 'bg-tertiary-container/10 border border-tertiary/30 backdrop-blur-md px-5 py-2 rounded-full flex items-center gap-2 shado' | Preview: "location_onAlex pinned a location..."
+[Div/Section] Class: 'flex items-end justify-end gap-3 w-full max-w-[85%] self-end' | Preview: "directionsSao Beach Club15 min drive • OpenLet's meet here at 2 PM! 🚀..."
+[Div/Section] Class: 'absolute bottom-3 left-3 right-3 flex items-center gap-3' | Preview: "directionsSao Beach Club15 min drive • Open..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-secondary-fixed/90 flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_#68fcbf]' | Preview: "directions..."
+[Div/Section] Class: 'flex-1' | Preview: "Sao Beach Club15 min drive • Open..."
+[Div/Section] Class: 'flex items-center gap-3 w-full mt-4 bg-surface-container-lowest/40 backdrop-blur-sm p-3 rounded-2xl w-fit border border-' | Preview: "3 people typing......"
+[Div/Section] Class: 'max-w-3xl mx-auto px-4 mb-2 flex gap-2 overflow-x-auto no-scrollbar pointer-events-auto' | Preview: "🔥LIT😂DEAD💀CHAOS💯YASSS..."
+[Div/Section] Class: 'max-w-3xl mx-auto flex items-center gap-3' | Preview: "addmicsend..."
+[Div/Section] Class: 'flex-1 relative group' | Preview: "mic..."
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - Profile Hub
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Minh Nhật
+[h3] workspace_premiumAchievements
+[h3] auto_awesomeChaotic Memories
+[h3] historyRecent Chaos Log
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "add_reaction" (Href: '', Classes: ['w-10', 'h-10', 'flex', 'items-center', 'justify-center', 'text-primary', 'hover:text-white', 'transition-colors', 'active:scale-95', 'duration-200'])
+[Button/Link] "editEdit Hub" (Href: '', Classes: ['bg-surface-container', 'hover:bg-surface-bright', 'text-primary', 'border', 'border-primary/30', 'font-label-lg', 'text-label-lg', 'px-6', 'py-2', 'rounded-full', 'transition-all', 'flex', 'items-center', 'gap-2'])
+[Button/Link] "View Gallery" (Href: '#', Classes: ['font-label-sm', 'text-label-sm', 'text-secondary', 'hover:underline', 'tracking-wider', 'uppercase'])
+[Button/Link] "explore" (Href: '#', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-all'])
+[Button/Link] "map" (Href: '#', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-all'])
+[Button/Link] "add_circle" (Href: '#', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-all'])
+[Button/Link] "group" (Href: '#', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-all'])
+[Button/Link] "person" (Href: '#', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-primary', 'drop-shadow-[0_0_8px_rgba(208,188,255,0.8)]', 'scale-110'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex justify-between items-center px-6 py-4 w-full' | Preview: "trip.mateadd_reaction..."
+[Div/Section] Class: 'glass-card rounded-[2rem] p-6 md:p-10 neon-border flex flex-col md:flex-row gap-8 items-center md:items-start text-cente' | Preview: "✈️Planning SeoulMinh Nhật@mnhat_travelsmilitary_techLvl 24Global Nomad8,420 / 10,000 XPgroupSquad Re..."
+[Div/Section] Class: 'absolute -bottom-2 right-0 bg-surface rounded-full py-1 px-3 border border-white/20 shadow-lg z-20 flex items-center gap' | Preview: "✈️Planning Seoul..."
+[Div/Section] Class: 'flex-1 space-y-6 w-full' | Preview: "Minh Nhật@mnhat_travelsmilitary_techLvl 24Global Nomad8,420 / 10,000 XPgroupSquad Rep:Legendarylocal..."
+[Div/Section] Class: 'bg-surface-container-highest/50 rounded-xl p-4 border border-white/5 space-y-3' | Preview: "military_techLvl 24Global Nomad8,420 / 10,000 XPgroupSquad Rep:Legendary..."
+[Div/Section] Class: 'flex justify-between items-end' | Preview: "military_techLvl 24Global Nomad8,420 / 10,000 XP..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "military_techLvl 24Global Nomad..."
+[Div/Section] Class: 'flex items-center gap-2 pt-1' | Preview: "groupSquad Rep:Legendary..."
+[Div/Section] Class: 'flex flex-wrap justify-center md:justify-start gap-2' | Preview: "local_fire_departmentChaos Plannerattach_moneyMVP PayernightlifeNightlife Lover..."
+[Div/Section] Class: 'flex justify-around md:justify-start gap-8 pt-2 border-t border-white/10' | Preview: "24Trips1.2kMemories15Countries..."
+[Div/Section] Class: 'flex overflow-x-auto gap-4 pb-4 hide-scrollbar' | Preview: "🔥Chaos KingGold Tier📸Pro PaparazziSilver Tier🍜Street Food LegendRare TierlockLocked???..."
+[Div/Section] Class: 'glass-card badge-rare rounded-xl p-4 flex-shrink-0 w-40 flex flex-col items-center justify-center text-center gap-2 rela' | Preview: "🔥Chaos KingGold Tier..."
+[Div/Section] Class: 'glass-card rounded-xl p-4 flex-shrink-0 w-40 flex flex-col items-center justify-center text-center gap-2 border border-p' | Preview: "📸Pro PaparazziSilver Tier..."
+[Div/Section] Class: 'glass-card badge-rare rounded-xl p-4 flex-shrink-0 w-40 flex flex-col items-center justify-center text-center gap-2 rela' | Preview: "🍜Street Food LegendRare Tier..."
+[Div/Section] Class: 'glass-card rounded-xl p-4 flex-shrink-0 w-40 flex flex-col items-center justify-center text-center gap-2 border border-s' | Preview: "lockLocked???..."
+[Div/Section] Class: 'flex justify-between items-end mb-6' | Preview: "auto_awesomeChaotic MemoriesView Gallery..."
+[Div/Section] Class: 'grid grid-cols-2 md:grid-cols-4 gap-6' | Preview: "BKK Night out 🇹🇭Seoul Searching 🇰🇷Tokyo Drift 🇯🇵Bali Sunsets 🇮🇩..."
+[Div/Section] Class: 'grid grid-cols-1 md:grid-cols-3 gap-element-gap' | Preview: "flight_takeoffBooked a chaotic weekend trip toTaipeiwith 4 others.2 hours ago+2account_balance_walle..."
+[Div/Section] Class: 'relative z-10 flex items-start gap-4' | Preview: "flight_takeoffBooked a chaotic weekend trip toTaipeiwith 4 others.2 hours ago+2..."
+[Div/Section] Class: 'w-12 h-12 rounded-full bg-surface flex items-center justify-center shrink-0 border-2 border-primary shadow-[0_0_15px_rgb' | Preview: "flight_takeoff..."
+[Div/Section] Class: 'flex -space-x-3 mt-4' | Preview: "+2..."
+[Div/Section] Class: 'w-8 h-8 rounded-full border-2 border-secondary bg-surface-dim flex items-center justify-center text-secondary font-label' | Preview: "+2..."
+[Div/Section] Class: 'glass-card rounded-xl p-6 flex flex-col justify-center items-center text-center hover:border-secondary/50 transition-col' | Preview: "account_balance_walletSettled up$420for the Tokyo bender...."
+[Div/Section] Class: 'w-14 h-14 rounded-full bg-surface border-2 border-secondary flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(' | Preview: "account_balance_wallet..."
+
+
+
+
+
+Found section:
+
+Document Title: Group Chat - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h4] Where to eat next? 🍜
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "arrow_back" (Href: '', Classes: ['hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200', 'p-2', '-ml-2', 'rounded-full', 'hover:bg-white/5', 'md:hidden'])
+[Button/Link] "add_reaction" (Href: '', Classes: ['hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "Bún Quậy Kiến Xây60%" (Href: '', Classes: ['relative', 'w-full', 'glass-card', 'hover:bg-white/10', 'transition-colors', 'rounded-xl', 'p-3', 'flex', 'justify-between', 'items-center', 'group', 'overflow-hidden'])
+[Button/Link] "Night Market Seafood40%" (Href: '', Classes: ['relative', 'w-full', 'glass-card', 'hover:bg-white/10', 'transition-colors', 'rounded-xl', 'p-3', 'flex', 'justify-between', 'items-center', 'group', 'overflow-hidden'])
+[Button/Link] "add" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'glass-card', 'flex', 'items-center', 'justify-center', 'hover:bg-white/10', 'transition-colors', 'text-primary', 'flex-shrink-0'])
+[Button/Link] "image" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'glass-card', 'flex', 'items-center', 'justify-center', 'hover:bg-white/10', 'transition-colors', 'text-secondary', 'flex-shrink-0'])
+[Button/Link] "mic" (Href: '', Classes: ['absolute', 'right-2', 'top-1/2', '-translate-y-1/2', 'w-8', 'h-8', 'flex', 'items-center', 'justify-center', 'text-primary', 'hover:text-primary-fixed-dim', 'transition-colors'])
+[Button/Link] "send" (Href: '', Classes: ['w-12', 'h-12', 'rounded-full', 'bg-primary', 'flex', 'items-center', 'justify-center', 'hover:bg-primary-fixed', 'transition-colors', 'shadow-[0_0_15px_rgba(208,188,255,0.4)]', 'flex-shrink-0', 'active:scale-95', 'duration-200'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "arrow_backPhú Quốc Escape3 typing......"
+[Div/Section] Class: 'flex flex-col ml-2' | Preview: "Phú Quốc Escape3 typing......"
+[Div/Section] Class: 'flex justify-center my-4' | Preview: "Today..."
+[Div/Section] Class: 'flex items-end gap-2 w-full max-w-[85%]' | Preview: "Did anyone check the weather for tomorrow? 🌴10:42 AM..."
+[Div/Section] Class: 'flex items-end justify-end gap-2 w-full max-w-[85%] self-end' | Preview: "Yeah, looking perfect. 28°C and sunny. We should hit Sao Beach early.10:45 AMdone_all..."
+[Div/Section] Class: 'flex justify-end items-center gap-1 mt-1' | Preview: "10:45 AMdone_all..."
+[Div/Section] Class: 'flex items-end gap-2 w-full max-w-[90%] mt-4' | Preview: "pollPoll by AlexWhere to eat next? 🍜Bún Quậy Kiến Xây60%Night Market Seafood40%..."
+[Div/Section] Class: 'flex items-start justify-between mb-4' | Preview: "pollPoll by AlexWhere to eat next? 🍜..."
+[Div/Section] Class: 'flex items-center gap-2 text-primary mb-1' | Preview: "pollPoll by Alex..."
+[Div/Section] Class: 'flex flex-col gap-3' | Preview: "Bún Quậy Kiến Xây60%Night Market Seafood40%..."
+[Div/Section] Class: 'flex items-center gap-2 relative z-10' | Preview: "60%..."
+[Div/Section] Class: 'flex items-center gap-2 relative z-10' | Preview: "40%..."
+[Div/Section] Class: 'flex justify-center my-4' | Preview: "location_onAlex pinned a location..."
+[Div/Section] Class: 'flex items-end justify-end gap-2 w-full max-w-[85%] self-end' | Preview: "directionsSao Beach Club15 min driveLet's meet here at 2 PM!..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end p-3' | Preview: "directionsSao Beach Club15 min drive..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "directionsSao Beach Club15 min drive..."
+[Div/Section] Class: 'w-8 h-8 rounded-full bg-secondary-container/90 flex items-center justify-center backdrop-blur-md' | Preview: "directions..."
+[Div/Section] Class: 'fixed bottom-0 left-0 w-full bg-surface-container/90 backdrop-blur-2xl border-t border-white/5 p-4 pb-8 z-50' | Preview: "addimagemicsend..."
+[Div/Section] Class: 'max-w-3xl mx-auto flex items-center gap-3' | Preview: "addimagemicsend..."
+[Div/Section] Class: 'flex-1 relative' | Preview: "mic..."
+
+
+
+
+
+Found section:
+
+Document Title: Trip.mate - Đà Lạt Chill Itinerary
+
+--- KEY TEXT ELEMENTS ---
+[h2] Saturday, Oct 12
+[h3] Bún bò Breakfast
+[h3] Coffee at The Hill Station
+[h3] Night Market Chaos
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "arrow_back" (Href: '', Classes: ['text-on-surface-variant', 'hover:text-secondary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200', 'p-2', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center'])
+[Button/Link] "person_add" (Href: '', Classes: ['text-primary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200', 'w-10', 'h-10', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center'])
+[Button/Link] "Magic Build" (Href: '', Classes: ['bg-primary', 'text-on-primary', 'rounded-xl', 'px-4', 'py-2', 'font-label-lg', 'text-label-lg', 'hover:opacity-90', 'transition-opacity', 'shadow-[0_0_15px_rgba(208,188,255,0.4)]'])
+[Button/Link] "Swap In" (Href: '', Classes: ['bg-primary/20', 'text-primary', 'font-label-sm', 'px-3', 'py-1', 'rounded-full', 'hover:bg-primary/30', 'transition-colors', 'border', 'border-primary/30'])
+[Button/Link] "addAdd Place" (Href: '', Classes: ['glass-panel', 'rounded-full', 'px-6', 'py-2', 'flex', 'items-center', 'gap-2', 'text-on-surface-variant', 'hover:text-on-surface', 'hover:bg-surface-bright/50', 'transition-all', 'border', 'border-dashed', 'border-white/20'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'bg-surface/50 backdrop-blur-3xl border-b border-white/10 shadow-[0_0_20px_rgba(208,188,255,0.1)] flex justify-between it' | Preview: "arrow_backĐà Lạt ChillOct 12 - 15 • 3 Collaboratorsvisibility+1person_add..."
+[Div/Section] Class: 'flex items-center gap-4' | Preview: "arrow_backĐà Lạt ChillOct 12 - 15 • 3 Collaborators..."
+[Div/Section] Class: 'flex flex-col' | Preview: "Đà Lạt ChillOct 12 - 15 • 3 Collaborators..."
+[Div/Section] Class: 'flex items-center gap-element-gap' | Preview: "visibility+1person_add..."
+[Div/Section] Class: 'flex -space-x-3 mr-2' | Preview: "visibility+1..."
+[Div/Section] Class: 'absolute -bottom-1 -right-1 bg-surface rounded-full p-[2px] border border-white/10 flex items-center justify-center' | Preview: "visibility..."
+[Div/Section] Class: 'w-8 h-8 rounded-full border-2 border-surface bg-surface-bright flex items-center justify-center relative z-10 glass-pane' | Preview: "+1..."
+[Div/Section] Class: 'bg-error-container/20 backdrop-blur-md border-b border-error/20 px-6 py-2 flex items-center gap-3' | Preview: "warningHeavy rain tomorrow in Đà Lạt - Matey is rerouting to indoor gems...."
+[Div/Section] Class: 'glass-panel rounded-2xl p-2 pl-4 flex items-center gap-3 border border-primary/30 neon-glow bg-surface-dim/50' | Preview: "auto_awesomeMagic Build..."
+[Div/Section] Class: 'grid grid-cols-2 gap-element-gap mb-section-gap hidden' | Preview: "mapView Route3 spots mappedpartly_cloudy_day18°C, CloudyPerfect for coffee..."
+[Div/Section] Class: 'glass-panel rounded-xl p-3 flex items-center gap-3 relative overflow-hidden group cursor-pointer hover:bg-surface-bright' | Preview: "mapView Route3 spots mapped..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-surface-dim/80 backdrop-blur-md flex items-center justify-center border border-white/10 z-10' | Preview: "map..."
+[Div/Section] Class: 'z-10 flex flex-col' | Preview: "View Route3 spots mapped..."
+[Div/Section] Class: 'glass-panel rounded-xl p-3 flex items-center gap-3 relative overflow-hidden group cursor-pointer hover:bg-surface-bright' | Preview: "partly_cloudy_day18°C, CloudyPerfect for coffee..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-surface-dim/80 backdrop-blur-md flex items-center justify-center border border-white/10 z-10' | Preview: "partly_cloudy_day..."
+[Div/Section] Class: 'z-10 flex flex-col' | Preview: "18°C, CloudyPerfect for coffee..."
+[Div/Section] Class: 'relative z-10 mb-8 flex items-center gap-4 -ml-12' | Preview: "1Saturday, Oct 12..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-surface-bright flex items-center justify-center border-2 border-surface neon-glow' | Preview: "1..."
+[Div/Section] Class: 'glass-panel rounded-2xl p-4 mb-element-gap relative group cursor-grab active:cursor-grabbing hover:-translate-y-1 transi' | Preview: "schedule08:00 AM - 09:30 AMdrag_indicatorBún bò BreakfastBún bò Huế Minh Trí - highly rated by local..."
+[Div/Section] Class: 'flex justify-between items-start mb-2' | Preview: "schedule08:00 AM - 09:30 AMdrag_indicator..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "schedule08:00 AM - 09:30 AM..."
+[Div/Section] Class: 'flex gap-2 mb-4' | Preview: "boltEnergy Balanced..."
+[Div/Section] Class: 'flex justify-between items-end' | Preview: "restaurantFood🔥2..."
+[Div/Section] Class: 'flex gap-2' | Preview: "restaurantFood..."
+[Div/Section] Class: 'flex -space-x-2' | Preview: "🔥2..."
+[Div/Section] Class: 'w-6 h-6 rounded-full bg-surface-bright border border-surface flex items-center justify-center relative' | Preview: "🔥2..."
+[Div/Section] Class: 'glass-panel rounded-2xl p-4 mb-element-gap relative group cursor-grab active:cursor-grabbing hover:-translate-y-1 transi' | Preview: "schedule10:00 AM - 12:00 PMdrag_indicatorCoffee at The Hill StationChill vibes, vintage aesthetic. G..."
+[Div/Section] Class: 'flex justify-between items-start mb-2' | Preview: "schedule10:00 AM - 12:00 PMdrag_indicator..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "schedule10:00 AM - 12:00 PM..."
+[Div/Section] Class: 'flex gap-2 mb-4' | Preview: "groupsCrowd Low..."
+[Div/Section] Class: 'flex justify-between items-end relative z-10' | Preview: "local_cafeCafe📸✨+1..."
+[Div/Section] Class: 'flex gap-2' | Preview: "local_cafeCafe..."
+[Div/Section] Class: 'flex items-center gap-1 bg-surface-dim px-2 py-1 rounded-full border border-white/10 relative' | Preview: "📸✨+1..."
+[Div/Section] Class: 'absolute -top-3 -right-2 bg-surface text-[10px] rounded-full px-1.5 py-0.5 border border-white/10 flex items-center gap-' | Preview: "+1..."
+[Div/Section] Class: 'glass-panel rounded-2xl p-4 mb-element-gap relative group cursor-grab active:cursor-grabbing hover:-translate-y-1 transi' | Preview: "schedule07:00 PM - Latedrag_indicatorNight Market ChaosStreet food, shopping, and wandering around.a..."
+[Div/Section] Class: 'flex justify-between items-start mb-2' | Preview: "schedule07:00 PM - Latedrag_indicator..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "schedule07:00 PM - Late..."
+[Div/Section] Class: 'bg-surface-bright/80 rounded-xl p-3 border border-primary/20 mb-3 relative overflow-hidden' | Preview: "auto_awesomeAI Alternative: Rain ExpectedInstead of the night market, try this speakeasyLéon BarSwap..."
+[Div/Section] Class: 'flex items-center gap-2 mb-1' | Preview: "auto_awesomeAI Alternative: Rain Expected..."
+[Div/Section] Class: 'flex justify-between items-center' | Preview: "Léon BarSwap In..."
+[Div/Section] Class: 'flex justify-between items-end' | Preview: "nightlifeExplore🤔..."
+[Div/Section] Class: 'flex gap-2 opacity-70' | Preview: "nightlifeExplore..."
+[Div/Section] Class: 'flex -space-x-2' | Preview: "🤔..."
+[Div/Section] Class: 'w-6 h-6 rounded-full bg-surface-bright border border-surface flex items-center justify-center relative opacity-50' | Preview: "🤔..."
+[Div/Section] Class: 'py-4 flex justify-center relative z-10' | Preview: "addAdd Place..."
+
+
+
+
+
+Found section:
+
+Document Title: Who Pays? - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Who Pays?
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "arrow_back" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'bg-surface-container', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant', 'hover:text-primary', 'transition-colors'])
+[Button/Link] "add_reaction" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'bg-surface-container', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "casinoSPIN TO DECIDE" (Href: '', Classes: ['px-8', 'py-4', 'rounded-full', 'bg-gradient-to-r', 'from-primary', 'to-inverse-primary', 'font-headline-md', 'text-headline-md', 'text-white', 'shadow-[0_0_30px_rgba(208,188,255,0.4)]', 'hover:shadow-[0_0_50px_rgba(208,188,255,0.6)]', 'hover:scale-105', 'transition-all', 'active:scale-95', 'duration-200', 'relative', 'overflow-hidden', 'group'])
+[Button/Link] "explore" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "map" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "add_circle" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-14', 'h-14', 'bg-primary/10', 'rounded-full', 'text-secondary-fixed', 'drop-shadow-[0_0_8px_rgba(69,223,164,0.8)]', 'scale-110', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "group" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "person" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "arrow_back..."
+[Div/Section] Class: 'inline-block px-4 py-1 rounded-full bg-error/10 text-error border border-error/30 font-label-lg text-label-lg mb-4 glow-' | Preview: "Chaos Mode Active..."
+[Div/Section] Class: 'absolute -top-4 -left-8 bg-surface-container px-3 py-1 rounded-full font-label-sm text-label-sm text-tertiary border bor' | Preview: "please not me 😭..."
+[Div/Section] Class: 'absolute top-1/2 -right-12 bg-surface-container px-3 py-1 rounded-full font-label-sm text-label-sm text-secondary border' | Preview: "my wallet is empty 💸..."
+[Div/Section] Class: 'w-full h-full rounded-full border-4 border-surface-container-high bg-surface-container shadow-[0_0_50px_rgba(0,189,133,0' | Preview: "NhậtLyTrungKhang..."
+[Div/Section] Class: 'absolute inset-0 flex items-center justify-center' | Preview: "NhậtLyTrungKhang..."
+[Div/Section] Class: 'absolute top-1/4 right-1/4 translate-x-4 -translate-y-4 flex flex-col items-center' | Preview: "Nhật..."
+[Div/Section] Class: 'absolute bottom-1/4 right-1/4 translate-x-4 translate-y-4 flex flex-col items-center' | Preview: "Ly..."
+[Div/Section] Class: 'absolute bottom-1/4 left-1/4 -translate-x-4 translate-y-4 flex flex-col items-center' | Preview: "Trung..."
+[Div/Section] Class: 'absolute top-1/4 left-1/4 -translate-x-4 -translate-y-4 flex flex-col items-center' | Preview: "Khang..."
+
+
+
+
+
+Found section:
+
+Document Title: Ghost Cam
+
+--- KEY TEXT ELEMENTS ---
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "close" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center', 'text-on-surface', 'hover:bg-surface-variant', 'transition-colors'])
+[Button/Link] "flip_camera_ios" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center', 'text-on-surface', 'hover:bg-surface-variant', 'transition-colors'])
+[Button/Link] "PHOTO" (Href: '', Classes: ['text-on-surface-variant', 'hover:text-on-surface', 'transition-colors'])
+[Button/Link] "GHOST CAM" (Href: '', Classes: ['text-secondary', 'font-bold', 'drop-shadow-[0_0_8px_rgba(69,223,164,0.5)]'])
+[Button/Link] "VIDEO" (Href: '', Classes: ['text-on-surface-variant', 'hover:text-on-surface', 'transition-colors'])
+[Button/Link] "flash_on" (Href: '', Classes: ['w-12', 'h-12', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center', 'text-primary', 'hover:bg-surface-variant', 'transition-all', 'hover:scale-105', 'active:scale-95'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'absolute top-0 w-full z-50 flex justify-between items-center px-container-padding-mobile py-6 pt-12' | Preview: "closeNam Trung is watchingflip_camera_ios..."
+[Div/Section] Class: 'flex items-center gap-2 glass-panel px-4 py-2 rounded-full shadow-[0_0_20px_rgba(208,188,255,0.2)]' | Preview: "Nam Trung is watching..."
+[Div/Section] Class: 'absolute top-48 right-8 sticker-rotate-2 bg-secondary/20 backdrop-blur-md px-3 py-1 rounded-full border border-secondary' | Preview: "location_onHội An Ancient Town..."
+[Div/Section] Class: 'absolute top-1/3 left-1/2 -translate-x-1/2 bg-error text-on-error font-display-sm text-[28px] px-4 py-2 rounded-lg trans' | Preview: "Surprise!..."
+[Div/Section] Class: 'absolute bottom-0 w-full z-50 p-container-padding-mobile pb-10 flex flex-col items-center gap-8' | Preview: "PHOTOGHOST CAMVIDEOflash_on..."
+[Div/Section] Class: 'flex gap-6 glass-panel px-6 py-3 rounded-full font-label-lg text-label-lg' | Preview: "PHOTOGHOST CAMVIDEO..."
+[Div/Section] Class: 'flex items-center justify-between w-full px-4' | Preview: "flash_on..."
+
+
+
+
+
+Found section:
+
+Document Title: Memory Wall - Hà Giang Loop
+
+--- KEY TEXT ELEMENTS ---
+[h1] Hà Giang Loop
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "more_horiz" (Href: '', Classes: ['w-8', 'h-8', 'rounded-full', 'bg-black/40', 'backdrop-blur-md', 'flex', 'items-center', 'justify-center', 'text-white', 'border', 'border-white/20', 'active:scale-95', 'transition-transform'])
+[Button/Link] "close" (Href: '', Classes: ['w-8', 'h-8', 'rounded-full', 'bg-black/40', 'backdrop-blur-md', 'flex', 'items-center', 'justify-center', 'text-white', 'border', 'border-white/20', 'active:scale-95', 'transition-transform'])
+[Button/Link] "explore" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-14', 'h-14', 'text-white/50', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300'])
+[Button/Link] "map" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-14', 'h-14', 'text-secondary-fixed', 'drop-shadow-[0_0_12px_rgba(69,223,164,0.6)]', 'scale-110', 'transition-transform', 'active:scale-90', 'duration-300'])
+[Button/Link] "add" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-16', 'h-16', 'rounded-full', 'bg-gradient-to-tr', 'from-primary-container', 'to-secondary-container', 'shadow-[0_10px_25px_rgba(160,120,255,0.5)]', 'text-white', 'hover:scale-105', 'transition-transform', 'active:scale-95', 'duration-300', 'border-2', 'border-white/20'])
+[Button/Link] "group" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-14', 'h-14', 'text-white/50', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300'])
+[Button/Link] "person" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-14', 'h-14', 'text-white/50', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '111', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3a2818', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'f4e4bc', 'f8f8f8', 'ff4d4d', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'fixed top-0 left-0 w-full z-50 px-4 pt-4 pb-2 bg-gradient-to-b from-black/80 to-transparent flex flex-col gap-3' | Preview: "trip.mateOct 14, 2023more_horizclose..."
+[Div/Section] Class: 'flex justify-between items-center px-1' | Preview: "trip.mateOct 14, 2023more_horizclose..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "trip.mateOct 14, 2023..."
+[Div/Section] Class: 'flex flex-col' | Preview: "trip.mateOct 14, 2023..."
+[Div/Section] Class: 'flex gap-2' | Preview: "more_horizclose..."
+[Div/Section] Class: 'absolute top-0 right-4 bg-white/90 backdrop-blur-sm text-black px-3 py-1 rounded-sm transform rotate-6 z-10 shadow-lg bo' | Preview: "location_onQuan Ba..."
+[Div/Section] Class: 'w-full aspect-[4/5] bg-surface-container-lowest overflow-hidden relative' | Preview: "09:42 AM..."
+[Div/Section] Class: 'relative w-full aspect-square bg-black overflow-hidden rounded-sm group' | Preview: "play_circleREC 00:15..."
+[Div/Section] Class: 'absolute inset-0 bg-black/30 flex items-center justify-center' | Preview: "play_circle..."
+[Div/Section] Class: 'absolute top-[380px] left-1/2 -translate-x-1/2 w-72 bg-gradient-to-br from-surface-container-high/90 to-surface-containe' | Preview: "auto_awesomeAI Memory VibeThat morning climb out of Ha Giang:high adrenaline, numb hands, and absolu..."
+[Div/Section] Class: 'flex items-center gap-2 mb-3' | Preview: "auto_awesomeAI Memory Vibe..."
+[Div/Section] Class: 'absolute top-[520px] left-2 w-44 bg-[#f4e4bc] p-5 shadow-[0_15px_30px_rgba(0,0,0,0.5)] transform -rotate-4 z-30' | Preview: ""I think I lost feeling in my legs but... worth it."- Alex..."
+[Div/Section] Class: 'w-full aspect-square bg-surface-container-lowest overflow-hidden relative' | Preview: "14:20 PM..."
+[Div/Section] Class: 'absolute bottom-2 left-2 font-digital text-[#ff4d4d] font-bold text-xl drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] bg-black/' | Preview: "14:20 PM..."
+[Div/Section] Class: 'absolute top-[850px] left-4 w-48 bg-surface-container-high/60 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 s' | Preview: "routeRoute Progress120 / 350 km..."
+[Div/Section] Class: 'h-28 w-full rounded-xl overflow-hidden bg-black relative mb-3' | Preview: "route..."
+[Div/Section] Class: 'absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/80 to-transparent' | Preview: "route..."
+[Div/Section] Class: 'flex justify-between items-end px-1' | Preview: "Route Progress120 / 350 km..."
+[Div/Section] Class: 'w-full aspect-[4/3] bg-surface-container-lowest overflow-hidden relative' | Preview: "22:43 PM..."
+[Div/Section] Class: 'fixed bottom-[100px] left-0 w-full flex flex-col items-center justify-center z-40 pointer-events-none opacity-80 mix-ble' | Preview: "keyboard_double_arrow_upSwipe up to react..."
+[Div/Section] Class: 'flex flex-col items-center swipe-up text-white/90' | Preview: "keyboard_double_arrow_upSwipe up to react..."
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - Vibe Selection
+
+--- KEY TEXT ELEMENTS ---
+[h1] what's the vibe for the squad?
+[h2] Chill
+[h2] Party
+[h2] Foodie
+[h2] Nature
+[h2] Adventure
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "check_circle🧘‍♀️🍹ChillResorts, spas, and slow mornings in Hội An." (Href: '', Classes: ['vibe-card', 'group', 'relative', 'flex-shrink-0', 'w-[280px]', 'h-[400px]', 'rounded-xl', 'overflow-hidden', 'snap-center', 'outline-none', 'transition-all', 'duration-300', 'transform', 'hover:scale-[1.02]', 'active:scale-95', 'text-left', 'border', 'border-white/10', 'shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]', 'bg-white/5', 'backdrop-blur-2xl'])
+[Button/Link] "check_circle🪩🍻PartyBùi Viện nights and rooftop bars in Saigon." (Href: '', Classes: ['vibe-card', 'group', 'relative', 'flex-shrink-0', 'w-[280px]', 'h-[400px]', 'rounded-xl', 'overflow-hidden', 'snap-center', 'outline-none', 'transition-all', 'duration-300', 'transform', 'hover:scale-[1.02]', 'active:scale-95', 'text-left', 'border', 'border-white/10', 'shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]', 'bg-white/5', 'backdrop-blur-2xl'])
+[Button/Link] "check_circle🍜🌶️FoodieStreet food tours and hidden Pho spots in Hanoi." (Href: '', Classes: ['vibe-card', 'group', 'relative', 'flex-shrink-0', 'w-[280px]', 'h-[400px]', 'rounded-xl', 'overflow-hidden', 'snap-center', 'outline-none', 'transition-all', 'duration-300', 'transform', 'hover:scale-[1.02]', 'active:scale-95', 'text-left', 'border', 'border-white/10', 'shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]', 'bg-white/5', 'backdrop-blur-2xl'])
+[Button/Link] "check_circle⛰️🌿NatureHa Long Bay cruises and Sapa rice terraces." (Href: '', Classes: ['vibe-card', 'group', 'relative', 'flex-shrink-0', 'w-[280px]', 'h-[400px]', 'rounded-xl', 'overflow-hidden', 'snap-center', 'outline-none', 'transition-all', 'duration-300', 'transform', 'hover:scale-[1.02]', 'active:scale-95', 'text-left', 'border', 'border-white/10', 'shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]', 'bg-white/5', 'backdrop-blur-2xl'])
+[Button/Link] "check_circle🏍️🎒AdventureHa Giang loop and exploring Son Doong cave." (Href: '', Classes: ['vibe-card', 'group', 'relative', 'flex-shrink-0', 'w-[280px]', 'h-[400px]', 'rounded-xl', 'overflow-hidden', 'snap-center', 'outline-none', 'transition-all', 'duration-300', 'transform', 'hover:scale-[1.02]', 'active:scale-95', 'text-left', 'border', 'border-white/10', 'shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]', 'bg-white/5', 'backdrop-blur-2xl', 'pr-[20px]'])
+[Button/Link] "Let's goooarrow_forward" (Href: '', Classes: ['pointer-events-auto', 'bg-gradient-to-r', 'from-primary', 'to-inverse-primary', 'text-white', 'font-label-lg', 'text-label-lg', 'py-4', 'px-12', 'rounded-full', 'shadow-[0_0_30px_rgba(208,188,255,0.4)]', 'hover:shadow-[0_0_40px_rgba(208,188,255,0.6)]', 'transform', 'hover:scale-105', 'active:scale-95', 'transition-all', 'duration-300', 'flex', 'items-center', 'gap-2', 'opacity-50', 'cursor-not-allowed'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'w-full overflow-x-auto no-scrollbar snap-x snap-mandatory flex gap-element-gap px-container-padding-mobile pb-8 pt-4' | Preview: "check_circle🧘‍♀️🍹ChillResorts, spas, and slow mornings in Hội An.check_circle🪩🍻PartyBùi Viện nights ..."
+[Div/Section] Class: 'absolute top-4 right-4 z-20 bg-surface/50 backdrop-blur-md rounded-full p-2 border border-white/10 opacity-0 group-focus' | Preview: "check_circle..."
+[Div/Section] Class: 'flex items-center gap-2 mb-2' | Preview: "🧘‍♀️🍹..."
+[Div/Section] Class: 'absolute top-4 right-4 z-20 bg-surface/50 backdrop-blur-md rounded-full p-2 border border-white/10 opacity-0 group-focus' | Preview: "check_circle..."
+[Div/Section] Class: 'flex items-center gap-2 mb-2' | Preview: "🪩🍻..."
+[Div/Section] Class: 'absolute top-4 right-4 z-20 bg-surface/50 backdrop-blur-md rounded-full p-2 border border-white/10 opacity-0 group-focus' | Preview: "check_circle..."
+[Div/Section] Class: 'flex items-center gap-2 mb-2' | Preview: "🍜🌶️..."
+[Div/Section] Class: 'absolute top-4 right-4 z-20 bg-surface/50 backdrop-blur-md rounded-full p-2 border border-white/10 opacity-0 group-focus' | Preview: "check_circle..."
+[Div/Section] Class: 'flex items-center gap-2 mb-2' | Preview: "⛰️🌿..."
+[Div/Section] Class: 'absolute top-4 right-4 z-20 bg-surface/50 backdrop-blur-md rounded-full p-2 border border-white/10 opacity-0 group-focus' | Preview: "check_circle..."
+[Div/Section] Class: 'flex items-center gap-2 mb-2' | Preview: "🏍️🎒..."
+[Div/Section] Class: 'fixed bottom-0 left-0 w-full p-container-padding-mobile pb-8 bg-gradient-to-t from-background via-background/80 to-trans' | Preview: "Let's goooarrow_forward..."
+
+
+
+
+
+Found section:
+
+Document Title: AI Travel Assistant - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] hey, i'mmatey✧
+[h3] 💸 broke alert
+[h3] weather savior
+[h4] Neon Light Cafe
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "diamond" (Href: '', Classes: ['active:scale-95', 'duration-200', 'hover:opacity-80', 'transition-opacity', 'text-on-surface-variant', 'focus:outline-none', 'drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]'])
+[Button/Link] "thumb_up" (Href: '', Classes: ['w-8', 'h-8', 'rounded-full', 'hover:bg-white/10', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant'])
+[Button/Link] "content_copy" (Href: '', Classes: ['w-8', 'h-8', 'rounded-full', 'hover:bg-white/10', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant'])
+[Button/Link] "reroute itinerary" (Href: '', Classes: ['flex-1', 'bg-gradient-to-r', 'from-secondary', 'to-secondary-fixed', 'text-on-secondary', 'font-label-lg', 'py-2.5', 'px-4', 'rounded-xl', 'hover:opacity-90', 'active:scale-95', 'transition-all', 'shadow-[0_4px_15px_rgba(69,223,164,0.3)]', 'font-bold'])
+[Button/Link] "close" (Href: '', Classes: ['w-12', 'h-10', 'bg-transparent', 'border', 'border-white/20', 'text-on-surface', 'flex', 'items-center', 'justify-center', 'rounded-xl', 'hover:bg-white/5', 'active:scale-95', 'transition-all'])
+[Button/Link] "add to itineraryadd" (Href: '', Classes: ['mt-3', 'bg-white/5', 'border', 'border-white/10', 'text-primary', 'font-label-sm', 'py-1.5', 'px-3', 'rounded-lg', 'flex', 'items-center', 'gap-1', 'w-fit', 'hover:bg-white/10', 'transition-colors', 'lowercase'])
+[Button/Link] "add" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant', 'hover:text-primary', 'transition-colors', 'hover:bg-white/10'])
+[Button/Link] "send" (Href: '', Classes: ['w-11', 'h-11', 'rounded-full', 'bg-gradient-to-br', 'from-primary', 'via-inverse-primary', 'to-primary-container', 'text-white', 'flex', 'items-center', 'justify-center', 'hover:opacity-90', 'active:scale-95', 'transition-all', 'shadow-[0_0_15px_rgba(109,59,215,0.6)]', 'border', 'border-white/20'])
+[Button/Link] "map" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/80', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "search" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/80', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "add_circle" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/80', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "auto_awesome" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-14', 'h-14', 'bg-gradient-to-br', 'from-secondary/20', 'to-primary/20', 'text-secondary', 'shadow-[0_0_25px_rgba(69,223,164,0.3)]', 'rounded-full', 'p-3', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'relative', 'border', 'border-white/10', '-mt-4'])
+[Button/Link] "person" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/80', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '040914', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center justify-between px-container-padding-mobile h-16 w-full max-w-7xl mx-auto' | Preview: "trip.matediamond..."
+[Div/Section] Class: 'flex flex-col items-center justify-center pt-10 pb-6 relative' | Preview: "auto_awesomehey, i'mmatey✧Squad energy: Chaotic Good (85%)..."
+[Div/Section] Class: 'relative z-10 w-36 h-36 rounded-full mb-6 animate-orb-float mood-glow-violet bg-gradient-to-br from-primary via-inverse-' | Preview: "auto_awesome..."
+[Div/Section] Class: 'w-full h-full rounded-full bg-surface-container-lowest flex items-center justify-center overflow-hidden relative shadow-' | Preview: "auto_awesome..."
+[Div/Section] Class: 'flex items-center gap-2 z-10 bg-surface-container-highest/50 backdrop-blur-md px-3 py-1 rounded-full border border-white' | Preview: "Squad energy: Chaotic Good (85%)..."
+[Div/Section] Class: 'flex flex-col gap-6 w-full pb-section-gap' | Preview: "You probably shouldn’t schedule 5 cafes in 2 hours 😭 Trừ khi các bồ muốn cả team xỉu up xỉu down vib..."
+[Div/Section] Class: 'flex flex-col gap-2 w-full max-w-[85%] self-start' | Preview: "You probably shouldn’t schedule 5 cafes in 2 hours 😭 Trừ khi các bồ muốn cả team xỉu up xỉu down vib..."
+[Div/Section] Class: 'glass-panel p-4 rounded-[24px] rounded-tl-sm relative group transition-all hover:bg-surface-container-high/60 border bor' | Preview: "You probably shouldn’t schedule 5 cafes in 2 hours 😭 Trừ khi các bồ muốn cả team xỉu up xỉu down vib..."
+[Div/Section] Class: 'absolute -bottom-3 -right-3 bg-surface-container/90 backdrop-blur-md rounded-full p-1 shadow-lg border border-white/10 o' | Preview: "thumb_upcontent_copy..."
+[Div/Section] Class: 'flex items-start gap-4 relative z-10' | Preview: "warning💸 broke alertThat omakase place is gonna eat 40% of the daily budget. Tìm quán khác hạt dẻ hơ..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-error-container/30 flex items-center justify-center shrink-0 border border-error/20' | Preview: "warning..."
+[Div/Section] Class: 'flex-1' | Preview: "💸 broke alertThat omakase place is gonna eat 40% of the daily budget. Tìm quán khác hạt dẻ hơn nha?..."
+[Div/Section] Class: 'glass-panel p-5 rounded-[24px] border border-secondary/30 relative overflow-hidden mood-glow-emerald bg-gradient-to-br f' | Preview: "thunderstormweather saviorrain detected ☔ saving the vibe... Trời sắp mưa rào rùi, tui đổi Tsukiji M..."
+[Div/Section] Class: 'flex items-start gap-4 relative z-10' | Preview: "thunderstormweather saviorrain detected ☔ saving the vibe... Trời sắp mưa rào rùi, tui đổi Tsukiji M..."
+[Div/Section] Class: 'w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center shrink-0 border border-secondary/30 sh' | Preview: "thunderstorm..."
+[Div/Section] Class: 'flex-1' | Preview: "weather saviorrain detected ☔ saving the vibe... Trời sắp mưa rào rùi, tui đổi Tsukiji Market sang c..."
+[Div/Section] Class: 'flex gap-3' | Preview: "reroute itineraryclose..."
+[Div/Section] Class: 'flex flex-col gap-2 w-full max-w-[85%] self-end' | Preview: "Fair point. What's a good alternative near Shibuya right now? Cần chỗ nào aesthetic xíu để sống ảo n..."
+[Div/Section] Class: 'bg-gradient-to-br from-primary to-inverse-primary text-on-primary p-4 rounded-[24px] rounded-tr-sm shadow-[0_5px_20px_rg' | Preview: "Fair point. What's a good alternative near Shibuya right now? Cần chỗ nào aesthetic xíu để sống ảo n..."
+[Div/Section] Class: 'glass-panel p-4 rounded-[24px] border-l-[4px] border-tertiary bg-gradient-to-r from-tertiary/5 to-transparent' | Preview: "groupvibe match ✧98% matchNeon Light Cafe"Đỉnh chóp luôn. Góc này lên hình bao cháy, matches your sq..."
+[Div/Section] Class: 'flex items-center gap-2 mb-3' | Preview: "groupvibe match ✧..."
+[Div/Section] Class: 'w-8 h-8 rounded-full bg-tertiary/20 flex items-center justify-center' | Preview: "group..."
+[Div/Section] Class: 'flex gap-4' | Preview: "98% matchNeon Light Cafe"Đỉnh chóp luôn. Góc này lên hình bao cháy, matches your squad's chaotic ene..."
+[Div/Section] Class: 'w-24 h-24 rounded-2xl overflow-hidden shrink-0 relative bg-surface-container-highest shadow-lg border border-white/5' | Preview: "98% match..."
+[Div/Section] Class: 'flex flex-col justify-center' | Preview: "Neon Light Cafe"Đỉnh chóp luôn. Góc này lên hình bao cháy, matches your squad's chaotic energy perfe..."
+[Div/Section] Class: 'glass-panel rounded-full p-2 flex items-center gap-2 relative z-10 border border-white/15 focus-within:border-primary/60' | Preview: "addsend..."
+[Div/Section] Class: 'hidden md:flex fixed left-0 top-16 bottom-0 w-64 glass-panel border-r border-t-0 flex-col py-6 px-4 z-40 bg-surface-cont' | Preview: "mapMapauto_awesomeMatey AI..."
+[Div/Section] Class: 'flex flex-col gap-2' | Preview: "mapMapauto_awesomeMatey AI..."
+[Div/Section] Class: 'px-4 py-3 text-on-surface-variant hover:bg-white/5 rounded-xl cursor-pointer flex items-center gap-3 transition-colors' | Preview: "mapMap..."
+[Div/Section] Class: 'px-4 py-3 bg-secondary-container/20 text-secondary rounded-xl cursor-pointer flex items-center gap-3 border-l-[3px] bord' | Preview: "auto_awesomeMatey AI..."
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - AI Search
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Where to next,chaotic squad?
+[h3] Vibes
+[h3] Curated for your squad
+[h4] Hanoi Street Food
+[h4] Secret Falls, Bali
+[h4] Tokyo Underground
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "diamond" (Href: '', Classes: ['text-on-surface-variant', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200', 'focus:outline-none'])
+[Button/Link] "auto_awesome" (Href: '', Classes: ['bg-primary', 'text-on-primary', 'rounded-full', 'p-3', 'ml-2', 'hover:bg-primary/90', 'transition-colors', 'shadow-[0_0_15px_rgba(208,188,255,0.4)]', 'flex-shrink-0'])
+[Button/Link] "See all" (Href: '', Classes: ['font-label-lg', 'text-label-lg', 'text-secondary', 'hover:text-secondary-fixed', 'transition-colors'])
+[Button/Link] "map" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "search" (Href: '#', Classes: ['bg-secondary-container/20', 'text-secondary', 'shadow-[0_0_15px_rgba(69,223,164,0.4)]', 'rounded-full', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "add_circle" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "auto_awesome" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "person" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center justify-between px-container-padding-mobile h-16 w-full max-w-7xl mx-auto' | Preview: "trip.matediamond..."
+[Div/Section] Class: 'mt-8 mb-section-gap flex flex-col items-center text-center' | Preview: "Where to next,chaotic squad?searchauto_awesomehistoryHidden waterfalls..."
+[Div/Section] Class: 'relative w-full max-w-2xl search-input-glow transition-all duration-300 rounded-full bg-surface-container-high border bo' | Preview: "searchauto_awesomehistoryHidden waterfalls..."
+[Div/Section] Class: 'absolute -bottom-14 left-0 right-0 flex justify-center gap-2 pointer-events-none opacity-0 group-focus-within:opacity-10' | Preview: "historyHidden waterfalls..."
+[Div/Section] Class: 'glass-card px-4 py-2 rounded-full font-label-sm text-label-sm text-primary flex items-center gap-1' | Preview: "historyHidden waterfalls..."
+[Div/Section] Class: 'flex items-center justify-between mb-4' | Preview: "VibesSee all..."
+[Div/Section] Class: 'grid grid-cols-2 md:grid-cols-4 gap-element-gap' | Preview: "🌿Chill Cafes🔥Nightlife📸Photo Spots your friends loved..."
+[Div/Section] Class: 'glass-card rounded-xl p-4 flex flex-col justify-between aspect-[4/3] group cursor-pointer hover:bg-surface-container-hig' | Preview: "🌿Chill Cafes..."
+[Div/Section] Class: 'glass-card rounded-xl p-4 flex flex-col justify-between aspect-[4/3] group cursor-pointer hover:bg-surface-container-hig' | Preview: "🔥Nightlife..."
+[Div/Section] Class: 'glass-card rounded-xl p-4 flex flex-col justify-between aspect-[4/3] group cursor-pointer hover:bg-surface-container-hig' | Preview: "📸Photo Spots your friends loved..."
+[Div/Section] Class: 'flex justify-between items-start z-10 w-full' | Preview: "📸..."
+[Div/Section] Class: 'flex items-center gap-2 mb-4' | Preview: "auto_awesomeCurated for your squad..."
+[Div/Section] Class: 'flex overflow-x-auto no-scrollbar gap-element-gap pb-4 -mx-container-padding-mobile px-container-padding-mobile md:mx-0 ' | Preview: "play_arrowTrendingHanoi Street FoodLate night chaos & the best pho you've ever had.exploreHidden Gem..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end h-full' | Preview: "play_arrowTrendingHanoi Street FoodLate night chaos & the best pho you've ever had...."
+[Div/Section] Class: 'glass-card w-fit px-3 py-1 rounded-full flex items-center gap-1 mb-3' | Preview: "play_arrowTrending..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end h-full' | Preview: "exploreHidden GemSecret Falls, BaliAway from the crowds, 45min hike...."
+[Div/Section] Class: 'glass-card w-fit px-3 py-1 rounded-full flex items-center gap-1 mb-3' | Preview: "exploreHidden Gem..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 flex flex-col justify-end h-full' | Preview: "local_barNightlifeTokyo UndergroundSpeakeasies your crew will talk about for years...."
+[Div/Section] Class: 'glass-card w-fit px-3 py-1 rounded-full flex items-center gap-1 mb-3' | Preview: "local_barNightlife..."
+
+
+
+
+
+Found section:
+
+Document Title: Share Your Trip - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] Share Trip
+[h2] 6 idiots.1 unforgettableĐà Lạt trip.
+[h3] Aesthetic Templates
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "close" (Href: '', Classes: ['text-on-surface-variant', 'hover:text-primary', 'transition-colors', 'flex', 'items-center', 'justify-center', 'p-2', 'rounded-full', 'hover:bg-white/5'])
+[Button/Link] "swap_horiz" (Href: '', Classes: ['text-on-surface-variant', 'hover:text-primary', 'transition-colors', 'p-2', 'bg-white/5', 'rounded-full'])
+[Button/Link] "shareShare to TikTok" (Href: '', Classes: ['w-full', 'kinetic-gradient', 'rounded-full', 'py-4', 'px-6', 'flex', 'items-center', 'justify-center', 'gap-2', 'font-headline-md', 'text-headline-md', 'text-on-primary-container', 'shadow-[0_0_20px_rgba(208,188,255,0.5)]', 'transition-transform', 'active:scale-95'])
+[Button/Link] "video_libraryPost to Reels" (Href: '', Classes: ['w-full', 'glass-panel', 'rounded-full', 'py-4', 'px-6', 'flex', 'items-center', 'justify-center', 'gap-2', 'font-headline-md', 'text-headline-md', 'text-on-surface', 'hover:bg-white/10', 'transition-colors', 'active:scale-95'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center justify-between px-container-padding-mobile h-16 w-full max-w-7xl mx-auto' | Preview: "closeShare Trip..."
+[Div/Section] Class: 'absolute inset-0 pointer-events-none p-4 flex flex-col justify-between z-10' | Preview: "#DaLatVibes6 idiots.1 unforgettableĐà Lạt trip...."
+[Div/Section] Class: 'flex justify-between items-start' | Preview: "#DaLatVibes..."
+[Div/Section] Class: 'bg-yellow-300 text-black font-label-lg px-3 py-1 rotate-[-12deg] shadow-lg border-2 border-white rounded-sm' | Preview: "#DaLatVibes..."
+[Div/Section] Class: 'absolute inset-0 flex items-center justify-center pointer-events-none z-20' | Preview: "play_arrow..."
+[Div/Section] Class: 'w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30' | Preview: "play_arrow..."
+[Div/Section] Class: 'flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-container-padding-mobile px-container-padding-mobile snap-x snap-mand' | Preview: "CinematicChaoticNostalgic..."
+[Div/Section] Class: 'glass-panel rounded-xl p-4 flex items-center justify-between' | Preview: "music_noteTrendingmignon - "watafuk"swap_horiz..."
+[Div/Section] Class: 'flex items-center gap-4' | Preview: "music_noteTrendingmignon - "watafuk"..."
+[Div/Section] Class: 'fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-3xl border-t border-white/5 p-container-padding-mobile z-50' | Preview: "shareShare to TikTokvideo_libraryPost to Reels..."
+
+
+
+
+
+Found section:
+
+Document Title: Live Map - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h2] Nearby Magic
+[h3] The Hill Station Cafe
+[h3] Secret Pine Viewpoint
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'absolute top-[80px] left-container-padding-mobile z-40 glass-panel rounded-full px-4 py-2 flex items-center gap-2' | Preview: "cloud18°CĐà Lạt..."
+[Div/Section] Class: 'absolute top-[80px] right-container-padding-mobile z-40 glass-panel rounded-full px-4 py-2 flex items-center gap-2 borde' | Preview: "Squad Coffee Run..."
+[Div/Section] Class: 'absolute top-[35%] left-[25%] flex flex-col items-center group cursor-pointer transition-transform hover:scale-105' | Preview: "getting coffee ☕Nam Trung..."
+[Div/Section] Class: 'absolute top-[50%] right-[30%] flex flex-col items-center group cursor-pointer transition-transform hover:scale-105' | Preview: "lost again 😭Thảo Ly..."
+[Div/Section] Class: 'absolute top-[60%] left-[45%] flex flex-col items-center' | Preview: "You..."
+[Div/Section] Class: 'absolute -bottom-2 bg-secondary text-on-secondary font-label-sm px-2 py-0.5 rounded-full z-10 shadow-[0_0_10px_rgba(69,2' | Preview: "You..."
+[Div/Section] Class: 'absolute top-[40%] right-[45%] flex flex-col items-center' | Preview: "local_cafeThe Hill Station..."
+[Div/Section] Class: 'w-8 h-8 rounded-full bg-secondary-container/20 border border-secondary flex items-center justify-center pin-glow-seconda' | Preview: "local_cafe..."
+[Div/Section] Class: 'absolute top-[25%] left-[60%] flex flex-col items-center' | Preview: "photo_camera..."
+[Div/Section] Class: 'w-8 h-8 rounded-full bg-primary-container/20 border border-primary flex items-center justify-center avatar-glow cursor-p' | Preview: "photo_camera..."
+[Div/Section] Class: 'absolute top-[65%] right-[20%] flex flex-col items-center' | Preview: "storefront..."
+[Div/Section] Class: 'w-8 h-8 rounded-full bg-tertiary-container/20 border border-tertiary flex items-center justify-center pin-glow-tertiary ' | Preview: "storefront..."
+[Div/Section] Class: 'glass-panel rounded-t-3xl p-container-padding-mobile shadow-[0_-10px_40px_rgba(0,0,0,0.5)] h-[397px] flex flex-col' | Preview: "Nearby Magicauto_awesomeAI Curated for the Squadstar4.9The Hill Station CafeVintage vibe, great pour..."
+[Div/Section] Class: 'flex justify-between items-end mb-element-gap' | Preview: "Nearby Magicauto_awesomeAI Curated for the Squad..."
+[Div/Section] Class: 'flex-1 overflow-y-auto pr-2 space-y-4 pb-4' | Preview: "star4.9The Hill Station CafeVintage vibe, great pour-overs.200m awayNam Trung is herestar4.8Secret P..."
+[Div/Section] Class: 'bg-surface-container-high/50 rounded-xl p-3 flex gap-4 border border-white/5 hover:bg-surface-container-high transition-' | Preview: "star4.9The Hill Station CafeVintage vibe, great pour-overs.200m awayNam Trung is here..."
+[Div/Section] Class: 'absolute top-1 right-1 bg-surface/80 rounded px-1 backdrop-blur-sm flex items-center' | Preview: "star4.9..."
+[Div/Section] Class: 'flex flex-col justify-center' | Preview: "The Hill Station CafeVintage vibe, great pour-overs.200m awayNam Trung is here..."
+[Div/Section] Class: 'flex items-center gap-2 mt-2' | Preview: "200m awayNam Trung is here..."
+[Div/Section] Class: 'flex -space-x-1' | Preview: "Nam Trung is here..."
+[Div/Section] Class: 'bg-surface-container-high/50 rounded-xl p-3 flex gap-4 border border-white/5 hover:bg-surface-container-high transition-' | Preview: "star4.8Secret Pine ViewpointPerfect sunset photo op.Trending800m away..."
+[Div/Section] Class: 'absolute top-1 right-1 bg-surface/80 rounded px-1 backdrop-blur-sm flex items-center' | Preview: "star4.8..."
+[Div/Section] Class: 'flex flex-col justify-center' | Preview: "Secret Pine ViewpointPerfect sunset photo op.Trending800m away..."
+[Div/Section] Class: 'flex items-center gap-2 mt-2' | Preview: "Trending800m away..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "trip.mate..."
+[Div/Section] Class: 'flex flex-col items-center justify-center cursor-pointer group active:scale-90 duration-300 ease-out bg-secondary-contai' | Preview: "map..."
+[Div/Section] Class: 'flex flex-col items-center justify-center cursor-pointer group active:scale-90 duration-300 ease-out text-on-surface-var' | Preview: "search..."
+[Div/Section] Class: 'flex flex-col items-center justify-center cursor-pointer group active:scale-90 duration-300 ease-out text-on-surface-var' | Preview: "add_circle..."
+[Div/Section] Class: 'flex flex-col items-center justify-center cursor-pointer group active:scale-90 duration-300 ease-out text-on-surface-var' | Preview: "auto_awesome..."
+[Div/Section] Class: 'flex flex-col items-center justify-center cursor-pointer group active:scale-90 duration-300 ease-out text-on-surface-var' | Preview: "person..."
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - AI Receipt Scanner
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "close" (Href: '', Classes: ['text-primary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "receipt_long" (Href: '', Classes: ['text-secondary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "Confirm Splitcheck_circle" (Href: '', Classes: ['w-full', 'max-w-sm', 'bg-gradient-to-r', 'from-primary', 'via-secondary', 'to-tertiary', 'text-on-primary', 'font-headline-md', 'text-headline-md', 'py-4', 'rounded-full', 'shadow-[0_0_20px_rgba(208,188,255,0.4)]', 'active:scale-95', 'transition-transform', 'duration-200', 'flex', 'justify-center', 'items-center', 'gap-2'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center justify-between px-container-padding-mobile h-16 w-full max-w-7xl mx-auto' | Preview: "closetrip.matereceipt_long..."
+[Div/Section] Class: 'w-full h-full bg-surface-container-highest relative overflow-hidden flex items-center justify-center' | Preview: "restaurant🍜 Bún bò — 120klocal_taxi🚕 Grab — 180k..."
+[Div/Section] Class: 'absolute top-1/4 left-1/4 pop-in delay-100 bg-surface-container-lowest/80 backdrop-blur-md rounded-lg p-2 border border-' | Preview: "restaurant🍜 Bún bò — 120k..."
+[Div/Section] Class: 'absolute top-1/2 right-1/4 pop-in delay-300 bg-surface-container-lowest/80 backdrop-blur-md rounded-lg p-2 border border' | Preview: "local_taxi🚕 Grab — 180k..."
+[Div/Section] Class: 'absolute bottom-0 left-0 w-full z-20 pb-8 pt-24 bg-gradient-to-t from-background via-background/90 to-transparent flex f' | Preview: "auto_awesomeLooks likeNam Trungpaid for everyone again 😭Confirm Splitcheck_circle..."
+[Div/Section] Class: 'bg-surface/60 backdrop-blur-3xl border border-white/10 rounded-full px-6 py-3 flex items-center gap-3 shadow-[0_8px_32px' | Preview: "auto_awesomeLooks likeNam Trungpaid for everyone again 😭..."
+
+
+
+
+
+Found section:
+
+Document Title: Premium Upgrade | trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h3] @adventure_seeker
+[h1] trip.mate
+[h2] Your memories deserve better than camera roll chaos
+[h3] Cinematic Themes
+[h4] Tokyo Neon
+[h4] Đà Lạt Mist
+[h4] Beach Chaos
+[h4] Retro Film
+[h4] Cyber Night
+[h3] Premium Identity
+[h3] Hidden Travel Spots
+[h3] Exclusive Reactions
+[h3] Infinite High-Res Storage
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "boltLive Trip Mode" (Href: '#', Classes: ['flex', 'items-center', 'gap-4', 'px-4', 'py-3', 'rounded-lg', 'text-on-surface-variant', 'hover:bg-white/5', 'hover:text-on-surface', 'transition-all', 'active:opacity-70', 'font-body-lg', 'text-body-lg'])
+[Button/Link] "receipt_longAI Receipt Scanner" (Href: '#', Classes: ['flex', 'items-center', 'gap-4', 'px-4', 'py-3', 'rounded-lg', 'text-on-surface-variant', 'hover:bg-white/5', 'hover:text-on-surface', 'transition-all', 'active:opacity-70', 'font-body-lg', 'text-body-lg'])
+[Button/Link] "exploreHidden Gems" (Href: '#', Classes: ['flex', 'items-center', 'gap-4', 'px-4', 'py-3', 'rounded-lg', 'text-on-surface-variant', 'hover:bg-white/5', 'hover:text-on-surface', 'transition-all', 'active:opacity-70', 'font-body-lg', 'text-body-lg'])
+[Button/Link] "auto_videocamMemories" (Href: '#', Classes: ['flex', 'items-center', 'gap-4', 'px-4', 'py-3', 'rounded-lg', 'text-on-surface-variant', 'hover:bg-white/5', 'hover:text-on-surface', 'transition-all', 'active:opacity-70', 'font-body-lg', 'text-body-lg'])
+[Button/Link] "starsPremium Upgrade" (Href: '#', Classes: ['flex', 'items-center', 'gap-4', 'px-4', 'py-3', 'rounded-lg', 'bg-gradient-to-r', 'from-primary/10', 'to-transparent', 'text-primary', 'font-bold', 'border-l-4', 'border-primary', 'hover:bg-primary/20', 'transition-all', 'active:opacity-70', 'font-body-lg', 'text-body-lg'])
+[Button/Link] "settingsSettings" (Href: '#', Classes: ['flex', 'items-center', 'gap-4', 'px-4', 'py-3', 'rounded-lg', 'text-on-surface-variant', 'hover:bg-white/5', 'hover:text-on-surface', 'transition-all', 'active:opacity-70', 'font-body-lg', 'text-body-lg'])
+[Button/Link] "diamond" (Href: '', Classes: ['text-[#ffb783]', 'hover:text-white', 'transition-colors', 'active:scale-95', 'duration-200'])
+[Button/Link] "Join the Elite Squadarrow_forward" (Href: '', Classes: ['pointer-events-auto', 'premium-shimmer', 'bg-gradient-to-r', 'from-[#222]', 'via-[#111]', 'to-[#222]', 'border', 'border-white/20', 'text-white', 'font-headline-md', 'text-xl', 'px-10', 'py-5', 'rounded-full', 'hover:scale-[1.02]', 'active:scale-[0.98]', 'transition-all', 'duration-300', 'w-full', 'max-w-lg', 'shadow-[0_10px_40px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.2)]', 'flex', 'items-center', 'justify-center', 'gap-3', 'group', 'overflow-hidden'])
+[Button/Link] "map" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "search" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "add_circle" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "auto_awesome" (Href: '#', Classes: ['bg-gradient-to-br', 'from-primary/30', 'to-primary/10', 'text-primary', 'border', 'border-primary/20', 'shadow-[0_0_20px_rgba(208,188,255,0.2)]', 'rounded-full', 'p-3', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "person" (Href: '#', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-white', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['000000', '002114', '003825', '00452e', '005137', '00bd85', '050505', '0a0a0a', '0a0a0c', '111', '111111', '1a1a1c', '1c1c1e', '222', '222222', '23005c', '283044', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'a1a1a6', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5', 'ffffff']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'hidden md:flex fixed top-0 bottom-0 left-0 z-40 bg-[#0a0a0a]/90 dark:bg-[#0a0a0a]/90 backdrop-blur-2xl border-r border-w' | Preview: "@adventure_seekerElite MemberboltLive Trip Modereceipt_longAI Receipt ScannerexploreHidden Gemsauto_..."
+[Div/Section] Class: 'flex items-center gap-4 py-4' | Preview: "@adventure_seekerElite Member..."
+[Div/Section] Class: 'inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-primary/10 via-white/5 to-transparent border' | Preview: "starstrip.mate Elite..."
+[Div/Section] Class: 'flex items-center justify-between mb-6 px-2 md:px-0' | Preview: "Cinematic ThemesElite Exclusive..."
+[Div/Section] Class: 'flex overflow-x-auto gap-4 pb-8 pt-4 no-scrollbar snap-x snap-mandatory' | Preview: "Tokyo NeonCyberpunk energy & hyper-vibrant saturation.play_circleĐà Lạt MistMoody, atmospheric, and ..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent' | Preview: "Tokyo NeonCyberpunk energy & hyper-vibrant saturation...."
+[Div/Section] Class: 'absolute top-4 right-4 bg-black/50 backdrop-blur-md rounded-full p-2 border border-white/10' | Preview: "play_circle..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent' | Preview: "Đà Lạt MistMoody, atmospheric, and profoundly romantic...."
+[Div/Section] Class: 'absolute top-4 right-4 bg-black/50 backdrop-blur-md rounded-full p-2 border border-white/10' | Preview: "play_circle..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent' | Preview: "Beach ChaosSun-drenched, high-contrast party vibes...."
+[Div/Section] Class: 'absolute top-4 right-4 bg-black/50 backdrop-blur-md rounded-full p-2 border border-white/10' | Preview: "play_circle..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent' | Preview: "Retro FilmClassic 35mm grain, light leaks, and nostalgia...."
+[Div/Section] Class: 'absolute top-4 right-4 bg-black/50 backdrop-blur-md rounded-full p-2 border border-white/10' | Preview: "play_circle..."
+[Div/Section] Class: 'absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent' | Preview: "Cyber NightDeep shadows and glowing neon accents...."
+[Div/Section] Class: 'absolute top-4 right-4 bg-black/50 backdrop-blur-md rounded-full p-2 border border-white/10' | Preview: "play_circle..."
+[Div/Section] Class: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-section-gap' | Preview: "military_techdiamondverifiedPremium IdentityStand out from the crowd. Flex your status with Elite Ba..."
+[Div/Section] Class: 'glass-card rounded-3xl p-8 relative overflow-hidden group md:col-span-2 lg:col-span-2 flex flex-col justify-end min-h-[3' | Preview: "military_techdiamondverifiedPremium IdentityStand out from the crowd. Flex your status with Elite Ba..."
+[Div/Section] Class: 'flex gap-3 mb-6' | Preview: "military_techdiamondverified..."
+[Div/Section] Class: 'w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 p-1 shadow-[0_0_20px_rgba(250,204,21,0.3)]' | Preview: "military_tech..."
+[Div/Section] Class: 'w-full h-full bg-black rounded-full flex items-center justify-center' | Preview: "military_tech..."
+[Div/Section] Class: 'w-14 h-14 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 p-1 shadow-[0_0_20px_rgba(209,213,219,0.2)]' | Preview: "diamond..."
+[Div/Section] Class: 'w-full h-full bg-black rounded-full flex items-center justify-center' | Preview: "diamond..."
+[Div/Section] Class: 'w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-primary p-1 shadow-[0_0_20px_rgba(208,188,255,0.3)]' | Preview: "verified..."
+[Div/Section] Class: 'w-full h-full bg-black rounded-full flex items-center justify-center' | Preview: "verified..."
+[Div/Section] Class: 'glass-card rounded-3xl p-8 relative overflow-hidden group flex flex-col justify-end min-h-[300px]' | Preview: "exploreHidden Travel SpotsAccess curated, elite-only maps revealing local secrets tourists never fin..."
+[Div/Section] Class: 'w-12 h-12 rounded-full bg-tertiary/20 flex items-center justify-center mb-6 border border-tertiary/30 text-tertiary shad' | Preview: "explore..."
+[Div/Section] Class: 'glass-card rounded-3xl p-8 relative overflow-hidden group md:col-span-1 lg:col-span-1 flex flex-col justify-end min-h-[3' | Preview: "🔥✨🚀Exclusive ReactionsUnlock a bespoke ecosystem of animated stickers and squad-only reaction effect..."
+[Div/Section] Class: 'flex flex-wrap gap-2 mb-6' | Preview: "🔥✨🚀..."
+[Div/Section] Class: 'bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-2xl border border-white/5 animate-bounce' | Preview: "🔥..."
+[Div/Section] Class: 'bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-2xl border border-white/5 animate-bounce' | Preview: "✨..."
+[Div/Section] Class: 'bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-2xl border border-white/5 animate-bounce' | Preview: "🚀..."
+[Div/Section] Class: 'glass-card rounded-3xl p-8 relative overflow-hidden group md:col-span-2 lg:col-span-2 flex flex-col justify-end min-h-[3' | Preview: "cloud_doneInfinite High-Res StorageNever delete a memory. Unlimited cloud storage for every photo, v..."
+[Div/Section] Class: 'relative z-10 flex flex-col md:flex-row gap-6 items-start md:items-end justify-between w-full' | Preview: "cloud_doneInfinite High-Res StorageNever delete a memory. Unlimited cloud storage for every photo, v..."
+[Div/Section] Class: 'w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-6 border border-primary/40 text-primary shadow-' | Preview: "cloud_done..."
+[Div/Section] Class: 'fixed bottom-24 md:bottom-12 left-0 right-0 md:left-80 z-40 flex justify-center px-6 pointer-events-none' | Preview: "Join the Elite Squadarrow_forward..."
+
+
+
+
+
+Found section:
+
+Document Title: Live Trip Mode - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Đà Lạt Chill
+[h3] Live Updates
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "diamond" (Href: '', Classes: ['text-primary', 'dark:text-primary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "search" (Href: '', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'gap-1'])
+[Button/Link] "map" (Href: '', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'gap-1'])
+[Button/Link] "auto_awesome" (Href: '', Classes: ['bg-secondary-container/20', 'text-secondary', 'shadow-[0_0_15px_rgba(69,223,164,0.4)]', 'rounded-full', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'gap-1', 'relative', '-top-2'])
+[Button/Link] "add_circle" (Href: '', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'gap-1'])
+[Button/Link] "person" (Href: '', Classes: ['text-on-surface-variant', 'p-3', 'hover:text-secondary', 'transition-colors', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'gap-1'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center justify-between px-container-padding-mobile h-16 w-full max-w-7xl mx-auto' | Preview: "trip.matediamond..."
+[Div/Section] Class: 'flex flex-col gap-element-gap relative' | Preview: "Live ModeĐà Lạt ChillDay 2 of 46 mates activeSquad Energy⚡ Chaotic Good (85%)..."
+[Div/Section] Class: 'flex justify-between items-end' | Preview: "Live ModeĐà Lạt ChillDay 2 of 46 mates active..."
+[Div/Section] Class: 'flex items-center gap-2 mb-1' | Preview: "Live Mode..."
+[Div/Section] Class: 'flex justify-between items-center mb-2' | Preview: "Squad Energy⚡ Chaotic Good (85%)..."
+[Div/Section] Class: 'relative h-[300px] rounded-xl overflow-hidden glass-panel flex items-center justify-center' | Preview: "☕📸Minh Nhật🚶‍♀️Thảo Ly..."
+[Div/Section] Class: 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center' | Preview: "☕..."
+[Div/Section] Class: 'absolute -bottom-2 -right-2 bg-surface-container-high rounded-full p-1 text-xs' | Preview: "☕..."
+[Div/Section] Class: 'absolute top-1/4 left-1/4 flex flex-col items-center animate-[bounce_3s_infinite]' | Preview: "📸Minh Nhật..."
+[Div/Section] Class: 'absolute -bottom-2 -right-2 bg-surface-container-high rounded-full p-1 text-xs' | Preview: "📸..."
+[Div/Section] Class: 'absolute bottom-1/3 right-1/4 flex flex-col items-center animate-[bounce_4s_infinite]' | Preview: "🚶‍♀️Thảo Ly..."
+[Div/Section] Class: 'absolute -bottom-2 -right-2 bg-surface-container-high rounded-full p-1 text-xs' | Preview: "🚶‍♀️..."
+[Div/Section] Class: 'flex flex-col gap-element-gap' | Preview: "Live Updates☕ Minh Nhậtis atThe Hill StationJust now📸 Thảo Lyuploaded 3 moments+15m ago..."
+[Div/Section] Class: 'flex flex-col gap-4 relative' | Preview: "☕ Minh Nhậtis atThe Hill StationJust now📸 Thảo Lyuploaded 3 moments+15m ago..."
+[Div/Section] Class: 'flex gap-4 items-start relative z-10' | Preview: "☕ Minh Nhậtis atThe Hill StationJust now..."
+[Div/Section] Class: 'glass-panel rounded-lg p-3 flex-1' | Preview: "☕ Minh Nhậtis atThe Hill StationJust now..."
+[Div/Section] Class: 'flex gap-4 items-start relative z-10' | Preview: "📸 Thảo Lyuploaded 3 moments+15m ago..."
+[Div/Section] Class: 'glass-panel rounded-lg p-3 flex-1 border-l-2 border-l-tertiary' | Preview: "📸 Thảo Lyuploaded 3 moments+15m ago..."
+[Div/Section] Class: 'flex gap-2 mt-2' | Preview: "+1..."
+[Div/Section] Class: 'w-16 h-16 rounded-md bg-surface-container-high flex items-center justify-center font-label-lg' | Preview: "+1..."
+
+
+
+
+
+Found section:
+
+Document Title: AI Recap Video - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "close" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center', 'hover:bg-white/20', 'transition-colors'])
+[Button/Link] "tune" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center', 'hover:bg-white/20', 'transition-colors'])
+[Button/Link] "smartphone9:16" (Href: '', Classes: ['px-3', 'py-1.5', 'rounded-md', 'bg-white/20', 'text-white', 'font-label-sm', 'shadow-sm', 'transition-all', 'flex', 'items-center', 'gap-1'])
+[Button/Link] "crop_square1:1" (Href: '', Classes: ['px-3', 'py-1.5', 'rounded-md', 'text-white/60', 'hover:text-white', 'font-label-sm', 'transition-all', 'flex', 'items-center', 'gap-1'])
+[Button/Link] "play_arrow" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'bg-white/20', 'backdrop-blur-md', 'border', 'border-white/30', 'flex', 'items-center', 'justify-center', 'hover:scale-105', 'transition-transform'])
+[Button/Link] "Tokyo Neon" (Href: '', Classes: ['flex-shrink-0', 'relative', 'w-24', 'h-28', 'rounded-xl', 'overflow-hidden', 'ring-2', 'ring-[#00e5ff]', 'shadow-[0_0_15px_rgba(0,229,255,0.3)]', 'transition-all'])
+[Button/Link] "VHS Nostalgia" (Href: '', Classes: ['flex-shrink-0', 'relative', 'w-24', 'h-28', 'rounded-xl', 'overflow-hidden', 'glass-panel', 'opacity-70', 'hover:opacity-100', 'transition-opacity'])
+[Button/Link] "Chaos Energy" (Href: '', Classes: ['flex-shrink-0', 'relative', 'w-24', 'h-28', 'rounded-xl', 'overflow-hidden', 'glass-panel', 'opacity-70', 'hover:opacity-100', 'transition-opacity'])
+[Button/Link] "Cinematic" (Href: '', Classes: ['flex-shrink-0', 'relative', 'w-24', 'h-28', 'rounded-xl', 'overflow-hidden', 'glass-panel', 'opacity-70', 'hover:opacity-100', 'transition-opacity'])
+[Button/Link] "Export to TikTok / Reels" (Href: '', Classes: ['w-full', 'h-14', 'rounded-full', 'bg-gradient-kinetic', 'text-white', 'font-headline-md', 'font-bold', 'flex', 'items-center', 'justify-center', 'gap-2', 'shadow-[0_0_25px_rgba(112,0,255,0.6)]', 'hover:scale-[1.02]', 'active:scale-[0.98]', 'transition-transform'])
+[Button/Link] "link" (Href: '', Classes: ['w-12', 'h-12', 'rounded-full', 'glass-panel', 'flex', 'items-center', 'justify-center', 'hover:bg-white/20', 'transition-colors'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['000', '002114', '003825', '00452e', '005137', '00bd85', '00e5ff', '050505', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '7000ff', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ff007f', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5', 'ffffff']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'fixed top-0 w-full z-50 flex justify-between items-center px-4 py-3 pt-safe mt-2 backdrop-blur-md bg-black/30' | Preview: "closetrip.mateCreatortune..."
+[Div/Section] Class: 'flex items-center gap-1' | Preview: "trip.mateCreator..."
+[Div/Section] Class: 'flex justify-between items-end px-2' | Preview: "smartphone9:16crop_square1:10:15 Durationbolt98 AI Energy..."
+[Div/Section] Class: 'glass-panel p-1 rounded-lg flex gap-1' | Preview: "smartphone9:16crop_square1:1..."
+[Div/Section] Class: 'flex flex-col items-end' | Preview: "0:15 Durationbolt98 AI Energy..."
+[Div/Section] Class: 'flex items-center gap-1 text-[#00e5ff]' | Preview: "bolt98 AI Energy..."
+[Div/Section] Class: 'absolute bottom-0 left-0 w-full p-4 flex flex-col gap-3' | Preview: "music_notePhonk Chaos - Drift Beatplay_arrow..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "music_notePhonk Chaos - Drift Beatplay_arrow..."
+[Div/Section] Class: 'flex items-center gap-2 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20' | Preview: "music_notePhonk Chaos - Drift Beat..."
+[Div/Section] Class: 'flex flex-col gap-6 mt-2' | Preview: "Vibe TemplatesTokyo NeonVHS NostalgiaChaos EnergyCinematicAudio Trackgraphic_eqSync to BeatsIndie Po..."
+[Div/Section] Class: 'flex flex-col gap-3' | Preview: "Vibe TemplatesTokyo NeonVHS NostalgiaChaos EnergyCinematic..."
+[Div/Section] Class: 'flex justify-between items-center px-2' | Preview: "Vibe Templates..."
+[Div/Section] Class: 'flex gap-3 overflow-x-auto hide-scrollbar -mx-4 px-4 pb-2' | Preview: "Tokyo NeonVHS NostalgiaChaos EnergyCinematic..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end justify-center pb-2' | Preview: "Tokyo Neon..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end justify-center pb-2' | Preview: "VHS Nostalgia..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end justify-center pb-2' | Preview: "Chaos Energy..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end justify-center pb-2' | Preview: "Cinematic..."
+[Div/Section] Class: 'flex flex-col gap-3' | Preview: "Audio Trackgraphic_eqSync to BeatsIndie PopLofi Tripmusic_notePhonk Chaos..."
+[Div/Section] Class: 'flex justify-between items-center px-2' | Preview: "Audio Trackgraphic_eqSync to Beats..."
+[Div/Section] Class: 'flex items-center gap-1.5 glass-panel px-2 py-1 rounded' | Preview: "graphic_eqSync to Beats..."
+[Div/Section] Class: 'flex flex-wrap gap-2 px-2' | Preview: "Indie PopLofi Tripmusic_notePhonk Chaos..."
+[Div/Section] Class: 'bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-white flex items-center gap-2 cursor-poi' | Preview: "Indie Pop..."
+[Div/Section] Class: 'bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-white flex items-center gap-2 cursor-poi' | Preview: "Lofi Trip..."
+[Div/Section] Class: 'bg-gradient-to-r from-[#ff007f]/20 to-[#7000ff]/20 backdrop-blur-md px-4 py-2 rounded-full border border-[#ff007f]/50 te' | Preview: "music_notePhonk Chaos..."
+[Div/Section] Class: 'fixed bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/95 to-transparent z-40 pb-8 pt-12 px-4 rounded-t-3xl ' | Preview: "Export to TikTok / Reelslink..."
+[Div/Section] Class: 'max-w-md mx-auto flex flex-col gap-4' | Preview: "Export to TikTok / Reelslink..."
+[Div/Section] Class: 'flex justify-center gap-4 mt-2' | Preview: "link..."
+
+
+
+
+
+Found section:
+
+Document Title: Explore Hidden Gems - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Curated for your squad
+[h3] Secret Đà Lạt Viewpoint
+[h3] Hanoi Street Food
+[h2] Trending Near You
+[h2] Night Market
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "notifications" (Href: '', Classes: ['text-primary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "auto_awesome" (Href: '', Classes: ['absolute', 'right-2', 'top-1/2', '-translate-y-1/2', 'bg-kinetic-gradient', 'text-on-primary', 'rounded-full', 'w-10', 'h-10', 'flex', 'items-center', 'justify-center', 'shadow-lg', 'bloom-shadow-primary'])
+[Button/Link] "🌿 Chill Cafes" (Href: '', Classes: ['glass-panel', 'px-4', 'py-2', 'rounded-full', 'whitespace-nowrap', 'text-on-surface', 'font-label-lg', 'border', 'border-primary/40', 'bloom-shadow-primary', 'flex', 'items-center', 'gap-2'])
+[Button/Link] "🔥 Nightlife" (Href: '', Classes: ['glass-panel', 'px-4', 'py-2', 'rounded-full', 'whitespace-nowrap', 'text-on-surface', 'font-label-lg', 'border', 'border-white/10', 'hover:bg-white/5', 'transition-colors'])
+[Button/Link] "📸 Hidden Gems" (Href: '', Classes: ['glass-panel', 'px-4', 'py-2', 'rounded-full', 'whitespace-nowrap', 'text-on-surface', 'font-label-lg', 'border', 'border-white/10', 'hover:bg-white/5', 'transition-colors'])
+[Button/Link] "🍜 Foodie" (Href: '', Classes: ['glass-panel', 'px-4', 'py-2', 'rounded-full', 'whitespace-nowrap', 'text-on-surface', 'font-label-lg', 'border', 'border-white/10', 'hover:bg-white/5', 'transition-colors'])
+[Button/Link] "🏕 Adventure" (Href: '', Classes: ['glass-panel', 'px-4', 'py-2', 'rounded-full', 'whitespace-nowrap', 'text-on-surface', 'font-label-lg', 'border', 'border-white/10', 'hover:bg-white/5', 'transition-colors'])
+[Button/Link] "favorite12k" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "mode_comment342" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "add" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group', 'mt-2'])
+[Button/Link] "search" (Href: '', Classes: ['text-secondary-fixed', 'drop-shadow-[0_0_8px_rgba(69,223,164,0.8)]', 'scale-110', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "map" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "add_circle" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "group" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "person" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-4' | Preview: "+3..."
+[Div/Section] Class: 'flex -space-x-2 relative group cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200' | Preview: "+3..."
+[Div/Section] Class: 'w-8 h-8 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center font-label-sm text-la' | Preview: "+3..."
+[Div/Section] Class: 'px-4 py-4 flex flex-col gap-4 sticky top-0 z-40 bg-background/80 backdrop-blur-xl' | Preview: "searchauto_awesome🌿 Chill Cafes🔥 Nightlife📸 Hidden Gems🍜 Foodie🏕 Adventure..."
+[Div/Section] Class: 'flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4 pb-2' | Preview: "🌿 Chill Cafes🔥 Nightlife📸 Hidden Gems🍜 Foodie🏕 Adventure..."
+[Div/Section] Class: 'px-4 flex items-center gap-2 mb-4' | Preview: "auto_awesomeCurated for your squad..."
+[Div/Section] Class: 'flex gap-4 overflow-x-auto hide-scrollbar px-4 pb-6' | Preview: "auto_awesome98% Squad MatchSecret Đà Lạt Viewpoint"This cafe matches your squad's chaotic energy per..."
+[Div/Section] Class: 'min-w-[280px] w-[280px] h-[380px] rounded-[32px] relative overflow-hidden flex-shrink-0 group shadow-[0_8px_32px_rgba(0,' | Preview: "auto_awesome98% Squad MatchSecret Đà Lạt Viewpoint"This cafe matches your squad's chaotic energy per..."
+[Div/Section] Class: 'absolute inset-0 p-5 flex flex-col justify-end z-10' | Preview: "auto_awesome98% Squad MatchSecret Đà Lạt Viewpoint"This cafe matches your squad's chaotic energy per..."
+[Div/Section] Class: 'glass-panel self-start px-3 py-1.5 rounded-full flex items-center gap-1.5 mb-auto mt-2 bloom-shadow-primary border-prima' | Preview: "auto_awesome98% Squad Match..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "favoriteMinh Nhật and 3 others loved this..."
+[Div/Section] Class: 'flex -space-x-2' | Preview: "favorite..."
+[Div/Section] Class: 'w-6 h-6 rounded-full border border-surface bg-primary flex items-center justify-center' | Preview: "favorite..."
+[Div/Section] Class: 'min-w-[280px] w-[280px] h-[380px] rounded-[32px] relative overflow-hidden flex-shrink-0 group shadow-[0_8px_32px_rgba(0,' | Preview: "local_fire_department95% Squad MatchHanoi Street Food"Perfect for late-night bún bò runs with main c..."
+[Div/Section] Class: 'absolute inset-0 p-5 flex flex-col justify-end z-10' | Preview: "local_fire_department95% Squad MatchHanoi Street Food"Perfect for late-night bún bò runs with main c..."
+[Div/Section] Class: 'glass-panel self-start px-3 py-1.5 rounded-full flex items-center gap-1.5 mb-auto mt-2 bloom-shadow-secondary border-sec' | Preview: "local_fire_department95% Squad Match..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "127 squads visited this week..."
+[Div/Section] Class: 'px-4 flex flex-col gap-6 pb-8' | Preview: "Trending Near You🔥😍location_onPhú QuốcNight MarketSeafood, chaotic vibes, and ocean breeze. The ulti..."
+[Div/Section] Class: 'absolute inset-0 p-6 flex flex-col justify-end z-10' | Preview: "location_onPhú QuốcNight MarketSeafood, chaotic vibes, and ocean breeze. The ultimate foodie adventu..."
+[Div/Section] Class: 'flex justify-between items-end' | Preview: "location_onPhú QuốcNight MarketSeafood, chaotic vibes, and ocean breeze. The ultimate foodie adventu..."
+[Div/Section] Class: 'flex flex-col w-[80%]' | Preview: "location_onPhú QuốcNight MarketSeafood, chaotic vibes, and ocean breeze. The ultimate foodie adventu..."
+[Div/Section] Class: 'flex items-center gap-2 mb-1' | Preview: "location_onPhú Quốc..."
+[Div/Section] Class: 'glass-panel self-start px-3 py-1.5 rounded-full flex items-center gap-2 border-white/10' | Preview: "group34 squads here right now..."
+[Div/Section] Class: 'flex flex-col items-center gap-5 pb-2' | Preview: "favorite12kmode_comment342add..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform bg-black/' | Preview: "favorite..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform bg-black/' | Preview: "mode_comment..."
+[Div/Section] Class: 'w-12 h-12 rounded-full kinetic-gradient p-[2px] bloom-shadow-primary group-active:scale-90 transition-transform' | Preview: "add..."
+[Div/Section] Class: 'w-full h-full rounded-full bg-surface-container flex items-center justify-center' | Preview: "add..."
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - Authentication
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] welcome to the squad.
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "send code" (Href: '', Classes: ['bg-primary', 'text-on-primary', 'rounded-full', 'px-6', 'py-3', 'font-label-lg', 'text-label-lg', 'hover:opacity-90', 'transition-opacity', 'active:scale-95', 'ml-2', 'shadow-[0_0_15px_rgba(208,188,255,0.4)]'])
+[Button/Link] "account_circleContinue with Google" (Href: '', Classes: ['w-full', 'flex', 'items-center', 'justify-center', 'gap-3', 'bg-surface-container/50', 'backdrop-blur-xl', 'border', 'border-white/5', 'rounded-full', 'py-4', 'px-6', 'hover:bg-surface-container/80', 'transition-colors', 'active:scale-[0.98]'])
+[Button/Link] "iosContinue with Apple" (Href: '', Classes: ['w-full', 'flex', 'items-center', 'justify-center', 'gap-3', 'bg-surface-container/50', 'backdrop-blur-xl', 'border', 'border-white/5', 'rounded-full', 'py-4', 'px-6', 'hover:bg-surface-container/80', 'transition-colors', 'active:scale-[0.98]'])
+[Button/Link] "terms" (Href: '#', Classes: ['text-primary', 'hover:underline'])
+[Button/Link] "privacy policy" (Href: '#', Classes: ['text-primary', 'hover:underline'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex flex-col gap-element-gap w-full' | Preview: "Phone Numbercallsend codeor continue withaccount_circleContinue with GoogleiosContinue with Apple..."
+[Div/Section] Class: 'flex items-center bg-surface-container/80 backdrop-blur-2xl rounded-full border border-white/5 p-2 shadow-[0_0_20px_rgba' | Preview: "callsend code..."
+[Div/Section] Class: 'pl-4 pr-2 flex items-center text-on-surface-variant' | Preview: "call..."
+[Div/Section] Class: 'flex items-center gap-4 my-4 w-full' | Preview: "or continue with..."
+[Div/Section] Class: 'flex flex-col gap-4' | Preview: "account_circleContinue with GoogleiosContinue with Apple..."
+
+
+
+
+
+Found section:
+
+Document Title: Create Trip - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] set the vibe.
+[h3] cover mood.
+[h3] invite the crew.
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "add_reaction" (Href: '', Classes: ['w-10', 'h-10', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "start datecalendar_today" (Href: '', Classes: ['w-full', 'bg-surface-container-highest', 'text-on-surface-variant', 'font-label-lg', 'text-label-lg', 'rounded-[14px]', 'px-4', 'py-4', 'flex', 'items-center', 'justify-between'])
+[Button/Link] "end dateevent" (Href: '', Classes: ['w-full', 'bg-surface-container-highest', 'text-on-surface-variant', 'font-label-lg', 'text-label-lg', 'rounded-[14px]', 'px-4', 'py-4', 'flex', 'items-center', 'justify-between'])
+[Button/Link] "initializerocket_launch" (Href: '', Classes: ['w-full', 'group', 'relative', 'flex', 'items-center', 'justify-center', 'h-16', 'rounded-full', 'overflow-hidden', 'transition-transform', 'active:scale-95', 'duration-300'])
+[Button/Link] "explore" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "map" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "add_circle" (Href: '', Classes: ['text-secondary-fixed', 'drop-shadow-[0_0_8px_rgba(69,223,164,0.8)]', 'scale-110', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'relative'])
+[Button/Link] "group" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+[Button/Link] "person" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex flex-col gap-element-gap' | Preview: "start datecalendar_todayend dateevent..."
+[Div/Section] Class: 'flex gap-element-gap' | Preview: "start datecalendar_todayend dateevent..."
+[Div/Section] Class: 'glass-panel rounded-DEFAULT p-1 neon-glow transition-all duration-300 flex-1' | Preview: "start datecalendar_today..."
+[Div/Section] Class: 'glass-panel rounded-DEFAULT p-1 neon-glow transition-all duration-300 flex-1' | Preview: "end dateevent..."
+[Div/Section] Class: 'flex flex-col gap-gutter' | Preview: "cover mood.check_circletokyo driftisland timealpine glow..."
+[Div/Section] Class: 'flex gap-gutter overflow-x-auto no-scrollbar pb-4 snap-x' | Preview: "check_circletokyo driftisland timealpine glow..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-background/90 to-transparent flex items-end p-3' | Preview: "check_circletokyo drift..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end p-3' | Preview: "island time..."
+[Div/Section] Class: 'absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end p-3' | Preview: "alpine glow..."
+[Div/Section] Class: 'glass-panel rounded-xl p-8 flex flex-col items-center justify-center relative overflow-hidden' | Preview: "invite the crew.qr_code_2or share link..."
+[Div/Section] Class: 'w-full h-full bg-surface-container-highest rounded-lg border-2 border-primary-fixed/30 p-2 flex items-center justify-cen' | Preview: "qr_code_2..."
+[Div/Section] Class: 'w-full h-full border-4 border-dashed border-primary-fixed-dim/50 rounded flex items-center justify-center bg-white/5' | Preview: "qr_code_2..."
+
+
+
+
+
+Found section:
+
+Document Title: AI Vibe Match - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] The Hill Station
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "arrow_back" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'bg-black/20', 'backdrop-blur-md', 'border', 'border-white/10', 'flex', 'items-center', 'justify-center', 'text-white', 'hover:bg-white/10', 'transition-colors'])
+[Button/Link] "close" (Href: '', Classes: ['neon-btn', 'btn-skip', 'w-16', 'h-16', 'rounded-full', 'flex', 'items-center', 'justify-center', 'group'])
+[Button/Link] "sentiment_neutral" (Href: '', Classes: ['neon-btn', 'btn-maybe', 'w-14', 'h-14', 'rounded-full', 'flex', 'items-center', 'justify-center', 'group', 'mt-4'])
+[Button/Link] "local_fire_department" (Href: '', Classes: ['neon-btn', 'btn-must-go', 'w-20', 'h-20', 'rounded-full', 'flex', 'items-center', 'justify-center', 'group'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "arrow_back..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "trip.mate..."
+[Div/Section] Class: 'relative z-20 flex flex-col h-full justify-between pt-20' | Preview: "87%Squad Matchadd📸 aesthetic hidden gem🌿 chill coffee squadNam Trung is typing...location_onOld Town..."
+[Div/Section] Class: 'flex flex-col gap-4' | Preview: "87%Squad Matchadd📸 aesthetic hidden gem🌿 chill coffee squad..."
+[Div/Section] Class: 'self-center flex flex-col items-center mt-2 relative' | Preview: "87%Squad Matchadd..."
+[Div/Section] Class: 'relative w-28 h-28 flex items-center justify-center' | Preview: "87%Squad Match..."
+[Div/Section] Class: 'flex flex-col items-center justify-center z-10 text-center' | Preview: "87%Squad Match..."
+[Div/Section] Class: 'absolute -left-1 bottom-0 glass-chip rounded-full w-6 h-6 flex items-center justify-center border-dashed border-white/30' | Preview: "add..."
+[Div/Section] Class: 'flex flex-wrap justify-center gap-2 mt-6 px-4' | Preview: "📸 aesthetic hidden gem🌿 chill coffee squad..."
+[Div/Section] Class: 'flex flex-col gap-6 w-full' | Preview: "Nam Trung is typing...location_onOld Town, Hội AnThe Hill Station"This is giving: main character Đà ..."
+[Div/Section] Class: 'px-2 h-8 relative flex items-end' | Preview: "Nam Trung is typing......"
+[Div/Section] Class: 'typing-bubble bg-black/40 backdrop-blur-md rounded-2xl rounded-bl-none px-3 py-1.5 border border-white/10 flex items-cen' | Preview: "Nam Trung is typing......"
+[Div/Section] Class: 'flex items-center gap-2 mb-1' | Preview: "location_onOld Town, Hội An..."
+[Div/Section] Class: 'bg-gradient-to-r from-primary/10 to-secondary/10 border-l-2 border-primary p-3 rounded-r-xl backdrop-blur-sm' | Preview: ""This is giving: main character Đà Lạt episode. Your squad would absolutely romanticize this cafe." ..."
+[Div/Section] Class: 'flex justify-center items-center gap-5 mt-2' | Preview: "closesentiment_neutrallocal_fire_department..."
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - Expense Splitter
+
+--- KEY TEXT ELEMENTS ---
+[h1] Squad Debt: Optimized ✨
+[h2] Friendship Status
+[h2] monitoringSquad Spending Stats
+[h2] Live Feed & Roasts
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "notifications" (Href: '', Classes: ['text-on-surface', 'hover:text-primary', 'transition-colors', 'active:scale-95', 'duration-200', 'relative'])
+[Button/Link] "boltQuick Clear" (Href: '', Classes: ['flex-[2]', 'bg-gradient-to-r', 'from-primary', 'to-primary-container', 'text-on-primary-fixed', 'font-headline-md', 'text-headline-md', 'py-4', 'rounded-[32px]', 'neon-glow-primary', 'active:scale-95', 'transition-transform', 'flex', 'items-center', 'justify-center', 'gap-2', 'shadow-lg'])
+[Button/Link] "qr_code_scannerQR" (Href: '', Classes: ['flex-1', 'glass-card', 'border', 'border-secondary/50', 'text-secondary', 'font-label-lg', 'text-label-lg', 'py-4', 'rounded-[32px]', 'active:scale-95', 'transition-transform', 'flex', 'items-center', 'justify-center', 'gap-2', 'hover:bg-secondary/10'])
+[Button/Link] "🔥" (Href: '', Classes: ['hover:scale-125', 'transition-transform', 'bg-surface-container-high', 'p-2', 'rounded-full'])
+[Button/Link] "👀 12" (Href: '', Classes: ['bg-surface-container-highest', 'px-3', 'py-1', 'rounded-full', 'text-xs', 'hover:bg-surface-variant', 'transition-colors', 'border', 'border-white/5', 'text-on-surface-variant'])
+[Button/Link] "home" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-colors', 'hover:scale-110'])
+[Button/Link] "explore" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-colors', 'hover:scale-110'])
+[Button/Link] "add_circle" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-colors', 'hover:scale-110', 'relative', '-top-4', 'bg-surface-container-high', 'p-3', 'rounded-full', 'border', 'border-white/10', 'shadow-[0_0_20px_rgba(208,188,255,0.3)]'])
+[Button/Link] "payments" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-colors', 'hover:scale-110'])
+[Button/Link] "person" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'hover:text-primary', 'transition-colors', 'hover:scale-110'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "+2..."
+[Div/Section] Class: 'flex -space-x-2' | Preview: "+2..."
+[Div/Section] Class: 'w-8 h-8 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center font-label-sm text-la' | Preview: "+2..."
+[Div/Section] Class: 'font-display-sm text-headline-lg-mobile font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary via-s' | Preview: "trip.mate..."
+[Div/Section] Class: 'relative h-[320px] glass-card flex items-center justify-center overflow-visible shadow-[0_0_40px_rgba(208,188,255,0.15)]' | Preview: "YouNT-750kTL+200k-50kauto_awesomeAI Simplified Graph..."
+[Div/Section] Class: 'absolute z-10 flex flex-col items-center top-[130px] left-[150px]' | Preview: "You..."
+[Div/Section] Class: 'absolute z-10 flex flex-col items-center top-[30px] left-[50px]' | Preview: "NT-750k..."
+[Div/Section] Class: 'w-14 h-14 rounded-full border-2 border-error p-1 bg-surface shadow-[0_0_15px_rgba(255,180,171,0.3)]' | Preview: "NT..."
+[Div/Section] Class: 'w-full h-full rounded-full bg-surface-container-high flex items-center justify-center font-bold text-error' | Preview: "NT..."
+[Div/Section] Class: 'absolute z-10 flex flex-col items-center bottom-[20px] left-[60px]' | Preview: "TL+200k..."
+[Div/Section] Class: 'w-14 h-14 rounded-full border-2 border-secondary p-1 bg-surface shadow-[0_0_15px_rgba(69,223,164,0.3)]' | Preview: "TL..."
+[Div/Section] Class: 'w-full h-full rounded-full bg-surface-container-high flex items-center justify-center font-bold text-secondary' | Preview: "TL..."
+[Div/Section] Class: 'absolute z-10 flex flex-col items-center top-[40px] right-[50px]' | Preview: "-50k..."
+[Div/Section] Class: 'absolute top-4 right-4 bg-primary/20 border border-primary/50 text-primary font-label-sm text-[10px] px-3 py-1.5 rounded' | Preview: "auto_awesomeAI Simplified Graph..."
+[Div/Section] Class: 'flex justify-between items-center mb-4 relative z-10' | Preview: "Friendship Status45% Restored..."
+[Div/Section] Class: 'flex gap-4 relative z-10' | Preview: "boltQuick Clearqr_code_scannerQR..."
+[Div/Section] Class: 'flex items-center gap-6 mb-4 relative z-10' | Preview: "3.8MFood & Drink80%Transport20%..."
+[Div/Section] Class: 'w-24 h-24 rounded-full border-[8px] border-surface-container-highest relative flex items-center justify-center' | Preview: "3.8M..."
+[Div/Section] Class: 'flex-1 space-y-3' | Preview: "Food & Drink80%Transport20%..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "Food & Drink80%..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "Food & Drink..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "Transport20%..."
+[Div/Section] Class: 'flex items-center gap-2' | Preview: "Transport..."
+[Div/Section] Class: 'bg-surface-container-high/50 rounded-2xl p-3 border border-tertiary/20 flex items-start gap-3 relative z-10' | Preview: "🤖AI Insight:80% of your budget went to bún bò 😭..."
+[Div/Section] Class: 'grid grid-cols-2 gap-4' | Preview: "🌪️9.2Chaos ScoreverifiedMost ReliablePKPhú Khang12% Reliable..."
+[Div/Section] Class: 'glass-card-sm p-5 flex flex-col items-center text-center justify-center relative overflow-hidden group shadow-[0_0_20px_' | Preview: "🌪️9.2Chaos Score..."
+[Div/Section] Class: 'glass-card-sm p-5 flex flex-col items-start justify-center relative overflow-hidden border border-secondary/20 bg-gradie' | Preview: "verifiedMost ReliablePKPhú Khang12% Reliable..."
+[Div/Section] Class: 'flex items-center gap-3' | Preview: "PKPhú Khang12% Reliable..."
+[Div/Section] Class: 'w-full h-full rounded-full bg-secondary/20 flex items-center justify-center font-bold text-secondary text-sm' | Preview: "PK..."
+[Div/Section] Class: 'flex flex-col' | Preview: "Phú Khang12% Reliable..."
+[Div/Section] Class: 'flex items-start gap-3 glass-card-sm py-3 px-4 border border-secondary/20 hover:border-secondary/40 transition-colors' | Preview: "💸Nam Trungjust cleared 420k. Legend behavior. 🙌Just now🔥..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-xl border border-secondary/30 shrink-0' | Preview: "💸..."
+[Div/Section] Class: 'flex-1 pt-1' | Preview: "Nam Trungjust cleared 420k. Legend behavior. 🙌Just now..."
+[Div/Section] Class: 'flex items-start gap-3 glass-card-sm py-3 px-4 border border-tertiary/20 hover:border-tertiary/40 transition-colors bg-g' | Preview: "💀Phú Khang:"bro i forgot my wallet at the hostel" 💀5m ago • Roast Comments👀 12..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-xl border border-tertiary/30 shrink-0' | Preview: "💀..."
+[Div/Section] Class: 'flex-1 pt-1' | Preview: "Phú Khang:"bro i forgot my wallet at the hostel" 💀5m ago • Roast Comments..."
+[Div/Section] Class: 'flex flex-col gap-1' | Preview: "👀 12..."
+[Div/Section] Class: 'flex items-center gap-3 glass-card-sm py-3 px-4 border border-white/5 opacity-70' | Preview: "🥷2 people still hiding from homestay bill......"
+[Div/Section] Class: 'w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-lg shrink-0' | Preview: "🥷..."
+[Div/Section] Class: 'flex-1 font-body-md text-sm text-on-surface-variant' | Preview: "2 people still hiding from homestay bill......"
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - Home
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h3] Đà Lạt Chill 🌲
+[h3] local_fire_departmentThe Roast
+[h2] Scrapbook
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "notifications" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'glass-card', 'flex', 'items-center', 'justify-center', 'text-primary', 'dark:text-primary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "💸chia tiền" (Href: '', Classes: ['glass-card', 'p-3', 'rounded-full', 'flex', 'items-center', 'justify-center', 'gap-3', 'hover:bg-white/10', 'transition-colors', 'active:scale-95', 'border', 'border-primary/30', 'shadow-[0_4px_12px_rgba(208,188,255,0.1)]'])
+[Button/Link] "📸ghost cam" (Href: '', Classes: ['glass-card', 'p-3', 'rounded-full', 'flex', 'items-center', 'justify-center', 'gap-3', 'hover:bg-white/10', 'transition-colors', 'active:scale-95', 'border', 'border-secondary/30', 'shadow-[0_4px_12px_rgba(69,223,164,0.1)]'])
+[Button/Link] "🎲bingo" (Href: '', Classes: ['glass-card', 'p-3', 'rounded-full', 'flex', 'items-center', 'justify-center', 'gap-3', 'hover:bg-white/10', 'transition-colors', 'active:scale-95', 'border', 'border-tertiary/30', 'shadow-[0_4px_12px_rgba(255,183,131,0.1)]'])
+[Button/Link] "🗺vibe match" (Href: '', Classes: ['glass-card', 'p-3', 'rounded-full', 'flex', 'items-center', 'justify-center', 'gap-3', 'hover:bg-white/10', 'transition-colors', 'active:scale-95', 'border', 'border-primary/30', 'shadow-[0_4px_12px_rgba(208,188,255,0.1)]'])
+[Button/Link] "explore" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'p-2', 'hover:text-secondary', 'transition-colors'])
+[Button/Link] "home" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-primary', 'p-2'])
+[Button/Link] "add" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'bg-gradient-to-tr', 'from-secondary', 'to-primary', 'text-background', 'rounded-full', 'p-4', 'animate-pulse-glow', 'hover:scale-105', 'transition-transform'])
+[Button/Link] "payments" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'p-2', 'hover:text-secondary', 'transition-colors'])
+[Button/Link] "person" (Href: '#', Classes: ['flex', 'items-center', 'justify-center', 'text-on-surface-variant/60', 'p-2', 'hover:text-secondary', 'transition-colors'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '2563eb', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6b7280', '6d3bd7', '713700', '93000a', '958ea0', '9ca3af', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e5e7eb', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5', 'fff']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-element-gap' | Preview: "trip.mate..."
+[Div/Section] Class: 'fixed top-20 left-0 w-full z-40 overflow-hidden bg-surface-container/40 backdrop-blur-md border-b border-white/5 py-2' | Preview: "Nam Trung added a coffee spot ☕️Thảo Ly reacted 😂Phú Khang owes 420k 💸Minh Nhật voted for BBQ 🍖Nam T..."
+[Div/Section] Class: 'whitespace-nowrap animate-marquee flex items-center gap-8 font-label-sm text-on-surface/80' | Preview: "Nam Trung added a coffee spot ☕️Thảo Ly reacted 😂Phú Khang owes 420k 💸Minh Nhật voted for BBQ 🍖Nam T..."
+[Div/Section] Class: 'absolute top-4 left-4 bg-background/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10' | Preview: ""6 idiots. 1 unforgettable trip."..."
+[Div/Section] Class: 'absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end' | Preview: "schedule3 days leftthermostat22°CĐà Lạt Chill 🌲3 editing..."
+[Div/Section] Class: 'flex items-center gap-2 mb-3' | Preview: "schedule3 days leftthermostat22°C..."
+[Div/Section] Class: 'flex items-center justify-between' | Preview: "3 editing..."
+[Div/Section] Class: 'flex items-center' | Preview: "3 editing..."
+[Div/Section] Class: 'ml-3 bg-background/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1.5' | Preview: "3 editing..."
+[Div/Section] Class: 'grid grid-cols-2 md:grid-cols-4 gap-4' | Preview: "💸chia tiền📸ghost cam🎲bingo🗺vibe match..."
+[Div/Section] Class: 'flex justify-between items-start mb-4 relative z-10' | Preview: "local_fire_departmentThe RoastTotal: 500k..."
+[Div/Section] Class: 'bg-error/20 px-3 py-1 rounded-full text-error font-bold border border-error/50' | Preview: "Total: 500k..."
+[Div/Section] Class: 'bg-surface-container-highest/60 rounded-xl p-4 border border-error/20 backdrop-blur-md relative z-10' | Preview: ""Phú Khang:main character energynhưng chưa trả 420k 😭"Group Progress80% Paid..."
+[Div/Section] Class: 'flex justify-between font-label-sm text-sm text-on-surface-variant' | Preview: "Group Progress80% Paid..."
+[Div/Section] Class: 'flex items-center gap-2 mb-2' | Preview: "Scrapbookpush_pin..."
+[Div/Section] Class: 'grid grid-cols-2 gap-6 p-4' | Preview: "Chợ Đêm Vibe- Phú Khang -📍 Da Lat Night MarketChạy booooo!- Thảo Ly -🛵💨..."
+[Div/Section] Class: 'absolute -top-3 -right-3 sticker bg-yellow-300 text-black px-2 py-1 rounded shadow-md font-bold text-xs transform rotate' | Preview: "📍 Da Lat Night Market..."
+
+
+
+
+
+Found section:
+
+Document Title: Explore Hidden Gems - trip.mate
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Hidden Terraces
+[h2] Misty Pine Forests
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "add_reaction" (Href: '', Classes: ['text-primary', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "favorite12k" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "mode_comment342" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "sendShare" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "addAdd to Trip" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group', 'mt-2'])
+[Button/Link] "favorite8.4k" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "mode_comment156" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "sendShare" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group'])
+[Button/Link] "addAdd to Trip" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'gap-1', 'group', 'mt-2'])
+[Button/Link] "explore" (Href: '', Classes: ['text-secondary-fixed', 'drop-shadow-[0_0_8px_rgba(69,223,164,0.8)]', 'scale-110', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "map" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "add_circle" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "group" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+[Button/Link] "person" (Href: '', Classes: ['text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out', 'flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-4' | Preview: "+3..."
+[Div/Section] Class: 'flex -space-x-2 relative group cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200' | Preview: "+3..."
+[Div/Section] Class: 'w-8 h-8 rounded-full border-2 border-surface bg-surface-container flex items-center justify-center font-label-sm text-la' | Preview: "+3..."
+[Div/Section] Class: 'h-[884px] w-full snap-always-center relative flex flex-col justify-end pb-32' | Preview: "auto_awesome98% Squad Matchlocation_onPù LuôngHidden TerracesEscape the crowds. Trek through infinit..."
+[Div/Section] Class: 'relative z-10 px-container-padding-mobile md:px-container-padding-desktop flex flex-col gap-element-gap' | Preview: "auto_awesome98% Squad Matchlocation_onPù LuôngHidden TerracesEscape the crowds. Trek through infinit..."
+[Div/Section] Class: 'self-start glass-panel rounded-full px-4 py-1.5 flex items-center gap-2 bloom-shadow-primary' | Preview: "auto_awesome98% Squad Match..."
+[Div/Section] Class: 'flex justify-between items-end' | Preview: "location_onPù LuôngHidden TerracesEscape the crowds. Trek through infinite green valleys and sleep a..."
+[Div/Section] Class: 'flex flex-col' | Preview: "location_onPù LuôngHidden TerracesEscape the crowds. Trek through infinite green valleys and sleep a..."
+[Div/Section] Class: 'flex items-center gap-2 mb-1' | Preview: "location_onPù Luông..."
+[Div/Section] Class: 'flex flex-col items-center gap-6 pb-4' | Preview: "favorite12kmode_comment342sendShareaddAdd to Trip..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform' | Preview: "favorite..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform' | Preview: "mode_comment..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform' | Preview: "send..."
+[Div/Section] Class: 'w-12 h-12 rounded-full kinetic-gradient p-[2px] bloom-shadow-primary group-active:scale-90 transition-transform' | Preview: "add..."
+[Div/Section] Class: 'w-full h-full rounded-full bg-surface-container flex items-center justify-center' | Preview: "add..."
+[Div/Section] Class: 'flex gap-2 mt-2 overflow-x-auto hide-scrollbar pb-2' | Preview: "🌿 Nature🥾 Trekking📸 Aesthetic..."
+[Div/Section] Class: 'h-[884px] w-full snap-always-center relative flex flex-col justify-end pb-32' | Preview: "local_fire_departmentTrending Nowlocation_onMăng ĐenMisty Pine ForestsThe 'Da Lat' without the crowd..."
+[Div/Section] Class: 'relative z-10 px-container-padding-mobile md:px-container-padding-desktop flex flex-col gap-element-gap' | Preview: "local_fire_departmentTrending Nowlocation_onMăng ĐenMisty Pine ForestsThe 'Da Lat' without the crowd..."
+[Div/Section] Class: 'self-start glass-panel rounded-full px-4 py-1.5 flex items-center gap-2 bloom-shadow-secondary' | Preview: "local_fire_departmentTrending Now..."
+[Div/Section] Class: 'flex justify-between items-end' | Preview: "location_onMăng ĐenMisty Pine ForestsThe 'Da Lat' without the crowds. Chill vibes, winding forest ro..."
+[Div/Section] Class: 'flex flex-col' | Preview: "location_onMăng ĐenMisty Pine ForestsThe 'Da Lat' without the crowds. Chill vibes, winding forest ro..."
+[Div/Section] Class: 'flex items-center gap-2 mb-1' | Preview: "location_onMăng Đen..."
+[Div/Section] Class: 'flex flex-col items-center gap-6 pb-4' | Preview: "favorite8.4kmode_comment156sendShareaddAdd to Trip..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform' | Preview: "favorite..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform' | Preview: "mode_comment..."
+[Div/Section] Class: 'w-12 h-12 rounded-full glass-panel flex items-center justify-center group-active:scale-90 transition-transform' | Preview: "send..."
+[Div/Section] Class: 'w-12 h-12 rounded-full kinetic-gradient p-[2px] bloom-shadow-primary group-active:scale-90 transition-transform' | Preview: "add..."
+[Div/Section] Class: 'w-full h-full rounded-full bg-surface-container flex items-center justify-center' | Preview: "add..."
+
+
+
+
+
+Found section:
+
+Document Title: trip.mate - Notification Center
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Notifications
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "add_reaction" (Href: '', Classes: ['w-10', 'h-10', 'rounded-full', 'flex', 'items-center', 'justify-center', 'text-on-surface-variant', 'hover:opacity-80', 'transition-opacity', 'active:scale-95', 'duration-200'])
+[Button/Link] "View Match" (Href: '', Classes: ['mt-3', 'px-4', 'py-2', 'rounded-full', 'bg-surface-bright', 'text-on-surface', 'text-label-sm', 'font-label-sm', 'border', 'border-white/10', 'hover:bg-surface-variant', 'transition-colors'])
+[Button/Link] "explore" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "map" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "add_circle" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "group" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "person" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex justify-between items-center px-6 py-4 w-full max-w-4xl mx-auto' | Preview: "trip.mateadd_reaction..."
+[Div/Section] Class: 'flex items-center' | Preview: "add_reaction..."
+[Div/Section] Class: 'grid grid-cols-1 md:grid-cols-2 gap-element-gap' | Preview: "auto_awesomeSystem AlertJust nowNew AI Vibe Match found!We found a group heading to Tokyo that match..."
+[Div/Section] Class: 'flex items-start gap-4 relative z-10' | Preview: "auto_awesomeSystem AlertJust nowNew AI Vibe Match found!We found a group heading to Tokyo that match..."
+[Div/Section] Class: 'shrink-0 w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/30 re' | Preview: "auto_awesome..."
+[Div/Section] Class: 'flex-1' | Preview: "System AlertJust nowNew AI Vibe Match found!We found a group heading to Tokyo that matches your chao..."
+[Div/Section] Class: 'flex justify-between items-baseline mb-1' | Preview: "System AlertJust now..."
+[Div/Section] Class: 'glass-card rounded-lg p-5 relative overflow-hidden hover:bg-white/[0.05] transition-colors duration-200 cursor-pointer' | Preview: "favoriteThảo Lyreacted to your photo from Bali Trip.2 hours ago..."
+[Div/Section] Class: 'flex items-start gap-4' | Preview: "favoriteThảo Lyreacted to your photo from Bali Trip.2 hours ago..."
+[Div/Section] Class: 'absolute -bottom-1 -right-1 w-5 h-5 bg-surface-container-highest rounded-full flex items-center justify-center border bo' | Preview: "favorite..."
+[Div/Section] Class: 'flex-1' | Preview: "Thảo Lyreacted to your photo from Bali Trip.2 hours ago..."
+[Div/Section] Class: 'glass-card rounded-lg p-5 relative overflow-hidden hover:bg-white/[0.05] transition-colors duration-200 cursor-pointer' | Preview: "paymentsNam Trungpaid forBBQ Night.+$45.00 settled5 hours ago..."
+[Div/Section] Class: 'flex items-start gap-4' | Preview: "paymentsNam Trungpaid forBBQ Night.+$45.00 settled5 hours ago..."
+[Div/Section] Class: 'absolute -bottom-1 -right-1 w-5 h-5 bg-surface-container-highest rounded-full flex items-center justify-center border bo' | Preview: "payments..."
+[Div/Section] Class: 'flex-1' | Preview: "Nam Trungpaid forBBQ Night.+$45.00 settled5 hours ago..."
+[Div/Section] Class: 'glass-card rounded-lg p-5 relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 md:col-spa' | Preview: "flight_takeoffReminder3 Days until Paris!Don't forget to pack your adapters...."
+[Div/Section] Class: 'relative z-10 flex flex-col h-full justify-between' | Preview: "flight_takeoffReminder3 Days until Paris!Don't forget to pack your adapters...."
+[Div/Section] Class: 'flex justify-between items-start mb-4' | Preview: "flight_takeoffReminder..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-primary-container/30 flex items-center justify-center border border-primary/30 backdrop-blur-m' | Preview: "flight_takeoff..."
+[Div/Section] Class: 'flex items-start gap-4' | Preview: "mapYour itinerary forSeoul Weekendhas been updated byHana.Yesterday..."
+[Div/Section] Class: 'shrink-0 w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-white/5' | Preview: "map..."
+[Div/Section] Class: 'flex-1' | Preview: "Your itinerary forSeoul Weekendhas been updated byHana.Yesterday..."
+
+
+
+
+
+Found section:
+
+Document Title: Squad Leaderboard
+
+--- KEY TEXT ELEMENTS ---
+[h1] trip.mate
+[h2] Squad Leaderboard
+[h3] Alex
+[h3] Sam
+[h3] Jordan
+[h3] The Rest of the Squad
+[h4] Taylor
+[h4] Casey
+
+--- BUTTONS & INTERACTIVE ELEMENTS ---
+[Button/Link] "add_reaction" (Href: '', Classes: ['w-10', 'h-10', 'flex', 'items-center', 'justify-center', 'rounded-full', 'hover:bg-white/5', 'transition-colors', 'text-primary', 'active:scale-95', 'duration-200'])
+[Button/Link] "👑 Chaos Score" (Href: '', Classes: ['snap-start', 'shrink-0', 'px-6', 'py-3', 'rounded-full', 'bg-primary', 'text-on-primary', 'font-label-lg', 'text-label-lg', 'font-bold', 'neon-glow-primary', 'active:scale-95', 'transition-all'])
+[Button/Link] "😂 Funny Moments" (Href: '', Classes: ['snap-start', 'shrink-0', 'px-6', 'py-3', 'rounded-full', 'glass-panel', 'text-on-surface', 'font-label-lg', 'text-label-lg', 'hover:bg-white/10', 'active:scale-95', 'transition-all'])
+[Button/Link] "🛡️ Most Reliable" (Href: '', Classes: ['snap-start', 'shrink-0', 'px-6', 'py-3', 'rounded-full', 'glass-panel', 'text-on-surface', 'font-label-lg', 'text-label-lg', 'hover:bg-white/10', 'active:scale-95', 'transition-all'])
+[Button/Link] "explore" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "map" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "group" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-secondary-fixed', 'drop-shadow-[0_0_8px_rgba(69,223,164,0.8)]', 'scale-110', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "add_circle" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+[Button/Link] "person" (Href: '', Classes: ['flex', 'flex-col', 'items-center', 'justify-center', 'w-12', 'h-12', 'text-on-surface-variant/60', 'hover:text-secondary-fixed-dim', 'transition-all', 'active:scale-90', 'duration-300', 'ease-out'])
+
+--- DETECTED HEX COLORS ---
+Hex Colors: ['002114', '003825', '00452e', '005137', '00bd85', '060e20', '0b1326', '131b2e', '171f33', '222a3d', '23005c', '283044', '2d3449', '301400', '31394d', '340080', '3c0091', '451f00', '45dfa4', '494454', '4f2500', '5516be', '68fcbf', '690005', '6d3bd7', '713700', '93000a', '958ea0', 'a078ff', 'cbc3d7', 'd0bcff', 'd97722', 'dae2fd', 'e9ddff', 'ffb4ab', 'ffb783', 'ffdad6', 'ffdcc5']
+
+--- DETECTED SECTIONS ---
+[Div/Section] Class: 'flex items-center gap-4' | Preview: "grouptrip.mate..."
+[Div/Section] Class: 'w-10 h-10 rounded-full bg-surface-container-high overflow-hidden border border-white/10 flex items-center justify-center' | Preview: "group..."
+[Div/Section] Class: 'flex overflow-x-auto pb-4 gap-element-gap snap-x scrollbar-hide' | Preview: "👑 Chaos Score😂 Funny Moments🛡️ Most Reliable..."
+[Div/Section] Class: 'flex flex-col md:flex-row items-end justify-center gap-element-gap pt-10' | Preview: "🥈AlexSidekick Energy850pts👑🥇SamMain Character1240pts🥉JordanNPC Vibes720pts..."
+[Div/Section] Class: 'w-full md:w-1/3 flex flex-col items-center order-2 md:order-1' | Preview: "🥈AlexSidekick Energy850pts..."
+[Div/Section] Class: 'absolute -bottom-2 -right-2 w-8 h-8 bg-surface rounded-full flex items-center justify-center border border-white/20 text' | Preview: "🥈..."
+[Div/Section] Class: 'glass-panel p-6 rounded-[2rem] w-full text-center flex flex-col items-center gap-2 border-t-4 border-t-secondary' | Preview: "AlexSidekick Energy850pts..."
+[Div/Section] Class: 'px-3 py-1 bg-secondary/20 text-secondary rounded-full font-label-sm text-label-sm' | Preview: "Sidekick Energy..."
+[Div/Section] Class: 'w-full md:w-1/3 flex flex-col items-center order-1 md:order-2 z-10 md:-translate-y-8' | Preview: "👑🥇SamMain Character1240pts..."
+[Div/Section] Class: 'absolute -bottom-2 -right-2 w-10 h-10 bg-surface rounded-full flex items-center justify-center border border-white/20 te' | Preview: "🥇..."
+[Div/Section] Class: 'glass-panel p-8 rounded-[2rem] w-full text-center flex flex-col items-center gap-2 border-t-4 border-t-tertiary bg-white' | Preview: "SamMain Character1240pts..."
+[Div/Section] Class: 'px-4 py-1.5 bg-tertiary/20 text-tertiary rounded-full font-label-lg text-label-lg border border-tertiary/50' | Preview: "Main Character..."
+[Div/Section] Class: 'w-full md:w-1/3 flex flex-col items-center order-3' | Preview: "🥉JordanNPC Vibes720pts..."
+[Div/Section] Class: 'absolute -bottom-2 -right-2 w-8 h-8 bg-surface rounded-full flex items-center justify-center border border-white/20 text' | Preview: "🥉..."
+[Div/Section] Class: 'glass-panel p-6 rounded-[2rem] w-full text-center flex flex-col items-center gap-2 border-t-4 border-t-primary' | Preview: "JordanNPC Vibes720pts..."
+[Div/Section] Class: 'px-3 py-1 bg-primary/20 text-primary rounded-full font-label-sm text-label-sm' | Preview: "NPC Vibes..."
+[Div/Section] Class: 'glass-panel rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors' | Preview: "4TaylorSlept through it all450pts..."
+[Div/Section] Class: 'flex items-center gap-4' | Preview: "4TaylorSlept through it all..."
+[Div/Section] Class: 'glass-panel rounded-xl p-4 flex items-center justify-between hover:bg-white/10 transition-colors' | Preview: "5personCaseyWho invited them?120pts..."
+[Div/Section] Class: 'flex items-center gap-4' | Preview: "5personCaseyWho invited them?..."
+[Div/Section] Class: 'w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center border border-white/10' | Preview: "person..."
+
+

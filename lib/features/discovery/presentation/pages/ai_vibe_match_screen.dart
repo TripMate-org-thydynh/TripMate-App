@@ -175,7 +175,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
     final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1326), // Premium dark canvas
+      backgroundColor: isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6),
       body: Stack(
         children: [
           // 1. Mesh Breathing Ambient Background
@@ -219,12 +219,19 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                         height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.black26.withValues(alpha: 0.3),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 1.2),
+                          color: isDark ? Colors.black26.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.7),
+                          border: Border.all(
+                            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
+                            width: 1.2,
+                          ),
                         ),
                         child: Center(
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: isDark ? Colors.white : Colors.black87,
+                              size: 20,
+                            ),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ),
@@ -235,7 +242,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                           fontWeight: FontWeight.w800,
                           fontSize: 20,
                           letterSpacing: -0.8,
-                          color: Colors.white,
+                          color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
                       const SizedBox(width: 40), // Balance leading widget

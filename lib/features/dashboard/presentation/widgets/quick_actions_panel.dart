@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,6 +11,7 @@ import '../../../ai/ai_hub_screen.dart';
 import '../../../premium/premium_hub_screen.dart';
 import '../../../system_states/system_states_hub_screen.dart';
 import '../../../marketing/marketing_hub_screen.dart';
+import '../../../expense_tracker/presentation/pages/expense_splitter_social_screen.dart';
 
 class QuickActionsPanel extends StatelessWidget {
   final bool isDarkMode;
@@ -21,92 +23,175 @@ class QuickActionsPanel extends StatelessWidget {
     required this.onThemeToggle,
   });
 
-  final List<Map<String, dynamic>> _actions = const [
+  // Primary 4 actions shown as large pill grid (Stitch spec)
+  static const List<Map<String, dynamic>> _primaryActions = [
     {
-      "icon": Icons.payments_outlined,
-      "title": "dashboard.split_money",
-      "gradient": [Color(0xFF10B981), Color(0xFF059669)],
-      "emoji": "💸",
+      'emoji': '💸',
+      'label': 'chia tiền',
+      'type': 'expense',
+      'glowColor': Color(0xFF34D399),
+      'borderColor': Color(0xFF10B981),
     },
     {
-      "icon": Icons.photo_camera_outlined,
-      "title": "dashboard.ghost_cam",
-      "gradient": [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
-      "emoji": "📸",
+      'emoji': '📸',
+      'label': 'ghost cam',
+      'type': 'ghost_cam',
+      'glowColor': Color(0xFF8B5CF6),
+      'borderColor': Color(0xFF7C3AED),
     },
     {
-      "icon": Icons.sports_esports_outlined,
-      "title": "dashboard.gamification",
-      "gradient": [Color(0xFFEC4899), Color(0xFFDB2777)],
-      "emoji": "🕹️",
+      'emoji': '🎲',
+      'label': 'bingo',
+      'type': 'bingo',
+      'glowColor': Color(0xFFF472B6),
+      'borderColor': Color(0xFFDB2777),
     },
     {
-      "icon": Icons.person_outline,
-      "title": "dashboard.profile",
-      "gradient": [Color(0xFFEBA83A), Color(0xFFD97706)],
-      "emoji": "🛡️",
+      'emoji': '🗺',
+      'label': 'vibe match',
+      'type': 'vibe_match',
+      'glowColor': Color(0xFF60A5FA),
+      'borderColor': Color(0xFF3B82F6),
     },
-    {
-      "icon": Icons.explore_outlined,
-      "title": "dashboard.vibe_match",
-      "gradient": [Color(0xFF3B82F6), Color(0xFF2563EB)],
-      "emoji": "🗺",
-    },
-    {
-      "icon": Icons.psychology_outlined,
-      "title": "dashboard.ai_hub",
-      "gradient": [Color(0xFFA855F7), Color(0xFF7C3AED)],
-      "emoji": "🔮",
-    },
-    {
-      "icon": Icons.workspace_premium_outlined,
-      "title": "dashboard.premium_hub",
-      "gradient": [Color(0xFFF59E0B), Color(0xFFD97706)],
-      "emoji": "💎",
-    },
-    {
-      "icon": Icons.warning_amber_outlined,
-      "title": "dashboard.system_hub",
-      "gradient": [Color(0xFFEF4444), Color(0xFFB91C1C)],
-      "emoji": "⚙️",
-    },
-    {
-      "icon": Icons.campaign_outlined,
-      "title": "dashboard.marketing_hub",
-      "gradient": [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-      "emoji": "📢",
-    }
   ];
 
-  String _getActionTitle(String key) {
-    if (key == "dashboard.gamification") return "Trò Chơi 🕹️";
-    if (key == "dashboard.profile") return "Cá Nhân 🛡️";
-    if (key == "dashboard.ai_hub") return "Matey AI Hub 🔮";
-    if (key == "dashboard.premium_hub") return "Premium Space 💎";
-    if (key == "dashboard.system_hub") return "Hệ Thống ⚙️";
-    if (key == "dashboard.marketing_hub") return "Core Showcase 📢";
-    return key.tr();
+  // Secondary actions shown in compact list row
+  static const List<Map<String, dynamic>> _secondaryActions = [
+    {
+      'icon': Icons.person_outline,
+      'label': 'Cá Nhân',
+      'type': 'profile',
+      'color': Color(0xFFEBA83A),
+    },
+    {
+      'icon': Icons.psychology_outlined,
+      'label': 'Matey AI',
+      'type': 'ai_hub',
+      'color': Color(0xFFA855F7),
+    },
+    {
+      'icon': Icons.workspace_premium_outlined,
+      'label': 'Premium',
+      'type': 'premium',
+      'color': Color(0xFFF59E0B),
+    },
+    {
+      'icon': Icons.warning_amber_outlined,
+      'label': 'System',
+      'type': 'system',
+      'color': Color(0xFFEF4444),
+    },
+    {
+      'icon': Icons.campaign_outlined,
+      'label': 'Showcase',
+      'type': 'marketing',
+      'color': Color(0xFF3B82F6),
+    },
+  ];
+
+  void _handleTap(BuildContext context, String type) {
+    switch (type) {
+      case 'expense':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const ExpenseSplitterSocialScreen(),
+          ),
+        );
+      case 'ghost_cam':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => GhostCamScreen(
+              isDarkMode: isDarkMode,
+              onThemeToggle: onThemeToggle,
+            ),
+          ),
+        );
+      case 'bingo':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const GamificationScreen()),
+        );
+      case 'vibe_match':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AIVibeMatchScreen(
+              isDarkMode: isDarkMode,
+              onThemeToggle: onThemeToggle,
+            ),
+          ),
+        );
+      case 'profile':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ProfileScreen()),
+        );
+      case 'ai_hub':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AiHubScreen()),
+        );
+      case 'premium':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PremiumHubScreen()),
+        );
+      case 'system':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SystemStatesHubScreen()),
+        );
+      case 'marketing':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MarketingHubScreen()),
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = isDarkMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Text(
-            "dashboard.quick_actions".tr(),
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+          child: Row(
+            children: [
+              Text(
+                'dashboard.quick_actions'.tr(),
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                  color: isDark ? Colors.white : const Color(0xFF1E2022),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '⚡ quick',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF8B5CF6),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
+
+        // Primary 2x2 Stitch-style pill grid
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -114,160 +199,128 @@ class QuickActionsPanel extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 2.2,
+            childAspectRatio: 1.9,
           ),
-          itemCount: _actions.length,
+          itemCount: _primaryActions.length,
           itemBuilder: (context, index) {
-            final action = _actions[index];
-            final gradient = action["gradient"] as List<Color>;
+            final action = _primaryActions[index];
+            final glowColor = action['glowColor'] as Color;
+            final borderColor = action['borderColor'] as Color;
 
             return GestureDetector(
-              onTap: () {
-                if (action["title"] == "dashboard.vibe_match") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AIVibeMatchScreen(
-                        isDarkMode: isDarkMode,
-                        onThemeToggle: onThemeToggle,
+              onTap: () => _handleTap(context, action['type'] as String),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: isDark
+                            ? [
+                                glowColor.withValues(alpha: 0.12),
+                                glowColor.withValues(alpha: 0.04),
+                              ]
+                            : [
+                                Colors.white.withValues(alpha: 0.9),
+                                glowColor.withValues(alpha: 0.06),
+                              ],
                       ),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.ai_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AiHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.premium_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PremiumHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.system_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SystemStatesHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.marketing_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MarketingHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.ghost_cam") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GhostCamScreen(
-                        isDarkMode: isDarkMode,
-                        onThemeToggle: onThemeToggle,
+                      border: Border.all(
+                        color: borderColor.withValues(alpha: isDark ? 0.4 : 0.3),
+                        width: 1.5,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: glowColor.withValues(alpha: 0.15),
+                          blurRadius: 16,
+                          spreadRadius: 0,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                  );
-                } else if (action["title"] == "dashboard.gamification") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GamificationScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.profile") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Opened ${_getActionTitle(action['title'] as String)}!"),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [
-                            gradient[0].withValues(alpha: 0.15),
-                            gradient[1].withValues(alpha: 0.05),
-                          ]
-                        : [
-                            gradient[0].withValues(alpha: 0.12),
-                            gradient[1].withValues(alpha: 0.06),
-                          ],
-                  ),
-                  border: Border.all(
-                    color: gradient[0].withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        right: -10,
-                        bottom: -10,
-                        child: Text(
-                          action["emoji"] as String,
-                          style: TextStyle(
-                            fontSize: 48,
-                            color: Colors.white.withValues(alpha: 0.1),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      child: Row(
+                        children: [
+                          Text(
+                            action['emoji'] as String,
+                            style: const TextStyle(fontSize: 26),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: gradient[0].withValues(alpha: 0.2),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              action['label'] as String,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: isDark ? Colors.white : const Color(0xFF1E2022),
+                                letterSpacing: -0.3,
                               ),
-                              child: Icon(
-                                action["icon"] as IconData,
-                                color: gradient[0],
-                                size: 20,
-                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _getActionTitle(action["title"] as String),
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             );
           },
+        ),
+
+        const SizedBox(height: 16),
+
+        // Secondary actions horizontal scrollable row
+        SizedBox(
+          height: 56,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _secondaryActions.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final action = _secondaryActions[index];
+              final color = action['color'] as Color;
+
+              return GestureDetector(
+                onTap: () => _handleTap(context, action['type'] as String),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: isDark
+                        ? color.withValues(alpha: 0.1)
+                        : Colors.white.withValues(alpha: 0.8),
+                    border: Border.all(
+                      color: color.withValues(alpha: 0.25),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(action['icon'] as IconData, size: 16, color: color),
+                      const SizedBox(width: 6),
+                      Text(
+                        action['label'] as String,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white70 : const Color(0xFF1E2022),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );

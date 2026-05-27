@@ -133,9 +133,9 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => BadgeDetailScreen(
-                                title: title,
-                                desc: desc,
+                                badgeName: title,
                                 unlocked: isUnlocked,
+                                isDarkMode: isDark,
                               ),
                             ),
                           );

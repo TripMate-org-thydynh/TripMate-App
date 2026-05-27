@@ -60,7 +60,7 @@ class _SocialChaosMarqueeState extends State<SocialChaosMarquee> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      height: 38,
+      height: 42,
       width: double.infinity,
       decoration: BoxDecoration(
         color: isDark
@@ -84,7 +84,7 @@ class _SocialChaosMarqueeState extends State<SocialChaosMarquee> {
           itemBuilder: (context, index) {
             final item = _marqueeItems[index % _marqueeItems.length];
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
               child: Row(
                 children: [
                   Text(

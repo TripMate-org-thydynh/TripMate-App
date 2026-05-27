@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AiReceiptScannerScreen extends StatefulWidget {
   const AiReceiptScannerScreen({super.key});
@@ -13,7 +15,6 @@ class _AiReceiptScannerScreenState extends State<AiReceiptScannerScreen>
   late Animation<double> _scannerAnimation;
 
   bool _isScanning = true;
-  bool _showItems = false;
 
   final List<Map<String, dynamic>> _detectedItems = [
     {'name': 'Lẩu gà lá é lớn', 'price': 350000.0, 'checked': true},
@@ -34,12 +35,11 @@ class _AiReceiptScannerScreenState extends State<AiReceiptScannerScreen>
       CurvedAnimation(parent: _scannerController, curve: Curves.easeInOut),
     );
 
-    // Mock completing scan in 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
+    // Mock completing scan in 2.5 seconds
+    Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
         setState(() {
           _isScanning = false;
-          _showItems = true;
         });
       }
     });
@@ -55,290 +55,415 @@ class _AiReceiptScannerScreenState extends State<AiReceiptScannerScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final primaryColor = Colors.purple;
+    
+    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
+    final tertiaryColor = isDark ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
+    
+    final bgColor = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
+    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
+    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
+    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
+
+    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.08);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Quét Hóa Đơn AI 📸',
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      backgroundColor: bgColor,
       body: Stack(
         children: [
-          // SCANNING VIEWPORT
-          if (_isScanning)
-            Column(
+          // 1. Soft atmospheric light gradient background
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.bottomLeft,
+                  radius: 1.2,
+                  colors: isDark
+                      ? [const Color(0xFF3F1B68).withValues(alpha: 0.15), Colors.transparent]
+                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.4), Colors.transparent],
+                ),
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: Column(
               children: [
+                // Top header navigation bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Text(
+                        'trip.mate',
+                        style: GoogleFonts.outfit(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          color: textPrimary,
+                          letterSpacing: -1.5,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.receipt_long, color: primaryColor),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                ),
+
                 Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.purpleAccent, width: 2),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    child: _isScanning
+                        ? _buildScanningViewport(isDark, primaryColor, secondaryColor, textPrimary, textSecondary)
+                        : _buildItemsBreakdown(isDark, primaryColor, secondaryColor, tertiaryColor, cardBg, glassBorder, textPrimary, textSecondary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Scanning Viewport with looping glowing laser bar
+  Widget _buildScanningViewport(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
+    return Column(
+      key: const ValueKey('scanning_view'),
+      children: [
+        const SizedBox(height: 20),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: primaryColor.withValues(alpha: 0.6), width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: primaryColor.withValues(alpha: 0.25),
+                  blurRadius: 20,
+                ),
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Receipt mockup silhouette
+                Opacity(
+                  opacity: 0.25,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Mock receipt background
-                        Opacity(
-                          opacity: 0.4,
-                          child: Center(
-                            child: Icon(
-                              Icons.receipt_long,
-                              size: 150,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                        ),
-
-                        // Animated scanning line
-                        AnimatedBuilder(
-                          animation: _scannerAnimation,
-                          builder: (context, child) {
-                            return Positioned(
-                              top: _scannerAnimation.value * 280 + 40,
-                              left: 20,
-                              right: 20,
-                              child: Container(
-                                height: 4,
-                                decoration: BoxDecoration(
-                                  color: Colors.purpleAccent,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.purpleAccent.withValues(alpha: 0.8),
-                                      blurRadius: 8,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        // Status loading text
-                        Positioned(
-                          bottom: 30,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.6),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Row(
-                              children: [
-                                SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'AI đang quét các món...',
-                                  style: TextStyle(
-                                    color: Colors.purpleAccent,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        const Icon(Icons.receipt_long, size: 100, color: Colors.white70),
+                        const SizedBox(height: 12),
+                        Text(
+                          'TAO NGO CHICKEN...',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Text(
-                    'Đặt hóa đơn ngay ngắn trong khung hình để AI đọc chính xác giá trị và tên món ăn nhé cưng!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+
+                // Moving scanning bar
+                AnimatedBuilder(
+                  animation: _scannerAnimation,
+                  builder: (context, child) {
+                    return Positioned(
+                      top: _scannerAnimation.value * 280 + 40,
+                      left: 20,
+                      right: 20,
+                      child: Container(
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.8),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                            BoxShadow(
+                              color: secondaryColor.withValues(alpha: 0.6),
+                              blurRadius: 15,
+                              spreadRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                // Floating loading glass box
+                Positioned(
+                  bottom: 32,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white24),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(secondaryColor),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'AI is scanning items...',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: secondaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+          child: Text(
+            'Keep your bill steady inside the frame. Matey AI will parse items and prices instantly! ⚡',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(fontSize: 13, color: textSecondary),
+          ),
+        ),
+      ],
+    );
+  }
 
-          // DETECTED ITEMS SHEET
-          if (_showItems)
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Success banner
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+  // Scan Completed Item Checklist Breakdown
+  Widget _buildItemsBreakdown(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color tertiaryColor,
+    Color cardBg,
+    Color glassBorder,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
+    return SingleChildScrollView(
+      key: const ValueKey('items_view'),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Styled Success Banner
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.25), width: 1.5),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.green, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'AI Scan Complete! (Accuracy 98%). Check the items you consumed to calculate splits.',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle, color: Colors.green),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'AI đã quét xong! Tỉ lệ chính xác 96%. Vui lòng tích chọn những món cưng đã xơi để tính tiền.',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Header Bill Info
+          Text(
+            'Lẩu gà lá é Tao Ngộ 🍜',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: textPrimary,
+              letterSpacing: -0.5,
+            ),
+          ),
+          Text(
+            'Dalat Old Market • Da Lat Trip',
+            style: GoogleFonts.inter(fontSize: 12, color: textSecondary),
+          ),
+          const SizedBox(height: 18),
+
+          // Bill breakdown items card
+          Container(
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: glassBorder),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 15,
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _detectedItems.length,
+                  itemBuilder: (context, index) {
+                    final item = _detectedItems[index];
+                    final isChecked = item['checked'] as bool;
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        unselectedWidgetColor: textSecondary,
+                      ),
+                      child: CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        activeColor: primaryColor,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(
+                          item['name'] as String,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: textPrimary,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Receipt details
-                  Text(
-                    'Lẩu gà lá é Tao Ngộ 🍜',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  Text(
-                    'Ngày quét: Hôm nay • Kyoto-Dalat Trip',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Item breakdown checkboxes
-                  Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: _detectedItems.length,
-                            itemBuilder: (context, index) {
-                              final item = _detectedItems[index];
-                              return CheckboxListTile(
-                                activeColor: primaryColor,
-                                controlAffinity: ListTileControlAffinity.leading,
-                                title: Text(
-                                  item['name'] as String,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : Colors.black87,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  '${(item['price'] as double).toStringAsFixed(0)} đ',
-                                  style: const TextStyle(
-                                    color: Colors.purpleAccent,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                value: item['checked'] as bool,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    _detectedItems[index]['checked'] = value ?? false;
-                                  });
-                                },
-                              );
-                            },
+                        subtitle: Text(
+                          '${(item['price'] as double).toStringAsFixed(0)} đ',
+                          style: GoogleFonts.outfit(
+                            color: primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
                           ),
-                          const Divider(height: 32),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Phần cưng cần trả:',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.grey[300] : Colors.grey[700],
-                                ),
-                              ),
-                              Text(
-                                '${_calculateTotalSelected().toStringAsFixed(0)} đ',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.purpleAccent,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Split button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Đã lưu hóa đơn quét bằng AI! Phần của cưng là ${_calculateTotalSelected().toStringAsFixed(0)} đ',
-                            ),
-                            backgroundColor: Colors.purple,
-                          ),
-                        );
-                        Navigator.of(context).pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
                         ),
-                        elevation: 3,
+                        value: isChecked,
+                        onChanged: (bool? val) {
+                          setState(() {
+                            _detectedItems[index]['checked'] = val ?? false;
+                          });
+                        },
                       ),
-                      child: const Text(
-                        'Xác nhận phần chia của tôi',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    );
+                  },
+                ),
+                const Divider(height: 32, color: Colors.white10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Your Split Damage:',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: textSecondary,
                       ),
                     ),
+                    Text(
+                      '${_calculateTotalSelected().toStringAsFixed(0)} đ',
+                      style: GoogleFonts.outfit(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // Sweeping linear gradient action button (Confirm Split check_circle)
+          GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Split confirmed! Your damage is ${_calculateTotalSelected().toStringAsFixed(0)} đ settled! ✨🛒'),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: secondaryColor,
+                ),
+              );
+              Navigator.pop(context);
+            },
+            child: Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                gradient: LinearGradient(
+                  colors: [primaryColor, secondaryColor, tertiaryColor],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withValues(alpha: 0.4),
+                    blurRadius: 20,
+                    offset: const Offset(0, 5),
                   ),
                 ],
               ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Confirm Split',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  ],
+                ),
+              ),
             ),
+          ),
+          const SizedBox(height: 40),
         ],
       ),
     );

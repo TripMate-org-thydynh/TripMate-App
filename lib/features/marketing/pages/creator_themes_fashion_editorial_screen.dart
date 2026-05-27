@@ -1,0 +1,517 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class CreatorThemesFashionEditorialScreen extends StatefulWidget {
+  final bool isDarkMode;
+  final VoidCallback? onThemeToggle;
+
+  const CreatorThemesFashionEditorialScreen({
+    super.key,
+    this.isDarkMode = true,
+    this.onThemeToggle,
+  });
+
+  @override
+  State<CreatorThemesFashionEditorialScreen> createState() =>
+      _CreatorThemesFashionEditorialScreenState();
+}
+
+class _CreatorThemesFashionEditorialScreenState
+    extends State<CreatorThemesFashionEditorialScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = widget.isDarkMode;
+
+    final primary = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF6D3BD7);
+    final secondary = isDark ? const Color(0xFF45DFA4) : const Color(0xFF00BD85);
+    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
+
+    final bg = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
+    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
+    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
+    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
+
+    return Scaffold(
+      backgroundColor: bg,
+      body: Stack(
+        children: [
+          // Background soft aurora glow
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topRight,
+                  radius: 1.3,
+                  colors: isDark
+                      ? [const Color(0xFF4E1D5B).withValues(alpha: 0.15), Colors.transparent]
+                      : [const Color(0xFFFDEFFF).withValues(alpha: 0.45), Colors.transparent],
+                ),
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: Column(
+              children: [
+                // Custom App Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: cardBg,
+                            border: Border.all(color: glassBorder),
+                          ),
+                          child: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 16),
+                        ),
+                      ),
+                      ShaderMask(
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: [primary, secondary, tertiary],
+                        ).createShader(bounds),
+                        child: Text(
+                          'trip.mate',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          if (widget.onThemeToggle != null)
+                            IconButton(
+                              icon: Icon(
+                                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                color: textPrimary.withValues(alpha: 0.7),
+                              ),
+                              onPressed: widget.onThemeToggle,
+                            ),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: cardBg,
+                              border: Border.all(color: glassBorder),
+                            ),
+                            child: Icon(Icons.notifications, color: primary, size: 18),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: secondary.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: secondary.withValues(alpha: 0.25)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.star, color: secondary, size: 12),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Spotlight',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: secondary,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: tertiary.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: tertiary.withValues(alpha: 0.25)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.timer_outlined, color: tertiary, size: 12),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Ends in 24h',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: tertiary,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'creator vibes unlocked✨',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            height: 1.1,
+                            letterSpacing: -1.0,
+                            color: textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'travel in your aesthetic. Drop exclusive UI themes from top creators to completely transform your trip.mate experience.',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: textSecondary,
+                            height: 1.45,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Spotlight Hero theme display
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: glassBorder),
+                            boxShadow: [
+                              BoxShadow(
+                                color: primary.withValues(alpha: 0.1),
+                                blurRadius: 15,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 200,
+                                decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+                                  image: DecorationImage(
+                                    image: NetworkImage('https://images.unsplash.com/photo-1506157786151-b8491531f063?w=600'),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          '🌃 Tokyo Neon',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w900,
+                                            color: textPrimary,
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.star_rounded, color: tertiary, size: 16),
+                                            Icon(Icons.star_rounded, color: tertiary, size: 16),
+                                            Icon(Icons.star_rounded, color: tertiary, size: 16),
+                                            Icon(Icons.star_rounded, color: tertiary, size: 16),
+                                            Icon(Icons.star_rounded, color: tertiary, size: 16),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '(4.9)',
+                                              style: GoogleFonts.inter(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: textSecondary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      'by @ryu_visuals',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: primary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      'High contrast dark mode with neon pink and cyan accents. Perfect for late-night city exploring.',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        color: textSecondary,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Container(
+                                      width: double.infinity,
+                                      height: 56,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(28),
+                                        gradient: LinearGradient(
+                                          colors: [primary, tertiary],
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: primary.withValues(alpha: 0.3),
+                                            blurRadius: 15,
+                                          ),
+                                        ],
+                                      ),
+                                      child: ElevatedButton.icon(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.visibility_rounded, color: Colors.white, size: 18),
+                                        label: Text(
+                                          'Try On',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Curated Drops Section
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Curated Drops',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: textPrimary,
+                              ),
+                            ),
+                            Text(
+                              'See all',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDropCard(
+                          title: '🌧 Đà Lạt Mist',
+                          creator: '@minh_travels',
+                          cardBg: cardBg,
+                          glassBorder: glassBorder,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
+                          primaryColor: primary,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDropCard(
+                          title: '📼 Retro Film',
+                          creator: '@analog_days',
+                          cardBg: cardBg,
+                          glassBorder: glassBorder,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
+                          primaryColor: primary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Bottom Aesthetic Nav
+          _buildBottomNav(cardBg, primary, secondary, textSecondary, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropCard({
+    required String title,
+    required String creator,
+    required Color cardBg,
+    required Color glassBorder,
+    required Color textPrimary,
+    required Color textSecondary,
+    required Color primaryColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: glassBorder),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.palette_rounded, color: primaryColor, size: 20),
+              ),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: textPrimary,
+                    ),
+                  ),
+                  Text(
+                    'by $creator',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.add, color: primaryColor, size: 16),
+              onPressed: () {},
+              padding: EdgeInsets.zero,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav(
+      Color surface, Color primary, Color secondary, Color textMuted, bool isDark) {
+    return Positioned(
+      bottom: 20,
+      left: 20,
+      right: 20,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            height: 72,
+            decoration: BoxDecoration(
+              color: surface.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(Icons.explore_rounded, 'explore', false, textMuted, primary),
+                _buildNavItem(Icons.group_rounded, 'group', false, textMuted, primary),
+                _buildNavItem(Icons.map_rounded, 'map', false, textMuted, primary),
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: secondary.withValues(alpha: 0.15),
+                      border: Border.all(color: secondary.withValues(alpha: 0.3)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: secondary.withValues(alpha: 0.3),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Icon(Icons.palette_rounded, color: secondary, size: 24),
+                  ),
+                ),
+                _buildNavItem(Icons.person_rounded, 'person', false, textMuted, primary),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, bool isActive, Color textMuted, Color primary) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          color: isActive ? primary : textMuted.withValues(alpha: 0.6),
+          size: 24,
+        ),
+      ],
+    );
+  }
+}

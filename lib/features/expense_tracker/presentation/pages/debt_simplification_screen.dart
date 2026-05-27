@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class DebtSimplificationScreen extends StatefulWidget {
   const DebtSimplificationScreen({super.key});
@@ -32,23 +34,33 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
     final debtsToShow = _useSimplification ? _simplifiedDebts : _rawDebts;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(Icons.arrow_back_ios_new, size: 18, color: isDark ? Colors.white : Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Tối Ưu Hóa Nợ Nhóm 🕸️',
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
+        title: ShaderMask(
+          shaderCallback: (bounds) => LinearGradient(
+            colors: isDark
+                ? [const Color(0xFFD0BCFF), const Color(0xFF45DFA4)]
+                : [const Color(0xFF7C3AED), const Color(0xFF059669)],
+          ).createShader(bounds),
+          child: Text(
+            '${'expense.simplification_title'.tr()} 🕸️',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Stack(
+        children: [
+          SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -65,27 +77,27 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.auto_awesome, color: Colors.white, size: 28),
-                  SizedBox(width: 14),
+                  const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'AI DEBT SIMPLIFIER ⚡',
-                          style: TextStyle(
+                          '${'expense.simplification_title'.tr().toUpperCase()} ⚡',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'Thuật toán đồ thị thông minh tự động rút gọn số giao dịch thừa để thanh toán nhanh gọn nhất.',
-                          style: TextStyle(
+                          'expense.simplification_desc'.tr(),
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
                             height: 1.3,
@@ -105,7 +117,7 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Bật bộ lọc tối ưu hóa',
+                  'expense.toggle_optimizer'.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -177,7 +189,7 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
 
             // Debt list breakdown
             Text(
-              'Các giao dịch cần thực hiện (${debtsToShow.length})',
+              'expense.transactions_to_do'.tr(args: ['${debtsToShow.length}']),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -213,7 +225,7 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      'Người trả',
+                                      'expense.payer'.tr(),
                                       style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                                     ),
                                   ],
@@ -231,7 +243,7 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      'Người nhận',
+                                      'expense.receiver'.tr(),
                                       style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                                     ),
                                   ],
@@ -254,8 +266,8 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
                               GestureDetector(
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Chuyển khoản qua MoMo liên kết siêu nhanh!'),
+                                    SnackBar(
+                                      content: Text('expense.momo_toast'.tr()),
                                       backgroundColor: Colors.purple,
                                     ),
                                   );
@@ -266,9 +278,9 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
                                     color: Colors.purple.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text(
-                                    'Trả Ngay 💸',
-                                    style: TextStyle(
+                                  child: Text(
+                                    'expense.pay_now'.tr(),
+                                    style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.purpleAccent,
@@ -287,6 +299,8 @@ class _DebtSimplificationScreenState extends State<DebtSimplificationScreen> {
             ),
           ],
         ),
+      ),
+        ],
       ),
     );
   }

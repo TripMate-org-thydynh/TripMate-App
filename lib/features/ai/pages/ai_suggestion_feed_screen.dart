@@ -1,109 +1,508 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class AiSuggestionFeedScreen extends StatelessWidget {
-  const AiSuggestionFeedScreen({super.key});
+class AiSuggestionFeedScreen extends StatefulWidget {
+  final bool isDarkMode;
+  final VoidCallback? onThemeToggle;
 
-  final List<Map<String, String>> _suggestions = const [
-    {
-      'title': 'Thời tiết mưa nhẹ chiều nay 🌧️',
-      'desc': 'Gợi ý: Ghé bảo tàng nghệ thuật Kyoto Kyoto Museum để tránh ướt áo nhé cưng.',
-      'type': 'Weather replan',
-    },
-    {
-      'title': 'Kinkaku-ji đang thưa khách ⛩️',
-      'desc': 'AI phân tích dữ liệu trực tiếp cho thấy dòng người đang giảm. Ghé ngay lúc này thôi!',
-      'type': 'Crowd limit advice',
-    },
-  ];
+  const AiSuggestionFeedScreen({
+    super.key,
+    this.isDarkMode = true,
+    this.onThemeToggle,
+  });
 
   @override
+  State<AiSuggestionFeedScreen> createState() => _AiSuggestionFeedScreenState();
+}
+
+class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
+
+    final primary = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF6D3BD7);
+    final secondary = isDark ? const Color(0xFF45DFA4) : const Color(0xFF00BD85);
+    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
+
+    final bg = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
+    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
+    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
+    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('Gợi Ý Thông Minh AI 💡', style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Squad Suggestion Feed',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      backgroundColor: bg,
+      body: Stack(
+        children: [
+          // Background soft aurora glow
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.bottomLeft,
+                  radius: 1.3,
+                  colors: isDark
+                      ? [const Color(0xFF2C1B4D).withValues(alpha: 0.12), Colors.transparent]
+                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.35), Colors.transparent],
+                ),
+              ),
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Dòng cấp ý kiến tự động bằng AI giúp cả Squad tối ưu chuyến đi từng giây từng phút.',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
+          ),
 
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _suggestions.length,
-              itemBuilder: (context, index) {
-                final item = _suggestions[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          SafeArea(
+            child: Column(
+              children: [
+                // Custom App Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: cardBg,
+                            border: Border.all(color: glassBorder),
+                          ),
+                          child: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 16),
+                        ),
+                      ),
+                      ShaderMask(
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: [primary, secondary, tertiary],
+                        ).createShader(bounds),
+                        child: Text(
+                          'trip.mate',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1.0,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.purple.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              item['type']!,
-                              style: const TextStyle(
-                                color: Colors.purpleAccent,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
+                          if (widget.onThemeToggle != null)
+                            IconButton(
+                              icon: Icon(
+                                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                color: textPrimary.withValues(alpha: 0.7),
                               ),
+                              onPressed: widget.onThemeToggle,
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            item['title']!,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            item['desc']!,
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
-                              fontSize: 13,
-                              height: 1.45,
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: cardBg,
+                              border: Border.all(color: glassBorder),
                             ),
+                            child: Icon(Icons.notifications, color: primary, size: 18),
                           ),
                         ],
                       ),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        // Squad vibe pill
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: tertiary.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: tertiary.withValues(alpha: 0.25)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.local_cafe_rounded, color: tertiary, size: 14),
+                                  const SizedBox(width: 6),
+                                  RichText(
+                                    text: TextSpan(
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: textPrimary,
+                                      ),
+                                      children: [
+                                        const TextSpan(text: 'Squad Vibe: '),
+                                        TextSpan(
+                                          text: 'Caffeine-Deprived',
+                                          style: TextStyle(color: tertiary, fontWeight: FontWeight.w800),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Squad Suggestion Feed',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.5,
+                            color: textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'AI-powered updates keeping your squad synced in real-time.',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Card 1: Rain switcher
+                        _buildFeedCard(
+                          isDark: isDark,
+                          cardBg: cardBg,
+                          glassBorder: glassBorder,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
+                          tagText: 'Matey AI Insight',
+                          tagColor: primary,
+                          headline: '☔ rain starts in 30 mins— switching to cafe mode.',
+                          description: 'the AI knows your chaos too well. Found a highly-rated spot 5 mins away.',
+                          actions: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: LinearGradient(
+                                      colors: [primary, const Color(0xFF8B5CF6)],
+                                    ),
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.route, color: Colors.white, size: 16),
+                                    label: Text(
+                                      'Route Me',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 13,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: glassBorder),
+                                ),
+                                child: IconButton(
+                                  icon: const Icon(Icons.favorite_rounded, color: Colors.white, size: 20),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Card 2: BBQ Place
+                        _buildFeedCard(
+                          isDark: isDark,
+                          cardBg: cardBg,
+                          glassBorder: glassBorder,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
+                          tagText: 'Matey AI Insight',
+                          tagColor: secondary,
+                          headline: '🍜 your squad would destroy this BBQ place.',
+                          description: 'Matches 4/4 squad dietary preferences. High energy vibe.',
+                          actions: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: LinearGradient(
+                                      colors: [secondary, const Color(0xFF00AD75)],
+                                    ),
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.done_all_rounded, color: Colors.white, size: 16),
+                                    label: Text(
+                                      'Vibe Check',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 13,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: glassBorder),
+                                ),
+                                child: IconButton(
+                                  icon: const Icon(Icons.share_rounded, color: Colors.white, size: 20),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                          extraInfo: Row(
+                            children: [
+                              Icon(Icons.check_circle_rounded, color: secondary, size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                '+1 ready to eat',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: secondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Card 3: Golden hour countdown
+                        _buildFeedCard(
+                          isDark: isDark,
+                          cardBg: cardBg,
+                          glassBorder: glassBorder,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
+                          tagText: 'Time Sensitive',
+                          tagColor: tertiary,
+                          headline: '📸 golden hour starts in 18 mins',
+                          description: 'Head to the rooftop for peak lighting. It\'s giving main character energy.',
+                          actions: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: LinearGradient(
+                                      colors: [tertiary, const Color(0xFFD67C00)],
+                                    ),
+                                  ),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.directions_walk_rounded, color: Colors.white, size: 16),
+                                    label: Text(
+                                      'Let\'s Go',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 13,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
-          ],
+          ),
+
+          // Floating Bottom Navigation
+          _buildBottomNav(cardBg, primary, secondary, textSecondary, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeedCard({
+    required bool isDark,
+    required Color cardBg,
+    required Color glassBorder,
+    required Color textPrimary,
+    required Color textSecondary,
+    required String tagText,
+    required Color tagColor,
+    required String headline,
+    required String description,
+    required Widget actions,
+    Widget? extraInfo,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: glassBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.smart_toy_rounded, color: tagColor, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    tagText,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: tagColor,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+              ?extraInfo,
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            headline,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: textPrimary,
+              height: 1.25,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: textSecondary,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 20),
+          actions,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav(
+      Color surface, Color primary, Color secondary, Color textMuted, bool isDark) {
+    return Positioned(
+      bottom: 20,
+      left: 20,
+      right: 20,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Container(
+            height: 72,
+            decoration: BoxDecoration(
+              color: surface.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: secondary.withValues(alpha: 0.15),
+                      border: Border.all(color: secondary.withValues(alpha: 0.3)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: secondary.withValues(alpha: 0.3),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Icon(Icons.explore_rounded, color: secondary, size: 24),
+                  ),
+                ),
+                _buildNavItem(Icons.group_rounded, 'group', false, textMuted, primary),
+                _buildNavItem(Icons.map_rounded, 'map', false, textMuted, primary),
+                _buildNavItem(Icons.person_rounded, 'person', false, textMuted, primary),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, bool isActive, Color textMuted, Color primary) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          color: isActive ? primary : textMuted.withValues(alpha: 0.6),
+          size: 24,
+        ),
+      ],
     );
   }
 }

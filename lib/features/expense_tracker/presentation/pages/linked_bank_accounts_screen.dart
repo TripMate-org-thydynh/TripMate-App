@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LinkedBankAccountsScreen extends StatefulWidget {
   const LinkedBankAccountsScreen({super.key});
@@ -36,7 +37,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
   void _triggerLinkBank() {
     if (_accountNumberController.text.isEmpty || _accountHolderController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin tài khoản')),
+        SnackBar(content: Text('banks.empty_warning'.tr())),
       );
       return;
     }
@@ -48,14 +49,14 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
   void _verifyOtp() {
     if (_otpController.text.length < 4) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mã OTP không hợp lệ')),
+        SnackBar(content: Text('banks.invalid_otp'.tr())),
       );
       return;
     }
     // Success linkage
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('🎉 Đã liên kết thành công tài khoản $_selectedBank!'),
+        content: Text('banks.success_toast'.tr(namedArgs: {'bank': _selectedBank ?? ''})),
         backgroundColor: Colors.purple,
       ),
     );
@@ -82,7 +83,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'Liên Kết Ngân Hàng 🏦',
+          'banks.link_bank_title'.tr(),
           style: TextStyle(
             color: isDark ? Colors.white : Colors.black87,
             fontWeight: FontWeight.bold,
@@ -97,7 +98,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
           children: [
             if (!_showOtpVerification && _selectedBank == null) ...[
               Text(
-                'Chọn Ngân Hàng Hoặc Ví Điện Tử',
+                'banks.select_provider'.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -114,7 +115,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                 },
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
-                  hintText: 'Tìm tên ngân hàng, ví dụ: VCB, MB...',
+                  hintText: 'banks.search_hint'.tr(),
                   hintStyle: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[400]),
                   prefixIcon: const Icon(Icons.search, color: Colors.purpleAccent),
                   border: OutlineInputBorder(
@@ -173,7 +174,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                   const Icon(Icons.account_balance, color: Colors.purpleAccent),
                   const SizedBox(width: 8),
                   Text(
-                    'Liên kết tài khoản $_selectedBank',
+                    'banks.link_acct_name'.tr(namedArgs: {'bank': _selectedBank ?? ''}),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -193,10 +194,10 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                       TextField(
                         controller: _accountNumberController,
                         style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-                        decoration: const InputDecoration(
-                          labelText: 'Số tài khoản / Số thẻ',
-                          hintText: 'Nhập số tài khoản ngân hàng',
-                          prefixIcon: Icon(Icons.tag),
+                        decoration: InputDecoration(
+                          labelText: 'banks.acct_number'.tr(),
+                          hintText: 'banks.acct_number_hint'.tr(),
+                          prefixIcon: const Icon(Icons.tag),
                         ),
                         keyboardType: TextInputType.number,
                       ),
@@ -204,10 +205,10 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                       TextField(
                         controller: _accountHolderController,
                         style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-                        decoration: const InputDecoration(
-                          labelText: 'Tên chủ tài khoản',
+                        decoration: InputDecoration(
+                          labelText: 'banks.acct_holder'.tr(),
                           hintText: 'VIET IN INHOA CHU',
-                          prefixIcon: Icon(Icons.person),
+                          prefixIcon: const Icon(Icons.person),
                         ),
                         textCapitalization: TextCapitalization.characters,
                       ),
@@ -228,7 +229,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: const Text('Liên kết ngân hàng', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text('banks.link_btn'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -239,7 +240,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                       _selectedBank = null;
                     });
                   },
-                  child: const Text('Chọn ngân hàng khác', style: TextStyle(color: Colors.purpleAccent)),
+                  child: Text('banks.select_other'.tr(), style: const TextStyle(color: Colors.purpleAccent)),
                 ),
               ),
             ] else ...[
@@ -250,7 +251,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                     const Icon(Icons.sms_failed_outlined, color: Colors.purpleAccent, size: 64),
                     const SizedBox(height: 24),
                     Text(
-                      'Xác thực mã OTP 🔐',
+                      'banks.verify_otp_title'.tr(),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -261,7 +262,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Text(
-                        'Một mã OTP bảo mật gồm 6 chữ số đã được gửi qua số điện thoại đăng ký của cưng. Nhập mã để hoàn tất.',
+                        'banks.verify_otp_desc'.tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -302,7 +303,7 @@ class _LinkedBankAccountsScreenState extends State<LinkedBankAccountsScreen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text('Xác nhận & Liên kết', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text('banks.confirm_link_btn'.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],

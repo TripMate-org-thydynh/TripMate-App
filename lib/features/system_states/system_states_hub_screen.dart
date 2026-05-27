@@ -2,12 +2,22 @@ import '../../core/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Screens
+// Pages
 import 'pages/maintenance_mode_screen.dart';
 import 'pages/app_update_required_screen.dart';
 import 'pages/server_down_screen.dart';
 import 'pages/session_expired_screen.dart';
 import 'pages/permission_denied_screen.dart';
+
+// Newly added Batch 11 Screens
+import 'pages/activity_hub_no_chaos_screen.dart';
+import 'pages/offline_mode_screen.dart';
+import 'pages/memory_wall_empty_screen.dart';
+import 'pages/no_internet_screen.dart';
+import 'pages/no_friends_solo_arc_screen.dart';
+import 'pages/sync_failed_screen.dart';
+import 'pages/upload_failed_screen.dart';
+import 'pages/ai_failed_crisis_screen.dart';
 
 class SystemStatesHubScreen extends StatefulWidget {
   const SystemStatesHubScreen({super.key});
@@ -17,40 +27,24 @@ class SystemStatesHubScreen extends StatefulWidget {
 }
 
 class _SystemStatesHubScreenState extends State<SystemStatesHubScreen> {
-  String? _activeSimulatedState; // null, OFFLINE, EMPTY_MEMORIES, UPLOAD_FAIL, AI_FAIL
+  bool _isDarkMode = true;
 
-  void _triggerSimulation(String stateKey) {
+  void _toggleTheme() {
     setState(() {
-      _activeSimulatedState = stateKey;
+      _isDarkMode = !_isDarkMode;
     });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('⚡ Đã giả lập trạng thái hệ thống: $stateKey!'),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.indigo,
-        action: SnackBarAction(
-          label: 'Khôi phục',
-          textColor: Colors.white,
-          onPressed: () {
-            setState(() {
-              _activeSimulatedState = null;
-            });
-          },
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = _isDarkMode;
     
     // Brand design system tokens
     final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
     final backgroundColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
     final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
+    final textPrimary = isDark ? TripMateTheme.darkTextPrimary : TripMateTheme.lightTextPrimary;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -68,101 +62,229 @@ class _SystemStatesHubScreenState extends State<SystemStatesHubScreen> {
             color: isDark ? Colors.white : Colors.black87,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+              color: primaryColor,
+            ),
+            onPressed: _toggleTheme,
+          ),
+        ],
       ),
-      body: _activeSimulatedState != null
-          ? _buildSimulatedStateBody(isDark, backgroundColor, surfaceColor, primaryColor)
-          : SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Mascot Banner
+            Container(
+              padding: const EdgeInsets.all(20),
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [primaryColor, secondaryColor],
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
                 children: [
-                  // Cute Mascot Banner
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.only(bottom: 24),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [primaryColor, const Color(0xFF10B981)],
+                  const Text('🛠️', style: TextStyle(fontSize: 36)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      'Bảng Điều Khiển Trạng Thái Hệ Thống & Lỗi Kết Nối. Chạm vào bất kỳ thẻ nào để xem trước giao diện lỗi được Gen Z hóa cá tính!',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
                       ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const Text('🛠️', style: TextStyle(fontSize: 36)),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            'Bảng Điều Khiển Trạng Thái Hệ Thống. Cưng có thể chạm vào để xem trước các cảnh báo hoặc giả lập lỗi kết nối mạng.',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.white,
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w500,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ),
-
-                  Text(
-                    'Màn Hình Cảnh Báo Hệ Thống 🔒',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  _buildRouteCard('Chế Độ Bảo Trì 🧹', 'Bảo trì hệ thống máy chủ TripMate nâng cấp định kỳ', isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary, () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MaintenanceModeScreen()));
-                  }, isDark, surfaceColor),
-                  _buildRouteCard('Cần Lên Đời Phiên Bản 🚀', 'Cưỡng chế nâng cấp phiên bản app cũ kỹ', const Color(0xFF8B5CF6), () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AppUpdateRequiredScreen()));
-                  }, isDark, surfaceColor),
-                  _buildRouteCard('Máy Chủ Không Phản Hồi 🌋', 'Lỗi sập server hoặc quá tải đường truyền', const Color(0xFFEF4444), () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ServerDownScreen()));
-                  }, isDark, surfaceColor),
-                  _buildRouteCard('Phiên Đăng Nhập Hết Hạn 🚪', 'Hết hạn JWT token truy cập, buộc đăng nhập lại', const Color(0xFF3B82F6), () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SessionExpiredScreen()));
-                  }, isDark, surfaceColor),
-                  _buildRouteCard('Quyền Bị Chặn 🛑', 'Không có quyền truy cập Location/Camera/Photos', const Color(0xFFEC4899), () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const PermissionDeniedScreen()));
-                  }, isDark, surfaceColor),
-
-                  const SizedBox(height: 24),
-
-                  Text(
-                    'Giả Lập Trạng Thái Tức Thời 💻',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  Row(
-                    children: [
-                      Expanded(child: _buildSimulationButton('OFFLINE', 'Mất Mạng 🔌', Colors.orange, isDark, surfaceColor)),
-                      const SizedBox(width: 12),
-                      Expanded(child: _buildSimulationButton('EMPTY_MEMORIES', 'Trống Trơn 📂', Colors.blue, isDark, surfaceColor)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(child: _buildSimulationButton('UPLOAD_FAIL', 'Lỗi Tải Lên ⚠️', Colors.red, isDark, surfaceColor)),
-                      const SizedBox(width: 12),
-                      Expanded(child: _buildSimulationButton('AI_FAIL', 'AI Hỏng 🤖', Colors.purple, isDark, surfaceColor)),
-                    ],
-                  ),
-                  const SizedBox(height: 48),
                 ],
               ),
             ),
+
+            Text(
+              'Trạng Thái Hệ Thống Mới (Batch 11) ✨',
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            _buildRouteCard(
+              'Activity Hub - Vô Sự 💤',
+              'Khi squad quá yên bình, không phát hiện emotional damage',
+              secondaryColor,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ActivityHubNoChaosScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            _buildRouteCard(
+              'Chế Độ Offline - Tiếp Tục Du Hí 🔌',
+              'Kích hoạt khi mất kết nối mạng nhưng an toàn với dữ liệu cục bộ',
+              const Color(0xFF3B82F6),
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OfflineModeScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            _buildRouteCard(
+              'Bức Tường Kỷ Niệm Trống Trơn 📂',
+              'Scrapbook trống, gợi ý chụp dìm hàng lũ bạn',
+              primaryColor,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MemoryWallEmptyScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            _buildRouteCard(
+              'Mất Kết Nối Wifi Left Squad 😭',
+              'Lỗi ngắt kết nối mạng bất chợt kèm Dino Game offline',
+              Colors.redAccent,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NoInternetScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            _buildRouteCard(
+              'Thiếu Vắng Đồng Bọn 😭',
+              'Solo traveler arc unlocked, kêu gọi lập squad ngáo ngơ',
+              const Color(0xFFEC4899),
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NoFriendsSoloArcScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            _buildRouteCard(
+              'Đồng Bộ Thất Bại 🌋',
+              'Mất sync lịch trình và gợi ý resolve merge conflicts',
+              Colors.orange,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SyncFailedScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            _buildRouteCard(
+              'Tải Lên Bị Lỗi ⚠️',
+              'Memory bị lạc giữa đường truyền, cho phép lưu local hoặc xếp hàng chờ',
+              Colors.red,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UploadFailedScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            _buildRouteCard(
+              'Matey AI Khủng Hoảng Hiện Sinh 🤖',
+              'Trí thông minh nhân tạo bị quá tải kèm bento fallback vibes',
+              Colors.purple,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AiFailedCrisisScreen(
+                    isDarkMode: _isDarkMode,
+                    onThemeToggle: _toggleTheme,
+                  ),
+                ),
+              ),
+              isDark,
+              surfaceColor,
+            ),
+
+            const SizedBox(height: 24),
+
+            Text(
+              'Giao Diện Quản Trị Hệ Thống Cũ 🔒',
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            _buildRouteCard('Chế Độ Bảo Trì 🧹', 'Bảo trì hệ thống máy chủ TripMate nâng cấp định kỳ', const Color(0xFFF59E0B), () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const MaintenanceModeScreen()));
+            }, isDark, surfaceColor),
+            _buildRouteCard('Cần Lên Đời Phiên Bản 🚀', 'Cưỡng chế nâng cấp phiên bản app cũ kỹ', const Color(0xFF8B5CF6), () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AppUpdateRequiredScreen()));
+            }, isDark, surfaceColor),
+            _buildRouteCard('Máy Chủ Không Phản Hồi 🌋', 'Lỗi sập server hoặc quá tải đường truyền', const Color(0xFFEF4444), () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ServerDownScreen()));
+            }, isDark, surfaceColor),
+            _buildRouteCard('Phiên Đăng Nhập Hết Hạn 🚪', 'Hết hạn JWT token truy cập, buộc đăng nhập lại', const Color(0xFF3B82F6), () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SessionExpiredScreen()));
+            }, isDark, surfaceColor),
+            _buildRouteCard('Quyền Bị Chặn 🛑', 'Không có quyền truy cập Location/Camera/Photos', const Color(0xFFEC4899), () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const PermissionDeniedScreen()));
+            }, isDark, surfaceColor),
+
+            const SizedBox(height: 48),
+          ],
+        ),
+      ),
     );
   }
 
@@ -174,7 +296,7 @@ class _SystemStatesHubScreenState extends State<SystemStatesHubScreen> {
           color: surfaceColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.08),
+            color: isDark ? color.withValues(alpha: 0.2) : color.withValues(alpha: 0.1),
           ),
         ),
         child: ListTile(
@@ -190,129 +312,6 @@ class _SystemStatesHubScreenState extends State<SystemStatesHubScreen> {
           title: Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13.5)),
           subtitle: Text(desc, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey)),
           trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSimulationButton(String stateKey, String label, Color color, bool isDark, Color surfaceColor) {
-    return ElevatedButton(
-      onPressed: () => _triggerSimulation(stateKey),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: surfaceColor,
-        foregroundColor: color,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: BorderSide(color: color.withValues(alpha: 0.3)),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-      ),
-      child: Text(label, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13)),
-    );
-  }
-
-  Widget _buildSimulatedStateBody(bool isDark, Color backgroundColor, Color surfaceColor, Color primaryColor) {
-    String emoji = '🔌';
-    String title = 'Mất Kết Nối Mạng!';
-    String desc = 'Vui lòng kiểm tra Wifi hoặc 4G của cưng. TripMate đang tạm thời chạy offline để cưng đọc lịch trình cũ.';
-    Color color = Colors.orange;
-
-    switch (_activeSimulatedState) {
-      case 'EMPTY_MEMORIES':
-        emoji = '📂';
-        title = 'Chưa Có Kỷ Niệm Nào!';
-        desc = 'Khu vườn kỷ niệm Kyoto / Dalat đang trống trơn. Chụp ngay vài tấm hình Ghost Cam dìm hàng lũ bạn để bắt đầu nhé!';
-        color = Colors.blue;
-        break;
-      case 'UPLOAD_FAIL':
-        emoji = '⚠️';
-        title = 'Tải Lên Bị Lỗi!';
-        desc = 'Tệp hình ảnh hoặc clip recap dung lượng quá nặng hoặc kết nối không ổn định. Hãy chạm thử lại nhé!';
-        color = Colors.red;
-        break;
-      case 'AI_FAIL':
-        emoji = '🤖';
-        title = 'Matey AI Đuối Sức!';
-        desc = 'Máy chủ phân tích ý kiến Companion đang tạm thời quá tải vì cưng ép xung bứt tốc dữ dội quá. Hãy thở đều và thử lại nhé!';
-        color = Colors.purple;
-        break;
-    }
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color.withValues(alpha: 0.15),
-              ),
-              child: Text(emoji, style: const TextStyle(fontSize: 48)),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              desc,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
-                color: Colors.grey[500],
-                height: 1.45,
-              ),
-            ),
-            const SizedBox(height: 36),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      _activeSimulatedState = null;
-                    });
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  ),
-                  child: Text('Khôi phục Hub', style: GoogleFonts.plusJakartaSans(color: Colors.grey)),
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _activeSimulatedState = null;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: color,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  ),
-                  child: Text(
-                    'Đồng Ý',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
       ),
     );

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AiGenerationQueueScreen extends StatefulWidget {
   const AiGenerationQueueScreen({super.key});
@@ -9,8 +11,12 @@ class AiGenerationQueueScreen extends StatefulWidget {
   State<AiGenerationQueueScreen> createState() => _AiGenerationQueueScreenState();
 }
 
-class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
+class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
+    with TickerProviderStateMixin {
   Timer? _timer;
+  bool _showLoadingOverlay = true;
+  late AnimationController _rotateController;
+  late AnimationController _pulseController;
   
   final List<Map<String, dynamic>> _tasks = [
     {
@@ -58,6 +64,20 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
   @override
   void initState() {
     super.initState();
+    _rotateController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+    // Auto-dismiss overlay after 4 seconds
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) {
+        setState(() => _showLoadingOverlay = false);
+      }
+    });
     // Simulate real-time progress increases!
     _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       if (!mounted) return;
@@ -73,9 +93,9 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
               // Update eta roughly
               int remainingSeconds = ((1.0 - task['progress']) * 100).toInt();
               if (remainingSeconds < 10) {
-                task['eta'] = '$remainingSeconds giây';
+                task['eta'] = 'ai_hub.seconds'.tr(args: ['$remainingSeconds']);
               } else {
-                task['eta'] = '${remainingSeconds ~/ 2} giây';
+                task['eta'] = 'ai_hub.seconds'.tr(args: ['${remainingSeconds ~/ 2}']);
               }
             }
           }
@@ -87,6 +107,8 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    _rotateController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -101,7 +123,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('⚡ Đã ép xung Matey AI! Tăng tốc "${task['title']}"!'),
+            content: Text('ai_hub.overclock_success'.tr(args: ['${task['title']}'])),
             behavior: SnackBarBehavior.floating,
             backgroundColor: task['color'],
           ),
@@ -116,7 +138,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
       _tasks.removeAt(index);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('🗑️ Đã hủy tác vụ "${task['title']}"'),
+          content: Text('ai_hub.task_cancelled'.tr(args: ['${task['title']}'])),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -129,11 +151,151 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     // Brand design system tokens
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF06B6D4) : const Color(0xFFEBA83A);
-    final backgroundColor = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final surfaceColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final primaryColor = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF7C3AED);
+    final secondaryColor = isDark ? const Color(0xFF45DFA4) : const Color(0xFF059669);
+    final backgroundColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
+    final surfaceColor = isDark ? const Color(0xFF1A2340) : Colors.white;
 
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // MAIN QUEUE CONTENT
+          _buildQueueBody(context, isDark, primaryColor, secondaryColor, backgroundColor, surfaceColor),
+          // MATEY IS COOKING OVERLAY
+          if (_showLoadingOverlay)
+            _buildCookingOverlay(context, isDark, primaryColor, secondaryColor),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCookingOverlay(BuildContext context, bool isDark, Color primaryColor, Color secondaryColor) {
+    return GestureDetector(
+      onTap: () => setState(() => _showLoadingOverlay = false),
+      child: Container(
+        color: (isDark ? const Color(0xFF0B1326) : Colors.white).withValues(alpha: 0.95),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Animated orbital spinner
+              AnimatedBuilder(
+                animation: _rotateController,
+                builder: (_, child) {
+                  return SizedBox(
+                    width: 140,
+                    height: 140,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Outer rotating ring
+                        Transform.rotate(
+                          angle: _rotateController.value * 2 * math.pi,
+                          child: Container(
+                            width: 140,
+                            height: 140,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: SweepGradient(
+                                colors: [
+                                  primaryColor.withValues(alpha: 0),
+                                  primaryColor,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        // White mask for donut effect
+                        Container(
+                          width: 110,
+                          height: 110,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isDark ? const Color(0xFF0B1326) : Colors.white,
+                          ),
+                        ),
+                        // Inner pulsing sparkle
+                        AnimatedBuilder(
+                          animation: _pulseController,
+                          builder: (_, child) => Icon(
+                            Icons.auto_awesome,
+                            color: primaryColor,
+                            size: 44 + 8 * _pulseController.value,
+                          ),
+                        ),
+                        // Orbiting particles
+                        ...List.generate(6, (i) {
+                          final angle = _rotateController.value * 2 * math.pi + i * math.pi / 3;
+                          final radius = 62.0;
+                          return Transform.translate(
+                            offset: Offset(
+                              math.cos(angle) * radius,
+                              math.sin(angle) * radius,
+                            ),
+                            child: Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: i.isEven ? primaryColor : secondaryColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: (i.isEven ? primaryColor : secondaryColor)
+                                        .withValues(alpha: 0.6),
+                                    blurRadius: 6,
+                                    spreadRadius: 1,
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 40),
+              ShaderMask(
+                shaderCallback: (bounds) => LinearGradient(
+                  colors: [primaryColor, secondaryColor],
+                ).createShader(bounds),
+                child: Text(
+                  'Matey is cooking...',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: -1,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Curating the perfect vibe for the squad.',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  color: isDark ? Colors.white60 : Colors.black54,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 40),
+              Text(
+                'Tap to see queue',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: isDark ? Colors.white30 : Colors.black38,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQueueBody(BuildContext context, bool isDark, Color primaryColor, Color secondaryColor, Color backgroundColor, Color surfaceColor) {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -144,7 +306,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Hàng Đợi AI Render 🖥️',
+          'AI Generation Queue 🖥️',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -155,12 +317,11 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
             icon: Icon(Icons.refresh, color: isDark ? Colors.white70 : Colors.black54),
             onPressed: () {
               setState(() {
-                // Reset completed to 50%
                 for (var task in _tasks) {
                   if (task['status'] == 'COMPLETED') {
                     task['progress'] = 0.50;
                     task['status'] = 'RENDERING';
-                    task['eta'] = '30 giây';
+                    task['eta'] = '30s';
                   }
                 }
               });
@@ -202,7 +363,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Lời khuyên từ Matey AI:',
+                          'ai_hub.matey_advice_title'.tr(),
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -211,7 +372,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '"Ta đang phải chạy bằng cơm để render đống tệp đa phương tiện siêu nặng này cho các cưng đấy! Táp nút Bứt Tốc để ép xung CPU của ta nhé!" 💥',
+                          'ai_hub.matey_advice_body'.tr(),
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -226,7 +387,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
             ),
 
             Text(
-              'Tác vụ đang xử lý (${_tasks.where((t) => t['progress'] < 1.0).length})',
+              'ai_hub.tasks_processing'.tr(args: ['${_tasks.where((t) => t['progress'] < 1.0).length}']),
               style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -244,7 +405,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                       const Text('🎉', style: TextStyle(fontSize: 48)),
                       const SizedBox(height: 12),
                       Text(
-                        'Hàng đợi trống rỗng! Matey đang rảnh rỗi nè!',
+                        'ai_hub.empty_queue'.tr(),
                         style: GoogleFonts.plusJakartaSans(
                           color: Colors.grey,
                           fontSize: 14,
@@ -257,12 +418,26 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
             else
               ListView.builder(
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _tasks.length,
-                itemBuilder: (context, index) {
+                   itemBuilder: (context, index) {
                   final task = _tasks[index];
                   final isCompleted = task['progress'] >= 1.0;
                   final Color baseColor = task['color'] as Color;
+
+                  String taskTitle = task['title'] as String;
+                  String taskSubtitle = task['subtitle'] as String;
+
+                  if (task['id'] == 'task-1') {
+                    taskSubtitle = 'ai_hub.kyoto_task'.tr();
+                  } else if (task['id'] == 'task-2') {
+                    taskTitle = 'ai_hub.ocr_task_title'.tr();
+                    taskSubtitle = 'ai_hub.ocr_task_sub'.tr();
+                  } else if (task['id'] == 'task-3') {
+                    taskTitle = 'ai_hub.roast_task_title'.tr();
+                    taskSubtitle = 'ai_hub.roast_task_sub'.tr();
+                  } else if (task['id'] == 'task-4') {
+                    taskTitle = 'ai_hub.vibe_map_title'.tr();
+                    taskSubtitle = 'ai_hub.vibe_map_sub'.tr();
+                  }
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 16),
@@ -315,7 +490,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      task['title'] as String,
+                                      taskTitle,
                                       style: GoogleFonts.plusJakartaSans(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
@@ -327,7 +502,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                               ),
                               // ETA or Xong label
                               Text(
-                                isCompleted ? 'Hoàn thành' : 'ETA: ${task['eta']}',
+                                isCompleted ? 'ai_hub.completed'.tr() : 'ETA: ${task['eta']}',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -338,7 +513,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            task['subtitle'] as String,
+                            taskSubtitle,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -406,7 +581,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                                   onPressed: () => _cancelTask(index),
                                   icon: const Icon(Icons.close, size: 16, color: Colors.redAccent),
                                   label: Text(
-                                    'Hủy bỏ',
+                                    'ai_hub.cancel'.tr(),
                                     style: GoogleFonts.plusJakartaSans(
                                       color: Colors.redAccent,
                                       fontSize: 12,
@@ -426,7 +601,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                                   ),
                                   icon: const Icon(Icons.flash_on, size: 14, color: Colors.white),
                                   label: Text(
-                                    'Bứt Tốc ⚡',
+                                    'ai_hub.boost'.tr(),
                                     style: GoogleFonts.plusJakartaSans(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -439,14 +614,14 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                                   onPressed: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('🎉 Tác vụ "${task['title']}" đã xong và lưu vào nhật ký!'),
+                                        content: Text('ai_hub.task_done_toast'.tr(args: [taskTitle])),
                                         behavior: SnackBarBehavior.floating,
                                       ),
                                     );
                                   },
                                   icon: const Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
                                   label: Text(
-                                    'Xem kết quả',
+                                    'ai_hub.view_result'.tr(),
                                     style: GoogleFonts.plusJakartaSans(
                                       color: Colors.green,
                                       fontSize: 12,
@@ -462,6 +637,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen> {
                     ),
                   );
                 },
+                itemCount: _tasks.length,
               ),
           ],
         ),

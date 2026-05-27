@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../discovery/presentation/pages/live_map_squad_tracking_screen.dart';
@@ -49,34 +48,31 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
   }
 
   void _triggerVibeBoost() {
-    // Shake animation
     _shakeController.forward(from: 0.0);
-    
-    // Increment energy slightly
     setState(() {
       _energyLevel = min(1.0, _energyLevel + 0.05);
     });
 
-    // Generate colorful particles
+    // Generate falling color particle sparks
     _particles.clear();
     for (int i = 0; i < 40; i++) {
       _particles.add(
         Particle(
-          x: 150 + _random.nextDouble() * 50 - 25,
-          y: 150 + _random.nextDouble() * 50 - 25,
-          vx: (_random.nextDouble() - 0.5) * 8,
+          x: 100 + _random.nextDouble() * 80,
+          y: 80 + _random.nextDouble() * 50,
+          vx: (_random.nextDouble() - 0.5) * 10,
           vy: (_random.nextDouble() - 0.5) * 8 - 4,
           color: Colors.primaries[_random.nextInt(Colors.primaries.length)],
-          size: _random.nextDouble() * 8 + 4,
+          size: _random.nextDouble() * 6 + 3,
         ),
       );
     }
     _particlesController.forward(from: 0.0);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("live_trip.boosted_vibe".tr()),
-        duration: const Duration(seconds: 1),
+      const SnackBar(
+        content: Text('VIBE BOOST ACTIVE! Squad energy is skyrocketing! 🚀⚡'),
+        duration: Duration(seconds: 1),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -84,277 +80,282 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
+    
+    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
+    
+    final bgColor = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
+    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
+    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
+    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
+    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
 
-    // Simulate active particles movement
     if (_particlesController.isAnimating) {
       for (var p in _particles) {
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.15; // Gravity
+        p.vy += 0.2; // Gravity effect
       }
     }
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      backgroundColor: bgColor,
+      body: Stack(
         children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "live_trip.live_mode".tr(),
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    Text(
-                      "live_trip.active_mates".tr(namedArgs: {"count": "6"}),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: colorScheme.secondary,
-                      ),
-                    ),
-                  ],
+          // Background aura glow
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topRight,
+                  radius: 1.2,
+                  colors: isDark
+                      ? [const Color(0xFF3F1B68).withValues(alpha: 0.15), Colors.transparent]
+                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.4), Colors.transparent],
                 ),
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title and Live Mode header block
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [Color(0xFFD0BCFF), Color(0xFF45DFA4)],
+                            ).createShader(bounds),
+                            child: Text(
+                              'Đà Lạt Chill 🌲',
+                              style: GoogleFonts.outfit(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: -1.0,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Active squad members: 6 idiots',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: secondaryColor,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      const Text(
-                        "LIVE MAP",
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LiveMapSquadTrackingScreen(
+                                isDarkMode: widget.isDarkMode,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.gps_fixed, color: Colors.redAccent, size: 14),
+                              SizedBox(width: 6),
+                              Text(
+                                'LIVE MAP',
+                                style: TextStyle(color: Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                  const SizedBox(height: 20),
 
-          // Map schematic mockup
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LiveMapSquadTrackingScreen(
-                    isDarkMode: widget.isDarkMode,
-                    onThemeToggle: widget.onThemeToggle,
-                  ),
-                ),
-              );
-            },
-            child: Container(
-              height: 240,
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-                border: Border.all(
-                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Stack(
-                  children: [
-                    // Abstract decorative map lines
-                    Positioned.fill(
-                      child: CustomPaint(
-                        painter: MapGridPainter(isDark: isDark, colorScheme: colorScheme),
-                      ),
-                    ),
-                    // Pinned squad overlays
-                    _buildMapPin(top: 40, left: 60, name: "Nam Trung", emoji: "☕", color: Colors.greenAccent),
-                    _buildMapPin(top: 130, left: 160, name: "Thảo Ly (Me)", emoji: "📸", color: colorScheme.primary, isMe: true),
-                    _buildMapPin(top: 80, left: 220, name: "Minh Nhật", emoji: "🚶‍♀️", color: Colors.greenAccent),
-                    _buildMapPin(top: 170, left: 80, name: "Phú Khang", emoji: "😴", color: Colors.amberAccent),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Vibe Meter & Particle Area
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              children: [
-                // Circular Vibe Energy Meter
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    height: 180,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.6) : Colors.white,
-                      border: Border.all(
-                        color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-                      ),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        CustomPaint(
-                          size: const Size(120, 120),
-                          painter: EnergyGaugePainter(
-                            progress: _energyLevel,
-                            color: colorScheme.secondary,
-                            backgroundColor: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                  // Mini Map Schematic panel card
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LiveMapSquadTrackingScreen(
+                            isDarkMode: widget.isDarkMode,
+                            onThemeToggle: widget.onThemeToggle,
                           ),
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "${(_energyLevel * 100).toInt()}%",
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                color: colorScheme.secondary,
-                              ),
-                            ),
-                            Text(
-                              "vibe energy".tr(),
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        // Custom animated particles on boost
-                        if (_particlesController.isAnimating)
-                          Positioned.fill(
-                            child: IgnorePointer(
-                              child: CustomPaint(
-                                painter: ParticlePainter(particles: _particles),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                // Shake booster button
-                Expanded(
-                  flex: 2,
-                  child: GestureDetector(
-                    onTap: _triggerVibeBoost,
+                      );
+                    },
                     child: Container(
                       height: 180,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [colorScheme.primary, colorScheme.primary.withValues(alpha: 0.7)],
-                        ),
                         borderRadius: BorderRadius.circular(24),
+                        color: cardBg,
+                        border: Border.all(color: glassBorder),
                         boxShadow: [
                           BoxShadow(
-                            color: colorScheme.primary.withValues(alpha: 0.25),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 15,
                           ),
                         ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Stack(
                           children: [
-                            const Icon(Icons.vibration, size: 42, color: Colors.white),
-                            const SizedBox(height: 12),
-                            Text(
-                              "live_trip.shake_to_boost".tr(),
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.plusJakartaSans(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                            Positioned.fill(
+                              child: CustomPaint(
+                                painter: MiniMapGridPainter(isDark: isDark, primaryColor: primaryColor),
                               ),
                             ),
+                            // Small simplified pin bubbles overlay
+                            _buildMiniMapPin(top: 30, left: 50, name: 'Nam Trung', color: Colors.greenAccent),
+                            _buildMiniMapPin(top: 100, left: 140, name: 'Ly (Me)', color: primaryColor, isMe: true),
+                            _buildMiniMapPin(top: 60, left: 240, name: 'Nhật', color: secondaryColor),
                           ],
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-          // Live Activity Feed
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "live_trip.live_updates".tr(),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  // Circular Vibe energy meter gauge & Shake booster panel (2 columns)
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          height: 180,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: glassBorder),
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              CustomPaint(
+                                size: const Size(110, 110),
+                                painter: EnergyCirclePainter(
+                                  progress: _energyLevel,
+                                  color: secondaryColor,
+                                  backgroundColor: isDark ? Colors.white10 : Colors.black12,
+                                ),
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${(_energyLevel * 100).toInt()}%',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    'vibe energy',
+                                    style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.bold, color: textSecondary),
+                                  ),
+                                ],
+                              ),
+                              // Spans floating particles when boosted
+                              if (_particlesController.isAnimating)
+                                Positioned.fill(
+                                  child: IgnorePointer(
+                                    child: CustomPaint(
+                                      painter: FallingParticlesPainter(particles: _particles),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: GestureDetector(
+                          onTap: _triggerVibeBoost,
+                          child: Container(
+                            height: 180,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [primaryColor, primaryColor.withValues(alpha: 0.8)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primaryColor.withValues(alpha: 0.3),
+                                  blurRadius: 15,
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.vibration, size: 40, color: Colors.white),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Shake to Vibe Boost',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 12),
-                _buildActivityFeedItem(
-                  theme: theme,
-                  isDark: isDark,
-                  emoji: "☕",
-                  title: "Minh Nhật is at The Hill Station",
-                  time: "Just now",
-                ),
-                _buildActivityFeedItem(
-                  theme: theme,
-                  isDark: isDark,
-                  emoji: "📸",
-                  title: "Thảo Ly uploaded 3 moments",
-                  time: "5m ago",
-                ),
-                _buildActivityFeedItem(
-                  theme: theme,
-                  isDark: isDark,
-                  emoji: "🛵",
-                  title: "Nam Trung is cruising Dalat Night Market",
-                  time: "15m ago",
-                ),
-                const SizedBox(height: 32),
-              ],
+                  const SizedBox(height: 24),
+
+                  // Real-time Live Updates timeline list section
+                  Text(
+                    'Live Updates',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  _buildLiveFeedItem('☕', 'Minh Nhật is at The Hill Station', 'Just now', cardBg, glassBorder, textPrimary, textSecondary),
+                  _buildLiveFeedItem('📸', 'Thảo Ly uploaded 3 moments', '5m ago', cardBg, glassBorder, textPrimary, textSecondary),
+                  _buildLiveFeedItem('🛵', 'Nam Trung is cruising Dalat Night Market', '15m ago', cardBg, glassBorder, textPrimary, textSecondary),
+
+                  const SizedBox(height: 48),
+                ],
+              ),
             ),
           ),
         ],
@@ -362,67 +363,47 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
     );
   }
 
-  Widget _buildMapPin({
+  Widget _buildMiniMapPin({
     required double top,
     required double left,
     required String name,
-    required String emoji,
     required Color color,
     bool isMe = false,
   }) {
     return Positioned(
       top: top,
       left: left,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isMe ? const Color(0xFF8B5CF6) : Colors.black87,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              name,
-              style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color.withValues(alpha: 0.2),
-                  border: Border.all(color: color, width: 2),
-                ),
-              ),
-              Text(emoji, style: const TextStyle(fontSize: 12)),
-            ],
-          ),
-        ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        decoration: BoxDecoration(
+          color: isMe ? const Color(0xFF8B5CF6) : Colors.black87,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color, width: 1),
+        ),
+        child: Text(
+          name,
+          style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
 
-  Widget _buildActivityFeedItem({
-    required ThemeData theme,
-    required bool isDark,
-    required String emoji,
-    required String title,
-    required String time,
-  }) {
+  Widget _buildLiveFeedItem(
+    String emoji,
+    String title,
+    String time,
+    Color cardBg,
+    Color glassBorder,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B).withValues(alpha: 0.6) : Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-        ),
+        border: Border.all(color: glassBorder),
       ),
       child: Row(
         children: [
@@ -434,15 +415,16 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 13,
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   time,
-                  style: theme.textTheme.bodyMedium?.copyWith(fontSize: 10),
+                  style: GoogleFonts.inter(fontSize: 10, color: textSecondary),
                 ),
               ],
             ),
@@ -469,9 +451,9 @@ class Particle {
   });
 }
 
-class ParticlePainter extends CustomPainter {
+class FallingParticlesPainter extends CustomPainter {
   final List<Particle> particles;
-  ParticlePainter({required this.particles});
+  FallingParticlesPainter({required this.particles});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -486,12 +468,12 @@ class ParticlePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
-class EnergyGaugePainter extends CustomPainter {
+class EnergyCirclePainter extends CustomPainter {
   final double progress;
   final Color color;
   final Color backgroundColor;
 
-  EnergyGaugePainter({
+  EnergyCirclePainter({
     required this.progress,
     required this.color,
     required this.backgroundColor,
@@ -499,10 +481,9 @@ class EnergyGaugePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    final strokeWidth = 10.0;
+    final strokeWidth = 8.0;
     
-    // Background arc
+    // Background complete ring
     final bgPaint = Paint()
       ..color = backgroundColor
       ..strokeWidth = strokeWidth
@@ -517,13 +498,9 @@ class EnergyGaugePainter extends CustomPainter {
       bgPaint,
     );
 
-    // Progress arc
+    // Front progress ring
     final fgPaint = Paint()
-      ..shader = SweepGradient(
-        colors: [color, color.withValues(alpha: 0.5)],
-        startAngle: 0.0,
-        endAngle: pi * 2,
-      ).createShader(rect)
+      ..color = color
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -541,19 +518,18 @@ class EnergyGaugePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
-class MapGridPainter extends CustomPainter {
+class MiniMapGridPainter extends CustomPainter {
   final bool isDark;
-  final ColorScheme colorScheme;
+  final Color primaryColor;
 
-  MapGridPainter({required this.isDark, required this.colorScheme});
+  MiniMapGridPainter({required this.isDark, required this.primaryColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.03)
+      ..color = isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
 
-    // Draw coordinate lines
     for (double i = 0; i < size.width; i += 30) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), gridPaint);
     }
@@ -561,17 +537,16 @@ class MapGridPainter extends CustomPainter {
       canvas.drawLine(Offset(0, j), Offset(size.width, j), gridPaint);
     }
 
-    // Abstract roads
     final roadPaint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.07) : Colors.black.withValues(alpha: 0.05)
+      ..color = isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04)
       ..strokeWidth = 6.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
-    path.moveTo(0, 40);
-    path.quadraticBezierTo(100, 50, 160, 130);
-    path.quadraticBezierTo(200, 200, size.width, 170);
+    path.moveTo(0, 30);
+    path.quadraticBezierTo(100, 40, 160, 100);
+    path.quadraticBezierTo(200, 160, size.width, 140);
 
     path.moveTo(80, 0);
     path.lineTo(60, size.height);

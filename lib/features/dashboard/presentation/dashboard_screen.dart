@@ -74,6 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       CreateTripScreen(
         isDarkMode: widget.isDarkMode,
         onThemeToggle: widget.onThemeToggle,
+        hideNavigationBar: true,
       ),
       LiveTripPage(
         isDarkMode: widget.isDarkMode,
