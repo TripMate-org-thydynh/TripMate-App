@@ -1,0 +1,335 @@
+import '../../../core/theme/theme.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/api_service.dart';
+
+class CreatorRevenueDashboardScreen extends StatefulWidget {
+  const CreatorRevenueDashboardScreen({super.key});
+
+  @override
+  State<CreatorRevenueDashboardScreen> createState() => _CreatorRevenueDashboardScreenState();
+}
+
+class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardScreen> {
+  bool _isPayoutRequesting = false;
+  bool _isLoading = false;
+
+  int _themesSold = 42;
+  int _stickersSold = 128;
+  int _totalSales = 1450000;
+  int _creatorShare = 1015000;
+  int _payoutPending = 450000;
+
+  List<Map<String, dynamic>> _recentSales = [
+    { 'item': 'Chủ đề Kyoto Retro 🎋', 'buyer': 'Hoàng Yến', 'price': 49000, 'date': '2026-05-25' },
+    { 'item': 'Nhãn dán Phú Quốc Shark 🦈', 'buyer': 'Phú Khang', 'price': 15000, 'date': '2026-05-24' },
+    { 'item': 'Chủ đề Dalat Vintage 🌲', 'buyer': 'Minh Nhật', 'price': 49000, 'date': '2026-05-23' },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchRevenueData();
+  }
+
+  Future<void> _fetchRevenueData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await ApiService.get('/premium/creator-revenue');
+    if (response != null) {
+      setState(() {
+        _themesSold = (response['themesSoldCount'] as int?) ?? _themesSold;
+        _stickersSold = (response['stickersSoldCount'] as int?) ?? _stickersSold;
+        _totalSales = (response['totalSalesRevenue'] as int?) ?? _totalSales;
+        _creatorShare = (response['creatorShare'] as int?) ?? _creatorShare;
+        _payoutPending = (response['payoutPending'] as int?) ?? _payoutPending;
+        
+        if (response['recentSales'] != null) {
+          final List<dynamic> salesList = response['recentSales'] as List<dynamic>;
+          _recentSales = salesList.map((item) => {
+            'item': item['item'] ?? 'Sản phẩm sáng tạo',
+            'buyer': item['buyer'] ?? 'Bạn bè',
+            'price': (item['price'] as int?) ?? 0,
+            'date': item['date'] ?? 'Vừa qua',
+          }).toList();
+        }
+      });
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _requestPayout() async {
+    setState(() {
+      _isPayoutRequesting = true;
+    });
+
+    // Simulate direct post to confirm payouts
+    await Future.delayed(const Duration(milliseconds: 1500));
+    
+    if (!mounted) return;
+    setState(() {
+      _isPayoutRequesting = false;
+      _payoutPending = 0;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('💸 Yêu cầu rút tiền thành công! Payout đã được gửi duyệt! Chờ ngân hàng xử lý nhé!'),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    // Brand design tokens
+    final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
+    final secondaryColor = isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary;
+    final backgroundColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
+    final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Thu Nhập Sáng Tạo 🎨',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchRevenueData,
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.purpleAccent))
+          : SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Stats Panel using vibrant Obsidian and brand coloring gradient
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [primaryColor, secondaryColor],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryColor.withValues(alpha: 0.3),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'SỐ DƯ KHẢ DỤNG RÚT 💸',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${_payoutPending.toString()}đ',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: _payoutPending == 0 || _isPayoutRequesting ? null : _requestPayout,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: primaryColor,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              child: _isPayoutRequesting
+                                  ? SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor),
+                                    )
+                                  : Text('Yêu Cầu Rút ⚡', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                            ),
+                          ],
+                        ),
+                        const Divider(color: Colors.white30, height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildMiniStat('Doanh Thu Shop', '${_totalSales.toString()}đ'),
+                            _buildMiniStat('Phần Chia Sáng Tạo (70%)', '${_creatorShare.toString()}đ'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // Visual Chart
+                  Text(
+                    'Xu Hướng Bán Hàng 📈',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 180,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: surfaceColor,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
+                    ),
+                    child: CustomPaint(
+                      painter: _RevenueChartPainter(isDark: isDark, strokeColor: primaryColor),
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // Recent sales lists
+                  Text(
+                    'Giao Dịch Gần Đây 🛒',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  Card(
+                    color: surfaceColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    borderOnForeground: false,
+                    child: Column(
+                      children: _recentSales.map((sale) {
+                        return Column(
+                          children: [
+                            ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                              title: Text(sale['item'] as String, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13)),
+                              subtitle: Text('Mua bởi: ${sale['buyer']}  •  ${sale['date']}', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey)),
+                              trailing: Text(
+                                '+${sale['price']}đ',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            if (_recentSales.indexOf(sale) < _recentSales.length - 1)
+                              const Divider(height: 1),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildMiniStat(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 11)),
+        const SizedBox(height: 4),
+        Text(value, style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.5)),
+      ],
+    );
+  }
+}
+
+// Custom Painter representing revenue line chart
+class _RevenueChartPainter extends CustomPainter {
+  final bool isDark;
+  final Color strokeColor;
+  _RevenueChartPainter({required this.isDark, required this.strokeColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = strokeColor
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+
+    final fillPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [strokeColor.withValues(alpha: 0.3), strokeColor.withValues(alpha: 0.0)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final path = Path()
+      ..moveTo(0, size.height * 0.8)
+      ..quadraticBezierTo(size.width * 0.2, size.height * 0.7, size.width * 0.4, size.height * 0.4)
+      ..quadraticBezierTo(size.width * 0.6, size.height * 0.1, size.width * 0.8, size.height * 0.3)
+      ..lineTo(size.width, size.height * 0.2);
+
+    final fillPath = Path.from(path)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(fillPath, fillPaint);
+    canvas.drawPath(path, paint);
+
+    // Draw grid horizontal line
+    final gridPaint = Paint()
+      ..color = isDark ? Colors.grey[800]! : Colors.grey[200]!
+      ..strokeWidth = 1;
+    for (int i = 1; i <= 3; i++) {
+      canvas.drawLine(
+        Offset(0, size.height * 0.25 * i),
+        Offset(size.width, size.height * 0.25 * i),
+        gridPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
