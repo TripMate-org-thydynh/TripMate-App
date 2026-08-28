@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import '../../../core/widgets/trip_cover_image.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -68,8 +69,11 @@ class TripHubScreen extends StatelessWidget {
                 tooltip: 'Chỉnh sửa chuyến',
                 icon: Icon(PhosphorIcons.pencilSimple(), color: _textPri),
                 onPressed: () async {
-                  final ok =
-                      await EditTripSheet.show(context, trip, isDarkMode);
+                  final ok = await EditTripSheet.show(
+                    context,
+                    trip,
+                    isDarkMode,
+                  );
                   if (ok == true && context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -86,33 +90,58 @@ class TripHubScreen extends StatelessWidget {
               titlePadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               title: Text(
                 trip.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppFonts.heading(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: _textPri,
+                  // Có ảnh bìa → nền tối, chữ phải trắng mới đọc được.
+                  color: (trip.coverImage?.isNotEmpty ?? false)
+                      ? Colors.white
+                      : _textPri,
                 ),
               ),
-              // Khối màu cam đặc + border-bottom ink (không gradient)
-              background: Container(
-                decoration: BoxDecoration(
-                  color: _primary,
+              // Ảnh bìa chuyến (nếu có) phủ toàn header, phía dưới là lớp tối
+              // để chữ tiêu đề luôn đọc được. Chưa chọn bìa thì về khối cam đặc
+              // kèm hoạ tiết máy bay như cũ.
+              background: DecoratedBox(
+                decoration: const BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(
-                      color: const Color(0xFF141210),
-                      width: 2.5,
-                    ),
+                    bottom: BorderSide(color: Color(0xFF141210), width: 2.5),
                   ),
                 ),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Icon(
-                      PhosphorIcons.airplaneTilt(PhosphorIconsStyle.fill),
-                      color: const Color(0xFF141210).withValues(alpha: 0.25),
-                      size: 80,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    TripCoverImage(
+                      source: trip.coverImage,
+                      fallbackColor: _primary,
                     ),
-                  ),
+                    if (trip.coverImage == null || trip.coverImage!.isEmpty)
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Icon(
+                            PhosphorIcons.airplaneTilt(PhosphorIconsStyle.fill),
+                            color: const Color(
+                              0xFF141210,
+                            ).withValues(alpha: 0.25),
+                            size: 80,
+                          ),
+                        ),
+                      )
+                    else
+                      const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Color(0xCC141210)],
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -129,7 +158,11 @@ class TripHubScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       _stat('${trip.memberCount}', 'thành viên'),
                       const SizedBox(width: 12),
-                      _stat(trip.inviteCode, 'trips.invite_code_lower'.tr(), mono: true),
+                      _stat(
+                        trip.inviteCode,
+                        'trips.invite_code_lower'.tr(),
+                        mono: true,
+                      ),
                     ],
                   ),
                   if ((trip.destination != null &&
@@ -392,9 +425,7 @@ class TripHubScreen extends StatelessWidget {
                         'trips.hub_leave_days'.tr(),
                         'Nghỉ phép thông minh',
                         const Color(0xFFF5822B),
-                        () => VacayScreen(
-                          isDarkMode: isDarkMode,
-                        ),
+                        () => VacayScreen(isDarkMode: isDarkMode),
                       ),
                       _tile(
                         context,
@@ -420,10 +451,7 @@ class TripHubScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Center(
-                    child: ExportPdfButton(
-                      trip: trip,
-                      isDarkMode: isDarkMode,
-                    ),
+                    child: ExportPdfButton(trip: trip, isDarkMode: isDarkMode),
                   ),
                 ],
               ),
@@ -462,10 +490,7 @@ class TripHubScreen extends StatelessWidget {
                       color: _textPri,
                     ),
             ),
-            Text(
-              label,
-              style: AppFonts.body(fontSize: 11, color: _textSec),
-            ),
+            Text(label, style: AppFonts.body(fontSize: 11, color: _textSec)),
           ],
         ),
       ),
@@ -518,24 +543,31 @@ class TripHubScreen extends StatelessWidget {
               size: 20,
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: _textPri,
+          // Bọc Flexible + ellipsis: tile không được tràn dù đổi tỉ lệ lưới hay
+          // gặp nhãn dài sau khi dịch sang ngôn ngữ khác.
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.heading(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: _textPri,
+                  ),
                 ),
-              ),
-              Text(
-                sub,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppFonts.body(fontSize: 11, color: _textSec),
-              ),
-            ],
+                Text(
+                  sub,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.body(fontSize: 11, color: _textSec),
+                ),
+              ],
+            ),
           ),
         ],
       ),
