@@ -1,616 +1,225 @@
-import 'dart:ui';
-import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../../core/app_messenger.dart';
-class AchievementUnlockScreen extends StatefulWidget {
-  final bool isDarkMode;
-  final VoidCallback? onThemeToggle;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-  const AchievementUnlockScreen({
-    super.key,
-    this.isDarkMode = false,
-    this.onThemeToggle,
+import '../../../core/network/api_client.dart';
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+
+/// Một danh hiệu và tiến độ đạt được của user.
+class Badge {
+  final String id;
+  final String title;
+  final String desc;
+  final int current;
+  final int target;
+  final bool unlocked;
+
+  const Badge({
+    required this.id,
+    required this.title,
+    required this.desc,
+    required this.current,
+    required this.target,
+    required this.unlocked,
   });
 
-  @override
-  State<AchievementUnlockScreen> createState() =>
-      _AchievementUnlockScreenState();
+  int get percent =>
+      target <= 0 ? 0 : ((current / target) * 100).clamp(0, 100).round();
+
+  factory Badge.fromJson(Map<String, dynamic> j) {
+    final p = j['progress'];
+    return Badge(
+      id: j['id'] as String? ?? '',
+      title: j['title'] as String? ?? '',
+      desc: j['desc'] as String? ?? '',
+      current: (p is Map ? (p['current'] as num?)?.toInt() : 0) ?? 0,
+      target: (p is Map ? (p['target'] as num?)?.toInt() : 1) ?? 1,
+      unlocked: j['unlocked'] as bool? ?? false,
+    );
+  }
 }
 
-class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _glowController;
-  late AnimationController _entranceController;
-  late AnimationController _particleController;
-  late Animation<double> _glowAnim;
-  late Animation<double> _scaleAnim;
-  late Animation<double> _slideAnim;
-  late Animation<double> _particleAnim;
+final badgesProvider = FutureProvider<List<Badge>>((ref) async {
+  final data = await ref.watch(apiClientProvider).getData('/users/me/badges');
+  if (data is! List) return const [];
+  return data
+      .whereType<Map>()
+      .map((e) => Badge.fromJson(e.cast<String, dynamic>()))
+      .toList();
+});
+
+/// Danh hiệu đã mở khoá và tiến độ tới các danh hiệu còn lại.
+///
+/// Trước đây màn này là một màn hình ăn mừng in cứng: "Level 4 Reached",
+/// "RARITY: MYTHIC", "1,200 / 2,000 to Lvl 5" — không đọc dữ liệu nào và có
+/// nút chỉ hiện "Tính năng đang được hoàn thiện 🚧". Nay lấy danh hiệu thật từ
+/// `/users/me/badges`, tiến độ đếm từ số chuyến, khoản chi đã trả và check-in.
+class AchievementUnlockScreen extends ConsumerWidget {
+  const AchievementUnlockScreen({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    _glowController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
-
-    _entranceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    )..forward();
-
-    _particleController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
-
-    _glowAnim = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
-    );
-    _scaleAnim = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _entranceController, curve: Curves.elasticOut),
-    );
-    _slideAnim = Tween<double>(begin: 40, end: 0).animate(
-      CurvedAnimation(parent: _entranceController, curve: Curves.easeOut),
-    );
-    _particleAnim = Tween<double>(begin: 0, end: 1.0).animate(
-      CurvedAnimation(parent: _particleController, curve: Curves.linear),
-    );
-  }
-
-  @override
-  void dispose() {
-    _glowController.dispose();
-    _entranceController.dispose();
-    _particleController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
-    final bg = isDark ? const Color(0xFF080818) : const Color(0xFFF0EEFF);
-    final surface = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.white.withValues(alpha: 0.75);
-    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A2E);
-    final textSecondary = isDark
-        ? Colors.white.withValues(alpha: 0.55)
-        : const Color(0xFF1A1A2E).withValues(alpha: 0.55);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: bg,
-      body: Stack(
-        children: [
-          // Purple ambient
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(color: Colors.transparent),
-            ),
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: ink),
+        title: Text(
+          'games.badges_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
           ),
-
-          // Particle-like dots
-          AnimatedBuilder(
-            animation: _particleAnim,
-            builder: (context, child) {
-              return Stack(
-                children: [
-                  _buildParticle(0.15, 0.12, _particleAnim.value, 0.0),
-                  _buildParticle(0.75, 0.08, _particleAnim.value, 0.3),
-                  _buildParticle(0.85, 0.25, _particleAnim.value, 0.6),
-                  _buildParticle(0.1, 0.35, _particleAnim.value, 0.15),
-                  _buildParticle(0.65, 0.18, _particleAnim.value, 0.45),
-                  _buildParticle(0.45, 0.05, _particleAnim.value, 0.7),
-                ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: ink),
+            onPressed: () => ref.invalidate(badgesProvider),
+          ),
+        ],
+      ),
+      body: ref
+          .watch(badgesProvider)
+          .when(
+            loading: () =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            error: (e, _) => AppErrorState(
+              isDark: isDark,
+              error: e,
+              onRetry: () => ref.invalidate(badgesProvider),
+            ),
+            data: (badges) {
+              if (badges.isEmpty) {
+                return AppEmptyState(
+                  isDark: isDark,
+                  icon: Icons.emoji_events_outlined,
+                  title: 'games.badges_title'.tr(),
+                  body: 'games.badges_empty'.tr(),
+                );
+              }
+              final unlocked = badges.where((b) => b.unlocked).length;
+              return RefreshIndicator(
+                onRefresh: () async => ref.invalidate(badgesProvider),
+                child: ListView(
+                  padding: const EdgeInsets.all(GenZTokens.space5),
+                  children: [
+                    _summary(isDark, unlocked, badges.length),
+                    const SizedBox(height: GenZTokens.space5),
+                    for (final b in badges) ...[
+                      _card(isDark, b),
+                      const SizedBox(height: GenZTokens.space4),
+                    ],
+                  ],
+                ),
               );
             },
           ),
+    );
+  }
 
-          SafeArea(
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
-                  child: Row(
-                    children: [
-                      _buildGlassButton(
-                        icon: Icons.arrow_back,
-                        onTap: () => Navigator.pop(context),
-                        isDark: isDark,
-                      ),
-                      const Spacer(),
-                      // Achievement Unlocked badge
-                      AnimatedBuilder(
-                        animation: _glowAnim,
-                        builder: (context, child) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: const Color(
-                                0xFFC9B8FF,
-                              ).withValues(alpha: 0.5 * _glowAnim.value),
-                            ),
-                            color: const Color(
-                              0xFF7B2FF7,
-                            ).withValues(alpha: 0.15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFFC9B8FF,
-                                ).withValues(alpha: 0.2 * _glowAnim.value),
-                                blurRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text('✨', style: TextStyle(fontSize: 12)),
-                              const SizedBox(width: 6),
-                              Text(
-                                'Achievement Unlocked',
-                                style: AppFonts.heading(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFFC9B8FF),
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      _buildGlassButton(
-                        icon: isDark
-                            ? Icons.light_mode_outlined
-                            : Icons.dark_mode_outlined,
-                        onTap: widget.onThemeToggle ?? () {},
-                        isDark: isDark,
-                      ),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: AnimatedBuilder(
-                      animation: _entranceController,
-                      builder: (context, child) => Transform.translate(
-                        offset: Offset(0, _slideAnim.value),
-                        child: Opacity(
-                          opacity: _entranceController.value,
-                          child: child,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 16),
-
-                          // Title
-                          Text(
-                            'new personality trait unlocked✨',
-                            style: AppFonts.heading(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w900,
-                              color: textPrimary,
-                              height: 1.2,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          Text(
-                            'your chaos is evolving.',
-                            style: AppFonts.body(
-                              fontSize: 14,
-                              color: textSecondary,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-
-                          const SizedBox(height: 36),
-
-                          // Main badge
-                          AnimatedBuilder(
-                            animation: _glowAnim,
-                            builder: (context, child) => AnimatedBuilder(
-                              animation: _scaleAnim,
-                              builder: (ctx, c) => Transform.scale(
-                                scale: _scaleAnim.value,
-                                child: Container(
-                                  width: 220,
-                                  height: 220,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(40),
-                                    color: Color(0xFF7B2FF7),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFF7B2FF7)
-                                            .withValues(
-                                              alpha: 0.5 * _glowAnim.value,
-                                            ),
-                                        blurRadius: 0,
-                                        spreadRadius: 8,
-                                      ),
-                                      BoxShadow(
-                                        color: const Color(0xFFC9B8FF)
-                                            .withValues(
-                                              alpha: 0.3 * _glowAnim.value,
-                                            ),
-                                        blurRadius: 0,
-                                        spreadRadius: 15,
-                                      ),
-                                    ],
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: BackdropFilter(
-                                      filter: ImageFilter.blur(
-                                        sigmaX: 0,
-                                        sigmaY: 0,
-                                      ),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Colors.white.withValues(
-                                                alpha: 0.15,
-                                              ),
-                                              Colors.transparent,
-                                            ],
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            // RARITY badge
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 4,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                color: Colors.white.withValues(
-                                                  alpha: 0.2,
-                                                ),
-                                              ),
-                                              child: Text(
-                                                'RARITY: MYTHIC',
-                                                style: AppFonts.heading(
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.w800,
-                                                  letterSpacing: 2,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 14),
-                                            const Icon(
-                                              Icons.local_fire_department,
-                                              color: Colors.white,
-                                              size: 56,
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Text(
-                                              'Chaos King',
-                                              style: AppFonts.heading(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w900,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            Text(
-                                              'Level 4 Reached',
-                                              style: AppFonts.body(
-                                                fontSize: 12,
-                                                color: Colors.white.withValues(
-                                                  alpha: 0.8,
-                                                ),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 32),
-
-                          // XP gained
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                              child: Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: surface,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: const Color(0xFFC9B8FF),
-                                    width: 2,
-                                  ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              100,
-                                            ),
-                                            color: Color(0xFF7B2FF7),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: const Color(
-                                                  0xFF7B2FF7,
-                                                ).withValues(alpha: 0.4),
-                                                blurRadius: 0,
-                                              ),
-                                            ],
-                                          ),
-                                          child: Text(
-                                            '+500 XP',
-                                            style: AppFonts.heading(
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.w900,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    // XP Progress bar
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Level 4',
-                                              style: AppFonts.body(
-                                                fontSize: 11,
-                                                color: textSecondary,
-                                              ),
-                                            ),
-                                            Text(
-                                              'Level 5',
-                                              style: AppFonts.body(
-                                                fontSize: 11,
-                                                color: textSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 6),
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            100,
-                                          ),
-                                          child: LinearProgressIndicator(
-                                            value: 1200 / 2000,
-                                            minHeight: 8,
-                                            backgroundColor: const Color(
-                                              0xFFC9B8FF,
-                                            ).withValues(alpha: 0.15),
-                                            valueColor:
-                                                const AlwaysStoppedAnimation(
-                                                  Color(0xFFC9B8FF),
-                                                ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Center(
-                                          child: Text(
-                                            '1,200 / 2,000 to Lvl 5',
-                                            style: AppFonts.body(
-                                              fontSize: 12,
-                                              color: textSecondary,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Share button
-                          AnimatedBuilder(
-                            animation: _glowAnim,
-                            builder: (context, child) => Container(
-                              width: double.infinity,
-                              height: 58,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: Color(0xFF7B2FF7),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFF7B2FF7,
-                                    ).withValues(alpha: 0.4 * _glowAnim.value),
-                                    blurRadius: 0,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(100),
-                                  onTap: () => showGlobalSnack(
-                                    'Tính năng đang được hoàn thiện 🚧',
-                                  ),
-                                  child: Center(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(
-                                          Icons.share,
-                                          color: Colors.white,
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Share the Chaos',
-                                          style: AppFonts.heading(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Collect button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 58,
-                            child: OutlinedButton(
-                              onPressed: () => showGlobalSnack(
-                                'Tính năng đang được hoàn thiện 🚧',
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: const Color(
-                                    0xFFC9B8FF,
-                                  ).withValues(alpha: 0.4),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                              ),
-                              child: Text(
-                                'Collect Reward',
-                                style: AppFonts.heading(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFFC9B8FF),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 40),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+  Widget _summary(bool isDark, int unlocked, int total) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(GenZTokens.space5),
+      decoration: BoxDecoration(
+        color: GenZTokens.yellow,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(
+          color: GenZTokens.ink,
+          width: GenZTokens.borderWidth,
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            '$unlocked / $total',
+            style: AppFonts.heading(
+              fontSize: 34,
+              fontWeight: FontWeight.w900,
+              color: GenZTokens.ink,
             ),
+          ),
+          Text(
+            'games.badges_unlocked'.tr(),
+            style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildParticle(
-    double xFactor,
-    double yFactor,
-    double t,
-    double offset,
-  ) {
-    final size = MediaQuery.of(context).size;
-    final phase = (t + offset) % 1.0;
-    final opacity = (phase < 0.5 ? phase : 1 - phase) * 0.6;
-    return Positioned(
-      left: xFactor * size.width,
-      top: (yFactor + phase * 0.2) * size.height,
-      child: Opacity(
-        opacity: opacity,
-        child: Container(
-          width: 4,
-          height: 4,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color(0xFFC9B8FF),
-          ),
+  Widget _card(bool isDark, Badge b) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+
+    return Container(
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      decoration: BoxDecoration(
+        color: b.unlocked ? GenZTokens.green.withValues(alpha: 0.18) : surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(
+          color: ink,
+          width: b.unlocked
+              ? GenZTokens.borderWidth
+              : GenZTokens.borderWidthThin,
         ),
       ),
-    );
-  }
-
-  Widget _buildGlassButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    required bool isDark,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(50),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-          child: Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.05),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.black,
-                width: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                b.unlocked ? Icons.emoji_events : Icons.lock_outline,
+                size: 20,
+                color: b.unlocked ? GenZTokens.success : inkSoft,
+              ),
+              const SizedBox(width: GenZTokens.space3),
+              Expanded(
+                child: Text(
+                  b.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: ink,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            b.desc,
+            style: AppFonts.body(fontSize: 12.5, color: inkSoft, height: 1.4),
+          ),
+          const SizedBox(height: GenZTokens.space3),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: b.percent / 100,
+              minHeight: 8,
+              backgroundColor: inkSoft.withValues(alpha: 0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                b.unlocked ? GenZTokens.success : GenZTokens.orange,
               ),
             ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-            ),
           ),
-        ),
+          const SizedBox(height: 4),
+          Text(
+            '${b.current} / ${b.target}',
+            style: AppFonts.body(fontSize: 12, color: inkSoft),
+          ),
+        ],
       ),
     );
   }
