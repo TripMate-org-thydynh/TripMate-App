@@ -27,6 +27,7 @@
     "view_match": "Xem Match"
   },
   "ai": {
+    "matey_intro": "Hỏi Matey bất cứ điều gì về chuyến đi — lên lịch trình, chia tiền, hay gợi ý chỗ chơi. Gõ câu hỏi ở dưới nha!",
     "mood_tension": "Độ hỗn loạn",
     "mood_title": "Tâm trạng squad 🎭",
     "personality_empty": "AI chưa có gì để phân tích. Thêm thành viên và vài khoản chi rồi quay lại nha!",

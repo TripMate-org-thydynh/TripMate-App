@@ -172,3 +172,48 @@ final suggestedPromptsProvider = FutureProvider<List<SuggestedPrompt>>((
       .map((e) => SuggestedPrompt.fromJson(e.cast<String, dynamic>()))
       .toList();
 });
+
+/// Trò chuyện với Matey AI qua `POST /ai/request`.
+class MateyChatService {
+  final ApiClient _client;
+  MateyChatService(this._client);
+
+  /// Gửi câu hỏi và trả về câu trả lời dạng văn bản.
+  ///
+  /// BE lưu kết quả dạng JSON theo từng `type`; ở đây dùng `ITINERARY_PLAN`
+  /// (loại tổng quát nhất) rồi rút phần chữ để hiện trong bong bóng chat.
+  Future<String> ask({required String prompt, String? tripId}) async {
+    final data = await _client.postData('/ai/request', {
+      'type': 'ITINERARY_PLAN',
+      'prompt': prompt,
+      'tripId': ?tripId,
+    });
+    final res = (data is Map) ? data['response'] : null;
+    return _textOf(res) ?? prompt;
+  }
+
+  /// Lấy đoạn chữ dài nhất trong JSON trả về — mỗi loại yêu cầu có khoá khác
+  /// nhau (`analysis`, `roastText`, `recapScript`...), nên không cố định khoá.
+  String? _textOf(Object? node) {
+    if (node is String) return node.trim().isEmpty ? null : node;
+    if (node is List) {
+      final parts = node.map(_textOf).whereType<String>();
+      return parts.isEmpty ? null : parts.join('\n\n');
+    }
+    if (node is Map) {
+      String? best;
+      for (final v in node.values) {
+        final t = _textOf(v);
+        if (t != null && (best == null || t.length > best.length)) {
+          best = t;
+        }
+      }
+      return best;
+    }
+    return null;
+  }
+}
+
+final mateyChatProvider = Provider<MateyChatService>(
+  (ref) => MateyChatService(ref.watch(apiClientProvider)),
+);

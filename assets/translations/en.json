@@ -27,6 +27,7 @@
     "view_match": "View Match"
   },
   "ai": {
+    "matey_intro": "Ask Matey anything about your trip — planning, splitting costs, or where to go next. Type below!",
     "mood_tension": "Chaos level",
     "mood_title": "Squad mood 🎭",
     "personality_empty": "Nothing to analyse yet. Add members and a few expenses, then come back!",

@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/app_messenger.dart';
+import '../../../core/network/api_exception.dart';
+import '../../gamification/data/games_repository.dart';
+import '../data/ai_repository.dart';
+
+import 'package:tripmate/core/theme/app_fonts.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
 
-class MateyAiEmotionalChaosScreen extends StatefulWidget {
+class MateyAiEmotionalChaosScreen extends ConsumerStatefulWidget {
   const MateyAiEmotionalChaosScreen({super.key});
 
   @override
-  State<MateyAiEmotionalChaosScreen> createState() =>
+  ConsumerState<MateyAiEmotionalChaosScreen> createState() =>
       _MateyAiEmotionalChaosScreenState();
 }
 
 class _MateyAiEmotionalChaosScreenState
-    extends State<MateyAiEmotionalChaosScreen>
+    extends ConsumerState<MateyAiEmotionalChaosScreen>
     with TickerProviderStateMixin {
   late final AnimationController _orbFloatController;
   late final AnimationController _typingController;
@@ -22,43 +29,15 @@ class _MateyAiEmotionalChaosScreenState
   bool _isDarkMode =
       true; // State of theme, will default to system or manual switch
 
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'type': 'ai',
-      'text':
-          'You probably shouldn’t schedule 5 cafes in 2 hours 😭 Trừ khi các bồ muốn cả team xỉu up xỉu down vibrating through the streets of Tokyo. Let\'s space it out a bit?',
-      'time': 'just now',
-      'likes': 12,
-    },
-    {
-      'type': 'alert_broke',
-      'title': 'broke alert',
-      'text':
-          'That omakase place is gonna eat 40% of the daily budget. Tìm quán khác hạt dẻ hơn nha?',
-    },
-    {
-      'type': 'alert_weather',
-      'title': 'weather savior',
-      'text':
-          'rain detected ☔ saving the vibe... Trời sắp mưa rào rùi, tui đổi Tsukiji Market sang chiều nha?',
-    },
-    {
-      'type': 'user',
-      'text':
-          'Fair point. What\'s a good alternative near Shibuya right now? Cần chỗ nào aesthetic xíu để sống ảo nha.',
-      'time': 'just now',
-    },
-    {
-      'type': 'vibe_match',
-      'title': 'vibe match',
-      'placeName': 'Neon Light Cafe',
-      'match': '98% match',
-      'text':
-          '"Đỉnh chóp luôn. Góc này lên hình bao cháy, matches your squad\'s chaotic energy perfectly."',
-      'imageUrl':
-          'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&auto=format&fit=crop&q=80',
-    },
-  ];
+  /// Hội thoại bắt đầu rỗng.
+  ///
+  /// Trước đây danh sách này dựng sẵn 5 tin nhắn về Tokyo/Shibuya/omakase —
+  /// cùng "vibe match 98%" cho Neon Light Cafe — nên ai mở Matey AI cũng thấy
+  /// một cuộc trò chuyện mình chưa từng có, về một chuyến không tồn tại.
+  final List<Map<String, dynamic>> _messages = [];
+
+  /// Đang chờ AI trả lời — dùng để hiện chấm gõ phím và khoá nút gửi.
+  bool _isThinking = false;
 
   @override
   void initState() {
@@ -83,40 +62,48 @@ class _MateyAiEmotionalChaosScreenState
     super.dispose();
   }
 
-  void _sendMessage() {
-    if (_textController.text.trim().isEmpty) return;
+  Future<void> _sendMessage() async {
+    final text = _textController.text.trim();
+    if (text.isEmpty || _isThinking) return;
     setState(() {
-      _messages.add({
-        'type': 'user',
-        'text': _textController.text.trim(),
-        'time': 'just now',
-      });
+      _messages.add({'type': 'user', 'text': text, 'time': 'just now'});
       _textController.clear();
+      _isThinking = true;
     });
+    _scrollToBottom();
 
-    // Auto scroll to bottom
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-
-    // Mock bot quick response
-    Future.delayed(const Duration(seconds: 1), () {
+    try {
+      // Gọi AI thật. Trước đây chỗ này chỉ `Future.delayed(1s)` rồi thêm một
+      // câu trả lời in cứng — Matey "trả lời" y hệt nhau bất kể hỏi gì.
+      final tripId = ref.read(activeTripIdProvider);
+      final reply = await ref
+          .read(mateyChatProvider)
+          .ask(prompt: text, tripId: tripId);
       if (!mounted) return;
       setState(() {
-        _messages.add({
-          'type': 'ai',
-          'text':
-              'OMG 😱 Đã ghi nhận ý kiến! Để tui tính toán lại lịch trình tối nay cho cả đội quẩy tẹt ga nha! ⚡🕺',
-          'time': 'just now',
-          'likes': 0,
-        });
+        _messages.add({'type': 'ai', 'text': reply, 'time': 'just now', 'likes': 0});
+        _isThinking = false;
       });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isThinking = false);
+      // Nói rõ AI đang bận thay vì im lặng hoặc bịa câu trả lời.
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
+    _scrollToBottom();
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     });
   }
 
@@ -167,6 +154,23 @@ class _MateyAiEmotionalChaosScreenState
 
                         const SizedBox(height: 16),
 
+                        // Lời mời mở đầu khi chưa hỏi gì — trước đây chỗ này
+                        // là 5 tin nhắn dựng sẵn về một chuyến Tokyo không có
+                        // thật.
+                        if (_messages.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: Text(
+                              'ai.matey_intro'.tr(),
+                              textAlign: TextAlign.center,
+                              style: AppFonts.body(
+                                fontSize: 14,
+                                color: textSecondary,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+
                         // Chat Flow list
                         ListView.builder(
                           shrinkWrap: true,
@@ -214,12 +218,14 @@ class _MateyAiEmotionalChaosScreenState
                           },
                         ),
 
-                        // Typing indicator
-                        _buildTypingIndicator(
-                          glassBg,
-                          glassBorder,
-                          primaryColor,
-                        ),
+                        // Chấm gõ phím chỉ hiện khi ĐANG chờ AI — trước đây
+                        // nó chạy vĩnh viễn, làm như Matey luôn sắp trả lời.
+                        if (_isThinking)
+                          _buildTypingIndicator(
+                            glassBg,
+                            glassBorder,
+                            primaryColor,
+                          ),
 
                         const SizedBox(height: 120), // Bottom input spacing
                       ],
