@@ -18,7 +18,7 @@ class WeatherData {
     required this.description,
     required this.icon,
     required this.color,
-    this.details = 'saving the vibe',
+    this.details = '',
     required this.daily,
   });
 }
@@ -100,7 +100,9 @@ class WeatherService {
         description: mappedCurrent.desc,
         icon: mappedCurrent.icon,
         color: mappedCurrent.color,
-        details: hasRainSoon ? 'Cảnh báo mưa/giông bão sắp tới ☔' : 'Trời đẹp lắm, quẩy thôi! ✨',
+        details: hasRainSoon
+            ? 'weather.rain_warning'.tr()
+            : 'weather.nice_day'.tr(),
         daily: dailyList,
       );
     } catch (e) {
@@ -111,7 +113,7 @@ class WeatherService {
         description: 'weather.cond_scattered_clouds'.tr(),
         icon: Icons.cloud_queue_outlined,
         color: GenZTokens.lilac,
-        details: 'Đang tải thời tiết... stay chill ☕',
+        details: 'weather.unavailable'.tr(),
         daily: List.generate(
           16,
           (index) => DailyForecast(

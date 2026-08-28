@@ -1,170 +1,230 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SquadXpSystemScreen extends StatelessWidget {
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../data/games_repository.dart';
+import '../widgets/game_state_views.dart';
+
+/// Hệ thống XP của squad.
+///
+/// XP do backend tính từ hoạt động THẬT của chuyến (lịch trình, chi tiêu,
+/// khoảnh khắc, mini game, bình chọn, thành viên). Trước đây màn này hiện cứng
+/// level 4 / 1420 XP và 3 "đặc quyền" không tồn tại, giống hệt nhau cho mọi
+/// tài khoản.
+class SquadXpSystemScreen extends ConsumerWidget {
   const SquadXpSystemScreen({super.key});
 
-  final int _currentXP = 1420;
-  final int _nextLevelXP = 2500;
-  final int _squadLevel = 4;
-
-  final List<String> _unlockedPerks = const [
-    'Voucher Kyoto Ryokan 10% 🏠',
-    'Theme App Độc Quyền 🌌',
-    'Gói Sticker Biểu Cảm Hỗn Loạn 😜',
-  ];
-
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final progress = _currentXP / _nextLevelXP;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF141210)
-          : const Color(0xFFFDF6D3),
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black87,
-          ),
-          onPressed: () => Navigator.pop(context),
+        iconTheme: IconThemeData(
+          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
         ),
-        title: const Text(
-          'Hệ Thống Squad XP 🚀',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          'games.xp_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+          ),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            // Circular level visual progress indicator
-            Card(
-              color: isDark ? const Color(0xFF262019) : Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
+      body: tripId == null
+          ? GameEmptyState(
+              isDark: isDark,
+              icon: Icons.rocket_launch_outlined,
+              title: 'games.need_trip_title'.tr(),
+              body: 'games.need_trip_body'.tr(),
+            )
+          : ref
+                .watch(squadXpProvider(tripId))
+                .when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  error: (e, _) => GameErrorState(
+                    isDark: isDark,
+                    onRetry: () => ref.invalidate(squadXpProvider(tripId)),
+                  ),
+                  data: (xp) => _content(context, isDark, xp),
+                ),
+    );
+  }
+
+  Widget _content(BuildContext context, bool isDark, SquadXp xp) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+
+    return ListView(
+      padding: const EdgeInsets.all(GenZTokens.space5),
+      children: [
+        // ── Vòng tiến độ level ──
+        Container(
+          padding: const EdgeInsets.all(GenZTokens.space5),
+          decoration: BoxDecoration(
+            color: GenZTokens.purple,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            border: Border.all(color: ink, width: GenZTokens.borderWidth),
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 140,
+                height: 140,
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    Stack(
-                      alignment: Alignment.center,
+                    SizedBox(
+                      width: 140,
+                      height: 140,
+                      child: CircularProgressIndicator(
+                        value: xp.levelProgress,
+                        strokeWidth: 12,
+                        backgroundColor: Colors.white.withValues(alpha: 0.25),
+                        valueColor: const AlwaysStoppedAnimation(
+                          GenZTokens.yellow,
+                        ),
+                      ),
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(
-                          width: 150,
-                          height: 150,
-                          child: CircularProgressIndicator(
-                            value: progress,
-                            strokeWidth: 12,
-                            backgroundColor: isDark
-                                ? Colors.grey[800]
-                                : Colors.grey[200],
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              Colors.purpleAccent,
-                            ),
+                        Text(
+                          'games.level_short'.tr(),
+                          style: AppFonts.mono(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white.withValues(alpha: 0.85),
                           ),
                         ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'LEVEL',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: isDark
-                                    ? Colors.grey[400]
-                                    : Colors.grey[600],
-                              ),
-                            ),
-                            Text(
-                              '$_squadLevel',
-                              style: TextStyle(
-                                fontSize: 48,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          '${xp.squadLevel}',
+                          style: AppFonts.heading(
+                            fontSize: 44,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      '$_currentXP / $_nextLevelXP XP',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purpleAccent,
+                  ],
+                ),
+              ),
+              const SizedBox(height: GenZTokens.space4),
+              Text(
+                '${xp.currentXP} / ${xp.nextLevelXP} XP',
+                style: AppFonts.mono(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                xp.xpToNextLevel == 0
+                    ? 'games.level_ready'.tr()
+                    : 'games.xp_to_next'.tr(
+                        namedArgs: {'xp': '${xp.xpToNextLevel}'},
+                      ),
+                textAlign: TextAlign.center,
+                style: AppFonts.body(
+                  fontSize: 13,
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: GenZTokens.space5),
+
+        // ── XP đến từ đâu ──
+        Text(
+          'games.xp_breakdown'.tr(),
+          style: AppFonts.heading(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: ink,
+          ),
+        ),
+        const SizedBox(height: GenZTokens.space3),
+        if (xp.currentXP == 0)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(GenZTokens.space5),
+            decoration: BoxDecoration(
+              color: surface,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(
+                color: ink.withValues(alpha: 0.25),
+                width: GenZTokens.borderWidthThin,
+              ),
+            ),
+            child: Text(
+              'games.xp_zero'.tr(),
+              textAlign: TextAlign.center,
+              style: AppFonts.body(fontSize: 13, color: inkSoft),
+            ),
+          )
+        else
+          ...xp.breakdown.where((b) => b.count > 0).map(
+            (b) => Padding(
+              padding: const EdgeInsets.only(bottom: GenZTokens.space2),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: GenZTokens.space4,
+                  vertical: GenZTokens.space3,
+                ),
+                decoration: BoxDecoration(
+                  color: surface,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                  border: Border.all(
+                    color: ink,
+                    width: GenZTokens.borderWidthThin,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        b.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppFonts.body(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: ink,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
                     Text(
-                      'Cần thêm 1,080 XP để thăng cấp tiếp theo và nhận các đặc quyền du lịch cực khủng!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        fontSize: 12,
+                      '×${b.count}',
+                      style: AppFonts.mono(fontSize: 12, color: inkSoft),
+                    ),
+                    const SizedBox(width: GenZTokens.space3),
+                    Text(
+                      '+${b.xp}',
+                      style: AppFonts.mono(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: GenZTokens.green,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-
-            const SizedBox(height: 28),
-
-            // Squad Perks unlocked
-            Row(
-              children: [
-                const Icon(Icons.stars, color: Colors.purpleAccent),
-                const SizedBox(width: 8),
-                Text(
-                  'Đặc Quyền Đã Mở Khóa 🎁',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _unlockedPerks.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Card(
-                    color: isDark ? const Color(0xFF262019) : Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        _unlockedPerks[index],
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
+      ],
     );
   }
 }

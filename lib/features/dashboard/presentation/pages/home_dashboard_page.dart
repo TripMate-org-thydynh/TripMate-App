@@ -3,6 +3,7 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../moments/data/moments_repository.dart';
+import '../../data/home_feed_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
@@ -14,8 +15,6 @@ import '../widgets/social_chaos_marquee.dart';
 import '../widgets/weather_forecast_sheet.dart';
 import '../widgets/upcoming_reservations_widget.dart';
 import '../widgets/friend_presence_panel.dart';
-import '../widgets/squad_mood_widget.dart';
-import '../widgets/emergency_sos_widget.dart';
 import '../widgets/daily_recap_widget.dart';
 import '../widgets/quick_actions_panel.dart';
 import '../../../moments/presentation/pages/memory_wall_screen.dart';
@@ -217,31 +216,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ),
         ),
 
-        // ── 7. SQUAD MOOD ──
-        SliverToBoxAdapter(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: const SquadMoodWidget(),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-
-        // ── 8. EMERGENCY SOS ──
-        SliverToBoxAdapter(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: const EmergencySosWidget(),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
+        // Đã gỡ 2 khối "Squad Mood" và "Emergency SOS": cả hai không có nguồn dữ
+        // liệu nào ở backend — Squad Mood luôn hiện "CHAOTIC 85%" cứng, còn SOS
+        // quảng cáo phát toạ độ GPS cố định trong khi app không xin quyền vị trí.
+        // Khôi phục khi có API thật đằng sau.
 
         // ── 9. DAILY RECAP ──
         SliverToBoxAdapter(
@@ -321,8 +299,9 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                       child: Text(
                         _isLoadingWeather
                             ? 'dashboard.weather_checking'.tr()
-                            : (_weatherData?.details ??
-                                  'dashboard.weather_saving_vibe'.tr()),
+                            : (_weatherData?.details.isNotEmpty == true
+                                  ? _weatherData!.details
+                                  : 'weather.unavailable'.tr()),
                         style: AppFonts.body(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -351,95 +330,158 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         ),
         const SizedBox(width: 12),
         // ── Up Next Card ──
+        // Đọc điểm lịch trình kế tiếp THẬT (/users/me/up-next). Trước đây thẻ
+        // này hiện cứng "Night Market Chaos · Uber XL arriving soon · Nam not
+        // ready" cho cả tài khoản chưa có chuyến nào.
         Expanded(
-          child: HardShadowBox(
-            color: _paper,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Consumer(
+            builder: (context, ref, _) {
+              final async = ref.watch(upNextProvider);
+              return HardShadowBox(
+                color: _paper,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'dashboard.up_next'.tr(),
-                      style: AppFonts.mono(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                        color: _inkSoft,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'dashboard.up_next'.tr(),
+                            style: AppFonts.mono(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                              color: _inkSoft,
+                            ),
+                          ),
+                        ),
+                        async.maybeWhen(
+                          data: (item) => item == null
+                              ? const SizedBox.shrink()
+                              : PillTag(
+                                  text: 'dashboard.up_next_day'.tr(
+                                    namedArgs: {'day': '${item.day}'},
+                                  ),
+                                  color: GenZTokens.pink,
+                                ),
+                          orElse: () => const SizedBox.shrink(),
+                        ),
+                      ],
                     ),
-                    const PillTag(text: '18 mins', color: GenZTokens.pink),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'dashboard.up_next_title'.tr(),
-                  style: AppFonts.heading(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: _ink,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _bg,
-                    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-                    border: Border.all(
-                      color: _ink,
-                      width: GenZTokens.borderWidthThin,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.local_taxi_outlined, color: _ink, size: 14),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          'dashboard.up_next_transport'.tr(),
-                          style: AppFonts.body(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: _inkSoft,
+                    const SizedBox(height: 6),
+                    async.when(
+                      loading: () => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        child: Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: _inkSoft,
+                            ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: GenZTokens.red,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: _ink, width: 1.5),
+                      error: (_, _) => Text(
+                        'errors.load_failed'.tr(),
+                        style: AppFonts.body(fontSize: 11, color: _inkSoft),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        'dashboard.up_next_status'.tr(),
-                        style: AppFonts.mono(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: GenZTokens.red,
-                        ),
-                      ),
+                      data: (item) => item == null
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'dashboard.up_next_empty_title'.tr(),
+                                  style: AppFonts.heading(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: _ink,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'dashboard.up_next_empty_body'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: _inkSoft,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.placeName,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppFonts.heading(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    color: _ink,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _bg,
+                                    borderRadius: BorderRadius.circular(
+                                      GenZTokens.radiusInput,
+                                    ),
+                                    border: Border.all(
+                                      color: _ink,
+                                      width: GenZTokens.borderWidthThin,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.schedule_outlined,
+                                        color: _ink,
+                                        size: 14,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          item.startTime,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppFonts.body(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                            color: _inkSoft,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  item.tripName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppFonts.mono(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    color: _inkSoft,
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ],
@@ -561,78 +603,95 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     );
   }
 
+  /// Cụm avatar squad trên header.
+  ///
+  /// Trước đây là 3 ảnh stock hardcode + nhãn "+2" cố định, hiện cả với tài
+  /// khoản chưa có chuyến nào. Nay lấy thành viên thật của chuyến gần nhất;
+  /// chưa có chuyến thì ẩn hẳn.
   Widget _buildSquadCluster() {
-    final avatars = [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB60ii0WkYusRAogyP7WxQ6KtCLjpi-fZazA3b7Hw_63SE76TTaTSYBlGn5gz8shuvpPAQIiS1UiyYmdWSciccncnq4y_m76yf0y7FTRLIYWSFqV6rjgfiwk7yPJT1DP-0RIcQ92w1a_TJZ281zFnle8zoP2y4vSggh1V1sYoi_mp4oIvRRWKhZeqIQ3rx4KJ2qUyQyZPN_fPGpu7_5Uv7xWk9Msa1Q5oU5bN8eEMtm6hEIIOo4lp4ye_DjDeIhgchKeWqQODMJtOT3',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB244M5yGCCxo4CnE1QbSwnOgbUvLW0EYlAQHgrIJaM_f_Nu4zoOioIRa_1hxA549ndJTO19XGaIGmsMVvXB0qfI2kQ28fTEAlImfIqK-8BkfrCrvA2yNCnpVqf2-SXr9-knPAtaoF5QKwxyZNaeD4lf569BT6Q0m_UTmBtw1Guj-hcrK4fYFSKLtDslymGQQxRESbhDogyXt8YneAyg--MnXiqhJBPMkTnWhIvNgcEeaN34P8fdWHmc1QttIe7PZi7wg0fbzf29Wq-',
-      'https://lh3.googleusercontent.com/aida-public/ADBb0ug71LcHZqevGgvQItUs3SyvwMN3xfSE1IVyp1j6KTWw5IJkFW5J79XpBMZVv0nXfPCbbN-VhyNK_CgQ5K3d_gVAOXSqJI5lFREzgSlT9yFpbr_nSzlV5N7MnhY6-u-xG_R5s_hCAvhQfmMajGRNBJw1I6HJcJWyZSibifRjsN7FdON-JkGS_E7h2Y07K-KVANpbLq9GJFvWz4C3AMEjvyGr3bX4_0nD4CqWXzF-cX_bJqmJyiUe7gNXXxw0rqQ',
-    ];
+    return Consumer(
+      builder: (context, ref, _) {
+        final members = ref.watch(tripsProvider).maybeWhen(
+          data: (trips) => trips.isEmpty ? const [] : trips.first.members,
+          orElse: () => const [],
+        );
+        if (members.isEmpty) return const SizedBox.shrink();
 
-    return SizedBox(
-      width: 72,
-      height: 32,
-      child: Stack(
-        children: [
-          for (int i = 0; i < 2; i++)
-            Positioned(
-              left: i * 20.0,
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: _ink, width: 2),
+        const maxShown = 2;
+        final shown = members.take(maxShown).toList();
+        final overflow = members.length - shown.length;
+        final width = shown.length * 20.0 + (overflow > 0 ? 32.0 : 12.0);
+
+        return SizedBox(
+          width: width,
+          height: 32,
+          child: Stack(
+            children: [
+              for (int i = 0; i < shown.length; i++)
+                Positioned(
+                  left: i * 20.0,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: GenZTokens.lilac,
+                      border: Border.all(color: _ink, width: 2),
+                    ),
+                    child: ClipOval(
+                      child: shown[i].avatarUrl == null
+                          ? Center(
+                              child: Text(
+                                shown[i].name.isNotEmpty
+                                    ? shown[i].name[0].toUpperCase()
+                                    : '?',
+                                style: AppFonts.mono(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: GenZTokens.ink,
+                                ),
+                              ),
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: shown[i].avatarUrl!,
+                              fit: BoxFit.cover,
+                              placeholder: (c, url) => Container(color: _bg),
+                              errorWidget: (c, url, e) => const Icon(
+                                Icons.person,
+                                size: 16,
+                                color: GenZTokens.ink,
+                              ),
+                            ),
+                    ),
+                  ),
                 ),
-                child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: avatars[i],
-                    fit: BoxFit.cover,
-                    placeholder: (context2, url) => Container(
-                      color: _bg,
-                      child: const Center(
-                        child: SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(strokeWidth: 1.5),
+              if (overflow > 0)
+                Positioned(
+                  left: shown.length * 20.0,
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).primaryColor,
+                      border: Border.all(color: _ink, width: 2),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '+$overflow',
+                        style: AppFonts.mono(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          color: GenZTokens.ink,
                         ),
                       ),
                     ),
-                    errorWidget: (context2, url, error) => Container(
-                      color: GenZTokens.lilac,
-                      child: const Icon(
-                        Icons.person,
-                        size: 16,
-                        color: GenZTokens.ink,
-                      ),
-                    ),
                   ),
                 ),
-              ),
-            ),
-          Positioned(
-            left: 40,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).primaryColor,
-                border: Border.all(color: _ink, width: 2),
-              ),
-              child: Center(
-                child: Text(
-                  '+2',
-                  style: AppFonts.mono(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: GenZTokens.ink,
-                  ),
-                ),
-              ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -846,87 +905,124 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   // ─── ROAST PANEL ─────────────────────────────────────────────────────────────
 
   Widget _buildRoastPanel(BuildContext context) {
-    return StickerCard(
-      color: _paper,
-      headerText: 'dashboard.the_roast'.tr(),
-      headerColor: GenZTokens.orange,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.local_fire_department_rounded,
-                color: GenZTokens.red,
-                size: 22,
+    // Đọc tổng hợp chi tiêu THẬT. Trước đây khối này hiện cứng
+    // "TỔNG: 500K", câu roast bịa tên người và thanh tiến độ 80% — kể cả với
+    // tài khoản chưa ghi khoản chi nào. Không có dữ liệu thì ẩn hẳn khối.
+    return Consumer(
+      builder: (context, ref, _) {
+        final async = ref.watch(expenseSummaryProvider);
+        return async.maybeWhen(
+          data: (sum) {
+            if (!sum.hasData) return const SizedBox.shrink();
+            return StickerCard(
+              color: _paper,
+              headerText: 'dashboard.the_roast'.tr(),
+              headerColor: GenZTokens.orange,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.local_fire_department_rounded,
+                        color: GenZTokens.red,
+                        size: 22,
+                      ),
+                      const Spacer(),
+                      Flexible(
+                        child: PillTag(
+                          text: 'dashboard.total_expense'.tr(
+                            namedArgs: {'amount': _fmtMoney(sum.totalAmount)},
+                          ),
+                          color: GenZTokens.pink,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (sum.topDebtorName != null) ...[
+                    const SizedBox(height: 14),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: isDarkMode
+                            ? GenZTokens.creamDark
+                            : GenZTokens.cream,
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusInput,
+                        ),
+                        border: Border.all(
+                          color: _ink,
+                          width: GenZTokens.borderWidthThin,
+                        ),
+                      ),
+                      child: Text(
+                        'dashboard.roast_owes'.tr(
+                          namedArgs: {
+                            'name': sum.topDebtorName!,
+                            'amount': _fmtMoney(sum.topDebtorAmount),
+                          },
+                        ),
+                        style: AppFonts.body(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                          color: _ink,
+                          height: 1.5,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          'dashboard.group_progress'.tr(),
+                          style: AppFonts.body(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: _inkSoft,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'dashboard.paid_label'.tr(
+                          namedArgs: {'percent': '${sum.paidPercent}'},
+                        ),
+                        style: AppFonts.mono(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: GenZTokens.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedProgress(
+                    total: sum.totalCount,
+                    completed: sum.paidCount,
+                    fillColor: GenZTokens.green,
+                  ),
+                ],
               ),
-              const Spacer(),
-              PillTag(
-                text: 'dashboard.total_expense'.tr(
-                  namedArgs: {'amount': '500k'},
-                ),
-                color: GenZTokens.pink,
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          // Roast quote — khối accent viền trái ink dày
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: isDarkMode ? GenZTokens.creamDark : GenZTokens.cream,
-              borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-              border: Border.all(
-                color: _ink,
-                width: GenZTokens.borderWidthThin,
-              ),
-            ),
-            child: Text(
-              'dashboard.roast_quote'.tr(),
-              style: AppFonts.body(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-                color: _ink,
-                height: 1.5,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Progress section — segment rời brutalist
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'dashboard.group_progress'.tr(),
-                style: AppFonts.body(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: _inkSoft,
-                ),
-              ),
-              Text(
-                'dashboard.paid_label'.tr(namedArgs: {'percent': '80'}),
-                style: AppFonts.mono(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: GenZTokens.green,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const SegmentedProgress(
-            total: 10,
-            completed: 8,
-            fillColor: GenZTokens.green,
-          ),
-        ],
-      ),
+            );
+          },
+          orElse: () => const SizedBox.shrink(),
+        );
+      },
     );
+  }
+
+  /// Rút gọn tiền cho nhãn chật: 3.000.000 → "3tr", 500000 → "500k".
+  String _fmtMoney(double v) {
+    if (v >= 1000000) {
+      final m = v / 1000000;
+      return '${m == m.roundToDouble() ? m.toStringAsFixed(0) : m.toStringAsFixed(1)}tr';
+    }
+    if (v >= 1000) return '${(v / 1000).toStringAsFixed(0)}k';
+    return v.toStringAsFixed(0);
   }
 
   // ─── SCRAPBOOK SECTION ───────────────────────────────────────────────────────

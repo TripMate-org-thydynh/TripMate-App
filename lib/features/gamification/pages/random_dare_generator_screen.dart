@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_fonts.dart';
@@ -46,18 +47,18 @@ class _RandomDareGeneratorScreenState
   double _shakeX = 0.0;
   double _shakeY = 0.0;
 
-  String _getRandomFriend(WidgetRef ref) {
-    final tripsAsync = ref.read(tripsProvider);
-    return tripsAsync.maybeWhen(
+  /// Tên một thành viên thật trong chuyến, hoặc `null` nếu chưa có chuyến.
+  ///
+  /// Trước đây fallback là 'Lê Minh' — một người không hề tồn tại, khiến thử
+  /// thách vô nghĩa với nhóm chưa có thành viên nào.
+  String? _randomFriend(WidgetRef ref) {
+    return ref.read(tripsProvider).maybeWhen(
       data: (trips) {
-        if (trips.isNotEmpty && trips.first.members.isNotEmpty) {
-          final members = trips.first.members;
-          final random = Random();
-          return members[random.nextInt(members.length)].name;
-        }
-        return 'Lê Minh';
+        if (trips.isEmpty || trips.first.members.isEmpty) return null;
+        final members = trips.first.members;
+        return members[Random().nextInt(members.length)].name;
       },
-      orElse: () => 'Lê Minh',
+      orElse: () => null,
     );
   }
 
@@ -68,7 +69,19 @@ class _RandomDareGeneratorScreenState
     });
 
     final random = Random();
-    final currentList = _daresByLevel[_selectedLevel]!;
+    final friend = _randomFriend(ref);
+    // Chưa biết thành viên nào thì bỏ các thử thách cần đích danh một người.
+    final all = _daresByLevel[_selectedLevel]!;
+    final currentList = friend == null
+        ? all.where((d) => !d.contains('{friend}')).toList()
+        : all;
+    if (currentList.isEmpty) {
+      setState(() {
+        _isGenerating = false;
+        _currentDare = 'games.dare_need_squad'.tr();
+      });
+      return;
+    }
 
     // Slot machine deceleration effect: 12 ticks
     const ticksCount = 12;
@@ -77,10 +90,9 @@ class _RandomDareGeneratorScreenState
       if (!mounted) return;
 
       final rawDare = currentList[random.nextInt(currentList.length)];
-      final friend = _getRandomFriend(ref);
 
       setState(() {
-        _currentDare = rawDare.replaceAll('{friend}', friend);
+        _currentDare = rawDare.replaceAll('{friend}', friend ?? '');
         _shakeX = (random.nextDouble() * 12) - 6;
         _shakeY = (random.nextDouble() * 12) - 6;
       });

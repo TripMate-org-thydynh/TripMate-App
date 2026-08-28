@@ -1,28 +1,43 @@
 import 'dart:async';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
+import '../../data/home_feed_repository.dart';
 
-class SocialChaosMarquee extends StatefulWidget {
+/// Dải marquee chạy các hoạt động THẬT của squad.
+///
+/// Trước đây widget này chạy một mảng câu cứng ("Phú Khang owes 420k"...) nên
+/// mọi tài khoản đều thấy y hệt nhau. Nay đọc `/users/me/activities/recent`;
+/// chưa có hoạt động nào thì dải tự ẩn thay vì bịa nội dung.
+class SocialChaosMarquee extends ConsumerWidget {
   const SocialChaosMarquee({super.key});
 
   @override
-  State<SocialChaosMarquee> createState() => _SocialChaosMarqueeState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(squadActivitiesProvider);
+    return async.maybeWhen(
+      data: (items) => items.isEmpty
+          ? const SizedBox.shrink()
+          : _MarqueeStrip(labels: items.map((a) => a.label).toList()),
+      // Đang tải hoặc lỗi: ẩn hẳn. Dải này là trang trí, không đáng để chiếm
+      // chỗ bằng spinner hay thông báo lỗi ở ngay đầu màn hình.
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
 }
 
-class _SocialChaosMarqueeState extends State<SocialChaosMarquee> {
+class _MarqueeStrip extends StatefulWidget {
+  final List<String> labels;
+  const _MarqueeStrip({required this.labels});
+
+  @override
+  State<_MarqueeStrip> createState() => _MarqueeStripState();
+}
+
+class _MarqueeStripState extends State<_MarqueeStrip> {
   late final ScrollController _scrollController;
   Timer? _timer;
-
-  final List<String> _marqueeItems = [
-    "Nam Trung added a coffee spot",
-    "Thảo Ly reacted to a moment",
-    "Phú Khang owes 420k",
-    "Minh Nhật voted for BBQ",
-    "Squad Energy: Chaotic Good (85%)",
-    "3 days left until Dalat adventure!",
-    "Packing check list updated by creator",
-  ];
 
   @override
   void initState() {
@@ -65,7 +80,10 @@ class _SocialChaosMarqueeState extends State<SocialChaosMarquee> {
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         border: Border.symmetric(
-          horizontal: BorderSide(color: GenZTokens.ink, width: GenZTokens.borderWidthThin),
+          horizontal: BorderSide(
+            color: GenZTokens.ink,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
       ),
       child: Center(
@@ -73,9 +91,9 @@ class _SocialChaosMarqueeState extends State<SocialChaosMarquee> {
           controller: _scrollController,
           scrollDirection: Axis.horizontal,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: _marqueeItems.length * 10, // Loop list
+          itemCount: widget.labels.length * 10, // Loop list
           itemBuilder: (context, index) {
-            final item = _marqueeItems[index % _marqueeItems.length];
+            final item = widget.labels[index % widget.labels.length];
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
               child: Row(

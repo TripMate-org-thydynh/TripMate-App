@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../../profile/data/bucket_list_repository.dart';
+import '../../../../core/network/api_exception.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Vibe Match dạng swipe deck (kiểu Tinder cho địa điểm).
 /// Vuốt phải = thích, vuốt trái = bỏ qua. Cuối deck hiện kết quả nhóm.
-class VibeSwipeDeckScreen extends StatefulWidget {
+class VibeSwipeDeckScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
@@ -16,10 +20,11 @@ class VibeSwipeDeckScreen extends StatefulWidget {
   });
 
   @override
-  State<VibeSwipeDeckScreen> createState() => _VibeSwipeDeckScreenState();
+  ConsumerState<VibeSwipeDeckScreen> createState() =>
+      _VibeSwipeDeckScreenState();
 }
 
-class _VibeSwipeDeckScreenState extends State<VibeSwipeDeckScreen> {
+class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   final List<_Place> _places = [
     _Place(
       'Hidden Terraces',
@@ -62,6 +67,48 @@ class _VibeSwipeDeckScreenState extends State<VibeSwipeDeckScreen> {
       'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800',
     ),
   ];
+
+  bool _saving = false;
+  bool _saved = false;
+
+  /// Lưu các nơi đã thích vào bucket list thật.
+  ///
+  /// Trước đây danh sách `_liked` chỉ nằm trong bộ nhớ rồi biến mất khi thoát
+  /// màn, dù CTA hứa "thêm vào lịch trình".
+  Future<void> _saveLikedToBucket() async {
+    if (_liked.isEmpty || _saving) return;
+    setState(() => _saving = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final repo = ref.read(bucketListRepositoryProvider);
+      for (final p in _liked) {
+        await repo.add('${p.name} · ${p.location}');
+      }
+      ref.invalidate(bucketListProvider);
+      if (!mounted) return;
+      setState(() => _saved = true);
+      HapticFeedback.mediumImpact();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('vibe_deck.saved'.tr(
+            namedArgs: {'count': '${_liked.length}'},
+          )),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   int _index = 0;
   Offset _drag = Offset.zero;
@@ -485,6 +532,40 @@ class _VibeSwipeDeckScreenState extends State<VibeSwipeDeckScreen> {
               itemBuilder: (context, i) => _resultTile(top[i], i),
             ),
           ),
+          if (_liked.isNotEmpty && !_saved) ...[
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _saving ? null : _saveLikedToBucket,
+                icon: _saving
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.bookmark_add_outlined, size: 18),
+                label: Text(
+                  'vibe_deck.save_to_bucket'.tr(),
+                  style: AppFonts.heading(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1FA85C),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -493,6 +574,7 @@ class _VibeSwipeDeckScreenState extends State<VibeSwipeDeckScreen> {
                 setState(() {
                   _index = 0;
                   _liked.clear();
+                  _saved = false;
                   _drag = Offset.zero;
                 });
               },
