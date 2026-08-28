@@ -11,7 +11,6 @@ import '../data/games_repository.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/app_messenger.dart';
 import '../../trips/application/trips_providers.dart';
 
 class WhoPaysWheelScreen extends ConsumerStatefulWidget {
@@ -346,21 +345,6 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                           fontSize: 18,
                           color: primaryColor,
                           letterSpacing: -0.5,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => showGlobalSnack(
-                          'Tính năng đang được hoàn thiện 🚧',
-                        ),
-                        icon: Icon(
-                          Icons.add_reaction_outlined,
-                          color: primaryColor,
-                        ),
-                        style: IconButton.styleFrom(
-                          backgroundColor: surfaceColor.withValues(
-                            alpha: isDark ? 0.3 : 0.8,
-                          ),
-                          shape: const CircleBorder(),
                         ),
                       ),
                     ],

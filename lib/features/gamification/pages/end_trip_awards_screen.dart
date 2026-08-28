@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../core/widgets/state_views.dart';
 import '../data/games_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +32,21 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
   ///
   /// Trước đây màn này liệt kê 5 giải cứng trao cho Minh Nhật / Thảo Ly /
   /// Nam Trung / Hoàng / Lan — những người không có trong chuyến.
+  /// Gửi bảng giải ra ngoài app (Zalo/Messenger/...).
+  Future<void> _shareAwards(List<Map<String, dynamic>> awards) async {
+    if (awards.isEmpty) {
+      showGlobalSnack(tr('games.awards_empty'));
+      return;
+    }
+    final lines = awards
+        .map((a) => '${a['emoji']} ${a['label']}: ${a['winner']}')
+        .join('\n');
+    await Share.share(
+      '${tr('games.awards_title')}\n$lines',
+      subject: 'TripMate — ${tr('games.awards_title')}',
+    );
+  }
+
   List<Map<String, dynamic>> _buildAwards(List<LeaderboardRow> rows) {
     if (rows.isEmpty) return const [];
 
@@ -337,9 +353,9 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(100),
-                                onTap: () => showGlobalSnack(
-                                  'Tính năng đang được hoàn thiện 🚧',
-                                ),
+                                // Chia sẻ THẬT danh sách giải. Trước đây nút
+                                // này chỉ hiện "đang được hoàn thiện".
+                                onTap: () => _shareAwards(awards),
                                 child: Center(
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
