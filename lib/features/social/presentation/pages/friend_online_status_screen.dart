@@ -1,7 +1,6 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class FriendOnlineStatusScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -48,28 +47,27 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
     final isDark = widget.isDarkMode;
 
     // Color system
-    const darkBg = Color(0xFF0B1326);
-    const darkSurface = Color(0xFF171F33);
-    const primary = Color(0xFFD0BCFF);
+    const darkBg = Color(0xFF1A1712);
+    const darkSurface = Color(0xFF262019);
+    const primary = Color(0xFFC9B8FF);
     const primaryLight = Color(0xFF6D3BD7);
-    const secondary = Color(0xFF45DFA4);
+    const secondary = Color(0xFF1FA85C);
     const secondaryLight = Color(0xFF059669);
     const errorColor = Color(0xFFFFB4AB);
-    const lightBg = Color(0xFFFCFAF6);
+    const lightBg = Color(0xFFFDF6D3);
 
     final bgColor = isDark ? darkBg : lightBg;
     final surfaceColor = isDark ? darkSurface : Colors.white;
     final primaryColor = isDark ? primary : primaryLight;
     final secondaryColor = isDark ? secondary : secondaryLight;
     final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A2E);
-    final textSecondary =
-        isDark ? Colors.white60 : const Color(0xFF6B7280);
+    final textSecondary = isDark ? Colors.white60 : const Color(0xFF4A453E);
 
     final List<_SquadMember> members = [
       _SquadMember(
         name: 'Minh Nhật',
         initial: 'M',
-        avatarColor: isDark ? const Color(0xFF7C3AED) : const Color(0xFF8B5CF6),
+        avatarColor: isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B),
         ringColor: secondaryColor,
         ringActive: true,
         status: '☕ getting coffee',
@@ -79,7 +77,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
       _SquadMember(
         name: 'Thảo Ly',
         initial: 'T',
-        avatarColor: isDark ? const Color(0xFFEC4899) : const Color(0xFFF472B6),
+        avatarColor: isDark ? const Color(0xFFD6248C) : const Color(0xFFF472B6),
         ringColor: primaryColor,
         ringActive: true,
         status: '📸 3 moments',
@@ -89,7 +87,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
       _SquadMember(
         name: 'Nam Trung',
         initial: 'N',
-        avatarColor: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
+        avatarColor: isDark ? const Color(0xFF4A453E) : const Color(0xFFB8AE9C),
         ringColor: Colors.grey,
         ringActive: false,
         status: '🚕 5 mins away',
@@ -119,11 +117,11 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
         ),
         title: ShaderMask(
           shaderCallback: (bounds) => LinearGradient(
-            colors: [primaryColor, secondaryColor],
+            colors: [primaryColor, primaryColor],
           ).createShader(bounds),
           child: Text(
             'Squad Presence',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: Colors.white,
@@ -151,7 +149,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
               const SizedBox(width: 4),
               Text(
                 'LIVE',
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: errorColor,
@@ -189,7 +187,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                 children: [
                   Text(
                     '4 members · 3 active',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: textPrimary,
@@ -197,7 +195,9 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: secondaryColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
@@ -208,7 +208,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                     ),
                     child: Text(
                       '⚡ squad is live',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: secondaryColor,
@@ -228,7 +228,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                 const SizedBox(width: 6),
                 Text(
                   'the chaos squad is active ⚡',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: textPrimary,
@@ -240,14 +240,16 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
             const SizedBox(height: 16),
 
             // Squad Member Cards
-            ...members.map((member) => _buildMemberCard(
-                  member: member,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  textPrimary: textPrimary,
-                  textSecondary: textSecondary,
-                  errorColor: errorColor,
-                )),
+            ...members.map(
+              (member) => _buildMemberCard(
+                member: member,
+                isDark: isDark,
+                surfaceColor: surfaceColor,
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                errorColor: errorColor,
+              ),
+            ),
 
             const SizedBox(height: 8),
 
@@ -257,17 +259,12 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          secondaryColor,
-                          secondaryColor.withValues(alpha: 0.7),
-                        ],
-                      ),
+                      color: secondaryColor,
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
                           color: secondaryColor.withValues(alpha: 0.3),
-                          blurRadius: 12,
+                          blurRadius: 0,
                           offset: const Offset(0, 4),
                         ),
                       ],
@@ -276,7 +273,8 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text('Opening squad chat 💬')),
+                            content: Text('Opening squad chat 💬'),
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -289,10 +287,12 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                       ),
                       child: Text(
                         'Squad Chat 💬',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: isDark ? const Color(0xFF0B1326) : Colors.white,
+                          color: isDark
+                              ? const Color(0xFF1A1712)
+                              : Colors.white,
                         ),
                       ),
                     ),
@@ -304,7 +304,8 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Pinging all squad members 🔔')),
+                          content: Text('Pinging all squad members 🔔'),
+                        ),
                       );
                     },
                     style: OutlinedButton.styleFrom(
@@ -319,7 +320,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                     ),
                     child: Text(
                       'Ping All 🔔',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: isDark ? primary : primaryLight,
@@ -385,11 +386,9 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                         ? [
                             BoxShadow(
                               color: member.ringColor.withValues(
-                                alpha: 0.3 +
-                                    0.2 * _breathController.value,
+                                alpha: 0.3 + 0.2 * _breathController.value,
                               ),
-                              blurRadius:
-                                  8 + 8 * _breathController.value,
+                              blurRadius: 8 + 8 * _breathController.value,
                               spreadRadius: 1,
                             ),
                           ]
@@ -406,7 +405,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                 alignment: Alignment.center,
                 child: Text(
                   member.initial,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -424,7 +423,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                 children: [
                   Text(
                     member.name,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: textPrimary,
@@ -433,7 +432,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
                   const SizedBox(height: 4),
                   Text(
                     member.status,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 13,
                       color: textSecondary,
                     ),
@@ -446,14 +445,13 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
 
             // Badge
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: member.isDebt
                     ? errorColor.withValues(alpha: 0.15)
                     : (isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : Colors.black.withValues(alpha: 0.06)),
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black.withValues(alpha: 0.06)),
                 borderRadius: BorderRadius.circular(20),
                 border: member.isDebt
                     ? Border.all(
@@ -464,7 +462,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
               ),
               child: Text(
                 member.badgeEmoji,
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: member.isDebt ? errorColor : textPrimary,
@@ -487,7 +485,7 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
@@ -496,8 +494,8 @@ class _FriendOnlineStatusScreenState extends State<FriendOnlineStatusScreen>
             border: Border.all(
               color: isDark
                   ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.05),
-              width: 1,
+                  : Colors.black,
+              width: 2,
             ),
           ),
           child: child,

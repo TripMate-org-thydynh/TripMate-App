@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SharedAlbumScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
     'Alex: Who let Khang drive the scooter? 😭🏍️',
     'Thảo Ly: Absolute peak vibe at the peak sunset!',
     'Minh Nhật: Ramen place was goated 🍜',
-    'Phú Khang: Next time let me cook!'
+    'Phú Khang: Next time let me cook!',
   ];
   final TextEditingController _commentController = TextEditingController();
 
@@ -37,35 +38,40 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
       'isVideo': 'false',
     },
     {
-      'url': 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=500',
+      'url':
+          'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=500',
       'tag': 'Sunset',
       'title': 'Golden Bamboo shadows',
       'isVideo': 'false',
     },
     {
-      'url': 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=500',
+      'url':
+          'https://images.unsplash.com/photo-1528164344705-47542687000d?w=500',
       'tag': 'Sunset',
       'title': 'Torii gate sunset drift',
       'isVideo': 'true',
     },
     {
-      'url': 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=500',
+      'url':
+          'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=500',
       'tag': 'Food',
       'title': 'Glistening tonkotsu bowl',
       'isVideo': 'false',
     },
     {
-      'url': 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=500',
+      'url':
+          'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=500',
       'tag': 'Fails',
       'title': 'Lost in Kyoto station again',
       'isVideo': 'true',
     },
     {
-      'url': 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=500',
+      'url':
+          'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=500',
       'tag': 'Fails',
       'title': 'Scooter crash in heavy rain',
       'isVideo': 'false',
-    }
+    },
   ];
 
   @override
@@ -77,15 +83,18 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bgGradStart = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDark ? const Color(0xFF151926) : const Color(0xFFF3EFE9);
+    final bgGradStart = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
     final textPrimary = isDark ? Colors.white : Colors.black87;
     final textSecondary = isDark ? Colors.white60 : Colors.black54;
-    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
 
     final neonPink = const Color(0xFFFF2E93);
     final neonCyan = const Color(0xFF00F5FF);
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
 
     final filteredMedia = _albumMedia.where((media) {
       if (_selectedTab == 0) return true;
@@ -97,13 +106,7 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgGradStart),
         child: Stack(
           children: [
             SafeArea(
@@ -112,20 +115,26 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                 children: [
                   // App Bar
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+                              icon: Icon(
+                                Icons.arrow_back_ios_new,
+                                color: textPrimary,
+                              ),
                               onPressed: () => Navigator.pop(context),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               'Shared Album 📸',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.body(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: textPrimary,
@@ -135,7 +144,9 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                         ),
                         IconButton(
                           icon: Icon(
-                            isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                            isDark
+                                ? Icons.light_mode_outlined
+                                : Icons.dark_mode_outlined,
                             color: textPrimary,
                           ),
                           onPressed: widget.onThemeToggle,
@@ -149,7 +160,7 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Text(
                       'Curated high-vibe memories of Kyoto Adventure.',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 13,
                         color: textSecondary,
                       ),
@@ -181,12 +192,13 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: GridView.builder(
                         physics: const BouncingScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1.0,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 1.0,
+                            ),
                         itemCount: filteredMedia.length,
                         itemBuilder: (context, index) {
                           final item = filteredMedia[index];
@@ -203,7 +215,9 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text('Double tap to drop ❤️ on "${item['title']}"!'),
+                                    content: Text(
+                                      'Double tap to drop ❤️ on "${item['title']}"!',
+                                    ),
                                     duration: const Duration(seconds: 2),
                                     backgroundColor: neonPink,
                                     behavior: SnackBarBehavior.floating,
@@ -213,10 +227,12 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                color: cardBg.withValues(alpha: 0.7),
+                                color: cardBg,
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: isDark ? Colors.white10 : Colors.black12,
+                                  color: isDark
+                                      ? Colors.white10
+                                      : Colors.black12,
                                 ),
                               ),
                               child: ClipRRect(
@@ -227,16 +243,22 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                                     Image.network(
                                       item['url']!,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return const Center(child: Icon(Icons.broken_image));
-                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return const Center(
+                                              child: Icon(Icons.broken_image),
+                                            );
+                                          },
                                     ),
                                     // Soft dark bottom overlay
                                     Positioned.fill(
                                       child: Container(
                                         decoration: const BoxDecoration(
                                           gradient: LinearGradient(
-                                            colors: [Colors.transparent, Colors.black54],
+                                            colors: [
+                                              Colors.transparent,
+                                              Colors.black54,
+                                            ],
                                             begin: Alignment.topCenter,
                                             end: Alignment.bottomCenter,
                                           ),
@@ -249,11 +271,12 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                                       left: 12,
                                       right: 12,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             item['title']!,
-                                            style: GoogleFonts.outfit(
+                                            style: AppFonts.body(
                                               fontSize: 12,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
@@ -263,21 +286,37 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                                           ),
                                           const SizedBox(height: 2),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color: isVideo ? neonCyan.withValues(alpha: 0.2) : neonPink.withValues(alpha: 0.2),
-                                              borderRadius: BorderRadius.circular(8),
+                                              color: isVideo
+                                                  ? neonCyan.withValues(
+                                                      alpha: 0.2,
+                                                    )
+                                                  : neonPink.withValues(
+                                                      alpha: 0.2,
+                                                    ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                               border: Border.all(
-                                                color: isVideo ? neonCyan.withValues(alpha: 0.4) : neonPink.withValues(alpha: 0.4),
-                                                width: 0.5,
+                                                color: isVideo
+                                                    ? neonCyan.withValues(
+                                                        alpha: 0.4,
+                                                      )
+                                                    : neonPink,
+                                                width: 2,
                                               ),
                                             ),
                                             child: Text(
                                               isVideo ? '📹 VIDEO' : '📸 PHOTO',
-                                              style: GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 8,
                                                 fontWeight: FontWeight.bold,
-                                                color: isVideo ? neonCyan : neonPink,
+                                                color: isVideo
+                                                    ? neonCyan
+                                                    : neonPink,
                                               ),
                                             ),
                                           ),
@@ -289,7 +328,10 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                                         child: CircleAvatar(
                                           backgroundColor: Colors.black54,
                                           radius: 20,
-                                          child: Icon(Icons.play_arrow, color: Colors.white),
+                                          child: Icon(
+                                            Icons.play_arrow,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                   ],
@@ -331,19 +373,25 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? selectedColor
-              : (isDark ? const Color(0xFF1E293B) : Colors.white).withValues(alpha: 0.8),
+              : (isDark ? const Color(0xFF262019) : Colors.white).withValues(
+                  alpha: 0.8,
+                ),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Colors.transparent : (isDark ? Colors.white10 : Colors.black12),
+            color: isSelected
+                ? Colors.transparent
+                : (isDark ? Colors.white10 : Colors.black12),
           ),
         ),
         child: Center(
           child: Text(
             label,
-            style: GoogleFonts.outfit(
+            style: AppFonts.body(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+              color: isSelected
+                  ? Colors.white
+                  : (isDark ? Colors.white70 : Colors.black87),
             ),
           ),
         ),
@@ -367,7 +415,9 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
               onDoubleTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Dropped a viral heart to this squad video! ❤️💥'),
+                    content: const Text(
+                      'Dropped a viral heart to this squad video! ❤️💥',
+                    ),
                     duration: const Duration(seconds: 1),
                     backgroundColor: neonPink,
                     behavior: SnackBarBehavior.floating,
@@ -384,14 +434,23 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                         _fullscreenVideoUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
-                          return const Center(child: Icon(Icons.broken_image, color: Colors.white));
+                          return const Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              color: Colors.white,
+                            ),
+                          );
                         },
                       ),
                       // Soft shadows
                       Container(
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.black54, Colors.transparent, Colors.black87],
+                            colors: [
+                              Colors.black54,
+                              Colors.transparent,
+                              Colors.black87,
+                            ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
@@ -403,7 +462,11 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                           child: CircleAvatar(
                             backgroundColor: Colors.black54,
                             radius: 36,
-                            child: Icon(Icons.play_arrow, color: Colors.white, size: 48),
+                            child: Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 48,
+                            ),
                           ),
                         ),
                     ],
@@ -444,12 +507,14 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: neonCyan, width: 1),
                         ),
-                        child: const Center(child: Text('🤪', style: TextStyle(fontSize: 14))),
+                        child: const Center(
+                          child: Text('🤪', style: TextStyle(fontSize: 14)),
+                        ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '@matey_bot • Squad Clip',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.body(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -460,7 +525,7 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                   const SizedBox(height: 8),
                   Text(
                     _fullscreenVideoTitle ?? 'Kyoto Roadtrip Highlights',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.body(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -488,7 +553,9 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                   _buildSidebarAction(Icons.favorite, '142', neonPink, () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Dropped a viral heart to this squad video! ❤️💥'),
+                        content: const Text(
+                          'Dropped a viral heart to this squad video! ❤️💥',
+                        ),
                         duration: const Duration(seconds: 1),
                         backgroundColor: neonPink,
                         behavior: SnackBarBehavior.floating,
@@ -496,16 +563,23 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                     );
                   }),
                   const SizedBox(height: 16),
-                  _buildSidebarAction(Icons.mode_comment, '18', Colors.white, () {
-                    setState(() {
-                      _showComments = true;
-                    });
-                  }),
+                  _buildSidebarAction(
+                    Icons.mode_comment,
+                    '18',
+                    Colors.white,
+                    () {
+                      setState(() {
+                        _showComments = true;
+                      });
+                    },
+                  ),
                   const SizedBox(height: 16),
                   _buildSidebarAction(Icons.share, 'Share', neonCyan, () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Copied share link to dashboard! 🚀🔗'),
+                        content: const Text(
+                          'Copied share link to dashboard! 🚀🔗',
+                        ),
                         backgroundColor: neonCyan,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -522,7 +596,10 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
               right: 20,
               child: Row(
                 children: [
-                  const Text('0:12', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  const Text(
+                    '0:12',
+                    style: TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
                   Expanded(
                     child: Slider(
                       value: 0.4,
@@ -531,21 +608,28 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                       inactiveColor: Colors.white30,
                     ),
                   ),
-                  const Text('0:30', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  const Text(
+                    '0:30',
+                    style: TextStyle(color: Colors.white70, fontSize: 11),
+                  ),
                 ],
               ),
             ),
 
             // Animated Comments drawer overlay (bottom sheet style)
-            if (_showComments)
-              _buildCommentsDrawer(neonPink),
+            if (_showComments) _buildCommentsDrawer(neonPink),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSidebarAction(IconData icon, String count, Color color, VoidCallback onTap) {
+  Widget _buildSidebarAction(
+    IconData icon,
+    String count,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -558,7 +642,11 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
           const SizedBox(height: 4),
           Text(
             count,
-            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
@@ -573,7 +661,7 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
       height: 400,
       child: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF1E293B),
+          color: Color(0xFF262019),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
@@ -588,7 +676,7 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
               children: [
                 Text(
                   'Comment Thread Overlay 💬',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.body(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -614,7 +702,7 @@ class _SharedAlbumScreenState extends State<SharedAlbumScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
                       _comments[index],
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         color: Colors.white70,
                         fontSize: 13,
                       ),

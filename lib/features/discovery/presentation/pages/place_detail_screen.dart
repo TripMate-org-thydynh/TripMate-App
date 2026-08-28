@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -29,13 +30,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     {
       'user': '@maya_explores',
       'rating': 5.0,
-      'text': '"Literally felt like stepping into an A24 movie. The matcha lattes are insane and we sat by the window for 3 hours just people-watching. A must-do if you find it."',
+      'text':
+          '"Literally felt like stepping into an A24 movie. The matcha lattes are insane and we sat by the window for 3 hours just people-watching. A must-do if you find it."',
     },
     {
       'user': '@josh_vibes',
       'rating': 4.8,
-      'text': '"The path to get here is a bit tricky but 100% worth it. Major dark academia energy. Best pour-over I\'ve had on this entire trip."',
-    }
+      'text':
+          '"The path to get here is a bit tricky but 100% worth it. Major dark academia energy. Best pour-over I\'ve had on this entire trip."',
+    },
   ];
 
   void _openAddToItinerary() {
@@ -63,11 +66,17 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF06B6D4) : const Color(0xFFEBA83A);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF3D8BFF)
+        : const Color(0xFFFFD84D);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6),
+      backgroundColor: isDark
+          ? const Color(0xFF1A1712)
+          : const Color(0xFFFDF6D3),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -76,7 +85,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             expandedHeight: 240,
             pinned: true,
             stretch: true,
-            backgroundColor: isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6),
+            backgroundColor: isDark
+                ? const Color(0xFF1A1712)
+                : const Color(0xFFFDF6D3),
             leading: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
@@ -124,16 +135,26 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [primaryColor.withValues(alpha: 0.4), Colors.black54],
+                  Hero(
+                    tag: 'place-${widget.placeName}',
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            primaryColor.withValues(alpha: 0.4),
+                            Colors.black54,
+                          ],
+                        ),
                       ),
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.storefront, color: Colors.white30, size: 72),
+                      child: const Center(
+                        child: Icon(
+                          Icons.storefront,
+                          color: Colors.white30,
+                          size: 72,
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -144,14 +165,19 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black45,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            'discovery.squad_match'.tr(namedArgs: {'percent': '98'}),
-                            style: GoogleFonts.plusJakartaSans(
+                            'discovery.squad_match'.tr(
+                              namedArgs: {'percent': '98'},
+                            ),
+                            style: AppFonts.heading(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -161,7 +187,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         const SizedBox(height: 8),
                         Text(
                           widget.placeName,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -170,7 +196,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -198,7 +224,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   // The Vibe Section
                   Text(
                     'discovery.vibe_label'.tr(),
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: isDark ? Colors.white : Colors.black87,
@@ -207,7 +233,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   const SizedBox(height: 10),
                   Text(
                     widget.placeDescription,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 13,
                       color: Colors.grey,
                       height: 1.5,
@@ -230,7 +256,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     children: [
                       Text(
                         'Squad Intel',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: isDark ? Colors.white : Colors.black87,
@@ -238,7 +264,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       ),
                       Text(
                         'View all 42',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: secondaryColor,
@@ -259,10 +285,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                          color: isDark
+                              ? const Color(0xFF262019)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : Colors.black,
+                            width: 2,
                           ),
                         ),
                         child: Column(
@@ -273,19 +304,28 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               children: [
                                 Text(
                                   review['user'] as String,
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white70 : Colors.black87,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : Colors.black87,
                                   ),
                                 ),
                                 Row(
                                   children: [
-                                    const Icon(Icons.star, color: Colors.amber, size: 14),
+                                    const Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                      size: 14,
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       (review['rating'] as double).toString(),
-                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -305,11 +345,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 90), // Spacing for floating action button
+                  const SizedBox(
+                    height: 90,
+                  ), // Spacing for floating action button
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
       floatingActionButton: Padding(
@@ -320,18 +362,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             width: double.infinity,
             height: 56,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [primaryColor, secondaryColor],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: primaryColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                   color: primaryColor.withValues(alpha: 0.25),
-                  blurRadius: 15,
+                  blurRadius: 0,
                   offset: const Offset(0, 5),
-                )
+                ),
               ],
             ),
             child: Row(
@@ -341,7 +379,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'discovery.save_to_itinerary'.tr(),
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -362,7 +400,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+        border: Border.all(color: color, width: 2),
       ),
       child: Text(
         text,

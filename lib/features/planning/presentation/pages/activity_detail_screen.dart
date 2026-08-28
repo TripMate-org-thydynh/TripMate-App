@@ -1,7 +1,7 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../../core/app_messenger.dart';
 class ActivityDetailScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
@@ -13,7 +13,7 @@ class ActivityDetailScreen extends StatefulWidget {
 
   const ActivityDetailScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
     this.title,
     this.time,
@@ -32,14 +32,14 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
   late Animation<double> _pulseAnimation;
 
   // ── Colour tokens ─────────────────────────────────────────────────────────
-  static const _darkBg = Color(0xFF0B1326);
-  static const _darkSurface = Color(0xFF171F33);
-  static const _primaryDark = Color(0xFFD0BCFF);
-  static const _secondaryDark = Color(0xFF45DFA4);
+  static const _darkBg = Color(0xFF1A1712);
+  static const _darkSurface = Color(0xFF262019);
+  static const _primaryDark = Color(0xFFC9B8FF);
+  static const _secondaryDark = Color(0xFF1FA85C);
   static const _tertiaryDark = Color(0xFFFFB783);
   static const _errorDark = Color(0xFFFFB4AB);
 
-  static const _lightBg = Color(0xFFFCFAF6);
+  static const _lightBg = Color(0xFFFDF6D3);
   static const _primaryLight = Color(0xFF6D3BD7);
   static const _secondaryLight = Color(0xFF059669);
 
@@ -68,7 +68,8 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
 
     final bg = isDark ? _darkBg : _lightBg;
     final surface = isDark ? _darkSurface : Colors.white;
-    final primary = widget.themeColor ?? (isDark ? _primaryDark : _primaryLight);
+    final primary =
+        widget.themeColor ?? (isDark ? _primaryDark : _primaryLight);
     final secondary = isDark ? _secondaryDark : _secondaryLight;
     final tertiary = isDark ? _tertiaryDark : const Color(0xFFE07B39);
     final error = isDark ? _errorDark : const Color(0xFFB00020);
@@ -82,16 +83,19 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: primary, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: primary,
+            size: 20,
+          ),
           onPressed: () => Navigator.maybePop(context),
         ),
         title: ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: [primary, secondary],
-          ).createShader(bounds),
+          shaderCallback: (bounds) =>
+              LinearGradient(colors: [primary, primary]).createShader(bounds),
           child: Text(
             'Up Next',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: Colors.white,
@@ -100,10 +104,11 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () =>
+                showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
             child: Text(
               'View Itinerary →',
-              style: GoogleFonts.inter(
+              style: AppFonts.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: secondary,
@@ -130,15 +135,12 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
             ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: surface.withValues(alpha: isDark ? 0.55 : 0.72),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: primary.withValues(alpha: 0.2),
-                      width: 1.2,
-                    ),
+                    border: Border.all(color: primary, width: 2),
                   ),
                   padding: const EdgeInsets.all(20),
                   child: Row(
@@ -158,7 +160,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                             // Title
                             Text(
                               widget.title ?? 'Night Market Chaos',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w800,
                                 color: textPrimary,
@@ -176,7 +178,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                 const SizedBox(width: 4),
                                 Text(
                                   widget.location ?? 'Shilin District',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 13,
                                     color: textMuted,
                                     fontWeight: FontWeight.w500,
@@ -188,7 +190,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                               const SizedBox(height: 10),
                               Text(
                                 widget.description!,
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 13,
                                   color: textMuted,
                                   height: 1.3,
@@ -203,20 +205,23 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                 animation: _pulseAnimation,
                                 builder: (_, child) => Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(30),
                                     border: Border.all(
                                       color: secondary.withValues(
-                                          alpha: _pulseAnimation.value),
+                                        alpha: _pulseAnimation.value,
+                                      ),
                                       width: 1.5,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
                                         color: secondary.withValues(
-                                            alpha: 0.25 *
-                                                _pulseAnimation.value),
-                                        blurRadius: 10,
+                                          alpha: 0.25 * _pulseAnimation.value,
+                                        ),
+                                        blurRadius: 0,
                                         spreadRadius: 1,
                                       ),
                                     ],
@@ -224,12 +229,15 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.timer_rounded,
-                                          size: 14, color: secondary),
+                                      Icon(
+                                        Icons.timer_rounded,
+                                        size: 14,
+                                        color: secondary,
+                                      ),
                                       const SizedBox(width: 5),
                                       Text(
                                         '18 MINS',
-                                        style: GoogleFonts.inter(
+                                        style: AppFonts.body(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w800,
                                           color: secondary,
@@ -246,17 +254,20 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 10),
+                                    horizontal: 14,
+                                    vertical: 10,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: surface.withValues(
-                                        alpha: isDark ? 0.4 : 0.6),
+                                      alpha: isDark ? 0.4 : 0.6,
+                                    ),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: tertiary.withValues(alpha: 0.25),
+                                      color: tertiary,
+                                      width: 2,
                                     ),
                                   ),
                                   child: Column(
@@ -265,12 +276,15 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                     children: [
                                       Row(
                                         children: [
-                                          Icon(Icons.local_taxi_rounded,
-                                              color: tertiary, size: 16),
+                                          Icon(
+                                            Icons.local_taxi_rounded,
+                                            color: tertiary,
+                                            size: 16,
+                                          ),
                                           const SizedBox(width: 8),
                                           Text(
                                             'Uber XL arriving soon',
-                                            style: GoogleFonts.inter(
+                                            style: AppFonts.body(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w600,
                                               color: textPrimary,
@@ -281,7 +295,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                       const SizedBox(height: 4),
                                       Text(
                                         '🚕 Leaving in 18 mins',
-                                        style: GoogleFonts.inter(
+                                        style: AppFonts.body(
                                           fontSize: 11,
                                           color: textMuted,
                                         ),
@@ -328,7 +342,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                 const SizedBox(width: 8),
                                 Text(
                                   '3/4 Ready',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 12,
                                     color: textMuted,
                                     fontWeight: FontWeight.w500,
@@ -342,13 +356,13 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                               animation: _pulseAnimation,
                               builder: (_, child) => Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: error.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: error.withValues(alpha: 0.3),
-                                  ),
+                                  border: Border.all(color: error, width: 2),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -360,13 +374,15 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: error.withValues(
-                                            alpha: _pulseAnimation.value),
+                                          alpha: _pulseAnimation.value,
+                                        ),
                                         boxShadow: [
                                           BoxShadow(
                                             color: error.withValues(
-                                                alpha: 0.4 *
-                                                    _pulseAnimation.value),
-                                            blurRadius: 6,
+                                              alpha:
+                                                  0.4 * _pulseAnimation.value,
+                                            ),
+                                            blurRadius: 0,
                                             spreadRadius: 1,
                                           ),
                                         ],
@@ -376,7 +392,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                     Flexible(
                                       child: Text(
                                         'Nam Trung is still not ready 😭',
-                                        style: GoogleFonts.inter(
+                                        style: AppFonts.body(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                           color: error,
@@ -425,13 +441,13 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: surface.withValues(alpha: 0.35),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: primary.withValues(alpha: 0.1),
-                        ),
+                        border: Border.all(color: primary, width: 2),
                       ),
                       child: Row(
                         children: [
@@ -441,7 +457,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                               children: [
                                 Text(
                                   '3:00 PM',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 11,
                                     color: textMuted,
                                     fontWeight: FontWeight.w600,
@@ -451,7 +467,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                                 const SizedBox(height: 4),
                                 Text(
                                   'Cafe hopping starts',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
                                     color: textPrimary,
@@ -460,9 +476,11 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen>
                               ],
                             ),
                           ),
-                          Icon(Icons.local_cafe_rounded,
-                              color: tertiary.withValues(alpha: 0.7),
-                              size: 22),
+                          Icon(
+                            Icons.local_cafe_rounded,
+                            color: tertiary.withValues(alpha: 0.7),
+                            size: 22,
+                          ),
                         ],
                       ),
                     ),
@@ -509,7 +527,8 @@ class _TimelineColumn extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: secondary.withValues(
-                          alpha: 0.25 * (1 - pulseAnimation.value) + 0.05),
+                        alpha: 0.25 * (1 - pulseAnimation.value) + 0.05,
+                      ),
                     ),
                   ),
                   // Core dot
@@ -522,7 +541,7 @@ class _TimelineColumn extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: secondary.withValues(alpha: 0.5),
-                          blurRadius: 6,
+                          blurRadius: 0,
                           spreadRadius: 1,
                         ),
                       ],
@@ -537,14 +556,7 @@ class _TimelineColumn extends StatelessWidget {
             width: 2,
             height: 200,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  secondary.withValues(alpha: 0.7),
-                  secondary.withValues(alpha: 0.0),
-                ],
-              ),
+              color: secondary.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(2),
             ),
           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'chat_search_screen.dart';
 import 'squad_group_settings_screen.dart';
 import 'shared_media_gallery_screen.dart';
@@ -43,7 +42,8 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       'id': 'pq1',
       'user': '@phuc_travels',
       'avatar': '🚗',
-      'content': 'Guys, I just arrived at the resort! Phú Quốc is absolutely gorgeous today. 🌊',
+      'content':
+          'Guys, I just arrived at the resort! Phú Quốc is absolutely gorgeous today. 🌊',
       'time': '10:02 AM',
       'reactions': ['🔥', '💯'],
     },
@@ -51,7 +51,8 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       'id': 'pq2',
       'user': '@lan_music',
       'avatar': '🎵',
-      'content': 'Sao Beach Club is the move for tonight! Already hear the bass calling. 🔊',
+      'content':
+          'Sao Beach Club is the move for tonight! Already hear the bass calling. 🔊',
       'time': '10:15 AM',
       'reactions': ['🔥', '💀'],
     },
@@ -68,10 +69,11 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       'id': 'pq3',
       'user': '@thao_ly',
       'avatar': '🦄',
-      'content': 'Are we renting bikes or taking a taxi to the beach club? It says 15m drive on the map.',
+      'content':
+          'Are we renting bikes or taking a taxi to the beach club? It says 15m drive on the map.',
       'time': '10:25 AM',
       'reactions': ['👀'],
-    }
+    },
   ];
 
   // Social Chaos messages
@@ -80,7 +82,8 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       'id': 'c1',
       'user': '@nam_trung',
       'avatar': '🦖',
-      'content': 'This channel is absolute social chaos edit. Post your wildest travel roasts here!',
+      'content':
+          'This channel is absolute social chaos edit. Post your wildest travel roasts here!',
       'time': '09:00 AM',
       'reactions': ['🔥', '😂'],
     },
@@ -88,15 +91,16 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       'id': 'c2',
       'user': '@thao_ly',
       'avatar': '🦄',
-      'content': 'I spent ¥8000 on matcha cookies and I am already broke student tier 💸😭',
+      'content':
+          'I spent ¥8000 on matcha cookies and I am already broke student tier 💸😭',
       'time': '09:30 AM',
       'reactions': ['💀', '💸'],
-    }
+    },
   ];
 
   void _sendMessage() {
     if (_msgController.text.trim().isEmpty) return;
-    
+
     setState(() {
       final newMsg = {
         'id': 'custom_${DateTime.now().millisecondsSinceEpoch}',
@@ -106,7 +110,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
         'time': 'Just now',
         'reactions': <String>[],
       };
-      
+
       if (_activeConversation == 0) {
         _phuQuocMessages.add(newMsg);
       } else {
@@ -127,32 +131,32 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
   }
 
   void _navigateToPage(Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
   }
 
-  Widget _buildCrewStatusChip(String name, String status, Color accent, Color textCol, Color subTextCol) {
+  Widget _buildCrewStatusChip(
+    String name,
+    String status,
+    Color accent,
+    Color textCol,
+    Color subTextCol,
+  ) {
     return Row(
       children: [
         Container(
           width: 6,
           height: 6,
-          decoration: BoxDecoration(
-            color: accent,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
         RichText(
           text: TextSpan(
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 11,
-              color: textCol,
-            ),
+            style: AppFonts.heading(fontSize: 11, color: textCol),
             children: [
-              TextSpan(text: '$name: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+              TextSpan(
+                text: '$name: ',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               TextSpan(
                 text: status,
                 style: TextStyle(color: subTextCol),
@@ -164,7 +168,12 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
     );
   }
 
-  Widget _buildQuickReactionChip(String label, Color accent, Color textCol, Color cardBg) {
+  Widget _buildQuickReactionChip(
+    String label,
+    Color accent,
+    Color textCol,
+    Color cardBg,
+  ) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -193,22 +202,16 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: cardBg.withValues(alpha: 0.9),
+          color: cardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: accent.withValues(alpha: 0.3),
-            width: 1.5,
-          ),
+          border: Border.all(color: accent, width: 2),
           boxShadow: [
-            BoxShadow(
-              color: accent.withValues(alpha: 0.05),
-              blurRadius: 6,
-            ),
+            BoxShadow(color: accent.withValues(alpha: 0.05), blurRadius: 0),
           ],
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(
+          style: AppFonts.body(
             fontSize: 11,
             fontWeight: FontWeight.bold,
             color: textCol,
@@ -223,31 +226,43 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
     final isDark = widget.isDarkMode;
 
     // Standard palette matching instructions
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final tertiaryColor = isDark ? const Color(0xFFFB923C) : const Color(0xFFEBA83A);
-    final backgroundColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+    final tertiaryColor = isDark
+        ? const Color(0xFFFB923C)
+        : const Color(0xFFFFD84D);
+    final backgroundColor = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
 
     final neonPink = const Color(0xFFFF2E93);
     final neonCyan = const Color(0xFF00F5FF);
 
-    final messages = _activeConversation == 0 ? _phuQuocMessages : _chaosMessages;
-    final activeTitle = _activeConversation == 0 ? 'Phú Quốc Escape 🌴' : 'Social Chaos Mode 🔥';
+    final messages = _activeConversation == 0
+        ? _phuQuocMessages
+        : _chaosMessages;
+    final activeTitle = _activeConversation == 0
+        ? 'Phú Quốc Escape 🌴'
+        : 'Social Chaos Mode 🔥';
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark 
-                ? [const Color(0xFF0B1326), const Color(0xFF171F33)] 
-                : [const Color(0xFFFCFAF6), const Color(0xFFF0EAE1)],
-          ),
+          color: isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3),
         ),
         child: SafeArea(
           child: Stack(
@@ -256,7 +271,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                 children: [
                   // Upper Top Bar
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -270,20 +288,34 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: _activeConversation == 0 ? primaryColor : Colors.transparent,
+                                  color: _activeConversation == 0
+                                      ? primaryColor
+                                      : Colors.transparent,
                                   borderRadius: BorderRadius.circular(15),
                                   boxShadow: _activeConversation == 0 && isDark
-                                      ? [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8)]
+                                      ? [
+                                          BoxShadow(
+                                            color: primaryColor.withValues(
+                                              alpha: 0.3,
+                                            ),
+                                            blurRadius: 0,
+                                          ),
+                                        ]
                                       : null,
                                 ),
                                 child: Text(
                                   '🌴 Phú Quốc',
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.body(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: _activeConversation == 0 ? Colors.white : textSecondary,
+                                    color: _activeConversation == 0
+                                        ? Colors.white
+                                        : textSecondary,
                                   ),
                                 ),
                               ),
@@ -296,20 +328,34 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: _activeConversation == 1 ? neonPink : Colors.transparent,
+                                  color: _activeConversation == 1
+                                      ? neonPink
+                                      : Colors.transparent,
                                   borderRadius: BorderRadius.circular(15),
                                   boxShadow: _activeConversation == 1 && isDark
-                                      ? [BoxShadow(color: neonPink.withValues(alpha: 0.3), blurRadius: 8)]
+                                      ? [
+                                          BoxShadow(
+                                            color: neonPink.withValues(
+                                              alpha: 0.3,
+                                            ),
+                                            blurRadius: 0,
+                                          ),
+                                        ]
                                       : null,
                                 ),
                                 child: Text(
                                   '🔥 Chaos',
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.body(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: _activeConversation == 1 ? Colors.white : textSecondary,
+                                    color: _activeConversation == 1
+                                        ? Colors.white
+                                        : textSecondary,
                                   ),
                                 ),
                               ),
@@ -331,7 +377,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Icon(Icons.alternate_email, color: textPrimary),
+                                    child: Icon(
+                                      Icons.alternate_email,
+                                      color: textPrimary,
+                                    ),
                                   ),
                                   Positioned(
                                     top: 4,
@@ -359,7 +408,9 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                             ),
                             IconButton(
                               icon: Icon(
-                                isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                                isDark
+                                    ? Icons.light_mode_outlined
+                                    : Icons.dark_mode_outlined,
                                 color: textPrimary,
                               ),
                               onPressed: widget.onThemeToggle,
@@ -383,10 +434,13 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: surfaceColor.withValues(alpha: 0.7),
+                        color: surfaceColor,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.black,
+                          width: 2,
                         ),
                       ),
                       child: Row(
@@ -407,7 +461,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                     color: primaryColor.withValues(alpha: 0.12),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Text('👥', style: TextStyle(fontSize: 16)),
+                                  child: const Text(
+                                    '👥',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -416,7 +473,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 children: [
                                   Text(
                                     activeTitle,
-                                    style: GoogleFonts.outfit(
+                                    style: AppFonts.body(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: textPrimary,
@@ -425,7 +482,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                   const SizedBox(height: 2),
                                   Text(
                                     '4 members active online • Tap for Settings',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 11,
                                       color: textSecondary,
                                     ),
@@ -434,7 +491,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                               ),
                             ],
                           ),
-                          Icon(Icons.settings, color: textSecondary.withValues(alpha: 0.6)),
+                          Icon(
+                            Icons.settings,
+                            color: textSecondary.withValues(alpha: 0.6),
+                          ),
                         ],
                       ),
                     ),
@@ -443,22 +503,49 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                   // Crew status sub-header
                   if (_activeConversation == 0)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: surfaceColor.withValues(alpha: 0.4),
+                          color: surfaceColor,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.05)
+                                : Colors.black,
+                            width: 2,
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildCrewStatusChip('🚗 Phúc', 'traveling', primaryColor, textPrimary, textSecondary),
-                            _buildCrewStatusChip('🎵 Lan', 'listening', secondaryColor, textPrimary, textSecondary),
-                            _buildCrewStatusChip('Minh', 'away', textSecondary, textPrimary, textSecondary),
+                            _buildCrewStatusChip(
+                              '🚗 Phúc',
+                              'traveling',
+                              primaryColor,
+                              textPrimary,
+                              textSecondary,
+                            ),
+                            _buildCrewStatusChip(
+                              '🎵 Lan',
+                              'listening',
+                              secondaryColor,
+                              textPrimary,
+                              textSecondary,
+                            ),
+                            _buildCrewStatusChip(
+                              'Minh',
+                              'away',
+                              textSecondary,
+                              textPrimary,
+                              textSecondary,
+                            ),
                           ],
                         ),
                       ),
@@ -467,24 +554,36 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                   // Pinned location card for Sao Beach Club
                   if (_activeConversation == 0 && _pinnedLocationVisible)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 4,
+                      ),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: isDark 
-                                ? [const Color(0xFF1E293B).withValues(alpha: 0.9), const Color(0xFF0F172A).withValues(alpha: 0.9)]
-                                : [Colors.white.withValues(alpha: 0.9), const Color(0xFFF3EFE9).withValues(alpha: 0.9)],
+                            colors: isDark
+                                ? [
+                                    const Color(
+                                      0xFF262019,
+                                    ).withValues(alpha: 0.9),
+                                    const Color(
+                                      0xFF141210,
+                                    ).withValues(alpha: 0.9),
+                                  ]
+                                : [
+                                    Colors.white.withValues(alpha: 0.9),
+                                    const Color(
+                                      0xFFF3EFE9,
+                                    ).withValues(alpha: 0.9),
+                                  ],
                           ),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: primaryColor.withValues(alpha: 0.3),
-                            width: 1.5,
-                          ),
+                          border: Border.all(color: primaryColor, width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: primaryColor.withValues(alpha: 0.1),
-                              blurRadius: 10,
+                              blurRadius: 0,
                               offset: const Offset(0, 4),
                             ),
                           ],
@@ -497,7 +596,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 color: primaryColor.withValues(alpha: 0.15),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Text('🏖️', style: TextStyle(fontSize: 18)),
+                              child: const Text(
+                                '🏖️',
+                                style: TextStyle(fontSize: 18),
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -507,14 +609,21 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                   Row(
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: primaryColor.withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(6),
+                                          color: primaryColor.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
                                           'PINNED',
-                                          style: GoogleFonts.outfit(
+                                          style: AppFonts.body(
                                             fontSize: 9,
                                             fontWeight: FontWeight.bold,
                                             color: primaryColor,
@@ -526,7 +635,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                       Expanded(
                                         child: Text(
                                           'Sao Beach Club',
-                                          style: GoogleFonts.outfit(
+                                          style: AppFonts.body(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                             color: textPrimary,
@@ -539,7 +648,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                   const SizedBox(height: 2),
                                   Text(
                                     '15m drive • Tap for direction details',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 11,
                                       color: textSecondary,
                                     ),
@@ -556,26 +665,35 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
                               ),
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Routing to Sao Beach Club... 🚙💨'),
+                                    content: Text(
+                                      'Routing to Sao Beach Club... 🚙💨',
+                                    ),
                                     behavior: SnackBarBehavior.floating,
                                   ),
                                 );
                               },
                               child: Text(
                                 'Directions',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.body(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.close, size: 16, color: textSecondary),
+                              icon: Icon(
+                                Icons.close,
+                                size: 16,
+                                color: textSecondary,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _pinnedLocationVisible = false;
@@ -589,7 +707,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
 
                   // Sub-trigger quick activities alert bar
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
                     child: GestureDetector(
                       onTap: () => _navigateToPage(
                         SquadActivityFeedScreen(
@@ -598,11 +719,14 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                         ),
                       ),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
+                          border: Border.all(color: Colors.green, width: 2),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -613,7 +737,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 const SizedBox(width: 6),
                                 Text(
                                   '@phuc_travels verified Packing List checklist items!',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green,
@@ -621,7 +745,11 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                                 ),
                               ],
                             ),
-                            Icon(Icons.keyboard_double_arrow_right, size: 12, color: Colors.green),
+                            Icon(
+                              Icons.keyboard_double_arrow_right,
+                              size: 12,
+                              color: Colors.green,
+                            ),
                           ],
                         ),
                       ),
@@ -630,115 +758,221 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
 
                   // Messages list
                   Expanded(
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        final msg = messages[index];
-                        final isSelf = msg['user'] == '@alex_escapes';
-                        final type = msg['type'] ?? 'text';
-
-                        return Column(
-                          crossAxisAlignment: isSelf ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                          children: [
-                            // User tag header
-                            if (!isSelf)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 4, bottom: 4),
-                                child: Text(
-                                  '${msg['avatar']} ${msg['user']}',
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: textSecondary,
+                    child: messages.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 64,
+                                  height: 64,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(
+                                      0xFFF5822B,
+                                    ).withValues(alpha: 0.1),
+                                  ),
+                                  child: const Icon(
+                                    Icons.chat_bubble_outline,
+                                    color: Color(0xFFF5822B),
+                                    size: 28,
                                   ),
                                 ),
-                              ),
-
-                            // Main Bubble content card
-                            Row(
-                              mainAxisAlignment: isSelf ? MainAxisAlignment.end : MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onLongPress: () {
-                                    setState(() {
-                                      _selectedMessageForSticker = msg['id'] as String;
-                                      _stickerTrayVisible = true;
-                                    });
-                                  },
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth: MediaQuery.of(context).size.width * 0.75,
-                                    ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                    decoration: BoxDecoration(
-                                      color: isSelf
-                                          ? primaryColor
-                                          : surfaceColor.withValues(alpha: 0.8),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: const Radius.circular(20),
-                                        topRight: const Radius.circular(20),
-                                        bottomLeft: isSelf ? const Radius.circular(20) : const Radius.circular(0),
-                                        bottomRight: isSelf ? const Radius.circular(0) : const Radius.circular(20),
-                                      ),
-                                      border: Border.all(
-                                        color: isSelf
-                                            ? Colors.transparent
-                                            : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
-                                      ),
-                                    ),
-                                    child: _buildBubbleContent(type, msg, isSelf, textPrimary, textSecondary, surfaceColor, primaryColor, secondaryColor, isDark),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'No messages yet',
+                                  style: AppFonts.heading(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Be the first to say hi to the squad!',
+                                  style: AppFonts.body(
+                                    fontSize: 12,
+                                    color: textSecondary,
                                   ),
                                 ),
                               ],
                             ),
+                          )
+                        : ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            itemCount: messages.length,
+                            itemBuilder: (context, index) {
+                              final msg = messages[index];
+                              final isSelf = msg['user'] == '@alex_escapes';
+                              final type = msg['type'] ?? 'text';
 
-                            // Reactions list below bubble
-                            if ((msg['reactions'] as List).isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4, bottom: 10),
-                                child: Wrap(
-                                  spacing: 4,
-                                  children: (msg['reactions'] as List).map<Widget>((emoji) {
-                                    return Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: surfaceColor,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+                              return Column(
+                                crossAxisAlignment: isSelf
+                                    ? CrossAxisAlignment.end
+                                    : CrossAxisAlignment.start,
+                                children: [
+                                  // User tag header
+                                  if (!isSelf)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 4,
+                                        bottom: 4,
                                       ),
                                       child: Text(
-                                        emoji as String,
-                                        style: const TextStyle(fontSize: 10),
+                                        '${msg['avatar']} ${msg['user']}',
+                                        style: AppFonts.body(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color: textSecondary,
+                                        ),
                                       ),
-                                    );
-                                  }).toList(),
-                                ),
-                              )
-                            else
-                              const SizedBox(height: 12),
-                          ],
-                        );
-                      },
-                    ),
+                                    ),
+
+                                  // Main Bubble content card
+                                  Row(
+                                    mainAxisAlignment: isSelf
+                                        ? MainAxisAlignment.end
+                                        : MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      GestureDetector(
+                                        onLongPress: () {
+                                          setState(() {
+                                            _selectedMessageForSticker =
+                                                msg['id'] as String;
+                                            _stickerTrayVisible = true;
+                                          });
+                                        },
+                                        child: Container(
+                                          constraints: BoxConstraints(
+                                            maxWidth:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.75,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: isSelf
+                                                ? primaryColor
+                                                : surfaceColor.withValues(
+                                                    alpha: 0.8,
+                                                  ),
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: const Radius.circular(
+                                                20,
+                                              ),
+                                              topRight: const Radius.circular(
+                                                20,
+                                              ),
+                                              bottomLeft: isSelf
+                                                  ? const Radius.circular(20)
+                                                  : const Radius.circular(0),
+                                              bottomRight: isSelf
+                                                  ? const Radius.circular(0)
+                                                  : const Radius.circular(20),
+                                            ),
+                                            border: Border.all(
+                                              color: isSelf
+                                                  ? Colors.transparent
+                                                  : (isDark
+                                                        ? Colors.white
+                                                              .withValues(
+                                                                alpha: 0.08,
+                                                              )
+                                                        : Colors.black
+                                                              .withValues(
+                                                                alpha: 0.05,
+                                                              )),
+                                            ),
+                                          ),
+                                          child: _buildBubbleContent(
+                                            type,
+                                            msg,
+                                            isSelf,
+                                            textPrimary,
+                                            textSecondary,
+                                            surfaceColor,
+                                            primaryColor,
+                                            secondaryColor,
+                                            isDark,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  // Reactions list below bubble
+                                  if ((msg['reactions'] as List).isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 4,
+                                        bottom: 10,
+                                      ),
+                                      child: Wrap(
+                                        spacing: 4,
+                                        children: (msg['reactions'] as List)
+                                            .map<Widget>((emoji) {
+                                              return Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: surfaceColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  border: Border.all(
+                                                    color: primaryColor,
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  emoji as String,
+                                                  style: const TextStyle(
+                                                    fontSize: 10,
+                                                  ),
+                                                ),
+                                              );
+                                            })
+                                            .toList(),
+                                      ),
+                                    )
+                                  else
+                                    const SizedBox(height: 12),
+                                ],
+                              );
+                            },
+                          ),
                   ),
 
                   // Realtime Typing Indicator
                   if (_showTypingIndicator)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 4,
+                      ),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
-                            color: surfaceColor.withValues(alpha: 0.8),
+                            color: surfaceColor,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: primaryColor.withValues(alpha: 0.15),
-                            ),
+                            border: Border.all(color: primaryColor, width: 2),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -754,7 +988,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                               const SizedBox(width: 8),
                               Text(
                                 '3 people typing... 💬',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: textSecondary,
@@ -768,14 +1002,37 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
 
                   // Gen Z Quick Reactions Row
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildQuickReactionChip('🔥 LIT', primaryColor, textPrimary, surfaceColor),
-                        _buildQuickReactionChip('😂 DEAD', secondaryColor, textPrimary, surfaceColor),
-                        _buildQuickReactionChip('💀 CHAOS', tertiaryColor, textPrimary, surfaceColor),
-                        _buildQuickReactionChip('💯 YASSS', primaryColor, textPrimary, surfaceColor),
+                        _buildQuickReactionChip(
+                          '🔥 LIT',
+                          primaryColor,
+                          textPrimary,
+                          surfaceColor,
+                        ),
+                        _buildQuickReactionChip(
+                          '😂 DEAD',
+                          secondaryColor,
+                          textPrimary,
+                          surfaceColor,
+                        ),
+                        _buildQuickReactionChip(
+                          '💀 CHAOS',
+                          tertiaryColor,
+                          textPrimary,
+                          surfaceColor,
+                        ),
+                        _buildQuickReactionChip(
+                          '💯 YASSS',
+                          primaryColor,
+                          textPrimary,
+                          surfaceColor,
+                        ),
                       ],
                     ),
                   ),
@@ -787,7 +1044,10 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                       children: [
                         // Media Gallery trigger
                         IconButton(
-                          icon: Icon(Icons.photo_library_outlined, color: neonCyan),
+                          icon: Icon(
+                            Icons.photo_library_outlined,
+                            color: neonCyan,
+                          ),
                           onPressed: () => _navigateToPage(
                             SharedMediaGalleryScreen(
                               isDarkMode: isDark,
@@ -808,17 +1068,23 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             decoration: BoxDecoration(
-                              color: surfaceColor.withValues(alpha: 0.8),
+                              color: surfaceColor,
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.08)
+                                    : Colors.black,
+                                width: 2,
+                              ),
                             ),
                             child: TextField(
                               controller: _msgController,
                               style: TextStyle(color: textPrimary),
                               decoration: InputDecoration(
                                 hintText: 'Message active squad...',
-                                hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.5)),
+                                hintStyle: TextStyle(
+                                  color: textSecondary.withValues(alpha: 0.5),
+                                ),
                                 border: InputBorder.none,
                               ),
                             ),
@@ -835,26 +1101,46 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                               boxShadow: [
                                 BoxShadow(
                                   color: primaryColor.withValues(alpha: 0.4),
-                                  blurRadius: 8,
-                                )
+                                  blurRadius: 0,
+                                ),
                               ],
                             ),
-                            child: const Icon(Icons.send, color: Colors.white, size: 18),
+                            child: const Icon(
+                              Icons.send,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
 
               // Glassmorphic Voice Chat Overlay (Supports simulated active voice)
               if (_voiceOverlayVisible)
-                _buildVoiceOverlay(isDark, surfaceColor, textPrimary, textSecondary, primaryColor, neonPink, neonCyan),
+                _buildVoiceOverlay(
+                  isDark,
+                  surfaceColor,
+                  textPrimary,
+                  textSecondary,
+                  primaryColor,
+                  neonPink,
+                  neonCyan,
+                ),
 
               // Sticker Reaction Tray Overlay
               if (_stickerTrayVisible)
-                _buildStickerTray(isDark, surfaceColor, textPrimary, textSecondary, primaryColor, neonPink, neonCyan),
+                _buildStickerTray(
+                  isDark,
+                  surfaceColor,
+                  textPrimary,
+                  textSecondary,
+                  primaryColor,
+                  neonPink,
+                  neonCyan,
+                ),
             ],
           ),
         ),
@@ -878,8 +1164,12 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
 
     if (type == 'poll') {
       final double totalVotes = (_bunQuayVotes + _seafoodVotes).toDouble();
-      final double bunQuayPercent = totalVotes > 0 ? (_bunQuayVotes / totalVotes) * 100 : 50.0;
-      final double seafoodPercent = totalVotes > 0 ? (_seafoodVotes / totalVotes) * 100 : 50.0;
+      final double bunQuayPercent = totalVotes > 0
+          ? (_bunQuayVotes / totalVotes) * 100
+          : 50.0;
+      final double seafoodPercent = totalVotes > 0
+          ? (_seafoodVotes / totalVotes) * 100
+          : 50.0;
 
       final bool votedBun = _myPollVote == 'bun';
       final bool votedSeafood = _myPollVote == 'seafood';
@@ -894,7 +1184,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
               Expanded(
                 child: Text(
                   'Dinner Democracy',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.body(
                     fontWeight: FontWeight.bold,
                     color: textColor,
                     fontSize: 15,
@@ -906,10 +1196,14 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
           const SizedBox(height: 8),
           Text(
             msg['pollQuestion'] as String,
-            style: GoogleFonts.outfit(fontSize: 13, color: textColor, fontWeight: FontWeight.w600),
+            style: AppFonts.body(
+              fontSize: 13,
+              color: textColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 12),
-          
+
           // Bun Quay option card
           GestureDetector(
             onTap: () {
@@ -932,17 +1226,21 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                 Container(
                   height: 48,
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF0F172A) : Colors.black.withValues(alpha: 0.05),
+                    color: isDark
+                        ? const Color(0xFF141210)
+                        : Colors.black.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: 48,
-                  width: (MediaQuery.of(context).size.width * 0.6) * (bunQuayPercent / 100),
+                  width:
+                      (MediaQuery.of(context).size.width * 0.6) *
+                      (bunQuayPercent / 100),
                   decoration: BoxDecoration(
-                    color: votedBun 
-                        ? primaryColor.withValues(alpha: 0.35) 
+                    color: votedBun
+                        ? primaryColor.withValues(alpha: 0.35)
                         : primaryColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -962,18 +1260,22 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                     children: [
                       Text(
                         'Bún Quậy 🍜',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 12,
                           color: textColor,
-                          fontWeight: votedBun ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: votedBun
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                       Text(
                         '$_bunQuayVotes (${bunQuayPercent.toStringAsFixed(0)}%)',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 11,
                           color: subColor,
-                          fontWeight: votedBun ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: votedBun
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ],
@@ -983,7 +1285,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          
+
           // Seafood option card
           GestureDetector(
             onTap: () {
@@ -1006,17 +1308,21 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                 Container(
                   height: 48,
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF0F172A) : Colors.black.withValues(alpha: 0.05),
+                    color: isDark
+                        ? const Color(0xFF141210)
+                        : Colors.black.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: 48,
-                  width: (MediaQuery.of(context).size.width * 0.6) * (seafoodPercent / 100),
+                  width:
+                      (MediaQuery.of(context).size.width * 0.6) *
+                      (seafoodPercent / 100),
                   decoration: BoxDecoration(
-                    color: votedSeafood 
-                        ? secondaryColor.withValues(alpha: 0.35) 
+                    color: votedSeafood
+                        ? secondaryColor.withValues(alpha: 0.35)
                         : secondaryColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -1036,18 +1342,22 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                     children: [
                       Text(
                         'Seafood 🦐',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 12,
                           color: textColor,
-                          fontWeight: votedSeafood ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: votedSeafood
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                       Text(
                         '$_seafoodVotes (${seafoodPercent.toStringAsFixed(0)}%)',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 11,
                           color: subColor,
-                          fontWeight: votedSeafood ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: votedSeafood
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ],
@@ -1061,11 +1371,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
     } else {
       return Text(
         msg['content'] as String,
-        style: GoogleFonts.inter(
-          fontSize: 13,
-          color: textColor,
-          height: 1.4,
-        ),
+        style: AppFonts.body(fontSize: 13, color: textColor, height: 1.4),
       );
     }
   }
@@ -1087,14 +1393,11 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: surfaceColor.withValues(alpha: 0.95),
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: themeColor.withValues(alpha: 0.4), width: 1.5),
+          border: Border.all(color: themeColor, width: 2),
           boxShadow: [
-            BoxShadow(
-              color: themeColor.withValues(alpha: 0.15),
-              blurRadius: 20,
-            ),
+            BoxShadow(color: themeColor.withValues(alpha: 0.15), blurRadius: 0),
           ],
         ),
         child: Column(
@@ -1108,7 +1411,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                     const SizedBox(width: 8),
                     Text(
                       'Voice Chat Active',
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.body(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: textPrimary,
@@ -1143,7 +1446,9 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                   _voiceOverlayVisible = false;
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Disconnected from Squad Voice Chat.')),
+                  const SnackBar(
+                    content: Text('Disconnected from Squad Voice Chat.'),
+                  ),
                 );
               },
               icon: const Icon(Icons.call_end, color: Colors.white),
@@ -1161,7 +1466,12 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
     );
   }
 
-  Widget _buildActiveVoiceSpeaker(String emoji, String tag, bool isTalking, Color color) {
+  Widget _buildActiveVoiceSpeaker(
+    String emoji,
+    String tag,
+    bool isTalking,
+    Color color,
+  ) {
     return Column(
       children: [
         Stack(
@@ -1192,7 +1502,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
         const SizedBox(height: 6),
         Text(
           tag,
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 10,
             color: isTalking ? color : Colors.grey,
             fontWeight: isTalking ? FontWeight.bold : FontWeight.normal,
@@ -1220,14 +1530,14 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: surfaceColor.withValues(alpha: 0.95),
+          color: surfaceColor,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: themeColor.withValues(alpha: 0.3)),
+          border: Border.all(color: themeColor, width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 15,
-            )
+              blurRadius: 0,
+            ),
           ],
         ),
         child: Column(
@@ -1238,7 +1548,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
               children: [
                 Text(
                   'Express the Chaos! Add Sticker Reaction:',
-                  style: GoogleFonts.outfit(
+                  style: AppFonts.body(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
@@ -1263,17 +1573,27 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                     setState(() {
                       // Find message and add reaction
                       if (_activeConversation == 0) {
-                        final idx = _phuQuocMessages.indexWhere((m) => m['id'] == _selectedMessageForSticker);
+                        final idx = _phuQuocMessages.indexWhere(
+                          (m) => m['id'] == _selectedMessageForSticker,
+                        );
                         if (idx != -1) {
-                          if (!(_phuQuocMessages[idx]['reactions'] as List).contains(sticker)) {
-                            (_phuQuocMessages[idx]['reactions'] as List).add(sticker);
+                          if (!(_phuQuocMessages[idx]['reactions'] as List)
+                              .contains(sticker)) {
+                            (_phuQuocMessages[idx]['reactions'] as List).add(
+                              sticker,
+                            );
                           }
                         }
                       } else {
-                        final idx = _chaosMessages.indexWhere((m) => m['id'] == _selectedMessageForSticker);
+                        final idx = _chaosMessages.indexWhere(
+                          (m) => m['id'] == _selectedMessageForSticker,
+                        );
                         if (idx != -1) {
-                          if (!(_chaosMessages[idx]['reactions'] as List).contains(sticker)) {
-                            (_chaosMessages[idx]['reactions'] as List).add(sticker);
+                          if (!(_chaosMessages[idx]['reactions'] as List)
+                              .contains(sticker)) {
+                            (_chaosMessages[idx]['reactions'] as List).add(
+                              sticker,
+                            );
                           }
                         }
                       }
@@ -1286,10 +1606,7 @@ class _SquadChatScreenState extends State<SquadChatScreen> {
                       color: Colors.black.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Text(
-                      sticker,
-                      style: const TextStyle(fontSize: 22),
-                    ),
+                    child: Text(sticker, style: const TextStyle(fontSize: 22)),
                   ),
                 );
               }).toList(),

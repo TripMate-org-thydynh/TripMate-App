@@ -1,5 +1,7 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import '../../../core/app_messenger.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BadgeDetailScreen extends StatefulWidget {
@@ -10,7 +12,7 @@ class BadgeDetailScreen extends StatefulWidget {
 
   const BadgeDetailScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
     this.badgeName,
     this.unlocked,
@@ -28,14 +30,8 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
   late Animation<double> _rotateAnim;
 
   final List<Map<String, dynamic>> _requirements = const [
-    {
-      'done': true,
-      'label': 'Spend 10m+ on midnight snacks',
-    },
-    {
-      'done': true,
-      'label': 'Trigger 5+ unplanned detours',
-    },
+    {'done': true, 'label': 'Spend 10m+ on midnight snacks'},
+    {'done': true, 'label': 'Trigger 5+ unplanned detours'},
     {
       'done': false,
       'label': 'Survive a 24h travel streak',
@@ -70,8 +66,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
     _glowAnim = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
-    _rotateAnim =
-        Tween<double>(begin: 0, end: 6.28).animate(_rotateController);
+    _rotateAnim = Tween<double>(begin: 0, end: 6.28).animate(_rotateController);
   }
 
   @override
@@ -103,17 +98,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
           // Ambient blobs
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: const Alignment(0, -0.5),
-                  radius: 0.7,
-                  colors: [
-                    const Color(0xFF7B2FF7)
-                        .withValues(alpha: isDark ? 0.2 : 0.1),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
             ),
           ),
 
@@ -122,8 +107,10 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
               children: [
                 // Header
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
                       _buildGlassButton(
@@ -135,7 +122,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                       Expanded(
                         child: Text(
                           'Badge Detail',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                             color: textPrimary,
@@ -152,7 +139,9 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                       const SizedBox(width: 8),
                       _buildGlassButton(
                         icon: Icons.more_horiz,
-                        onTap: () {},
+                        onTap: () => showGlobalSnack(
+                          'Tính năng đang được hoàn thiện 🚧',
+                        ),
                         isDark: isDark,
                       ),
                     ],
@@ -182,14 +171,16 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                   boxShadow: [
                                     BoxShadow(
                                       color: const Color(0xFF7B2FF7).withValues(
-                                          alpha: 0.35 * _glowAnim.value),
-                                      blurRadius: 50,
+                                        alpha: 0.35 * _glowAnim.value,
+                                      ),
+                                      blurRadius: 0,
                                       spreadRadius: 10,
                                     ),
                                     BoxShadow(
-                                      color: const Color(0xFFD0BCFF).withValues(
-                                          alpha: 0.2 * _glowAnim.value),
-                                      blurRadius: 80,
+                                      color: const Color(0xFFC9B8FF).withValues(
+                                        alpha: 0.2 * _glowAnim.value,
+                                      ),
+                                      blurRadius: 0,
                                       spreadRadius: 20,
                                     ),
                                   ],
@@ -206,15 +197,16 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: const Color(0xFFD0BCFF)
-                                            .withValues(alpha: 0.2),
-                                        width: 1.5,
+                                        color: const Color(0xFFC9B8FF),
+                                        width: 2,
                                       ),
                                     ),
                                     child: CustomPaint(
                                       painter: _DashedCirclePainter(
-                                          color: const Color(0xFFD0BCFF)
-                                              .withValues(alpha: 0.4)),
+                                        color: const Color(
+                                          0xFFC9B8FF,
+                                        ).withValues(alpha: 0.4),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -225,14 +217,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                 height: 140,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF7B2FF7),
-                                      Color(0xFFD0BCFF),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
+                                  color: Color(0xFF7B2FF7),
                                 ),
                                 child: const Center(
                                   child: Icon(
@@ -252,12 +237,15 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.stars,
-                                size: 16, color: Color(0xFFFFD700)),
+                            const Icon(
+                              Icons.stars,
+                              size: 16,
+                              color: Color(0xFFFFD700),
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               'Legendary',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFFFFD700),
@@ -270,7 +258,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
 
                         Text(
                           'your chaos has evolved ✨',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 22,
                             fontWeight: FontWeight.w900,
                             color: textPrimary,
@@ -282,7 +270,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
 
                         Text(
                           'travel personality unlocked.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 14,
                             color: textSecondary,
                             fontStyle: FontStyle.italic,
@@ -295,7 +283,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
@@ -315,7 +303,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                         children: [
                                           Text(
                                             'Level 4',
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: AppFonts.heading(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w600,
                                               color: textSecondary,
@@ -323,7 +311,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                           ),
                                           Text(
                                             'Chaos King',
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: AppFonts.heading(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w900,
                                               color: textPrimary,
@@ -333,20 +321,18 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                       ),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 14, vertical: 8),
+                                          horizontal: 14,
+                                          vertical: 8,
+                                        ),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xFF7B2FF7),
-                                              Color(0xFFD0BCFF),
-                                            ],
+                                          borderRadius: BorderRadius.circular(
+                                            100,
                                           ),
+                                          color: Color(0xFF7B2FF7),
                                         ),
                                         child: Text(
                                           '2,450 / 3,000 XP',
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
                                             color: Colors.white,
@@ -361,17 +347,18 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                     child: LinearProgressIndicator(
                                       value: 2450 / 3000,
                                       minHeight: 8,
-                                      backgroundColor: const Color(0xFFD0BCFF)
-                                          .withValues(alpha: 0.12),
-                                      valueColor:
-                                          const AlwaysStoppedAnimation(
-                                              Color(0xFFD0BCFF)),
+                                      backgroundColor: const Color(
+                                        0xFFC9B8FF,
+                                      ).withValues(alpha: 0.12),
+                                      valueColor: const AlwaysStoppedAnimation(
+                                        Color(0xFFC9B8FF),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
                                     '550 XP to Level 5: God of Chaos',
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.body(
                                       fontSize: 12,
                                       color: textSecondary,
                                     ),
@@ -388,7 +375,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
@@ -401,13 +388,15 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(Icons.task_alt,
-                                          size: 18,
-                                          color: Color(0xFF45DFA4)),
+                                      const Icon(
+                                        Icons.task_alt,
+                                        size: 18,
+                                        color: Color(0xFF1FA85C),
+                                      ),
                                       const SizedBox(width: 8),
                                       Text(
                                         'Requirements',
-                                        style: GoogleFonts.plusJakartaSans(
+                                        style: AppFonts.heading(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
                                           color: textPrimary,
@@ -420,8 +409,9 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                     final req = _requirements[i];
                                     final done = req['done'] as bool;
                                     return Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 10),
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
                                       child: Row(
                                         children: [
                                           Icon(
@@ -430,14 +420,14 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                                 : Icons.lock_outline,
                                             size: 18,
                                             color: done
-                                                ? const Color(0xFF45DFA4)
+                                                ? const Color(0xFF1FA85C)
                                                 : textSecondary,
                                           ),
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Text(
                                               req['label'] as String,
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 13,
                                                 color: done
                                                     ? textPrimary
@@ -451,7 +441,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                           if (req.containsKey('suffix'))
                                             Text(
                                               req['suffix'] as String,
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 11,
                                                 color: const Color(0xFFFFD700),
                                                 fontWeight: FontWeight.w600,
@@ -473,7 +463,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
@@ -486,13 +476,15 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(Icons.group,
-                                          size: 18,
-                                          color: Color(0xFFD0BCFF)),
+                                      const Icon(
+                                        Icons.group,
+                                        size: 18,
+                                        color: Color(0xFFC9B8FF),
+                                      ),
                                       const SizedBox(width: 8),
                                       Text(
                                         'Squad Stat',
-                                        style: GoogleFonts.plusJakartaSans(
+                                        style: AppFonts.heading(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
                                           color: textPrimary,
@@ -503,7 +495,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                   const SizedBox(height: 12),
                                   Text(
                                     'Only 3% of squads achieve this.',
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.body(
                                       fontSize: 13,
                                       color: textSecondary,
                                     ),
@@ -517,7 +509,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                       const SizedBox(width: 10),
                                       Text(
                                         'Also earned this badge',
-                                        style: GoogleFonts.inter(
+                                        style: AppFonts.body(
                                           fontSize: 12,
                                           color: textSecondary,
                                         ),
@@ -536,7 +528,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
@@ -549,7 +541,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                 children: [
                                   Text(
                                     'Achievement Timeline',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
                                       color: textPrimary,
@@ -558,8 +550,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                   const SizedBox(height: 14),
                                   ...List.generate(_timeline.length, (i) {
                                     final item = _timeline[i];
-                                    final isLast =
-                                        i == _timeline.length - 1;
+                                    final isLast = i == _timeline.length - 1;
                                     return IntrinsicHeight(
                                       child: Row(
                                         children: [
@@ -570,7 +561,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                                 height: 12,
                                                 decoration: const BoxDecoration(
                                                   shape: BoxShape.circle,
-                                                  color: Color(0xFFD0BCFF),
+                                                  color: Color(0xFFC9B8FF),
                                                 ),
                                               ),
                                               if (!isLast)
@@ -578,8 +569,8 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                                   child: Container(
                                                     width: 2,
                                                     color: const Color(
-                                                            0xFFD0BCFF)
-                                                        .withValues(alpha: 0.2),
+                                                      0xFFC9B8FF,
+                                                    ).withValues(alpha: 0.2),
                                                   ),
                                                 ),
                                             ],
@@ -588,7 +579,8 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                           Expanded(
                                             child: Padding(
                                               padding: EdgeInsets.only(
-                                                  bottom: isLast ? 0 : 16),
+                                                bottom: isLast ? 0 : 16,
+                                              ),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -600,27 +592,31 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                                     children: [
                                                       Text(
                                                         item['level'] as String,
-                                                        style: GoogleFonts
-                                                            .plusJakartaSans(
-                                                          fontSize: 13,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: textPrimary,
-                                                        ),
+                                                        style:
+                                                            GoogleFonts.plusJakartaSans(
+                                                              fontSize: 13,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              color:
+                                                                  textPrimary,
+                                                            ),
                                                       ),
                                                       Text(
                                                         item['date'] as String,
-                                                        style: GoogleFonts.inter(
-                                                          fontSize: 11,
-                                                          color: textSecondary,
-                                                        ),
+                                                        style:
+                                                            AppFonts.body(
+                                                              fontSize: 11,
+                                                              color:
+                                                                  textSecondary,
+                                                            ),
                                                       ),
                                                     ],
                                                   ),
                                                   const SizedBox(height: 2),
                                                   Text(
                                                     'Unlocked during ${item['trip']}',
-                                                    style: GoogleFonts.inter(
+                                                    style: AppFonts.body(
                                                       fontSize: 12,
                                                       color: textSecondary,
                                                       fontStyle:
@@ -653,18 +649,14 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                   height: 56,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(100),
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF7B2FF7),
-                                        Color(0xFFD0BCFF),
-                                      ],
-                                    ),
+                                    color: Color(0xFF7B2FF7),
                                     boxShadow: [
                                       BoxShadow(
                                         color: const Color(0xFF7B2FF7)
                                             .withValues(
-                                                alpha: 0.4 * _glowAnim.value),
-                                        blurRadius: 20,
+                                              alpha: 0.4 * _glowAnim.value,
+                                            ),
+                                        blurRadius: 0,
                                         offset: const Offset(0, 4),
                                       ),
                                     ],
@@ -673,18 +665,22 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                                     color: Colors.transparent,
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(100),
-                                      onTap: () {},
+                                      onTap: () => showGlobalSnack(
+                                        'Tính năng đang được hoàn thiện 🚧',
+                                      ),
                                       child: Center(
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Icon(Icons.ios_share,
-                                                color: Colors.white, size: 18),
+                                            const Icon(
+                                              Icons.ios_share,
+                                              color: Colors.white,
+                                              size: 18,
+                                            ),
                                             const SizedBox(width: 6),
                                             Text(
                                               'Share the Glory',
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w700,
                                                 color: Colors.white,
@@ -703,21 +699,27 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
                               child: SizedBox(
                                 height: 56,
                                 child: OutlinedButton.icon(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.person_add_outlined,
-                                      size: 18, color: Color(0xFFD0BCFF)),
+                                  onPressed: () => showGlobalSnack(
+                                    'Tính năng đang được hoàn thiện 🚧',
+                                  ),
+                                  icon: const Icon(
+                                    Icons.person_add_outlined,
+                                    size: 18,
+                                    color: Color(0xFFC9B8FF),
+                                  ),
                                   label: Text(
                                     'Equip to Profile',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFFD0BCFF),
+                                      color: const Color(0xFFC9B8FF),
                                     ),
                                   ),
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(
-                                      color: const Color(0xFFD0BCFF)
-                                          .withValues(alpha: 0.4),
+                                      color: const Color(
+                                        0xFFC9B8FF,
+                                      ).withValues(alpha: 0.4),
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(100),
@@ -750,9 +752,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
           height: 36,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [Color(0xFF7B2FF7), Color(0xFFD0BCFF)],
-            ),
+            color: Color(0xFF7B2FF7),
           ),
           child: Center(
             child: Text(
@@ -779,7 +779,7 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             width: 42,
             height: 42,
@@ -791,7 +791,8 @@ class _BadgeDetailScreenState extends State<BadgeDetailScreen>
               border: Border.all(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.black.withValues(alpha: 0.08),
+                    : Colors.black,
+                width: 2,
               ),
             ),
             child: Icon(

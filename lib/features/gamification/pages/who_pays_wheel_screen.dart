@@ -1,30 +1,69 @@
 import 'dart:math';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/app_messenger.dart';
+import '../../trips/application/trips_providers.dart';
 
-class WhoPaysWheelScreen extends StatefulWidget {
+class WhoPaysWheelScreen extends ConsumerStatefulWidget {
   const WhoPaysWheelScreen({super.key});
 
   @override
-  State<WhoPaysWheelScreen> createState() => _WhoPaysWheelScreenState();
+  ConsumerState<WhoPaysWheelScreen> createState() => _WhoPaysWheelScreenState();
 }
 
-class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
+class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _spinController;
   late Animation<double> _spinAnimation;
 
   final List<Map<String, String>> _participants = [
-    {'name': 'Minh Nhật', 'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nhat'},
-    {'name': 'Thảo Ly', 'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ly'},
-    {'name': 'Nam Trung', 'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Trung'},
-    {'name': 'Duy Khang', 'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Khang'},
+    {
+      'name': 'Minh Nhật',
+      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nhat',
+    },
+    {
+      'name': 'Thảo Ly',
+      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ly',
+    },
+    {
+      'name': 'Nam Trung',
+      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Trung',
+    },
+    {
+      'name': 'Duy Khang',
+      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Khang',
+    },
   ];
 
+  List<Map<String, String>> _currentParticipants = [];
   int _winnerIndex = -1;
   bool _isSpinning = false;
   double _startRotation = 0.0;
   double _endRotation = 0.0;
+  double _lastTickRotation = 0.0;
+  double _pointerAngle = 0.0;
+
+  void _triggerPointerBounce() {
+    setState(() {
+      _pointerAngle = 0.25;
+    });
+    Future.delayed(const Duration(milliseconds: 60), () {
+      if (mounted) {
+        setState(() {
+          _pointerAngle = -0.12;
+        });
+        Future.delayed(const Duration(milliseconds: 50), () {
+          if (mounted) {
+            setState(() {
+              _pointerAngle = 0.0;
+            });
+          }
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -34,16 +73,31 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
       duration: const Duration(seconds: 4),
     );
 
-    _spinAnimation = Tween<double>(begin: 0.0, end: 0.0).animate(_spinController);
+    _spinAnimation = Tween<double>(
+      begin: 0.0,
+      end: 0.0,
+    ).animate(_spinController);
+
+    _spinAnimation.addListener(() {
+      if (_currentParticipants.isEmpty) return;
+      final sectorAngle = (2 * pi) / _currentParticipants.length;
+      final currentRotation = _spinAnimation.value;
+      if ((currentRotation - _lastTickRotation).abs() >= sectorAngle) {
+        _lastTickRotation = currentRotation;
+        HapticFeedback.lightImpact();
+        _triggerPointerBounce();
+      }
+    });
 
     _spinController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {
           _isSpinning = false;
           final finalAngle = _endRotation % (2 * pi);
-          final sectorAngle = (2 * pi) / _participants.length;
+          final sectorAngle = (2 * pi) / _currentParticipants.length;
           final alignedAngle = (5 * pi / 2 - finalAngle) % (2 * pi);
-          _winnerIndex = ((alignedAngle / sectorAngle).floor()) % _participants.length;
+          _winnerIndex =
+              ((alignedAngle / sectorAngle).floor()) % _currentParticipants.length;
         });
         _showChaosPayerDialog();
       }
@@ -57,7 +111,7 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
   }
 
   void _spin() {
-    if (_isSpinning) return;
+    if (_isSpinning || _currentParticipants.isEmpty) return;
     setState(() {
       _isSpinning = true;
       _winnerIndex = -1;
@@ -67,23 +121,21 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
       final targetAngle = random.nextDouble() * 2 * pi;
       _endRotation = _startRotation + (extraSpins * 2 * pi) + targetAngle;
 
-      _spinAnimation = Tween<double>(
-        begin: _startRotation,
-        end: _endRotation,
-      ).animate(CurvedAnimation(
-        parent: _spinController,
-        curve: Curves.decelerate,
-      ));
+      _spinAnimation = Tween<double>(begin: _startRotation, end: _endRotation)
+          .animate(
+            CurvedAnimation(parent: _spinController, curve: Curves.decelerate),
+          );
     });
 
+    _lastTickRotation = _startRotation;
     _spinController.reset();
     _spinController.forward();
   }
 
   void _showChaosPayerDialog() {
-    final winner = _participants[_winnerIndex];
+    final winner = _currentParticipants[_winnerIndex];
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -93,27 +145,24 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
           child: Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF171F33) : Colors.white,
+              color: isDark ? const Color(0xFF262019) : Colors.white,
               borderRadius: BorderRadius.circular(28),
               boxShadow: [
                 BoxShadow(
                   color: Colors.redAccent.withValues(alpha: 0.3),
-                  blurRadius: 30,
+                  blurRadius: 0,
                   spreadRadius: 2,
                 ),
               ],
-              border: Border.all(
-                color: const Color(0xFFEF4444),
-                width: 2.5,
-              ),
+              border: Border.all(color: const Color(0xFFD8422B), width: 2.5),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '🔥 CHAOS PAYER 🔥',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: const Color(0xFFEF4444),
+                  style: AppFonts.heading(
+                    color: const Color(0xFFD8422B),
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.5,
@@ -123,12 +172,15 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                 Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFEF4444), width: 3),
+                    border: Border.all(
+                      color: const Color(0xFFD8422B),
+                      width: 3,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFEF4444).withValues(alpha: 0.3),
-                        blurRadius: 15,
-                      )
+                        color: const Color(0xFFD8422B).withValues(alpha: 0.3),
+                        blurRadius: 0,
+                      ),
                     ],
                   ),
                   child: CircleAvatar(
@@ -140,27 +192,31 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                 const SizedBox(height: 20),
                 Text(
                   winner['name']!,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022),
+                    color: isDark
+                        ? const Color(0xFFDAE2FD)
+                        : const Color(0xFF141210),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   'Thần tài hỗn loạn đã gõ đầu cưng! Ngoài việc phải bao trọn hóa đơn này, cưng còn phải thực hiện một thử thách Dare ngẫu nhiên tiếp theo! 💀💸',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 13,
                     height: 1.5,
-                    color: isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76),
+                    color: isDark
+                        ? const Color(0xFFCBC3D7)
+                        : const Color(0xFF4A453E),
                   ),
                 ),
                 const SizedBox(height: 28),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEF4444),
+                    backgroundColor: const Color(0xFFD8422B),
                     foregroundColor: Colors.white,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
@@ -170,7 +226,7 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                   ),
                   child: Text(
                     'Chấp nhận số phận 💸',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontWeight: FontWeight.w800,
                       fontSize: 15,
                     ),
@@ -186,37 +242,54 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
 
   @override
   Widget build(BuildContext context) {
+    final tripsAsync = ref.watch(tripsProvider);
+    _currentParticipants = tripsAsync.maybeWhen(
+      data: (trips) {
+        if (trips.isNotEmpty && trips.first.members.isNotEmpty) {
+          return trips.first.members.map((m) => {
+            'name': m.name,
+            'avatar': m.avatarUrl ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=${Uri.encodeComponent(m.name)}',
+          }).toList();
+        }
+        return _participants;
+      },
+      orElse: () => _participants,
+    );
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     // Standard Palette colors
-    final Color bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final Color primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final Color surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
-    final Color textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final Color textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final Color bgColor = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final Color primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final Color surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final Color textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final Color textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     return Scaffold(
       backgroundColor: bgColor,
       body: Container(
         decoration: isDark
-            ? const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF0B1326),
-                    Color(0xFF131B2E),
-                    Color(0xFF060E20),
-                  ],
-                ),
-              )
+            ? const BoxDecoration(color: Color(0xFF1A1712))
             : null,
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10.0,
+              ),
               child: Column(
                 children: [
                   // Top Navigation Header
@@ -227,13 +300,15 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                         onPressed: () => Navigator.pop(context),
                         icon: Icon(Icons.arrow_back, color: textPrimary),
                         style: IconButton.styleFrom(
-                          backgroundColor: surfaceColor.withValues(alpha: isDark ? 0.3 : 0.8),
+                          backgroundColor: surfaceColor.withValues(
+                            alpha: isDark ? 0.3 : 0.8,
+                          ),
                           shape: const CircleBorder(),
                         ),
                       ),
                       Text(
                         'trip.mate',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontWeight: FontWeight.w800,
                           fontSize: 18,
                           color: primaryColor,
@@ -241,10 +316,17 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.add_reaction_outlined, color: primaryColor),
+                        onPressed: () => showGlobalSnack(
+                          'Tính năng đang được hoàn thiện 🚧',
+                        ),
+                        icon: Icon(
+                          Icons.add_reaction_outlined,
+                          color: primaryColor,
+                        ),
                         style: IconButton.styleFrom(
-                          backgroundColor: surfaceColor.withValues(alpha: isDark ? 0.3 : 0.8),
+                          backgroundColor: surfaceColor.withValues(
+                            alpha: isDark ? 0.3 : 0.8,
+                          ),
                           shape: const CircleBorder(),
                         ),
                       ),
@@ -259,7 +341,7 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                   // Title Text
                   Text(
                     'Who Pays?',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: textPrimary,
@@ -269,7 +351,7 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                   const SizedBox(height: 8),
                   Text(
                     'Chế độ tăng cực mạnh chỉ số hỗn loạn của cả Squad!',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 14,
                       color: textSecondary,
                     ),
@@ -297,7 +379,7 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                           text: "my wallet is empty 💸",
                           top: 160,
                           right: -32,
-                          textColor: const Color(0xFF34D399),
+                          textColor: const Color(0xFF1FA85C),
                           isDark: isDark,
                         ),
                         // Wheel glowing outer border container
@@ -308,15 +390,22 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: isDark
-                                  ? const Color(0xFF8B5CF6).withValues(alpha: 0.3)
-                                  : const Color(0xFFE0533C).withValues(alpha: 0.3),
+                                  ? const Color(
+                                      0xFFF5822B,
+                                    ).withValues(alpha: 0.3)
+                                  : const Color(
+                                      0xFFF5822B,
+                                    ).withValues(alpha: 0.3),
                               width: 6,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: (isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C))
-                                    .withValues(alpha: 0.15),
-                                blurRadius: 30,
+                                color:
+                                    (isDark
+                                            ? const Color(0xFFF5822B)
+                                            : const Color(0xFFF5822B))
+                                        .withValues(alpha: 0.15),
+                                blurRadius: 0,
                               ),
                             ],
                           ),
@@ -332,7 +421,7 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                                 child: CustomPaint(
                                   size: const Size(300, 300),
                                   painter: ChaosWheelPainter(
-                                    participants: _participants,
+                                    participants: _currentParticipants,
                                     isDark: isDark,
                                   ),
                                 ),
@@ -348,29 +437,32 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                             height: 64,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: isDark
-                                    ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
-                                    : [Colors.white, const Color(0xFFE2E8F0)],
-                              ),
+                              color: isDark
+                                  ? const Color(0xFF262019)
+                                  : Colors.white,
                               border: Border.all(
-                                color: isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C),
+                                color: isDark
+                                    ? const Color(0xFFF5822B)
+                                    : const Color(0xFFF5822B),
                                 width: 3,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: (isDark
-                                          ? const Color(0xFF8B5CF6)
-                                          : const Color(0xFFE0533C))
-                                      .withValues(alpha: 0.4),
-                                  blurRadius: 12,
-                                )
+                                  color:
+                                      (isDark
+                                              ? const Color(0xFFF5822B)
+                                              : const Color(0xFFF5822B))
+                                          .withValues(alpha: 0.4),
+                                  blurRadius: 0,
+                                ),
                               ],
                             ),
                             child: Center(
                               child: Icon(
                                 Icons.casino,
-                                color: isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C),
+                                color: isDark
+                                    ? const Color(0xFFF5822B)
+                                    : const Color(0xFFF5822B),
                                 size: 28,
                               ),
                             ),
@@ -379,10 +471,16 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                         // Top pointer indicator
                         Positioned(
                           top: -12,
-                          child: Icon(
-                            Icons.arrow_drop_down_sharp,
-                            color: isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C),
-                            size: 42,
+                          child: Transform.rotate(
+                            angle: _pointerAngle,
+                            alignment: Alignment.topCenter,
+                            child: Icon(
+                              Icons.arrow_drop_down_sharp,
+                              color: isDark
+                                  ? const Color(0xFFF5822B)
+                                  : const Color(0xFFF5822B),
+                              size: 42,
+                            ),
                           ),
                         ),
                       ],
@@ -397,19 +495,14 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                       width: double.infinity,
                       height: 56,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            primaryColor,
-                            isDark ? const Color(0xFFEC4899) : const Color(0xFFFBA83A),
-                          ],
-                        ),
+                        color: primaryColor,
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: [
                           BoxShadow(
                             color: primaryColor.withValues(alpha: 0.4),
-                            blurRadius: 20,
+                            blurRadius: 0,
                             offset: const Offset(0, 8),
-                          )
+                          ),
                         ],
                       ),
                       child: Row(
@@ -423,7 +516,7 @@ class _WhoPaysWheelScreenState extends State<WhoPaysWheelScreen>
                           const SizedBox(width: 8),
                           Text(
                             'SPIN TO DECIDE',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
@@ -457,17 +550,17 @@ class ChaosWheelPainter extends CustomPainter {
     final sectorAngle = (2 * pi) / participants.length;
 
     final darkColors = [
-      const Color(0xFF8B5CF6), // Purple
-      const Color(0xFF34D399), // Mint Green
+      const Color(0xFFF5822B), // Purple
+      const Color(0xFF1FA85C), // Mint Green
       const Color(0xFFFB923C), // Orange
-      const Color(0xFFEF4444), // Red
+      const Color(0xFFD8422B), // Red
     ];
 
     final lightColors = [
-      const Color(0xFFE0533C), // Coral
-      const Color(0xFFEBA83A), // Amber
-      const Color(0xFF3B82F6), // Blue
-      const Color(0xFF10B981), // Emerald
+      const Color(0xFFF5822B), // Coral
+      const Color(0xFFFFD84D), // Amber
+      const Color(0xFF3D8BFF), // Blue
+      const Color(0xFF1FA85C), // Emerald
     ];
 
     final colors = isDark ? darkColors : lightColors;
@@ -501,7 +594,7 @@ class ChaosWheelPainter extends CustomPainter {
       final tp = TextPainter(textDirection: TextDirection.ltr);
       tp.text = TextSpan(
         text: participants[i]['name']!,
-        style: GoogleFonts.plusJakartaSans(
+        style: AppFonts.heading(
           color: Colors.white,
           fontWeight: FontWeight.w800,
           fontSize: 13,
@@ -509,8 +602,8 @@ class ChaosWheelPainter extends CustomPainter {
             Shadow(
               color: Colors.black.withValues(alpha: 0.5),
               offset: const Offset(0, 1),
-              blurRadius: 3,
-            )
+              blurRadius: 0,
+            ),
           ],
         ),
       );
@@ -551,9 +644,10 @@ class _FlashingPillState extends State<FlashingPill>
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
-    _opacityAnimation = Tween<double>(begin: 0.2, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _opacityAnimation = Tween<double>(
+      begin: 0.2,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -570,18 +664,22 @@ class _FlashingPillState extends State<FlashingPill>
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFFEF4444).withValues(alpha: 0.08),
+            color: const Color(0xFFD8422B).withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: const Color(0xFFEF4444).withValues(alpha: _opacityAnimation.value),
+              color: const Color(
+                0xFFD8422B,
+              ).withValues(alpha: _opacityAnimation.value),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFEF4444).withValues(alpha: _opacityAnimation.value * 0.2),
-                blurRadius: 8,
+                color: const Color(
+                  0xFFD8422B,
+                ).withValues(alpha: _opacityAnimation.value * 0.2),
+                blurRadius: 0,
                 spreadRadius: 1,
-              )
+              ),
             ],
           ),
           child: Row(
@@ -591,15 +689,15 @@ class _FlashingPillState extends State<FlashingPill>
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFEF4444),
+                  color: Color(0xFFD8422B),
                   shape: BoxShape.circle,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 'Chaos Mode Active ⚠️',
-                style: GoogleFonts.plusJakartaSans(
-                  color: const Color(0xFFEF4444),
+                style: AppFonts.heading(
+                  color: const Color(0xFFD8422B),
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
@@ -639,7 +737,8 @@ class FloatingBubble extends StatefulWidget {
 class _FloatingBubbleState extends State<FloatingBubble>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
+  late Animation<double> _translateAnimation;
+  late Animation<double> _rotateAnimation;
 
   @override
   void initState() {
@@ -648,9 +747,16 @@ class _FloatingBubbleState extends State<FloatingBubble>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: -6.0, end: 6.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    
+    _translateAnimation = Tween<double>(
+      begin: -6.0,
+      end: 6.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _rotateAnimation = Tween<double>(
+      begin: -0.06,
+      end: 0.06,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -667,37 +773,40 @@ class _FloatingBubbleState extends State<FloatingBubble>
       right: widget.right,
       bottom: widget.bottom,
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: _controller,
         builder: (context, child) {
           return Transform.translate(
-            offset: Offset(0, _animation.value),
-            child: child,
+            offset: Offset(0, _translateAnimation.value),
+            child: Transform.rotate(
+              angle: _rotateAnimation.value,
+              child: child,
+            ),
           );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: widget.isDark
-                ? const Color(0xFF171F33).withValues(alpha: 0.85)
+                ? const Color(0xFF262019).withValues(alpha: 0.85)
                 : Colors.white.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: widget.isDark
                   ? Colors.white.withValues(alpha: 0.12)
-                  : Colors.black.withValues(alpha: 0.08),
-              width: 1,
+                  : Colors.black,
+              width: 2,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
+                blurRadius: 0,
                 offset: const Offset(0, 4),
-              )
+              ),
             ],
           ),
           child: Text(
             widget.text,
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               color: widget.textColor,
               fontSize: 12,
               fontWeight: FontWeight.bold,

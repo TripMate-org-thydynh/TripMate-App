@@ -66,12 +66,17 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -99,9 +104,11 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Khám phá các cột mốc danh hiệu cưng đã mở khóa trong suốt các chặng đường đi.',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 32),
 
@@ -109,23 +116,28 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.85,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.85,
+                        ),
                     itemCount: _liveBadges.length,
                     itemBuilder: (context, index) {
                       final badge = _liveBadges[index];
-                      final isUnlocked = badge['unlockedAt'] != null || badge['unlocked'] == true;
+                      final isUnlocked =
+                          badge['unlockedAt'] != null ||
+                          badge['unlocked'] == true;
                       final title = badge['title'] as String;
                       final desc = badge['desc'] as String;
-                      
+
                       // Map custom colors dynamically
                       final accentColor = badge['id'] == 'b1'
                           ? Colors.amber
-                          : (badge['id'] == 'b2' ? Colors.purpleAccent : Colors.teal);
+                          : (badge['id'] == 'b2'
+                                ? Colors.purpleAccent
+                                : Colors.teal);
 
                       return GestureDetector(
                         onTap: () {
@@ -142,16 +154,20 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                            color: isDark
+                                ? const Color(0xFF262019)
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: isUnlocked ? accentColor.withValues(alpha: 0.3) : Colors.transparent,
+                              color: isUnlocked
+                                  ? accentColor.withValues(alpha: 0.3)
+                                  : Colors.transparent,
                               width: 2,
                             ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
+                                blurRadius: 0,
                               ),
                             ],
                           ),
@@ -162,7 +178,9 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
                               Opacity(
                                 opacity: isUnlocked ? 1.0 : 0.4,
                                 child: Icon(
-                                  isUnlocked ? Icons.emoji_events : Icons.lock_outline,
+                                  isUnlocked
+                                      ? Icons.emoji_events
+                                      : Icons.lock_outline,
                                   color: isUnlocked ? accentColor : Colors.grey,
                                   size: 48,
                                 ),
@@ -183,7 +201,10 @@ class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
                               Text(
                                 desc,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(color: Colors.grey, fontSize: 10),
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),

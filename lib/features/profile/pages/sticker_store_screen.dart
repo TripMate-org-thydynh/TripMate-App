@@ -18,6 +18,7 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
   ];
 
   List<dynamic> _liveStickers = [];
+  List<dynamic> _ownedStickers = [];
   bool _isLoading = true;
 
   @override
@@ -27,14 +28,24 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
   }
 
   Future<void> _fetchStickers() async {
-    final response = await ApiService.get('/users/sticker-store');
-    if (mounted) {
-      if (response is List) {
+    try {
+      final response = await ApiService.get('/users/sticker-store');
+      final ownedResponse = await ApiService.get('/users/me/stickers');
+      if (mounted) {
         setState(() {
-          _liveStickers = response;
+          if (response is List) {
+            _liveStickers = response;
+          } else {
+            _liveStickers = List.from(_mockStickers);
+          }
+          if (ownedResponse is List) {
+            _ownedStickers = ownedResponse;
+          }
           _isLoading = false;
         });
-      } else {
+      }
+    } catch (_) {
+      if (mounted) {
         setState(() {
           _liveStickers = List.from(_mockStickers);
           _isLoading = false;
@@ -57,13 +68,15 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
         _isLoading = false;
       });
 
-      if (response != null && response['success'] == true) {
+      // ApiService đã unwrap envelope → thành công khi response khác null.
+      if (response != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('🎉 Mua thành công sticker: $label!'),
             backgroundColor: Colors.purple,
           ),
         );
+        _fetchStickers(); // Refresh store/inventory ownership status!
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -81,12 +94,17 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -98,7 +116,10 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.inventory_2_outlined, color: isDark ? Colors.white : Colors.black87),
+            icon: Icon(
+              Icons.inventory_2_outlined,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -127,9 +148,11 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Mua sticker độc lạ để thả thính hoặc cà khịa cực mạnh trong chat nhóm.',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 32),
 
@@ -137,30 +160,33 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.85,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.72,
+                        ),
                     itemCount: _liveStickers.length,
                     itemBuilder: (context, index) {
                       final item = _liveStickers[index];
                       final id = item['id'] as String;
                       final label = item['label'] as String;
                       final costXP = item['costXP'] ?? item['cost'] ?? 150;
-                      
+
                       // Safely extract the emoji (last word or character)
                       final emoji = label.split(' ').last;
 
                       return Container(
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                          color: isDark
+                              ? const Color(0xFF262019)
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
+                              blurRadius: 0,
                             ),
                           ],
                         ),
@@ -168,10 +194,7 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              emoji,
-                              style: const TextStyle(fontSize: 48),
-                            ),
+                            Text(emoji, style: const TextStyle(fontSize: 48)),
                             const SizedBox(height: 12),
                             Text(
                               label,
@@ -194,21 +217,32 @@ class _StickerStoreScreenState extends State<StickerStoreScreen> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            ElevatedButton(
-                              onPressed: () => _purchaseSticker(id, label),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.purple,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                            (() {
+                              final isOwned = _ownedStickers.any(
+                                (s) => s['id'] == id || s['stickerId'] == id,
+                              );
+                              return ElevatedButton(
+                                onPressed: isOwned ? null : () => _purchaseSticker(id, label),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isOwned ? Colors.grey : Colors.purple,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 8,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
-                              ),
-                              child: const Text(
-                                'Mua Ngay',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                              ),
-                            ),
+                                child: Text(
+                                  isOwned ? 'Đã Sở Hữu' : 'Mua Ngay',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              );
+                            })(),
                           ],
                         ),
                       );

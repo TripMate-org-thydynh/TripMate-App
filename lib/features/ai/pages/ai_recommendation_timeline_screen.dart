@@ -22,15 +22,23 @@ class AiRecommendationTimelineScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Hành Trình Gợi Ý Bằng AI 🕒', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Hành Trình Gợi Ý Bằng AI 🕒',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -43,9 +51,11 @@ class AiRecommendationTimelineScreen extends StatelessWidget {
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Dòng thời gian các điểm đến được gợi ý tối ưu tự động dựa trên vị trí và sở thích nhóm.',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -58,12 +68,17 @@ class AiRecommendationTimelineScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
                       leading: Text(
                         item['time']!,
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.purpleAccent),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purpleAccent,
+                        ),
                       ),
                       title: Text(
                         item['location']!,

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'pages/subscription_checkout_screen.dart';
 import 'pages/billing_history_screen.dart';
 import 'pages/subscription_settings_screen.dart';
 import 'pages/referral_rewards_screen.dart';
 import 'pages/creator_revenue_dashboard_screen.dart';
 import 'pages/referral_campaign_screen.dart';
-
 
 class PremiumHubScreen extends StatefulWidget {
   const PremiumHubScreen({super.key});
@@ -16,11 +14,18 @@ class PremiumHubScreen extends StatefulWidget {
   State<PremiumHubScreen> createState() => _PremiumHubScreenState();
 }
 
-class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerProviderStateMixin {
+class _PremiumHubScreenState extends State<PremiumHubScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _shimmerController;
-  bool _isDarkMode = true; // State of theme
+  bool _isDarkMode = false; // State of theme (mặc định sáng như app)
 
-  final List<String> _themes = ['Tokyo Neon', 'Đà Lạt Mist', 'Beach Chaos', 'Retro Film', 'Cyber Night'];
+  final List<String> _themes = [
+    'Tokyo Neon',
+    'Đà Lạt Mist',
+    'Beach Chaos',
+    'Retro Film',
+    'Cyber Night',
+  ];
 
   @override
   void initState() {
@@ -40,52 +45,53 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     final isDark = _isDarkMode;
-    
-    final primaryColor = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF8B5CF6);
-    final secondaryColor = isDark ? const Color(0xFF45DFA4) : const Color(0xFF34D399);
-    final tertiaryColor = isDark ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
-    
-    final bgColor = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
-    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+
+    final primaryColor = isDark
+        ? const Color(0xFFC9B8FF)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFF1FA85C);
+    final tertiaryColor = isDark
+        ? const Color(0xFFFFB783)
+        : const Color(0xFFF5822B);
+
+    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
+    final glassBorder = textPrimary; // viền ink brutalist
 
     return Scaffold(
       backgroundColor: bgColor,
       body: Stack(
         children: [
-          // 1. Dark aurora background overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.topLeft,
-                  radius: 1.4,
-                  colors: isDark
-                      ? [const Color(0xFF3F1B68).withValues(alpha: 0.25), Colors.transparent]
-                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.5), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-
           SafeArea(
             child: Column(
               children: [
                 // Top app bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+                        icon: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: textPrimary,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       Text(
                         'Elite Squad',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: textPrimary,
@@ -93,7 +99,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                       ),
                       IconButton(
                         icon: Icon(
-                          isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                          isDark
+                              ? Icons.light_mode_outlined
+                              : Icons.dark_mode_outlined,
                           color: primaryColor,
                         ),
                         onPressed: () {
@@ -120,23 +128,18 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ShaderMask(
-                                  shaderCallback: (bounds) => const LinearGradient(
-                                    colors: [Color(0xFFD0BCFF), Color(0xFF45DFA4), Color(0xFFFFB783)],
-                                  ).createShader(bounds),
-                                  child: Text(
-                                    'trip.mate',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: -1.5,
-                                      color: Colors.white,
-                                    ),
+                                Text(
+                                  'trip.mate',
+                                  style: AppFonts.heading(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -1.5,
+                                    color: textPrimary,
                                   ),
                                 ),
                                 Text(
                                   '@adventure_seeker',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: tertiaryColor,
@@ -150,7 +153,11 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                                 shape: BoxShape.circle,
                                 color: tertiaryColor.withValues(alpha: 0.15),
                               ),
-                              child: Icon(Icons.workspace_premium, color: tertiaryColor, size: 24),
+                              child: Icon(
+                                Icons.workspace_premium,
+                                color: tertiaryColor,
+                                size: 24,
+                              ),
                             ),
                           ],
                         ),
@@ -158,7 +165,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
 
                         Text(
                           'Your memories deserve better than camera roll chaos.',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
                             color: textPrimary,
@@ -170,7 +177,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                         // Cinematic themes section
                         Text(
                           'Cinematic Themes',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: textPrimary,
@@ -188,25 +195,41 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                               final isNeon = thm == 'Tokyo Neon';
                               return Container(
                                 margin: const EdgeInsets.only(right: 8),
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: isDark ? const Color(0xFF171F33) : Colors.white,
+                                  color: isDark
+                                      ? const Color(0xFF262019)
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(19),
                                   border: Border.all(
-                                    color: isNeon ? secondaryColor : glassBorder,
+                                    color: isNeon
+                                        ? secondaryColor
+                                        : glassBorder,
                                     width: isNeon ? 1.5 : 1.0,
                                   ),
                                   boxShadow: isNeon
-                                      ? [BoxShadow(color: secondaryColor.withValues(alpha: 0.25), blurRadius: 8)]
+                                      ? [
+                                          BoxShadow(
+                                            color: secondaryColor.withValues(
+                                              alpha: 0.25,
+                                            ),
+                                            blurRadius: 0,
+                                          ),
+                                        ]
                                       : null,
                                 ),
                                 child: Center(
                                   child: Text(
                                     thm,
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
-                                      color: isNeon ? secondaryColor : textPrimary,
+                                      color: isNeon
+                                          ? secondaryColor
+                                          : textPrimary,
                                     ),
                                   ),
                                 ),
@@ -217,10 +240,34 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                         const SizedBox(height: 24),
 
                         // Feature check rows list
-                        _buildFeatureRow('✨ Premium Identity', 'Stand out with glowing squad tags & gold border highlights.', primaryColor, textPrimary, textSecondary),
-                        _buildFeatureRow('🗺️ Hidden Travel Spots', 'Unlock exclusive geolocated pins & secret local viewpoints.', secondaryColor, textPrimary, textSecondary),
-                        _buildFeatureRow('💯 Exclusive Reactions', 'Express chaos with custom LIT, DEAD, and YASSS emojis.', tertiaryColor, textPrimary, textSecondary),
-                        _buildFeatureRow('📦 Infinite High-Res Storage', 'Keep original raw frames and cinematic highlights forever.', primaryColor, textPrimary, textSecondary),
+                        _buildFeatureRow(
+                          '✨ Premium Identity',
+                          'Stand out with glowing squad tags & gold border highlights.',
+                          primaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
+                        _buildFeatureRow(
+                          '🗺️ Hidden Travel Spots',
+                          'Unlock exclusive geolocated pins & secret local viewpoints.',
+                          secondaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
+                        _buildFeatureRow(
+                          '💯 Exclusive Reactions',
+                          'Express chaos with custom LIT, DEAD, and YASSS emojis.',
+                          tertiaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
+                        _buildFeatureRow(
+                          '📦 Infinite High-Res Storage',
+                          'Keep original raw frames and cinematic highlights forever.',
+                          primaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
 
                         const SizedBox(height: 28),
 
@@ -237,7 +284,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                                     Colors.white.withValues(alpha: 0.1),
                                   ],
                                   stops: const [0.35, 0.5, 0.65],
-                                  transform: SlideGradientTransform(percent: _shimmerController.value),
+                                  transform: SlideGradientTransform(
+                                    percent: _shimmerController.value,
+                                  ),
                                 ).createShader(bounds);
                               },
                               blendMode: BlendMode.srcATop,
@@ -248,27 +297,31 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const SubscriptionCheckoutScreen()),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SubscriptionCheckoutScreen(),
+                                ),
                               );
                             },
                             child: Container(
                               width: double.infinity,
                               height: 60,
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF222222), Color(0xFF111111), Color(0xFF222222)],
-                                ),
+                                color: Color(0xFF222222),
                                 borderRadius: BorderRadius.circular(30),
-                                border: Border.all(color: Colors.white24, width: 1.5),
+                                border: Border.all(
+                                  color: Colors.white24,
+                                  width: 1.5,
+                                ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withValues(alpha: 0.6),
-                                    blurRadius: 15,
+                                    blurRadius: 0,
                                     offset: const Offset(0, 5),
                                   ),
                                   BoxShadow(
                                     color: primaryColor.withValues(alpha: 0.15),
-                                    blurRadius: 20,
+                                    blurRadius: 0,
                                   ),
                                 ],
                               ),
@@ -278,14 +331,18 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                                   children: [
                                     Text(
                                       'Join the Elite Squad',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                                    const Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -298,38 +355,107 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
                         // Secondary Options list
                         Text(
                           'Services Settings',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: textPrimary),
+                          style: AppFonts.heading(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
                         ),
                         const SizedBox(height: 10),
 
-                        _buildSettingTile('Subscription Settings ⚙', 'Manage payment methods & automatic renewals', () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SubscriptionSettingsScreen()));
-                        }, cardBg, glassBorder, textPrimary, textSecondary),
-
-                        _buildSettingTile('Invoices History 🧾', 'Download PDF invoices of your payments history', () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const BillingHistoryScreen()));
-                        }, cardBg, glassBorder, textPrimary, textSecondary),
-
-                        _buildSettingTile('Referral Rewards 🎁', 'Invite squad mates & receive free premium levels', () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ReferralRewardsScreen()));
-                        }, cardBg, glassBorder, textPrimary, textSecondary),
-
-                        _buildSettingTile('Referral Campaign 🤝', 'Bring the squad & unlock lifetime Elite access', () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ReferralCampaignScreen(
-                                isDarkMode: _isDarkMode,
-                                onThemeToggle: () => setState(() => _isDarkMode = !_isDarkMode),
+                        _buildSettingTile(
+                          'Subscription Settings ⚙',
+                          'Manage payment methods & automatic renewals',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SubscriptionSettingsScreen(),
                               ),
-                            ),
-                          );
-                        }, cardBg, glassBorder, textPrimary, textSecondary),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
 
-                        _buildSettingTile('Creative Shop Revenue 🎨', 'Dashboard of your custom sticker packages sales', () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CreatorRevenueDashboardScreen()));
-                        }, cardBg, glassBorder, textPrimary, textSecondary),
+                        _buildSettingTile(
+                          'Invoices History 🧾',
+                          'Download PDF invoices of your payments history',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const BillingHistoryScreen(),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
 
+                        _buildSettingTile(
+                          'Referral Rewards 🎁',
+                          'Invite squad mates & receive free premium levels',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ReferralRewardsScreen(),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
+
+                        _buildSettingTile(
+                          'Referral Campaign 🤝',
+                          'Bring the squad & unlock lifetime Elite access',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReferralCampaignScreen(
+                                  isDarkMode: _isDarkMode,
+                                  onThemeToggle: () => setState(
+                                    () => _isDarkMode = !_isDarkMode,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
+
+                        _buildSettingTile(
+                          'Creative Shop Revenue 🎨',
+                          'Dashboard of your custom sticker packages sales',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const CreatorRevenueDashboardScreen(),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
 
                         const SizedBox(height: 48),
                       ],
@@ -344,7 +470,13 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildFeatureRow(String title, String subtitle, Color glowColor, Color textPrimary, Color textSecondary) {
+  Widget _buildFeatureRow(
+    String title,
+    String subtitle,
+    Color glowColor,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -352,7 +484,10 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
         children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(shape: BoxShape.circle, color: glowColor.withValues(alpha: 0.15)),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: glowColor.withValues(alpha: 0.15),
+            ),
             child: Icon(Icons.done, color: glowColor, size: 14),
           ),
           const SizedBox(width: 14),
@@ -360,9 +495,19 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold, color: textPrimary)),
+                Text(
+                  title,
+                  style: AppFonts.heading(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(subtitle, style: GoogleFonts.inter(fontSize: 11, color: textSecondary)),
+                Text(
+                  subtitle,
+                  style: AppFonts.body(fontSize: 11, color: textSecondary),
+                ),
               ],
             ),
           ),
@@ -371,19 +516,38 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildSettingTile(String title, String desc, VoidCallback onTap, Color cardBg, Color glassBorder, Color textPrimary, Color textSecondary) {
+  Widget _buildSettingTile(
+    String title,
+    String desc,
+    VoidCallback onTap,
+    Color cardBg,
+    Color glassBorder,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: glassBorder),
+        border: Border.all(color: glassBorder, width: 2),
+        boxShadow: [BoxShadow(color: glassBorder, offset: const Offset(0, 3))],
       ),
       child: ListTile(
         onTap: onTap,
-        title: Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold, color: textPrimary)),
-        subtitle: Text(desc, style: GoogleFonts.inter(fontSize: 10, color: textSecondary)),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+        title: Text(
+          title,
+          style: AppFonts.heading(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: textPrimary,
+          ),
+        ),
+        subtitle: Text(
+          desc,
+          style: AppFonts.body(fontSize: 10, color: textSecondary),
+        ),
+        trailing: const Icon(Icons.arrow_forward, size: 14, color: Colors.grey),
       ),
     );
   }

@@ -7,17 +7,20 @@ class AiPersonalityAnalysisScreen extends StatelessWidget {
     {
       'name': 'Alex Nguyễn',
       'type': 'Chúa Tể Hỗn Loạn 👑',
-      'roast': 'Thích tiêu tiền nhóm và chia nợ bằng vòng quay roulette! Không quan tâm ví ai khóc!',
+      'roast':
+          'Thích tiêu tiền nhóm và chia nợ bằng vòng quay roulette! Không quan tâm ví ai khóc!',
     },
     {
       'name': 'Trần Bình',
       'type': 'Thần Tài Săn Deal 💸',
-      'roast': 'Checkin chậm nhất nhưng đòi hóa đơn chi tiết nhất nhóm! Sợ mất 1 đồng xu!',
+      'roast':
+          'Checkin chậm nhất nhưng đòi hóa đơn chi tiết nhất nhóm! Sợ mất 1 đồng xu!',
     },
     {
       'name': 'Minh Nhật',
       'type': 'Phượt Thủ Selfie 🤳',
-      'roast': 'Gom 90% bộ nhớ album chung chỉ để up ảnh của mình! Sợ mọi người quên mặt!',
+      'roast':
+          'Gom 90% bộ nhớ album chung chỉ để up ảnh của mình! Sợ mọi người quên mặt!',
     },
   ];
 
@@ -27,15 +30,23 @@ class AiPersonalityAnalysisScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Phân Tích Tính Cách Squad 🎭', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Phân Tích Tính Cách Squad 🎭',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -48,11 +59,7 @@ class AiPersonalityAnalysisScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                gradient: const LinearGradient(
-                  colors: [Colors.purpleAccent, Colors.pinkAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Colors.purpleAccent,
               ),
               child: const Row(
                 children: [
@@ -98,8 +105,10 @@ class AiPersonalityAnalysisScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
@@ -107,11 +116,17 @@ class AiPersonalityAnalysisScreen extends StatelessWidget {
                         children: [
                           Text(
                             item['name']!,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.purple.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
@@ -129,7 +144,9 @@ class AiPersonalityAnalysisScreen extends StatelessWidget {
                           Text(
                             'Roast: ${item['roast']}',
                             style: TextStyle(
-                              color: isDark ? Colors.grey[300] : Colors.grey[750],
+                              color: isDark
+                                  ? Colors.grey[300]
+                                  : Colors.grey[750],
                               fontSize: 13,
                               height: 1.4,
                             ),

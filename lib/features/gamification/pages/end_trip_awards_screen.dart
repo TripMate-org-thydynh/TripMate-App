@@ -1,14 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class EndTripAwardsScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const EndTripAwardsScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -36,14 +36,14 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
       'label': 'Main Character',
       'winner': 'Thảo Ly',
       'desc': '428 selfies taken',
-      'color': Color(0xFFD0BCFF),
+      'color': Color(0xFFC9B8FF),
     },
     {
       'emoji': '💸',
       'label': 'Biggest Spender',
       'winner': 'Nam Trung',
       'desc': 'Spent 42% of budget on coffee',
-      'color': Color(0xFF45DFA4),
+      'color': Color(0xFF1FA85C),
     },
     {
       'emoji': '🚕',
@@ -112,12 +112,7 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
               height: 350,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFD0BCFF).withValues(alpha: 0.25),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -129,12 +124,7 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
               height: 280,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF45DFA4).withValues(alpha: 0.18),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -144,8 +134,10 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
               children: [
                 // Header
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   child: Row(
                     children: [
                       _buildGlassButton(
@@ -176,23 +168,27 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                         // TRIP WRAPPED badge
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 6),
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: const Color(0xFFD0BCFF)
-                                  .withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFFC9B8FF,
+                              ).withValues(alpha: 0.5),
                             ),
-                            color: const Color(0xFFD0BCFF).withValues(
-                                alpha: isDark ? 0.1 : 0.2),
+                            color: const Color(
+                              0xFFC9B8FF,
+                            ).withValues(alpha: isDark ? 0.1 : 0.2),
                           ),
                           child: Text(
                             'TRIP WRAPPED',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 2,
-                              color: const Color(0xFFD0BCFF),
+                              color: const Color(0xFFC9B8FF),
                             ),
                           ),
                         ),
@@ -211,16 +207,13 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                             height: 90,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFFFD700), Color(0xFFFF8C00)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                              color: Color(0xFFFFD700),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFFFD700)
-                                      .withValues(alpha: 0.4),
-                                  blurRadius: 30,
+                                  color: const Color(
+                                    0xFFFFD700,
+                                  ).withValues(alpha: 0.4),
+                                  blurRadius: 0,
                                   spreadRadius: 5,
                                 ),
                               ],
@@ -235,7 +228,7 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
 
                         Text(
                           'The Phú Quốc Awards',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
                             color: textPrimary,
@@ -248,7 +241,7 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
 
                         Text(
                           'Friendship survived 7 days of financial chaos.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 14,
                             color: textSecondary,
                           ),
@@ -279,21 +272,13 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                             height: 58,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(100),
-                              gradient: LinearGradient(
-                                colors: [
-                                  const Color(0xFFD0BCFF),
-                                  Color.lerp(
-                                    const Color(0xFFD0BCFF),
-                                    const Color(0xFF45DFA4),
-                                    _shimmerAnim.value,
-                                  )!,
-                                ],
-                              ),
+                              color: const Color(0xFFC9B8FF),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFD0BCFF)
-                                      .withValues(alpha: 0.4),
-                                  blurRadius: 24,
+                                  color: const Color(
+                                    0xFFC9B8FF,
+                                  ).withValues(alpha: 0.4),
+                                  blurRadius: 0,
                                   offset: const Offset(0, 6),
                                 ),
                               ],
@@ -302,17 +287,22 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                               color: Colors.transparent,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(100),
-                                onTap: () {},
+                                onTap: () => showGlobalSnack(
+                                  'Tính năng đang được hoàn thiện 🚧',
+                                ),
                                 child: Center(
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(Icons.share,
-                                          color: Colors.black87, size: 20),
+                                      const Icon(
+                                        Icons.share,
+                                        color: Colors.black87,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 8),
                                       Text(
                                         'Share the Damage',
-                                        style: GoogleFonts.plusJakartaSans(
+                                        style: AppFonts.heading(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
                                           color: Colors.black87,
@@ -353,16 +343,13 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: surface,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: accentColor.withValues(alpha: 0.25),
-                width: 1,
-              ),
+              border: Border.all(color: accentColor, width: 2),
             ),
             child: Row(
               children: [
@@ -372,12 +359,11 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: accentColor.withValues(alpha: 0.15),
-                    border: Border.all(
-                        color: accentColor.withValues(alpha: 0.3), width: 1.5),
+                    border: Border.all(color: accentColor, width: 2),
                     boxShadow: [
                       BoxShadow(
                         color: accentColor.withValues(alpha: 0.2),
-                        blurRadius: 12,
+                        blurRadius: 0,
                       ),
                     ],
                   ),
@@ -395,14 +381,16 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: accentColor.withValues(alpha: 0.15),
                         ),
                         child: Text(
                           award['label'] as String,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                             color: accentColor,
@@ -413,7 +401,7 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                       const SizedBox(height: 6),
                       Text(
                         award['winner'] as String,
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
                           color: textPrimary,
@@ -422,7 +410,7 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                       const SizedBox(height: 2),
                       Text(
                         award['desc'] as String,
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 12,
                           color: textSecondary,
                           fontStyle: FontStyle.italic,
@@ -451,7 +439,7 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             width: 42,
             height: 42,
@@ -463,7 +451,8 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
               border: Border.all(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.black.withValues(alpha: 0.08),
+                    : Colors.black,
+                width: 2,
               ),
             ),
             child: Icon(

@@ -1,14 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class DailySquadMissionsScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const DailySquadMissionsScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -62,7 +62,6 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
     },
   ];
 
-
   @override
   void initState() {
     super.initState();
@@ -109,12 +108,7 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF45DFA4).withValues(alpha: 0.2),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -126,12 +120,7 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
               height: 220,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFD0BCFF).withValues(alpha: 0.18),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -141,16 +130,18 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
               children: [
                 // AppBar
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
                       Text(
                         'trip.mate',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFFD0BCFF),
+                          color: const Color(0xFFC9B8FF),
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -168,7 +159,7 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                         icon: Icons.notifications_outlined,
                         isDark: isDark,
                         isActive: true,
-                        activeColor: const Color(0xFFD0BCFF),
+                        activeColor: const Color(0xFFC9B8FF),
                       ),
                     ],
                   ),
@@ -185,22 +176,17 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(24),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    const Color(0xFF45DFA4)
-                                        .withValues(alpha: isDark ? 0.15 : 0.12),
-                                    const Color(0xFF1DB954)
-                                        .withValues(alpha: isDark ? 0.1 : 0.08),
-                                  ],
-                                ),
+                                color: const Color(
+                                  0xFF1FA85C,
+                                ).withValues(alpha: isDark ? 0.15 : 0.12),
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: const Color(0xFF45DFA4)
-                                      .withValues(alpha: 0.25),
+                                  color: const Color(0xFF1FA85C),
+                                  width: 2,
                                 ),
                               ),
                               child: Row(
@@ -212,7 +198,7 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                                       children: [
                                         Text(
                                           'Squad Energy',
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w700,
                                             color: textPrimary,
@@ -223,18 +209,17 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                                           children: [
                                             Text(
                                               '84%',
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 38,
                                                 fontWeight: FontWeight.w900,
-                                                color: const Color(0xFF45DFA4),
+                                                color: const Color(0xFF1FA85C),
                                               ),
                                             ),
                                           ],
                                         ),
                                         Text(
                                           'collective chaos achieved ✨',
-                                          style: GoogleFonts.inter(
+                                          style: AppFonts.body(
                                             fontSize: 12,
                                             color: textSecondary,
                                           ),
@@ -247,20 +232,22 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                                     animation: _pulseAnim,
                                     builder: (context, child) =>
                                         Transform.scale(
-                                      scale: _pulseAnim.value,
-                                      child: child,
-                                    ),
+                                          scale: _pulseAnim.value,
+                                          child: child,
+                                        ),
                                     child: SizedBox(
                                       width: 70,
                                       height: 70,
                                       child: CircularProgressIndicator(
                                         value: 0.84,
                                         strokeWidth: 6,
-                                        backgroundColor: const Color(0xFF45DFA4)
-                                            .withValues(alpha: 0.15),
+                                        backgroundColor: const Color(
+                                          0xFF1FA85C,
+                                        ).withValues(alpha: 0.15),
                                         valueColor:
                                             const AlwaysStoppedAnimation(
-                                                Color(0xFF45DFA4)),
+                                              Color(0xFF1FA85C),
+                                            ),
                                         strokeCap: StrokeCap.round,
                                       ),
                                     ),
@@ -277,10 +264,12 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: surface,
                                 borderRadius: BorderRadius.circular(16),
@@ -288,22 +277,24 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.schedule,
-                                      size: 16,
-                                      color: const Color(0xFFD0BCFF)),
+                                  Icon(
+                                    Icons.schedule,
+                                    size: 16,
+                                    color: const Color(0xFFC9B8FF),
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '14:22:05 left',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFFD0BCFF),
+                                      color: const Color(0xFFC9B8FF),
                                     ),
                                   ),
                                   const Spacer(),
                                   Text(
                                     'daily reset',
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.body(
                                       fontSize: 12,
                                       color: textSecondary,
                                     ),
@@ -318,7 +309,7 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
 
                         Text(
                           'Daily Missions',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: textPrimary,
@@ -378,29 +369,29 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
   }) {
     final xp = mission['xp'] as String;
     final Color progressColor = complete
-        ? const Color(0xFF45DFA4)
+        ? const Color(0xFF1FA85C)
         : locked
-            ? Colors.grey
-            : const Color(0xFFD0BCFF);
+        ? Colors.grey
+        : const Color(0xFFC9B8FF);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: locked
                   ? (isDark
-                      ? Colors.white.withValues(alpha: 0.03)
-                      : Colors.black.withValues(alpha: 0.03))
+                        ? Colors.white.withValues(alpha: 0.03)
+                        : Colors.black.withValues(alpha: 0.03))
                   : surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: complete
-                    ? const Color(0xFF45DFA4).withValues(alpha: 0.3)
+                    ? const Color(0xFF1FA85C).withValues(alpha: 0.3)
                     : borderColor,
               ),
             ),
@@ -413,7 +404,9 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                       mission['emoji'] as String,
                       style: TextStyle(
                         fontSize: 22,
-                        color: locked ? Colors.white.withValues(alpha: 0.3) : null,
+                        color: locked
+                            ? Colors.white.withValues(alpha: 0.3)
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -425,49 +418,47 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                             Row(
                               children: [
                                 Icon(
-                                  mission['tagIcon'] as IconData? ??
-                                      Icons.star,
+                                  mission['tagIcon'] as IconData? ?? Icons.star,
                                   size: 12,
-                                  color: const Color(0xFF45DFA4),
+                                  color: const Color(0xFF1FA85C),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   mission['tag'] as String,
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF45DFA4),
+                                    color: const Color(0xFF1FA85C),
                                   ),
                                 ),
                               ],
                             ),
                           Text(
                             mission['title'] as String,
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: locked
-                                  ? textSecondary
-                                  : textPrimary,
+                              color: locked ? textSecondary : textPrimary,
                             ),
                           ),
                         ],
                       ),
                     ),
                     if (locked)
-                      Icon(Icons.lock,
-                          size: 16, color: textSecondary)
+                      Icon(Icons.lock, size: 16, color: textSecondary)
                     else
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           color: progressColor.withValues(alpha: 0.15),
                         ),
                         child: Text(
                           xp,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: progressColor,
@@ -486,17 +477,17 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                           child: LinearProgressIndicator(
                             value: pct,
                             minHeight: 6,
-                            backgroundColor:
-                                progressColor.withValues(alpha: 0.12),
-                            valueColor:
-                                AlwaysStoppedAnimation(progressColor),
+                            backgroundColor: progressColor.withValues(
+                              alpha: 0.12,
+                            ),
+                            valueColor: AlwaysStoppedAnimation(progressColor),
                           ),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         'Progress: ${mission['progress']}/${mission['total']}',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: textSecondary,
@@ -510,7 +501,7 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       'Mystery Mission',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 12,
                         color: textSecondary,
                         fontStyle: FontStyle.italic,
@@ -546,8 +537,8 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
         color: isActive && activeColor != null
             ? activeColor
             : isDark
-                ? Colors.white.withValues(alpha: 0.5)
-                : Colors.black.withValues(alpha: 0.4),
+            ? Colors.white.withValues(alpha: 0.5)
+            : Colors.black.withValues(alpha: 0.4),
       ),
     );
   }
@@ -565,10 +556,9 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.06)
@@ -586,21 +576,23 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
             children: List.generate(icons.length, (i) {
               final isActive = i == activeIdx;
               return GestureDetector(
-                onTap: () {},
+                onTap: () =>
+                    showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
                 child: Container(
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isActive
-                        ? const Color(0xFF45DFA4).withValues(alpha: 0.2)
+                        ? const Color(0xFF1FA85C).withValues(alpha: 0.2)
                         : Colors.transparent,
                     boxShadow: isActive
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF45DFA4)
-                                  .withValues(alpha: 0.3),
-                              blurRadius: 12,
+                              color: const Color(
+                                0xFF1FA85C,
+                              ).withValues(alpha: 0.3),
+                              blurRadius: 0,
                             ),
                           ]
                         : null,
@@ -609,10 +601,10 @@ class _DailySquadMissionsScreenState extends State<DailySquadMissionsScreen>
                     icons[i],
                     size: 24,
                     color: isActive
-                        ? const Color(0xFF45DFA4)
+                        ? const Color(0xFF1FA85C)
                         : isDark
-                            ? Colors.white.withValues(alpha: 0.45)
-                            : Colors.black.withValues(alpha: 0.35),
+                        ? Colors.white.withValues(alpha: 0.45)
+                        : Colors.black.withValues(alpha: 0.35),
                   ),
                 ),
               );

@@ -1,14 +1,16 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:flutter/services.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 class TripBingoScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const TripBingoScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -21,52 +23,27 @@ class _TripBingoScreenState extends State<TripBingoScreen>
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
+  final List<List<int>> _winningLines = const [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+    [0, 4, 8], [2, 4, 6]             // Diagonals
+  ];
+  final Set<int> _completedLineIndices = {};
+
   final List<Map<String, dynamic>> _bingoTiles = [
     {
       'emoji': '☕',
       'title': 'Cafe at 2AM',
       'state': 'completed', // completed, active, normal
     },
-    {
-      'emoji': '📸',
-      'title': 'Accidental Film Photo',
-      'state': 'active',
-    },
-    {
-      'emoji': '☔',
-      'title': 'Survive Random Rain',
-      'state': 'normal',
-    },
-    {
-      'emoji': '🗺️',
-      'title': 'Lost with Squad',
-      'state': 'normal',
-    },
-    {
-      'emoji': '💸',
-      'title': 'Overspend Budget',
-      'state': 'completed',
-    },
-    {
-      'emoji': '🍕',
-      'title': 'Eat 4th Meal',
-      'state': 'active',
-    },
-    {
-      'emoji': '🎤',
-      'title': 'Public Karaoke',
-      'state': 'normal',
-    },
-    {
-      'emoji': '🏃',
-      'title': 'Miss a Train',
-      'state': 'completed',
-    },
-    {
-      'emoji': '🌅',
-      'title': 'Stay up til Sunrise',
-      'state': 'normal',
-    },
+    {'emoji': '📸', 'title': 'Accidental Film Photo', 'state': 'active'},
+    {'emoji': '☔', 'title': 'Survive Random Rain', 'state': 'normal'},
+    {'emoji': '🗺️', 'title': 'Lost with Squad', 'state': 'normal'},
+    {'emoji': '💸', 'title': 'Overspend Budget', 'state': 'completed'},
+    {'emoji': '🍕', 'title': 'Eat 4th Meal', 'state': 'active'},
+    {'emoji': '🎤', 'title': 'Public Karaoke', 'state': 'normal'},
+    {'emoji': '🏃', 'title': 'Miss a Train', 'state': 'completed'},
+    {'emoji': '🌅', 'title': 'Stay up til Sunrise', 'state': 'normal'},
   ];
 
   @override
@@ -91,8 +68,130 @@ class _TripBingoScreenState extends State<TripBingoScreen>
 
   // Recalculate chaos progress level dynamically
   double _getChaosLevel() {
-    int completedCount = _bingoTiles.where((t) => t['state'] == 'completed').length;
+    int completedCount = _bingoTiles
+        .where((t) => t['state'] == 'completed')
+        .length;
     return (completedCount / _bingoTiles.length);
+  }
+
+  void _checkBingoWin() {
+    bool newBingoAchieved = false;
+
+    for (int i = 0; i < _winningLines.length; i++) {
+      final line = _winningLines[i];
+      final isLineComplete = line.every((idx) => _bingoTiles[idx]['state'] == 'completed');
+
+      if (isLineComplete) {
+        if (!_completedLineIndices.contains(i)) {
+          _completedLineIndices.add(i);
+          newBingoAchieved = true;
+        }
+      } else {
+        _completedLineIndices.remove(i);
+      }
+    }
+
+    if (newBingoAchieved) {
+      HapticFeedback.heavyImpact();
+      _showBingoCelebrationDialog();
+    }
+  }
+
+  void _showBingoCelebrationDialog() {
+    final isDark = widget.isDarkMode;
+    final surfaceColor = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Stack(
+          children: [
+            const Positioned.fill(child: ConfettiOverlay()),
+            Center(
+              child: Dialog(
+                backgroundColor: Colors.transparent,
+                child: Container(
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: surfaceColor,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: inkColor, width: 2.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: inkColor,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        '🎉 BINGO! 🎉',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: GenZTokens.orange,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'BẢNG BINGO HOÀN THÀNH!',
+                        style: AppFonts.heading(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: inkColor,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Squad của bạn đã hoàn thành một đường thẳng trên bảng thử thách! Bạn nhận được:\n⚡ +500 XP Chuyến đi\n🎁 Unlocked Sticker mới!',
+                        textAlign: TextAlign.center,
+                        style: AppFonts.body(
+                          fontSize: 13,
+                          height: 1.5,
+                          color: isDark
+                              ? GenZTokens.inkSoftDark
+                              : GenZTokens.inkSoft,
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: double.infinity,
+                          height: 50,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: GenZTokens.orange,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: inkColor, width: 2),
+                            boxShadow: [
+                              BoxShadow(color: inkColor, offset: const Offset(0, 3)),
+                            ],
+                          ),
+                          child: Text(
+                            'Quá xịn luôn! 🚀',
+                            style: AppFonts.heading(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              color: GenZTokens.ink,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -100,23 +199,22 @@ class _TripBingoScreenState extends State<TripBingoScreen>
     final isDark = widget.isDarkMode;
 
     // Design System colors
-    final bgStart = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final bgEnd = isDark ? const Color(0xFF060E20) : const Color(0xFFF1EDE6);
-    final surface = isDark ? const Color(0xFF171F33) : Colors.white;
-    final primary = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondary = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textMuted = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final bgStart = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+    final secondary = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textMuted = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [bgStart, bgEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgStart),
         child: Stack(
           children: [
             // Glowing background orbs
@@ -132,7 +230,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                     shape: BoxShape.circle,
                   ),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90),
+                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                     child: Container(color: Colors.transparent),
                   ),
                 ),
@@ -148,7 +246,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                     shape: BoxShape.circle,
                   ),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90),
+                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                     child: Container(color: Colors.transparent),
                   ),
                 ),
@@ -179,19 +277,41 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                             const SizedBox(height: 24),
 
                             // Chaos level progress bar panel
-                            _buildChaosProgressCard(surface, secondary, textPrimary, textMuted, isDark),
+                            _buildChaosProgressCard(
+                              surface,
+                              secondary,
+                              textPrimary,
+                              textMuted,
+                              isDark,
+                            ),
 
                             const SizedBox(height: 28),
 
                             // 3x3 Bingo Grid
-                            _buildBingoGrid(surface, primary, secondary, textPrimary, textMuted, isDark),
+                            _buildBingoGrid(
+                              surface,
+                              primary,
+                              secondary,
+                              textPrimary,
+                              textMuted,
+                              isDark,
+                            ),
 
                             const SizedBox(height: 28),
 
                             // Financial Reward unlocked alert card
-                            _buildRewardCard(surface, primary, secondary, textPrimary, textMuted, isDark),
+                            _buildRewardCard(
+                              surface,
+                              primary,
+                              secondary,
+                              textPrimary,
+                              textMuted,
+                              isDark,
+                            ),
 
-                            const SizedBox(height: 100), // Spacing for bottom navbar
+                            const SizedBox(
+                              height: 100,
+                            ), // Spacing for bottom navbar
                           ],
                         ),
                       ),
@@ -217,13 +337,17 @@ class _TripBingoScreenState extends State<TripBingoScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: textPrimary,
+              size: 20,
+            ),
             onPressed: () => Navigator.maybePop(context),
             tooltip: 'Back',
           ),
           Text(
             'trip.mate',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 24,
               fontWeight: FontWeight.w900,
               letterSpacing: -1.0,
@@ -253,7 +377,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
         children: [
           Text(
             'Trip Bingo 🎲',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 28,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
@@ -263,7 +387,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
           const SizedBox(height: 6),
           Text(
             'Complete chaos challenges to win.',
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 14,
               color: textMuted,
               fontWeight: FontWeight.w500,
@@ -275,16 +399,26 @@ class _TripBingoScreenState extends State<TripBingoScreen>
   }
 
   Widget _buildChaosProgressCard(
-      Color surface, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    Color surface,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    bool isDark,
+  ) {
     final currentChaosRatio = _getChaosLevel();
-    final remainingCount = _bingoTiles.where((t) => t['state'] != 'completed').length;
+    final remainingCount = _bingoTiles
+        .where((t) => t['state'] != 'completed')
+        .length;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05)),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black),
+          width: 2,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -294,7 +428,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
             children: [
               Text(
                 'Squad Chaos Level',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: textMuted,
@@ -302,7 +436,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
               ),
               Text(
                 'Level 3: Unhinged 🤪',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: secondary,
@@ -320,7 +454,8 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                     height: 8,
                     child: LinearProgressIndicator(
                       value: currentChaosRatio,
-                      backgroundColor: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                      backgroundColor: (isDark ? Colors.white : Colors.black)
+                          .withValues(alpha: 0.05),
                       valueColor: AlwaysStoppedAnimation<Color>(secondary),
                     ),
                   ),
@@ -329,7 +464,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
               const SizedBox(width: 16),
               Text(
                 '${(currentChaosRatio * 100).toInt()}%',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 14,
                   fontWeight: FontWeight.w900,
                   color: textPrimary,
@@ -342,7 +477,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
             remainingCount > 0
                 ? 'Chaos level increasing. $remainingCount more for Bingo!'
                 : 'Bingo achieved! Complete chaos unleashed! 🎉',
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 12,
               fontWeight: FontWeight.w600,
               color: textMuted,
@@ -354,7 +489,13 @@ class _TripBingoScreenState extends State<TripBingoScreen>
   }
 
   Widget _buildBingoGrid(
-      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -370,7 +511,9 @@ class _TripBingoScreenState extends State<TripBingoScreen>
         final state = tile['state'] as String;
 
         Color tileBg = surface.withValues(alpha: isDark ? 0.35 : 0.65);
-        Color tileBorder = (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05);
+        Color tileBorder = (isDark ? Colors.white : Colors.black).withValues(
+          alpha: 0.05,
+        );
         double borderWidth = 1.0;
         List<BoxShadow>? tileGlow;
 
@@ -379,24 +522,18 @@ class _TripBingoScreenState extends State<TripBingoScreen>
           tileBorder = secondary;
           borderWidth = 1.5;
           tileGlow = [
-            BoxShadow(
-              color: secondary.withValues(alpha: 0.1),
-              blurRadius: 10,
-            )
+            BoxShadow(color: secondary.withValues(alpha: 0.1), blurRadius: 0),
           ];
         } else if (state == 'active') {
           tileBg = primary.withValues(alpha: 0.12);
           tileBorder = primary;
           borderWidth = 1.5;
           tileGlow = [
-            BoxShadow(
-              color: primary.withValues(alpha: 0.1),
-              blurRadius: 10,
-            )
+            BoxShadow(color: primary.withValues(alpha: 0.1), blurRadius: 0),
           ];
         }
 
-        return GestureDetector(
+        return BouncingTile(
           onTap: () {
             setState(() {
               if (state == 'completed') {
@@ -405,6 +542,8 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                 tile['state'] = 'completed';
               }
             });
+            _checkBingoWin();
+
             if (tile['state'] == 'completed') {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -431,16 +570,21 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(tile['emoji'] as String, style: const TextStyle(fontSize: 22)),
+                    Text(
+                      tile['emoji'] as String,
+                      style: const TextStyle(fontSize: 22),
+                    ),
                     const SizedBox(height: 6),
                     Text(
                       tile['title'] as String,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 10,
-                        fontWeight: state == 'completed' ? FontWeight.w900 : FontWeight.bold,
+                        fontWeight: state == 'completed'
+                            ? FontWeight.w900
+                            : FontWeight.bold,
                         color: textPrimary,
                       ),
                     ),
@@ -450,7 +594,11 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                   Positioned(
                     top: 2,
                     right: 2,
-                    child: Icon(Icons.check_circle_rounded, color: secondary, size: 14),
+                    child: Icon(
+                      Icons.check_circle_rounded,
+                      color: secondary,
+                      size: 14,
+                    ),
                   )
                 else if (state == 'active')
                   Positioned(
@@ -474,20 +622,26 @@ class _TripBingoScreenState extends State<TripBingoScreen>
   }
 
   Widget _buildRewardCard(
-      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           decoration: BoxDecoration(
             color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: secondary.withValues(alpha: 0.25), width: 1.5),
+            border: Border.all(color: secondary, width: 2),
             boxShadow: [
               BoxShadow(
                 color: secondary.withValues(alpha: 0.05),
-                blurRadius: 20,
+                blurRadius: 0,
               ),
             ],
           ),
@@ -500,7 +654,11 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                   color: secondary.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.workspace_premium_rounded, color: secondary, size: 24),
+                child: Icon(
+                  Icons.workspace_premium_rounded,
+                  color: secondary,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -509,7 +667,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                   children: [
                     Text(
                       'Financial damage bonus unlocked! 💰',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: textPrimary,
@@ -518,7 +676,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
                     const SizedBox(height: 4),
                     Text(
                       '+50 Chaos Points awarded to Squad.',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: textMuted,
@@ -534,7 +692,12 @@ class _TripBingoScreenState extends State<TripBingoScreen>
     );
   }
 
-  Widget _buildFloatingNavbar(Color surface, Color primary, Color secondary, Color textMuted) {
+  Widget _buildFloatingNavbar(
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textMuted,
+  ) {
     final isDark = widget.isDarkMode;
     return Positioned(
       bottom: 24,
@@ -547,11 +710,14 @@ class _TripBingoScreenState extends State<TripBingoScreen>
           decoration: BoxDecoration(
             color: surface.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(40),
-            border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08)),
+            border: Border.all(
+              color: (isDark ? Colors.white : Colors.black),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.4),
-                blurRadius: 40,
+                blurRadius: 0,
                 offset: const Offset(0, 10),
               ),
             ],
@@ -560,11 +726,36 @@ class _TripBingoScreenState extends State<TripBingoScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavbarItem(Icons.explore_outlined, false, textMuted, secondary),
-              _buildNavbarItem(Icons.payments_outlined, false, textMuted, secondary),
-              _buildNavbarItem(Icons.explore_rounded, false, textMuted, secondary),
-              _buildNavbarItem(Icons.auto_awesome_rounded, true, textMuted, secondary),
-              _buildNavbarItem(Icons.person_outline_rounded, false, textMuted, secondary),
+              _buildNavbarItem(
+                Icons.explore_outlined,
+                false,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.payments_outlined,
+                false,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.explore_rounded,
+                false,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.auto_awesome_rounded,
+                true,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.person_outline_rounded,
+                false,
+                textMuted,
+                secondary,
+              ),
             ],
           ),
         ),
@@ -572,7 +763,12 @@ class _TripBingoScreenState extends State<TripBingoScreen>
     );
   }
 
-  Widget _buildNavbarItem(IconData icon, bool isActive, Color textMuted, Color secondary) {
+  Widget _buildNavbarItem(
+    IconData icon,
+    bool isActive,
+    Color textMuted,
+    Color secondary,
+  ) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: isActive
@@ -582,16 +778,177 @@ class _TripBingoScreenState extends State<TripBingoScreen>
               boxShadow: [
                 BoxShadow(
                   color: secondary.withValues(alpha: 0.25),
-                  blurRadius: 15,
+                  blurRadius: 0,
                   spreadRadius: 2,
                 ),
               ],
             )
           : null,
-      child: Icon(
-        icon,
-        color: isActive ? secondary : textMuted,
-        size: 24,
+      child: Icon(icon, color: isActive ? secondary : textMuted, size: 24),
+    );
+  }
+}
+
+// ── Confetti Particle Animation Overlay ──────────────────────────────────────
+
+class ConfettiOverlay extends StatefulWidget {
+  const ConfettiOverlay({super.key});
+
+  @override
+  State<ConfettiOverlay> createState() => _ConfettiOverlayState();
+}
+
+class _ConfettiOverlayState extends State<ConfettiOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 4),
+    vsync: this,
+  )..forward();
+
+  final List<_ConfettiParticle> _particles = List.generate(40, (index) {
+    final random = Random();
+    return _ConfettiParticle(
+      color: [
+        GenZTokens.yellow,
+        GenZTokens.orange,
+        GenZTokens.green,
+        GenZTokens.purple,
+        GenZTokens.pink,
+        GenZTokens.blue,
+      ][random.nextInt(6)],
+      x: random.nextDouble(),
+      y: -0.1 - random.nextDouble() * 0.4,
+      speedY: 2.0 + random.nextDouble() * 3.5,
+      speedX: -1.5 + random.nextDouble() * 3.0,
+      size: 6.0 + random.nextDouble() * 8.0,
+      rotation: random.nextDouble() * 2 * pi,
+      rotationSpeed: -0.05 + random.nextDouble() * 0.1,
+    );
+  });
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final elapsed = _controller.value;
+        return CustomPaint(
+          size: Size.infinite,
+          painter: _ConfettiPainter(particles: _particles, elapsed: elapsed),
+        );
+      },
+    );
+  }
+}
+
+class _ConfettiParticle {
+  final Color color;
+  double x;
+  double y;
+  final double speedY;
+  final double speedX;
+  final double size;
+  double rotation;
+  final double rotationSpeed;
+
+  _ConfettiParticle({
+    required this.color,
+    required this.x,
+    required this.y,
+    required this.speedY,
+    required this.speedX,
+    required this.size,
+    required this.rotation,
+    required this.rotationSpeed,
+  });
+}
+
+class _ConfettiPainter extends CustomPainter {
+  final List<_ConfettiParticle> particles;
+  final double elapsed;
+
+  _ConfettiPainter({required this.particles, required this.elapsed});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final p in particles) {
+      final currentY = p.y * size.height + (p.speedY * elapsed * size.height * 0.25);
+      final currentX = p.x * size.width + (p.speedX * elapsed * size.width * 0.08);
+      final currentRotation = p.rotation + (p.rotationSpeed * elapsed * 20);
+
+      if (currentY > size.height || currentX < 0 || currentX > size.width) continue;
+
+      final paint = Paint()
+        ..color = p.color
+        ..style = PaintingStyle.fill;
+
+      canvas.save();
+      canvas.translate(currentX, currentY);
+      canvas.rotate(currentRotation);
+
+      canvas.drawRect(
+        Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 1.5),
+        paint,
+      );
+
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+// ── Tactile Squishy Bouncing Button/Tile ─────────────────────────────────────
+
+class BouncingTile extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+
+  const BouncingTile({super.key, required this.child, required this.onTap});
+
+  @override
+  State<BouncingTile> createState() => _BouncingTileState();
+}
+
+class _BouncingTileState extends State<BouncingTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 100),
+    vsync: this,
+  );
+  late final Animation<double> _scaleAnimation = Tween<double>(
+    begin: 1.0,
+    end: 0.9,
+  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) {
+        HapticFeedback.lightImpact();
+        _controller.forward();
+      },
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: widget.child,
       ),
     );
   }

@@ -1,14 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class AchievementUnlockScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const AchievementUnlockScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -86,16 +86,7 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
           // Purple ambient
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: const Alignment(0, -0.3),
-                  radius: 0.8,
-                  colors: [
-                    const Color(0xFF7B2FF7).withValues(alpha: isDark ? 0.25 : 0.12),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
             ),
           ),
 
@@ -122,7 +113,9 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                 // Header
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 16),
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   child: Row(
                     children: [
                       _buildGlassButton(
@@ -136,35 +129,39 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                         animation: _glowAnim,
                         builder: (context, child) => Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: const Color(0xFFD0BCFF)
-                                  .withValues(alpha: 0.5 * _glowAnim.value),
+                              color: const Color(
+                                0xFFC9B8FF,
+                              ).withValues(alpha: 0.5 * _glowAnim.value),
                             ),
-                            color: const Color(0xFF7B2FF7)
-                                .withValues(alpha: 0.15),
+                            color: const Color(
+                              0xFF7B2FF7,
+                            ).withValues(alpha: 0.15),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFD0BCFF)
-                                    .withValues(alpha: 0.2 * _glowAnim.value),
-                                blurRadius: 12,
+                                color: const Color(
+                                  0xFFC9B8FF,
+                                ).withValues(alpha: 0.2 * _glowAnim.value),
+                                blurRadius: 0,
                               ),
                             ],
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('✨',
-                                  style: TextStyle(fontSize: 12)),
+                              const Text('✨', style: TextStyle(fontSize: 12)),
                               const SizedBox(width: 6),
                               Text(
                                 'Achievement Unlocked',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: const Color(0xFFD0BCFF),
+                                  color: const Color(0xFFC9B8FF),
                                   letterSpacing: 0.3,
                                 ),
                               ),
@@ -204,7 +201,7 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                           // Title
                           Text(
                             'new personality trait unlocked✨',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
                               color: textPrimary,
@@ -217,7 +214,7 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
 
                           Text(
                             'your chaos is evolving.',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.body(
                               fontSize: 14,
                               color: textSecondary,
                               fontStyle: FontStyle.italic,
@@ -238,28 +235,22 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                   height: 220,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(40),
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFF7B2FF7),
-                                        Color(0xFFD0BCFF),
-                                        Color(0xFF45DFA4),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
+                                    color: Color(0xFF7B2FF7),
                                     boxShadow: [
                                       BoxShadow(
                                         color: const Color(0xFF7B2FF7)
                                             .withValues(
-                                                alpha: 0.5 * _glowAnim.value),
-                                        blurRadius: 40,
+                                              alpha: 0.5 * _glowAnim.value,
+                                            ),
+                                        blurRadius: 0,
                                         spreadRadius: 8,
                                       ),
                                       BoxShadow(
-                                        color: const Color(0xFFD0BCFF)
+                                        color: const Color(0xFFC9B8FF)
                                             .withValues(
-                                                alpha: 0.3 * _glowAnim.value),
-                                        blurRadius: 60,
+                                              alpha: 0.3 * _glowAnim.value,
+                                            ),
+                                        blurRadius: 0,
                                         spreadRadius: 15,
                                       ),
                                     ],
@@ -268,13 +259,16 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                     borderRadius: BorderRadius.circular(40),
                                     child: BackdropFilter(
                                       filter: ImageFilter.blur(
-                                          sigmaX: 0, sigmaY: 0),
+                                        sigmaX: 0,
+                                        sigmaY: 0,
+                                      ),
                                       child: Container(
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
                                             colors: [
-                                              Colors.white
-                                                  .withValues(alpha: 0.15),
+                                              Colors.white.withValues(
+                                                alpha: 0.15,
+                                              ),
                                               Colors.transparent,
                                             ],
                                             begin: Alignment.topLeft,
@@ -289,18 +283,19 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 10,
-                                                      vertical: 4),
+                                                    horizontal: 10,
+                                                    vertical: 4,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(20),
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.2),
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.2,
+                                                ),
                                               ),
                                               child: Text(
                                                 'RARITY: MYTHIC',
-                                                style:
-                                                    GoogleFonts.plusJakartaSans(
+                                                style: AppFonts.heading(
                                                   fontSize: 9,
                                                   fontWeight: FontWeight.w800,
                                                   letterSpacing: 2,
@@ -317,8 +312,7 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                             const SizedBox(height: 10),
                                             Text(
                                               'Chaos King',
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w900,
                                                 color: Colors.white,
@@ -326,10 +320,11 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                             ),
                                             Text(
                                               'Level 4 Reached',
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 12,
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.8),
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.8,
+                                                ),
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
@@ -349,16 +344,15 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                           ClipRRect(
                             borderRadius: BorderRadius.circular(20),
                             child: BackdropFilter(
-                              filter:
-                                  ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                               child: Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   color: surface,
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: const Color(0xFFD0BCFF)
-                                        .withValues(alpha: 0.2),
+                                    color: const Color(0xFFC9B8FF),
+                                    width: 2,
                                   ),
                                 ),
                                 child: Column(
@@ -369,27 +363,26 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                       children: [
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
+                                            horizontal: 16,
+                                            vertical: 8,
+                                          ),
                                           decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            gradient: const LinearGradient(
-                                              colors: [
-                                                Color(0xFF7B2FF7),
-                                                Color(0xFFD0BCFF),
-                                              ],
+                                            borderRadius: BorderRadius.circular(
+                                              100,
                                             ),
+                                            color: Color(0xFF7B2FF7),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: const Color(0xFF7B2FF7)
-                                                    .withValues(alpha: 0.4),
-                                                blurRadius: 16,
+                                                color: const Color(
+                                                  0xFF7B2FF7,
+                                                ).withValues(alpha: 0.4),
+                                                blurRadius: 0,
                                               ),
                                             ],
                                           ),
                                           child: Text(
                                             '+500 XP',
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: AppFonts.heading(
                                               fontSize: 22,
                                               fontWeight: FontWeight.w900,
                                               color: Colors.white,
@@ -410,14 +403,14 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                           children: [
                                             Text(
                                               'Level 4',
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 11,
                                                 color: textSecondary,
                                               ),
                                             ),
                                             Text(
                                               'Level 5',
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 11,
                                                 color: textSecondary,
                                               ),
@@ -426,24 +419,26 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                         ),
                                         const SizedBox(height: 6),
                                         ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
+                                          borderRadius: BorderRadius.circular(
+                                            100,
+                                          ),
                                           child: LinearProgressIndicator(
                                             value: 1200 / 2000,
                                             minHeight: 8,
-                                            backgroundColor:
-                                                const Color(0xFFD0BCFF)
-                                                    .withValues(alpha: 0.15),
+                                            backgroundColor: const Color(
+                                              0xFFC9B8FF,
+                                            ).withValues(alpha: 0.15),
                                             valueColor:
                                                 const AlwaysStoppedAnimation(
-                                                    Color(0xFFD0BCFF)),
+                                                  Color(0xFFC9B8FF),
+                                                ),
                                           ),
                                         ),
                                         const SizedBox(height: 6),
                                         Center(
                                           child: Text(
                                             '1,200 / 2,000 to Lvl 5',
-                                            style: GoogleFonts.inter(
+                                            style: AppFonts.body(
                                               fontSize: 12,
                                               color: textSecondary,
                                               fontWeight: FontWeight.w600,
@@ -468,17 +463,13 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                               height: 58,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF7B2FF7),
-                                    Color(0xFFD0BCFF),
-                                  ],
-                                ),
+                                color: Color(0xFF7B2FF7),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF7B2FF7).withValues(
-                                        alpha: 0.4 * _glowAnim.value),
-                                    blurRadius: 24,
+                                    color: const Color(
+                                      0xFF7B2FF7,
+                                    ).withValues(alpha: 0.4 * _glowAnim.value),
+                                    blurRadius: 0,
                                     offset: const Offset(0, 6),
                                   ),
                                 ],
@@ -487,17 +478,22 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(100),
-                                  onTap: () {},
+                                  onTap: () => showGlobalSnack(
+                                    'Tính năng đang được hoàn thiện 🚧',
+                                  ),
                                   child: Center(
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(Icons.share,
-                                            color: Colors.white, size: 18),
+                                        const Icon(
+                                          Icons.share,
+                                          color: Colors.white,
+                                          size: 18,
+                                        ),
                                         const SizedBox(width: 8),
                                         Text(
                                           'Share the Chaos',
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
                                             color: Colors.white,
@@ -518,11 +514,14 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                             width: double.infinity,
                             height: 58,
                             child: OutlinedButton(
-                              onPressed: () {},
+                              onPressed: () => showGlobalSnack(
+                                'Tính năng đang được hoàn thiện 🚧',
+                              ),
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
-                                  color: const Color(0xFFD0BCFF)
-                                      .withValues(alpha: 0.4),
+                                  color: const Color(
+                                    0xFFC9B8FF,
+                                  ).withValues(alpha: 0.4),
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(100),
@@ -530,10 +529,10 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
                               ),
                               child: Text(
                                 'Collect Reward',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: const Color(0xFFD0BCFF),
+                                  color: const Color(0xFFC9B8FF),
                                 ),
                               ),
                             ),
@@ -554,7 +553,11 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
   }
 
   Widget _buildParticle(
-      double xFactor, double yFactor, double t, double offset) {
+    double xFactor,
+    double yFactor,
+    double t,
+    double offset,
+  ) {
     final size = MediaQuery.of(context).size;
     final phase = (t + offset) % 1.0;
     final opacity = (phase < 0.5 ? phase : 1 - phase) * 0.6;
@@ -568,7 +571,7 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
           height: 4,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            color: Color(0xFFD0BCFF),
+            color: Color(0xFFC9B8FF),
           ),
         ),
       ),
@@ -585,7 +588,7 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             width: 42,
             height: 42,
@@ -597,7 +600,8 @@ class _AchievementUnlockScreenState extends State<AchievementUnlockScreen>
               border: Border.all(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.black.withValues(alpha: 0.08),
+                    : Colors.black,
+                width: 2,
               ),
             ),
             child: Icon(

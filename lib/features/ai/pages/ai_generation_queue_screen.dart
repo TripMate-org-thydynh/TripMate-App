@@ -1,14 +1,15 @@
 import 'dart:async';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class AiGenerationQueueScreen extends StatefulWidget {
   const AiGenerationQueueScreen({super.key});
 
   @override
-  State<AiGenerationQueueScreen> createState() => _AiGenerationQueueScreenState();
+  State<AiGenerationQueueScreen> createState() =>
+      _AiGenerationQueueScreenState();
 }
 
 class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
@@ -17,7 +18,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
   bool _showLoadingOverlay = true;
   late AnimationController _rotateController;
   late AnimationController _pulseController;
-  
+
   final List<Map<String, dynamic>> _tasks = [
     {
       'id': 'task-1',
@@ -26,7 +27,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
       'progress': 0.74,
       'status': 'RENDERING',
       'eta': '25 giây',
-      'color': const Color(0xFF8B5CF6), // Purple
+      'color': const Color(0xFFF5822B), // Purple
       'type': 'VIDEO',
     },
     {
@@ -36,7 +37,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
       'progress': 0.92,
       'status': 'PARSING',
       'eta': '5 giây',
-      'color': const Color(0xFF10B981), // Emerald
+      'color': const Color(0xFF1FA85C), // Emerald
       'type': 'OCR',
     },
     {
@@ -46,7 +47,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
       'progress': 0.40,
       'status': 'ANALYZING',
       'eta': '1 phút',
-      'color': const Color(0xFFEF4444), // Red
+      'color': const Color(0xFFD8422B), // Red
       'type': 'ROAST',
     },
     {
@@ -56,9 +57,9 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
       'progress': 0.15,
       'status': 'SCANNING',
       'eta': '3 phút',
-      'color': const Color(0xFF3B82F6), // Blue
+      'color': const Color(0xFF3D8BFF), // Blue
       'type': 'GEO',
-    }
+    },
   ];
 
   @override
@@ -95,7 +96,9 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
               if (remainingSeconds < 10) {
                 task['eta'] = 'ai_hub.seconds'.tr(args: ['$remainingSeconds']);
               } else {
-                task['eta'] = 'ai_hub.seconds'.tr(args: ['${remainingSeconds ~/ 2}']);
+                task['eta'] = 'ai_hub.seconds'.tr(
+                  args: ['${remainingSeconds ~/ 2}'],
+                );
               }
             }
           }
@@ -123,7 +126,9 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('ai_hub.overclock_success'.tr(args: ['${task['title']}'])),
+            content: Text(
+              'ai_hub.overclock_success'.tr(args: ['${task['title']}']),
+            ),
             behavior: SnackBarBehavior.floating,
             backgroundColor: task['color'],
           ),
@@ -151,17 +156,32 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
     final isDark = theme.brightness == Brightness.dark;
 
     // Brand design system tokens
-    final primaryColor = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF7C3AED);
-    final secondaryColor = isDark ? const Color(0xFF45DFA4) : const Color(0xFF059669);
-    final backgroundColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final surfaceColor = isDark ? const Color(0xFF1A2340) : Colors.white;
+    final primaryColor = isDark
+        ? const Color(0xFFC9B8FF)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFF059669);
+    final backgroundColor = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(
         children: [
           // MAIN QUEUE CONTENT
-          _buildQueueBody(context, isDark, primaryColor, secondaryColor, backgroundColor, surfaceColor),
+          _buildQueueBody(
+            context,
+            isDark,
+            primaryColor,
+            secondaryColor,
+            backgroundColor,
+            surfaceColor,
+          ),
           // MATEY IS COOKING OVERLAY
           if (_showLoadingOverlay)
             _buildCookingOverlay(context, isDark, primaryColor, secondaryColor),
@@ -170,11 +190,18 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
     );
   }
 
-  Widget _buildCookingOverlay(BuildContext context, bool isDark, Color primaryColor, Color secondaryColor) {
+  Widget _buildCookingOverlay(
+    BuildContext context,
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+  ) {
     return GestureDetector(
       onTap: () => setState(() => _showLoadingOverlay = false),
       child: Container(
-        color: (isDark ? const Color(0xFF0B1326) : Colors.white).withValues(alpha: 0.95),
+        color: (isDark ? const Color(0xFF1A1712) : Colors.white).withValues(
+          alpha: 0.95,
+        ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +239,9 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                           height: 110,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: isDark ? const Color(0xFF0B1326) : Colors.white,
+                            color: isDark
+                                ? const Color(0xFF1A1712)
+                                : Colors.white,
                           ),
                         ),
                         // Inner pulsing sparkle
@@ -226,7 +255,9 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                         ),
                         // Orbiting particles
                         ...List.generate(6, (i) {
-                          final angle = _rotateController.value * 2 * math.pi + i * math.pi / 3;
+                          final angle =
+                              _rotateController.value * 2 * math.pi +
+                              i * math.pi / 3;
                           final radius = 62.0;
                           return Transform.translate(
                             offset: Offset(
@@ -241,11 +272,14 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                                 color: i.isEven ? primaryColor : secondaryColor,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: (i.isEven ? primaryColor : secondaryColor)
-                                        .withValues(alpha: 0.6),
-                                    blurRadius: 6,
+                                    color:
+                                        (i.isEven
+                                                ? primaryColor
+                                                : secondaryColor)
+                                            .withValues(alpha: 0.6),
+                                    blurRadius: 0,
                                     spreadRadius: 1,
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -259,11 +293,11 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
               const SizedBox(height: 40),
               ShaderMask(
                 shaderCallback: (bounds) => LinearGradient(
-                  colors: [primaryColor, secondaryColor],
+                  colors: [primaryColor, primaryColor],
                 ).createShader(bounds),
                 child: Text(
                   'Matey is cooking...',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 28,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
@@ -274,7 +308,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
               const SizedBox(height: 12),
               Text(
                 'Curating the perfect vibe for the squad.',
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 15,
                   color: isDark ? Colors.white60 : Colors.black54,
                   height: 1.5,
@@ -283,7 +317,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
               const SizedBox(height: 40),
               Text(
                 'Tap to see queue',
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 12,
                   color: isDark ? Colors.white30 : Colors.black38,
                 ),
@@ -295,26 +329,39 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
     );
   }
 
-  Widget _buildQueueBody(BuildContext context, bool isDark, Color primaryColor, Color secondaryColor, Color backgroundColor, Color surfaceColor) {
+  Widget _buildQueueBody(
+    BuildContext context,
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color backgroundColor,
+    Color surfaceColor,
+  ) {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'AI Generation Queue 🖥️',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: isDark ? Colors.white70 : Colors.black54),
+            icon: Icon(
+              Icons.refresh,
+              color: isDark ? Colors.white70 : Colors.black54,
+            ),
             onPressed: () {
               setState(() {
                 for (var task in _tasks) {
@@ -340,23 +387,18 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [primaryColor, secondaryColor],
-                ),
+                color: primaryColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: primaryColor.withValues(alpha: 0.2),
-                    blurRadius: 10,
+                    blurRadius: 0,
                   ),
                 ],
               ),
               child: Row(
                 children: [
-                  const Text(
-                    '🧠',
-                    style: TextStyle(fontSize: 36),
-                  ),
+                  const Text('🧠', style: TextStyle(fontSize: 36)),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -364,7 +406,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                       children: [
                         Text(
                           'ai_hub.matey_advice_title'.tr(),
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                             color: Colors.white,
@@ -373,7 +415,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                         const SizedBox(height: 4),
                         Text(
                           'ai_hub.matey_advice_body'.tr(),
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: Colors.white.withValues(alpha: 0.9),
@@ -387,8 +429,10 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
             ),
 
             Text(
-              'ai_hub.tasks_processing'.tr(args: ['${_tasks.where((t) => t['progress'] < 1.0).length}']),
-              style: GoogleFonts.plusJakartaSans(
+              'ai_hub.tasks_processing'.tr(
+                args: ['${_tasks.where((t) => t['progress'] < 1.0).length}'],
+              ),
+              style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
                 color: isDark ? Colors.white70 : Colors.black87,
@@ -402,13 +446,34 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                   padding: const EdgeInsets.symmetric(vertical: 48),
                   child: Column(
                     children: [
-                      const Text('🎉', style: TextStyle(fontSize: 48)),
-                      const SizedBox(height: 12),
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFF5822B).withValues(alpha: 0.1),
+                        ),
+                        child: const Icon(
+                          Icons.check_circle_outline,
+                          color: Color(0xFFF5822B),
+                          size: 36,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       Text(
                         'ai_hub.empty_queue'.tr(),
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           color: Colors.grey,
                           fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Queue is clear — Matey is ready',
+                        style: AppFonts.body(
+                          color: Colors.grey[500],
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -418,7 +483,7 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
             else
               ListView.builder(
                 shrinkWrap: true,
-                   itemBuilder: (context, index) {
+                itemBuilder: (context, index) {
                   final task = _tasks[index];
                   final isCompleted = task['progress'] >= 1.0;
                   final Color baseColor = task['color'] as Color;
@@ -447,13 +512,13 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                       border: Border.all(
                         color: isCompleted
                             ? Colors.green.withValues(alpha: 0.3)
-                            : baseColor.withValues(alpha: 0.2),
-                        width: 1,
+                            : baseColor,
+                        width: 2,
                       ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 10,
+                          blurRadius: 0,
                           offset: const Offset(0, 4),
                         ),
                       ],
@@ -472,29 +537,40 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: isCompleted
-                                            ? Colors.green.withValues(alpha: 0.15)
+                                            ? Colors.green.withValues(
+                                                alpha: 0.15,
+                                              )
                                             : baseColor.withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
-                                        isCompleted ? 'COMPLETED' : task['status'] as String,
-                                        style: GoogleFonts.plusJakartaSans(
+                                        isCompleted
+                                            ? 'COMPLETED'
+                                            : task['status'] as String,
+                                        style: AppFonts.heading(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
-                                          color: isCompleted ? Colors.green : baseColor,
+                                          color: isCompleted
+                                              ? Colors.green
+                                              : baseColor,
                                         ),
                                       ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       taskTitle,
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
-                                        color: isDark ? Colors.white : Colors.black87,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black87,
                                       ),
                                     ),
                                   ],
@@ -502,11 +578,15 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                               ),
                               // ETA or Xong label
                               Text(
-                                isCompleted ? 'ai_hub.completed'.tr() : 'ETA: ${task['eta']}',
-                                style: GoogleFonts.plusJakartaSans(
+                                isCompleted
+                                    ? 'ai_hub.completed'.tr()
+                                    : 'ETA: ${task['eta']}',
+                                style: AppFonts.heading(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: isCompleted ? Colors.green : Colors.grey[500],
+                                  color: isCompleted
+                                      ? Colors.green
+                                      : Colors.grey[500],
                                 ),
                               ),
                             ],
@@ -514,9 +594,11 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                           const SizedBox(height: 8),
                           Text(
                             taskSubtitle,
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 12,
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -530,27 +612,36 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                                     Container(
                                       height: 8,
                                       decoration: BoxDecoration(
-                                        color: isDark ? Colors.grey[800] : Colors.grey[200],
+                                        color: isDark
+                                            ? Colors.grey[800]
+                                            : Colors.grey[200],
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                     ),
                                     AnimatedContainer(
-                                      duration: const Duration(milliseconds: 500),
+                                      duration: const Duration(
+                                        milliseconds: 500,
+                                      ),
                                       height: 8,
-                                      width: (MediaQuery.of(context).size.width - 120) * task['progress'],
+                                      width:
+                                          (MediaQuery.of(context).size.width -
+                                              120) *
+                                          task['progress'],
                                       decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: isCompleted
-                                              ? [Colors.green, Colors.teal]
-                                              : [baseColor, baseColor.withValues(alpha: 0.6)],
-                                        ),
+                                        color: isCompleted
+                                            ? Colors.green
+                                            : baseColor,
                                         borderRadius: BorderRadius.circular(4),
                                         boxShadow: [
                                           BoxShadow(
                                             color: isCompleted
-                                                ? Colors.green.withValues(alpha: 0.3)
-                                                : baseColor.withValues(alpha: 0.3),
-                                            blurRadius: 4,
+                                                ? Colors.green.withValues(
+                                                    alpha: 0.3,
+                                                  )
+                                                : baseColor.withValues(
+                                                    alpha: 0.3,
+                                                  ),
+                                            blurRadius: 0,
                                             offset: const Offset(0, 1),
                                           ),
                                         ],
@@ -562,10 +653,14 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                               const SizedBox(width: 12),
                               Text(
                                 '${(task['progress'] * 100).toInt()}%',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
-                                  color: isCompleted ? Colors.green : (isDark ? Colors.white : Colors.black87),
+                                  color: isCompleted
+                                      ? Colors.green
+                                      : (isDark
+                                            ? Colors.white
+                                            : Colors.black87),
                                 ),
                               ),
                             ],
@@ -579,10 +674,14 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                               if (!isCompleted) ...[
                                 TextButton.icon(
                                   onPressed: () => _cancelTask(index),
-                                  icon: const Icon(Icons.close, size: 16, color: Colors.redAccent),
+                                  icon: const Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: Colors.redAccent,
+                                  ),
                                   label: Text(
                                     'ai_hub.cancel'.tr(),
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       color: Colors.redAccent,
                                       fontSize: 12,
                                     ),
@@ -596,13 +695,20 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
                                     elevation: 0,
                                   ),
-                                  icon: const Icon(Icons.flash_on, size: 14, color: Colors.white),
+                                  icon: const Icon(
+                                    Icons.flash_on,
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
                                   label: Text(
                                     'ai_hub.boost'.tr(),
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
@@ -614,15 +720,23 @@ class _AiGenerationQueueScreenState extends State<AiGenerationQueueScreen>
                                   onPressed: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('ai_hub.task_done_toast'.tr(args: [taskTitle])),
+                                        content: Text(
+                                          'ai_hub.task_done_toast'.tr(
+                                            args: [taskTitle],
+                                          ),
+                                        ),
                                         behavior: SnackBarBehavior.floating,
                                       ),
                                     );
                                   },
-                                  icon: const Icon(Icons.check_circle_outline, size: 16, color: Colors.green),
+                                  icon: const Icon(
+                                    Icons.check_circle_outline,
+                                    size: 16,
+                                    color: Colors.green,
+                                  ),
                                   label: Text(
                                     'ai_hub.view_result'.tr(),
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       color: Colors.green,
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,

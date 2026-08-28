@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../../../core/theme/theme.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../../../core/widgets/gen_z_widgets.dart';
 
 class SquadMoodWidget extends StatefulWidget {
   const SquadMoodWidget({super.key});
@@ -10,24 +11,50 @@ class SquadMoodWidget extends StatefulWidget {
 }
 
 class _SquadMoodWidgetState extends State<SquadMoodWidget> {
-  String _myActiveMood = "⚡";
+  String _myActiveMood = "chaotic";
 
   final List<Map<String, dynamic>> _moodOptions = const [
-    {"emoji": "⚡", "label": "Chaotic"},
-    {"emoji": "🥱", "label": "Sleepy"},
-    {"emoji": "🍲", "label": "Hungry"},
-    {"emoji": "🤑", "label": "Rich"},
-    {"emoji": "🥳", "label": "Hyped"},
+    {
+      "id": "chaotic",
+      "label": "Chaotic",
+      "icon": PhosphorIconsRegular.lightning,
+    },
+    {"id": "sleepy", "label": "Sleepy", "icon": PhosphorIconsRegular.moon},
+    {
+      "id": "hungry",
+      "label": "Hungry",
+      "icon": PhosphorIconsRegular.cookingPot,
+    },
+    {
+      "id": "rich",
+      "label": "Rich",
+      "icon": PhosphorIconsRegular.currencyDollar,
+    },
+    {"id": "hyped", "label": "Hyped", "icon": PhosphorIconsRegular.confetti},
   ];
 
-  // Group mood distribution mockup
   final Map<String, double> _groupMoods = const {
-    "⚡": 0.45,
-    "🥱": 0.20,
-    "🍲": 0.15,
-    "🤑": 0.10,
-    "🥳": 0.10,
+    "chaotic": 0.45,
+    "sleepy": 0.20,
+    "hungry": 0.15,
+    "rich": 0.10,
+    "hyped": 0.10,
   };
+
+  Color _barColor(String id) {
+    switch (id) {
+      case "chaotic":
+        return GenZTokens.orange;
+      case "sleepy":
+        return GenZTokens.lilac;
+      case "hungry":
+        return GenZTokens.red;
+      case "rich":
+        return GenZTokens.green;
+      default:
+        return GenZTokens.blue;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +62,12 @@ class _SquadMoodWidgetState extends State<SquadMoodWidget> {
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      width: double.infinity,
+    final activeMood = _moodOptions.firstWhere((o) => o["id"] == _myActiveMood);
+
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    return HardShadowBox(
+      color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: isDark ? TripMateTheme.darkSurface.withValues(alpha: 0.8) : TripMateTheme.lightSurface,
-        border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-        ),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -58,39 +81,32 @@ class _SquadMoodWidgetState extends State<SquadMoodWidget> {
                   fontSize: 16,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? TripMateTheme.darkSecondary.withValues(alpha: 0.15)
-                      : TripMateTheme.lightSecondary.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
+              PillTag(
+                text: 'dashboard.mood_active'.tr(
+                  namedArgs: {'mood': activeMood['label'] as String},
                 ),
-                child: Text(
-                  "⚡ Chaotic Good (85%)",
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary,
-                  ),
-                ),
+                icon: activeMood["icon"] as IconData,
+                color: GenZTokens.yellow,
               ),
             ],
           ),
           const SizedBox(height: 16),
-          // Interactive mood selector
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: _moodOptions.map((opt) {
-              final isSelected = _myActiveMood == opt["emoji"];
+              final isSelected = _myActiveMood == opt["id"];
               return GestureDetector(
                 onTap: () {
                   setState(() {
-                    _myActiveMood = opt["emoji"] as String;
+                    _myActiveMood = opt["id"] as String;
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Updated your vibe to ${opt['label']}!"),
+                      content: Text(
+                        'dashboard.vibe_updated'.tr(
+                          namedArgs: {'mood': opt['label'] as String},
+                        ),
+                      ),
                       duration: const Duration(seconds: 1),
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -98,75 +114,58 @@ class _SquadMoodWidgetState extends State<SquadMoodWidget> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutBack,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? colorScheme.primary.withValues(alpha: 0.2)
+                        ? colorScheme.primary
                         : Colors.transparent,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected ? colorScheme.primary : Colors.transparent,
-                      width: 1.5,
+                      color: isSelected ? ink : Colors.transparent,
+                      width: GenZTokens.borderWidthThin,
                     ),
+                    boxShadow: isSelected
+                        ? [BoxShadow(color: ink, offset: const Offset(0, 3))]
+                        : null,
                   ),
-                  child: Text(
-                    opt["emoji"] as String,
-                    style: const TextStyle(fontSize: 22),
+                  child: Icon(
+                    opt["icon"] as IconData,
+                    size: 22,
+                    color: isSelected
+                        ? GenZTokens.ink
+                        : ink.withValues(alpha: 0.5),
                   ),
                 ),
               );
             }).toList(),
           ),
           const SizedBox(height: 20),
-          // Horizontal stack bar showing group distribution
           Text(
-            "Group Vibe Breakdown",
+            'dashboard.group_vibe'.tr(),
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
               fontSize: 12,
             ),
           ),
           const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: SizedBox(
-              height: 16,
-              child: Row(
-                children: _groupMoods.entries.map((entry) {
-                  final double widthFraction = entry.value;
-                  final String emoji = entry.key;
-
-                  // Sample palette for parts
-                  Color barColor;
-                  switch (emoji) {
-                    case "⚡":
-                      barColor = const Color(0xFF8B5CF6);
-                      break;
-                    case "🥱":
-                      barColor = const Color(0xFFF59E0B);
-                      break;
-                    case "🍲":
-                      barColor = const Color(0xFFEF4444);
-                      break;
-                    case "🤑":
-                      barColor = const Color(0xFF10B981);
-                      break;
-                    default:
-                      barColor = const Color(0xFF3B82F6);
-                  }
-
-                  return Expanded(
-                    flex: (widthFraction * 100).toInt(),
-                    child: Container(
-                      color: barColor,
-                      alignment: Alignment.center,
-                      child: Text(
-                        emoji,
-                        style: const TextStyle(fontSize: 9, color: Colors.white),
-                      ),
-                    ),
-                  );
-                }).toList(),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                height: 16,
+                child: Row(
+                  children: _groupMoods.entries.map((entry) {
+                    return Expanded(
+                      flex: (entry.value * 100).toInt(),
+                      child: Container(color: _barColor(entry.key)),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ),

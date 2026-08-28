@@ -1,7 +1,7 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../../core/app_messenger.dart';
 class MemoryTimelineScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -54,10 +54,12 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
       time: '08:00 AM',
       title: 'soft launch chaos.',
       subtitle: 'literally died here 😭',
-      description: 'The squad arrived in Hà Giang. Phu fell off his motorbike within 10 minutes. 92% squad battery remaining but emotional stability at an all-time low.',
+      description:
+          'The squad arrived in Hà Giang. Phu fell off his motorbike within 10 minutes. 92% squad battery remaining but emotional stability at an all-time low.',
       location: 'Hà Giang Loop',
       energy: '92% energy',
-      imageUrl: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=500',
+      imageUrl:
+          'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=500',
       angle: -0.02,
       likes: 42,
       music: '♫ Fred again.. - leavemealone',
@@ -68,10 +70,12 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
       time: '02:30 PM',
       title: 'tatami sleep crisis 🍵',
       subtitle: 'Alex is out of service.',
-      description: 'Checked into Koto Ryokan. Alex fell asleep on the tatami floor in broad daylight while Sam was complaining about the lack of iced matcha.',
+      description:
+          'Checked into Koto Ryokan. Alex fell asleep on the tatami floor in broad daylight while Sam was complaining about the lack of iced matcha.',
       location: 'Koto Ryokan, Kyoto',
       energy: '48% energy',
-      imageUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=500',
+      imageUrl:
+          'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=500',
       angle: 0.03,
       likes: 56,
       music: '♫ Pink + White - Frank Ocean',
@@ -82,10 +86,12 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
       time: '07:15 AM',
       title: 'early bird mental damage 🌅',
       subtitle: 'Cruel but golden reflections.',
-      description: 'Woke up the group with a heavy metal solo on the portable JBL speaker to beat the crowd at the Golden Temple. Cruel? Yes. Worth it? Absolutely.',
+      description:
+          'Woke up the group with a heavy metal solo on the portable JBL speaker to beat the crowd at the Golden Temple. Cruel? Yes. Worth it? Absolutely.',
       location: 'Golden Temple, Kyoto',
       energy: '99% energy',
-      imageUrl: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=500',
+      imageUrl:
+          'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=500',
       angle: -0.04,
       likes: 124,
       music: '♫ Bring Me The Horizon - LosT',
@@ -96,15 +102,17 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
       time: '01:00 PM',
       title: ' Nishiki Market bankruptcies 🍢',
       subtitle: 'financial ruin is imminent.',
-      description: 'Khang spent half his food budget on custom octopus skewers and sweet potato mochi. Now seeking sponsors for dinner.',
+      description:
+          'Khang spent half his food budget on custom octopus skewers and sweet potato mochi. Now seeking sponsors for dinner.',
       location: 'Nishiki Market, Tokyo',
       energy: '68% energy',
-      imageUrl: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=500',
+      imageUrl:
+          'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=500',
       angle: 0.02,
       likes: 83,
       music: '♫ Money - LISA',
       hashtags: ['#StreetFood', '#BrokeInTokyo', '#Octopus🍢'],
-    )
+    ),
   ];
 
   int _selectedTab = 1; // 0: Explore, 1: Trips (Friends & Profile)
@@ -119,10 +127,12 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
           time: 'Just Now',
           title: 'late night arcade raid 🕹️',
           subtitle: 'main character unlocked.',
-          description: 'Cleared three claw machines in Shibuya and bought a giant neon pink teddy bear. The squad is officially out of funds.',
+          description:
+              'Cleared three claw machines in Shibuya and bought a giant neon pink teddy bear. The squad is officially out of funds.',
           location: 'Akihabara Arcade',
           energy: '100% energy',
-          imageUrl: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=500',
+          imageUrl:
+              'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=500',
           angle: -0.03,
           likes: 1,
           music: '♫ Tokyo Drift - Teriyaki Boyz',
@@ -135,7 +145,7 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
       SnackBar(
         content: Text(
           'Added arcade memory to squad odyssey timeline!',
-          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+          style: AppFonts.body(fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFFFF2E93),
         behavior: SnackBarBehavior.floating,
@@ -147,12 +157,13 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
     final bgStart = isDark ? const Color(0xFF0C091A) : const Color(0xFFFAF7FF);
-    final bgEnd = isDark ? const Color(0xFF04040A) : const Color(0xFFEDE9F5);
-    
+
     final textPrimary = isDark ? Colors.white : const Color(0xFF1E1533);
     final textSecondary = isDark ? Colors.white60 : Colors.black54;
     final cardBg = isDark ? const Color(0xFF16152B) : Colors.white;
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08);
+    final glassBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.08);
 
     final neonPink = const Color(0xFFFF2E93);
     final neonCyan = const Color(0xFF00F5FF);
@@ -160,13 +171,7 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgStart, bgEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgStart),
         child: SafeArea(
           child: Stack(
             children: [
@@ -175,7 +180,10 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                 children: [
                   // PREMIUM TIMELINE HEADER (Matching Screen 68 spec)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -192,10 +200,16 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                                  color: isDark
+                                      ? Colors.white10
+                                      : Colors.black.withValues(alpha: 0.05),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(Icons.menu, color: textPrimary, size: 20),
+                                child: Icon(
+                                  Icons.menu,
+                                  color: textPrimary,
+                                  size: 20,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -204,7 +218,7 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                               children: [
                                 Text(
                                   'trip.mate',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w800,
                                     color: textPrimary,
@@ -213,7 +227,7 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                 ),
                                 Text(
                                   "the squad's odyssey",
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 12,
                                     color: textSecondary,
                                     fontStyle: FontStyle.italic,
@@ -227,7 +241,10 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                         Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.add_circle_outline, color: neonPink),
+                              icon: Icon(
+                                Icons.add_circle_outline,
+                                color: neonPink,
+                              ),
                               onPressed: _addNewTimelineItem,
                             ),
                             IconButton(
@@ -245,23 +262,33 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
 
                   // Mini Stats Ticker Banner
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 4,
+                    ),
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: neonPink.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: neonPink.withValues(alpha: 0.2)),
+                            border: Border.all(color: neonPink, width: 2),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.auto_awesome, color: neonPink, size: 10),
+                              Icon(
+                                Icons.auto_awesome,
+                                color: neonPink,
+                                size: 10,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 'Day 1 to 3',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: isDark ? Colors.white : Colors.black87,
@@ -273,7 +300,10 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                         const SizedBox(width: 8),
                         Text(
                           '•  4 memories pinned  •  12.4k views',
-                          style: GoogleFonts.inter(fontSize: 11, color: textSecondary),
+                          style: AppFonts.body(
+                            fontSize: 11,
+                            color: textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -284,7 +314,11 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                   Expanded(
                     child: ListView.builder(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 90),
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: 90,
+                      ),
                       itemCount: _timelineItems.length,
                       itemBuilder: (context, index) {
                         final item = _timelineItems[index];
@@ -303,22 +337,32 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                     width: 32,
                                     height: 32,
                                     decoration: BoxDecoration(
-                                      color: isDark ? const Color(0xFF22153B) : const Color(0xFFF3EDF7),
+                                      color: isDark
+                                          ? const Color(0xFF22153B)
+                                          : const Color(0xFFF3EDF7),
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: item.isLiked ? neonPink : neonCyan,
+                                        color: item.isLiked
+                                            ? neonPink
+                                            : neonCyan,
                                         width: 2.0,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: (item.isLiked ? neonPink : neonCyan).withValues(alpha: 0.3),
-                                          blurRadius: 8,
+                                          color:
+                                              (item.isLiked
+                                                      ? neonPink
+                                                      : neonCyan)
+                                                  .withValues(alpha: 0.3),
+                                          blurRadius: 0,
                                         ),
                                       ],
                                     ),
                                     child: Center(
                                       child: Text(
-                                        index == 0 ? '✨' : (index == 1 ? '😴' : '🏮'),
+                                        index == 0
+                                            ? '✨'
+                                            : (index == 1 ? '😴' : '🏮'),
                                         style: const TextStyle(fontSize: 12),
                                       ),
                                     ),
@@ -333,8 +377,14 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                             begin: Alignment.topCenter,
                                             end: Alignment.bottomCenter,
                                             colors: [
-                                              item.isLiked ? neonPink : neonCyan,
-                                              isLast ? Colors.transparent : (index % 2 == 0 ? neonAmber : neonPink),
+                                              item.isLiked
+                                                  ? neonPink
+                                                  : neonCyan,
+                                              isLast
+                                                  ? Colors.transparent
+                                                  : (index % 2 == 0
+                                                        ? neonAmber
+                                                        : neonPink),
                                             ],
                                           ),
                                         ),
@@ -357,20 +407,30 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                         Container(
                                           decoration: BoxDecoration(
                                             color: cardBg,
-                                            borderRadius: BorderRadius.circular(24),
-                                            border: Border.all(color: glassBorder, width: 2),
+                                            borderRadius: BorderRadius.circular(
+                                              24,
+                                            ),
+                                            border: Border.all(
+                                              color: glassBorder,
+                                              width: 2,
+                                            ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
-                                                blurRadius: 16,
+                                                color: Colors.black.withValues(
+                                                  alpha: isDark ? 0.25 : 0.06,
+                                                ),
+                                                blurRadius: 0,
                                                 offset: const Offset(0, 6),
                                               ),
                                             ],
                                           ),
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(22),
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 // High-Quality image overlay
                                                 Image.network(
@@ -378,55 +438,112 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                                   height: 140,
                                                   width: double.infinity,
                                                   fit: BoxFit.cover,
-                                                  errorBuilder: (context, err, stack) => Container(
-                                                    height: 120,
-                                                    color: isDark ? Colors.white10 : Colors.black12,
-                                                    child: const Icon(Icons.broken_image, color: Colors.grey),
-                                                  ),
+                                                  errorBuilder:
+                                                      (
+                                                        context,
+                                                        err,
+                                                        stack,
+                                                      ) => Container(
+                                                        height: 120,
+                                                        color: isDark
+                                                            ? Colors.white10
+                                                            : Colors.black12,
+                                                        child: const Icon(
+                                                          Icons.broken_image,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
                                                 ),
                                                 Padding(
-                                                  padding: const EdgeInsets.all(16),
+                                                  padding: const EdgeInsets.all(
+                                                    16,
+                                                  ),
                                                   child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       // Tag / Time Row
                                                       Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
                                                           Row(
                                                             children: [
                                                               Container(
-                                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                                padding:
+                                                                    const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          8,
+                                                                      vertical:
+                                                                          4,
+                                                                    ),
                                                                 decoration: BoxDecoration(
-                                                                  color: neonCyan.withValues(alpha: 0.15),
-                                                                  borderRadius: BorderRadius.circular(8),
+                                                                  color: neonCyan
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.15,
+                                                                      ),
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        8,
+                                                                      ),
                                                                 ),
                                                                 child: Text(
                                                                   '${item.day}  •  ${item.time}',
-                                                                  style: GoogleFonts.plusJakartaSans(
-                                                                    fontSize: 10,
-                                                                    fontWeight: FontWeight.w800,
-                                                                    color: neonCyan,
+                                                                  style: AppFonts.heading(
+                                                                    fontSize:
+                                                                        10,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w800,
+                                                                    color:
+                                                                        neonCyan,
                                                                   ),
                                                                 ),
                                                               ),
-                                                              const SizedBox(width: 6),
+                                                              const SizedBox(
+                                                                width: 6,
+                                                              ),
                                                               // Bolt energy rating tag (Screen 68 requirement)
                                                               Container(
-                                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                                                padding:
+                                                                    const EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          6,
+                                                                      vertical:
+                                                                          4,
+                                                                    ),
                                                                 decoration: BoxDecoration(
-                                                                  color: neonAmber.withValues(alpha: 0.15),
-                                                                  borderRadius: BorderRadius.circular(8),
+                                                                  color: neonAmber
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.15,
+                                                                      ),
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        8,
+                                                                      ),
                                                                 ),
                                                                 child: Row(
                                                                   children: [
-                                                                    Icon(Icons.bolt, color: neonAmber, size: 10),
+                                                                    Icon(
+                                                                      Icons
+                                                                          .bolt,
+                                                                      color:
+                                                                          neonAmber,
+                                                                      size: 10,
+                                                                    ),
                                                                     Text(
                                                                       item.energy,
-                                                                      style: GoogleFonts.inter(
-                                                                        fontSize: 9,
-                                                                        color: neonAmber,
-                                                                        fontWeight: FontWeight.bold,
+                                                                      style: AppFonts.body(
+                                                                        fontSize:
+                                                                            9,
+                                                                        color:
+                                                                            neonAmber,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
                                                                       ),
                                                                     ),
                                                                   ],
@@ -437,83 +554,129 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                                           // Location Tag
                                                           Row(
                                                             children: [
-                                                              Icon(Icons.location_on, color: neonPink, size: 11),
-                                                              const SizedBox(width: 2),
+                                                              Icon(
+                                                                Icons
+                                                                    .location_on,
+                                                                color: neonPink,
+                                                                size: 11,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
                                                               Text(
                                                                 item.location,
-                                                                style: GoogleFonts.inter(
+                                                                style: AppFonts.body(
                                                                   fontSize: 9,
-                                                                  fontWeight: FontWeight.bold,
-                                                                  color: textSecondary,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color:
+                                                                      textSecondary,
                                                                 ),
                                                               ),
                                                             ],
                                                           ),
                                                         ],
                                                       ),
-                                                      const SizedBox(height: 10),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
 
                                                       // Main Header and "literally died here" subtitle
                                                       Text(
                                                         item.title,
-                                                        style: GoogleFonts.plusJakartaSans(
-                                                          fontSize: 16,
-                                                          fontWeight: FontWeight.bold,
-                                                          color: textPrimary,
-                                                        ),
+                                                        style:
+                                                            AppFonts.heading(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  textPrimary,
+                                                            ),
                                                       ),
                                                       Text(
                                                         item.subtitle,
-                                                        style: GoogleFonts.inter(
-                                                          fontSize: 11,
-                                                          color: neonPink,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontStyle: FontStyle.italic,
-                                                        ),
+                                                        style:
+                                                            AppFonts.body(
+                                                              fontSize: 11,
+                                                              color: neonPink,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontStyle:
+                                                                  FontStyle
+                                                                      .italic,
+                                                            ),
                                                       ),
                                                       const SizedBox(height: 8),
 
                                                       // Body Narrative text
                                                       Text(
                                                         item.description,
-                                                        style: GoogleFonts.inter(
-                                                          fontSize: 12,
-                                                          color: textSecondary,
-                                                          height: 1.4,
-                                                        ),
+                                                        style:
+                                                            AppFonts.body(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  textSecondary,
+                                                              height: 1.4,
+                                                            ),
                                                       ),
-                                                      const SizedBox(height: 10),
+                                                      const SizedBox(
+                                                        height: 10,
+                                                      ),
 
                                                       // Music played ticker label
                                                       Row(
                                                         children: [
-                                                          const Icon(Icons.music_note, size: 11, color: Colors.grey),
-                                                          const SizedBox(width: 4),
+                                                          const Icon(
+                                                            Icons.music_note,
+                                                            size: 11,
+                                                            color: Colors.grey,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 4,
+                                                          ),
                                                           Text(
                                                             item.music,
-                                                            style: GoogleFonts.inter(
-                                                              fontSize: 10,
-                                                              color: Colors.grey,
-                                                              fontWeight: FontWeight.w500,
-                                                            ),
+                                                            style:
+                                                                AppFonts.body(
+                                                                  fontSize: 10,
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
                                                           ),
                                                         ],
                                                       ),
-                                                      const SizedBox(height: 12),
+                                                      const SizedBox(
+                                                        height: 12,
+                                                      ),
 
                                                       // Hashtags
                                                       Wrap(
                                                         spacing: 6,
-                                                        children: item.hashtags.map((tag) => Text(
-                                                          tag,
-                                                          style: GoogleFonts.inter(
-                                                            fontSize: 10,
-                                                            color: neonCyan,
-                                                            fontWeight: FontWeight.bold,
-                                                          ),
-                                                        )).toList(),
+                                                        children: item.hashtags
+                                                            .map(
+                                                              (tag) => Text(
+                                                                tag,
+                                                                style: AppFonts.body(
+                                                                  fontSize: 10,
+                                                                  color:
+                                                                      neonCyan,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                            )
+                                                            .toList(),
                                                       ),
-                                                      const SizedBox(height: 12),
+                                                      const SizedBox(
+                                                        height: 12,
+                                                      ),
 
                                                       // Interactions: Likes & comments
                                                       Row(
@@ -521,48 +684,103 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                                           GestureDetector(
                                                             onTap: () {
                                                               setState(() {
-                                                                item.isLiked = !item.isLiked;
-                                                                item.likes += item.isLiked ? 1 : -1;
+                                                                item.isLiked =
+                                                                    !item
+                                                                        .isLiked;
+                                                                item.likes +=
+                                                                    item.isLiked
+                                                                    ? 1
+                                                                    : -1;
                                                               });
                                                             },
                                                             child: AnimatedContainer(
-                                                              duration: const Duration(milliseconds: 200),
-                                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                              duration:
+                                                                  const Duration(
+                                                                    milliseconds:
+                                                                        200,
+                                                                  ),
+                                                              padding:
+                                                                  const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        10,
+                                                                    vertical: 6,
+                                                                  ),
                                                               decoration: BoxDecoration(
-                                                                color: item.isLiked 
-                                                                  ? neonPink.withValues(alpha: 0.15) 
-                                                                  : Colors.transparent,
-                                                                borderRadius: BorderRadius.circular(12),
+                                                                color:
+                                                                    item.isLiked
+                                                                    ? neonPink.withValues(
+                                                                        alpha:
+                                                                            0.15,
+                                                                      )
+                                                                    : Colors
+                                                                          .transparent,
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      12,
+                                                                    ),
                                                                 border: Border.all(
-                                                                  color: item.isLiked ? neonPink : Colors.transparent,
+                                                                  color:
+                                                                      item.isLiked
+                                                                      ? neonPink
+                                                                      : Colors
+                                                                            .transparent,
                                                                 ),
                                                               ),
                                                               child: Row(
                                                                 children: [
                                                                   Icon(
-                                                                    item.isLiked ? Icons.favorite : Icons.favorite_border,
-                                                                    color: item.isLiked ? neonPink : Colors.grey,
+                                                                    item.isLiked
+                                                                        ? Icons
+                                                                              .favorite
+                                                                        : Icons
+                                                                              .favorite_border,
+                                                                    color:
+                                                                        item.isLiked
+                                                                        ? neonPink
+                                                                        : Colors
+                                                                              .grey,
                                                                     size: 14,
                                                                   ),
-                                                                  const SizedBox(width: 4),
+                                                                  const SizedBox(
+                                                                    width: 4,
+                                                                  ),
                                                                   Text(
                                                                     '${item.likes}',
-                                                                    style: GoogleFonts.plusJakartaSans(
-                                                                      fontSize: 11,
-                                                                      fontWeight: FontWeight.bold,
-                                                                      color: item.isLiked ? neonPink : textSecondary,
+                                                                    style: AppFonts.heading(
+                                                                      fontSize:
+                                                                          11,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color:
+                                                                          item.isLiked
+                                                                          ? neonPink
+                                                                          : textSecondary,
                                                                     ),
                                                                   ),
                                                                 ],
                                                               ),
                                                             ),
                                                           ),
-                                                          const SizedBox(width: 14),
-                                                          const Icon(Icons.mode_comment_outlined, size: 14, color: Colors.grey),
-                                                          const SizedBox(width: 4),
+                                                          const SizedBox(
+                                                            width: 14,
+                                                          ),
+                                                          const Icon(
+                                                            Icons
+                                                                .mode_comment_outlined,
+                                                            size: 14,
+                                                            color: Colors.grey,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 4,
+                                                          ),
                                                           Text(
                                                             '4 replies',
-                                                            style: GoogleFonts.inter(fontSize: 11, color: textSecondary),
+                                                            style: AppFonts.body(
+                                                              fontSize: 11,
+                                                              color:
+                                                                  textSecondary,
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -584,9 +802,14 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                               width: 60,
                                               height: 18,
                                               decoration: BoxDecoration(
-                                                color: Colors.white.withValues(alpha: 0.35),
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.35,
+                                                ),
                                                 boxShadow: const [
-                                                  BoxShadow(color: Colors.black12, blurRadius: 4),
+                                                  BoxShadow(
+                                                    color: Colors.black12,
+                                                    blurRadius: 0,
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -625,11 +848,18 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                             bottom: 0,
                             width: MediaQuery.of(context).size.width * 0.75,
                             child: GestureDetector(
-                              onTap: () {}, // Prevent tap close-through
+                              onTap: () => showGlobalSnack(
+                                'Tính năng đang được hoàn thiện 🚧',
+                              ), // Prevent tap close-through
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: cardBg,
-                                  border: Border(right: BorderSide(color: glassBorder, width: 2)),
+                                  border: Border(
+                                    right: BorderSide(
+                                      color: glassBorder,
+                                      width: 2,
+                                    ),
+                                  ),
                                 ),
                                 padding: const EdgeInsets.all(24),
                                 child: Column(
@@ -638,7 +868,7 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                     const SizedBox(height: 20),
                                     Text(
                                       'Trip Analytics 📈',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                         color: textPrimary,
@@ -647,13 +877,32 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                     const SizedBox(height: 8),
                                     Text(
                                       'Kyoto Drift Squad Live Vibes',
-                                      style: GoogleFonts.inter(fontSize: 12, color: textSecondary),
+                                      style: AppFonts.body(
+                                        fontSize: 12,
+                                        color: textSecondary,
+                                      ),
                                     ),
                                     const SizedBox(height: 24),
-                                    _buildStatRow('Total Pinned Memories', '24 Pockets', neonCyan),
-                                    _buildStatRow('Squad Active Hours', '168 hours', neonPink),
-                                    _buildStatRow('Financial Toll (Est)', '\$1,420 spent', neonAmber),
-                                    _buildStatRow('Energy levels', '68% Avg', const Color(0xFF45FFA4)),
+                                    _buildStatRow(
+                                      'Total Pinned Memories',
+                                      '24 Pockets',
+                                      neonCyan,
+                                    ),
+                                    _buildStatRow(
+                                      'Squad Active Hours',
+                                      '168 hours',
+                                      neonPink,
+                                    ),
+                                    _buildStatRow(
+                                      'Financial Toll (Est)',
+                                      '\$1,420 spent',
+                                      neonAmber,
+                                    ),
+                                    _buildStatRow(
+                                      'Energy levels',
+                                      '68% Avg',
+                                      const Color(0xFF45FFA4),
+                                    ),
                                     const Spacer(),
                                     ElevatedButton.icon(
                                       onPressed: () {
@@ -666,7 +915,11 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: neonPink,
                                         foregroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -688,19 +941,22 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark 
-                          ? const Color(0xFF141226).withValues(alpha: 0.8) 
-                          : Colors.white.withValues(alpha: 0.85),
+                        color: isDark
+                            ? const Color(0xFF141226).withValues(alpha: 0.8)
+                            : Colors.white.withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(color: glassBorder),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.15),
-                            blurRadius: 16,
+                            blurRadius: 0,
                           ),
                         ],
                       ),
@@ -734,7 +990,7 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 11,
               color: isDark ? Colors.white60 : Colors.black54,
             ),
@@ -742,7 +998,7 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
           const SizedBox(height: 2),
           Text(
             value,
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: color,
@@ -765,15 +1021,11 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: isSel ? activeCol : Colors.grey,
-            size: 20,
-          ),
+          Icon(icon, color: isSel ? activeCol : Colors.grey, size: 20),
           const SizedBox(height: 2),
           Text(
             label,
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 10,
               color: isSel ? activeCol : Colors.grey,
               fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
@@ -797,26 +1049,19 @@ class _MemoryTimelineScreenState extends State<MemoryTimelineScreen> {
         decoration: BoxDecoration(
           color: neonGreen.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: neonGreen.withValues(alpha: 0.3)),
+          border: Border.all(color: neonGreen, width: 2),
           boxShadow: [
-            BoxShadow(
-              color: neonGreen.withValues(alpha: 0.2),
-              blurRadius: 10,
-            ),
+            BoxShadow(color: neonGreen.withValues(alpha: 0.2), blurRadius: 0),
           ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: neonGreen,
-              size: 20,
-            ),
+            Icon(icon, color: neonGreen, size: 20),
             const SizedBox(width: 4),
             Text(
               label,
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 10,
                 color: neonGreen,
                 fontWeight: FontWeight.bold,

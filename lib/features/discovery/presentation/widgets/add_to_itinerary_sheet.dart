@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
 class AddToItinerarySheet extends StatefulWidget {
   final String placeName;
   final String placeAddress;
@@ -19,7 +18,8 @@ class AddToItinerarySheet extends StatefulWidget {
   State<AddToItinerarySheet> createState() => _AddToItinerarySheetState();
 }
 
-class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTickerProviderStateMixin {
+class _AddToItinerarySheetState extends State<AddToItinerarySheet>
+    with SingleTickerProviderStateMixin {
   int _selectedDay = 1;
   String _selectedTime = '10:30 AM';
   final TextEditingController _notesController = TextEditingController();
@@ -30,12 +30,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
   late AnimationController _successController;
   late Animation<double> _scaleAnimation;
 
-  final List<String> _tags = [
-    '🌿 Chill',
-    '🔥 Party',
-    '🍜 Foodie',
-    '📸 Iconic',
-  ];
+  final List<String> _tags = ['🌿 Chill', '🔥 Party', '🍜 Foodie', '📸 Iconic'];
 
   final List<String> _timeOptions = [
     '08:00 AM',
@@ -106,12 +101,22 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
     final theme = Theme.of(context);
     final isDark = widget.isDarkMode;
 
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
-    final subTextColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final textColor = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final subTextColor = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.88,
@@ -126,15 +131,17 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
               topRight: Radius.circular(32),
             ),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
-              width: 1.5,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
-                blurRadius: 30,
+                blurRadius: 0,
                 offset: const Offset(0, -10),
-              )
+              ),
             ],
           ),
           child: ClipRRect(
@@ -146,12 +153,23 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
               controller: scrollController,
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 child: AnimatedSize(
                   duration: const Duration(milliseconds: 300),
                   child: _showSuccess
                       ? _buildSuccessView(primaryColor, isDark, textColor)
-                      : _buildFormView(theme, primaryColor, secondaryColor, surfaceColor, textColor, subTextColor, isDark),
+                      : _buildFormView(
+                          theme,
+                          primaryColor,
+                          secondaryColor,
+                          surfaceColor,
+                          textColor,
+                          subTextColor,
+                          isDark,
+                        ),
                 ),
               ),
             ),
@@ -173,18 +191,18 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
             height: 88,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF34D399).withValues(alpha: 0.15),
-              border: Border.all(color: const Color(0xFF34D399), width: 2),
+              color: const Color(0xFF1FA85C).withValues(alpha: 0.15),
+              border: Border.all(color: const Color(0xFF1FA85C), width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF34D399).withValues(alpha: 0.25),
-                  blurRadius: 15,
-                )
+                  color: const Color(0xFF1FA85C).withValues(alpha: 0.25),
+                  blurRadius: 0,
+                ),
               ],
             ),
             child: const Icon(
               Icons.check_circle,
-              color: Color(0xFF34D399),
+              color: Color(0xFF1FA85C),
               size: 54,
             ),
           ),
@@ -192,7 +210,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
         const SizedBox(height: 28),
         Text(
           'Added to Trip! ✨',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 24,
             fontWeight: FontWeight.w900,
             color: textColor,
@@ -202,9 +220,9 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
         Text(
           '${widget.placeName} scheduled for Day $_selectedDay at $_selectedTime.',
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
+          style: AppFonts.body(
             fontSize: 14,
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 60),
@@ -230,7 +248,9 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
             width: 44,
             height: 5,
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.15),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.15)
+                  : Colors.black.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(3),
             ),
           ),
@@ -243,7 +263,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
           children: [
             Text(
               'Find your vibe',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
                 color: textColor,
@@ -256,7 +276,9 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.05),
                 ),
                 child: Icon(
                   Icons.close,
@@ -273,26 +295,27 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.03),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
-              Icon(
-                Icons.search,
-                color: subTextColor,
-                size: 20,
-              ),
+              Icon(Icons.search, color: subTextColor, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Search spots, cafes, activities...',
-                  style: GoogleFonts.inter(
-                    color: Colors.grey,
+                  style: AppFonts.body(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 13,
                   ),
                 ),
@@ -300,14 +323,12 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
               Container(
                 height: 24,
                 width: 1,
-                color: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.12),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.black.withValues(alpha: 0.12),
                 margin: const EdgeInsets.symmetric(horizontal: 8),
               ),
-              Icon(
-                Icons.mic,
-                color: primaryColor,
-                size: 20,
-              ),
+              Icon(Icons.mic, color: primaryColor, size: 20),
             ],
           ),
         ),
@@ -330,31 +351,42 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 250),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: isActive
                           ? primaryColor.withValues(alpha: 0.15)
-                          : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white),
+                          : (isDark
+                                ? Colors.white.withValues(alpha: 0.04)
+                                : Colors.white),
                       borderRadius: BorderRadius.circular(25),
                       border: Border.all(
-                        color: isActive ? primaryColor : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black12),
+                        color: isActive
+                            ? primaryColor
+                            : (isDark
+                                  ? Colors.white.withValues(alpha: 0.08)
+                                  : Colors.black12),
                         width: isActive ? 1.5 : 1.0,
                       ),
                       boxShadow: isActive
                           ? [
                               BoxShadow(
                                 color: primaryColor.withValues(alpha: 0.2),
-                                blurRadius: 10,
-                              )
+                                blurRadius: 0,
+                              ),
                             ]
                           : null,
                     ),
                     child: Text(
                       tag,
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: isActive ? primaryColor : textColor.withValues(alpha: 0.8),
+                        color: isActive
+                            ? primaryColor
+                            : textColor.withValues(alpha: 0.8),
                       ),
                     ),
                   ),
@@ -372,7 +404,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
             const SizedBox(width: 6),
             Text(
               'Hidden Gems',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: textColor,
@@ -389,15 +421,17 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
             color: surfaceColor,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
-              width: 1.5,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-                blurRadius: 15,
+                blurRadius: 0,
                 offset: const Offset(0, 5),
-              )
+              ),
             ],
           ),
           child: Column(
@@ -415,7 +449,9 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                         topRight: Radius.circular(22),
                       ),
                       image: DecorationImage(
-                        image: NetworkImage('https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&auto=format&fit=crop&q=80'),
+                        image: NetworkImage(
+                          'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&auto=format&fit=crop&q=80',
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -429,7 +465,10 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                         topRight: Radius.circular(22),
                       ),
                       gradient: LinearGradient(
-                        colors: [Colors.black.withValues(alpha: 0.4), Colors.transparent],
+                        colors: [
+                          Colors.black.withValues(alpha: 0.4),
+                          Colors.transparent,
+                        ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -440,18 +479,25 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                     top: 12,
                     left: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.location_on, color: secondaryColor, size: 10),
+                          Icon(
+                            Icons.location_on,
+                            color: secondaryColor,
+                            size: 10,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Café & Deli',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               color: Colors.white,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
@@ -465,7 +511,10 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                     top: 12,
                     right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: secondaryColor,
                         borderRadius: BorderRadius.circular(12),
@@ -476,7 +525,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                           const SizedBox(width: 4),
                           Text(
                             '4.9',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               color: Colors.white,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
@@ -496,8 +545,10 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.placeName.isNotEmpty ? widget.placeName : 'The Hill Station',
-                      style: GoogleFonts.plusJakartaSans(
+                      widget.placeName.isNotEmpty
+                          ? widget.placeName
+                          : 'The Hill Station',
+                      style: AppFonts.heading(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
                         color: textColor,
@@ -509,8 +560,10 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                         Icon(Icons.map_outlined, color: subTextColor, size: 12),
                         const SizedBox(width: 4),
                         Text(
-                          widget.placeAddress.isNotEmpty ? widget.placeAddress : 'Hội An, Vietnam',
-                          style: GoogleFonts.inter(
+                          widget.placeAddress.isNotEmpty
+                              ? widget.placeAddress
+                              : 'Hội An, Vietnam',
+                          style: AppFonts.body(
                             fontSize: 12,
                             color: subTextColor,
                           ),
@@ -520,20 +573,24 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                     const SizedBox(height: 10),
                     Text(
                       'A moody, atmospheric spot known for artisanal deli cuts, local craft beers, and a perfectly chilled vibe.',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 12,
                         color: subTextColor,
                         height: 1.4,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Divider(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06)),
+                    Divider(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black.withValues(alpha: 0.06),
+                    ),
                     const SizedBox(height: 10),
 
                     // Inline Schedule pickers
                     Text(
                       'Schedule Spot',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: textColor.withValues(alpha: 0.9),
@@ -555,23 +612,34 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                             },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? primaryColor.withValues(alpha: 0.15)
-                                    : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03)),
+                                    : (isDark
+                                          ? Colors.white.withValues(alpha: 0.04)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            )),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isSelected ? primaryColor : Colors.transparent,
+                                  color: isSelected
+                                      ? primaryColor
+                                      : Colors.transparent,
                                   width: 1,
                                 ),
                               ),
                               child: Text(
                                 'Day $day',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
-                                  color: isSelected ? primaryColor : subTextColor,
+                                  color: isSelected
+                                      ? primaryColor
+                                      : subTextColor,
                                 ),
                               ),
                             ),
@@ -601,24 +669,37 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                               },
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? secondaryColor.withValues(alpha: 0.15)
-                                      : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03)),
+                                      : (isDark
+                                            ? Colors.white.withValues(
+                                                alpha: 0.04,
+                                              )
+                                            : Colors.black.withValues(
+                                                alpha: 0.03,
+                                              )),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: isSelected ? secondaryColor : Colors.transparent,
+                                    color: isSelected
+                                        ? secondaryColor
+                                        : Colors.transparent,
                                     width: 1,
                                   ),
                                 ),
                                 child: Text(
                                   time,
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: isSelected ? secondaryColor : subTextColor,
+                                    color: isSelected
+                                        ? secondaryColor
+                                        : subTextColor,
                                   ),
                                 ),
                               ),
@@ -633,29 +714,41 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                     Container(
                       height: 38,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.02),
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.03)
+                            : Colors.black.withValues(alpha: 0.02),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.05)
+                              : Colors.black,
+                          width: 2,
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: TextField(
                         controller: _notesController,
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 11,
                           color: textColor,
                         ),
                         decoration: const InputDecoration(
                           hintText: 'Add aesthetic / photo notes... 📸✨',
-                          hintStyle: TextStyle(color: Colors.grey, fontSize: 11),
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 11,
+                          ),
                           border: InputBorder.none,
                           isDense: true,
                         ),
                       ),
                     ),
                     const SizedBox(height: 18),
-                    Divider(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06)),
+                    Divider(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black.withValues(alpha: 0.06),
+                    ),
                     const SizedBox(height: 10),
 
                     // Crew also down to go + Gradient Add to Trip button
@@ -668,7 +761,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                           children: [
                             Text(
                               'Also down to go',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 color: subTextColor,
@@ -686,8 +779,16 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                                         left: 0,
                                         child: CircleAvatar(
                                           radius: 10,
-                                          backgroundColor: Colors.amber.shade400,
-                                          child: Text('T', style: GoogleFonts.outfit(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold)),
+                                          backgroundColor:
+                                              Colors.amber.shade400,
+                                          child: Text(
+                                            'T',
+                                            style: AppFonts.body(
+                                              fontSize: 8,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                       Positioned(
@@ -695,7 +796,14 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                                         child: CircleAvatar(
                                           radius: 10,
                                           backgroundColor: Colors.blue.shade400,
-                                          child: Text('L', style: GoogleFonts.outfit(fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold)),
+                                          child: Text(
+                                            'L',
+                                            style: AppFonts.body(
+                                              fontSize: 8,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                       Positioned(
@@ -705,13 +813,18 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                                           height: 20,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                                            border: Border.all(color: primaryColor, width: 1),
+                                            color: isDark
+                                                ? const Color(0xFF262019)
+                                                : Colors.white,
+                                            border: Border.all(
+                                              color: primaryColor,
+                                              width: 1,
+                                            ),
                                           ),
                                           child: Center(
                                             child: Text(
                                               '+2',
-                                              style: GoogleFonts.outfit(
+                                              style: AppFonts.body(
                                                 fontSize: 8,
                                                 fontWeight: FontWeight.w900,
                                                 color: primaryColor,
@@ -733,20 +846,19 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                           onTap: _isSaving ? null : _saveToItinerary,
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [primaryColor, secondaryColor],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                              color: primaryColor,
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
                                   color: primaryColor.withValues(alpha: 0.3),
-                                  blurRadius: 10,
+                                  blurRadius: 0,
                                   offset: const Offset(0, 3),
-                                )
+                                ),
                               ],
                             ),
                             child: _isSaving
@@ -755,16 +867,22 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                                     height: 14,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
                                     ),
                                   )
                                 : Row(
                                     children: [
-                                      const Icon(Icons.add_circle_outline, color: Colors.white, size: 14),
+                                      const Icon(
+                                        Icons.add_circle_outline,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
                                       const SizedBox(width: 6),
                                       Text(
                                         'Add to Trip',
-                                        style: GoogleFonts.plusJakartaSans(
+                                        style: AppFonts.heading(
                                           color: Colors.white,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
@@ -787,7 +905,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
         // Section Title: More spots nearby
         Text(
           'More spots nearby',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 16,
             fontWeight: FontWeight.w800,
             color: textColor,
@@ -802,7 +920,10 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
             color: surfaceColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
           ),
           child: Row(
@@ -814,7 +935,9 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   image: const DecorationImage(
-                    image: NetworkImage('https://images.unsplash.com/photo-1541188111-1e0d58224f24?w=200&auto=format&fit=crop&q=80'),
+                    image: NetworkImage(
+                      'https://images.unsplash.com/photo-1541188111-1e0d58224f24?w=200&auto=format&fit=crop&q=80',
+                    ),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -828,7 +951,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                   children: [
                     Text(
                       'Morning Glory Original',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: textColor,
@@ -837,7 +960,7 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                     const SizedBox(height: 2),
                     Text(
                       'Iconic central Vietnamese street food. \$\$',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 11,
                         color: subTextColor,
                       ),
@@ -845,11 +968,15 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.directions_walk, color: secondaryColor, size: 12),
+                        Icon(
+                          Icons.directions_walk,
+                          color: secondaryColor,
+                          size: 12,
+                        ),
                         const SizedBox(width: 2),
                         Text(
                           '8 min',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 10,
                             color: secondaryColor,
                             fontWeight: FontWeight.bold,
@@ -866,7 +993,9 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text("Selected Morning Glory! 🍲 Customise day and time to add."),
+                      content: Text(
+                        "Selected Morning Glory! 🍲 Customise day and time to add.",
+                      ),
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -879,13 +1008,11 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet> with SingleTi
                     border: Border.all(
                       color: isDark ? Colors.white24 : Colors.black12,
                     ),
-                    color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.02),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.04)
+                        : Colors.black.withValues(alpha: 0.02),
                   ),
-                  child: Icon(
-                    Icons.add,
-                    color: subTextColor,
-                    size: 16,
-                  ),
+                  child: Icon(Icons.add, color: subTextColor, size: 16),
                 ),
               ),
             ],

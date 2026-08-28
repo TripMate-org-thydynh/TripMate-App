@@ -1,14 +1,13 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class SquadReputationScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const SquadReputationScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -34,7 +33,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
       'label': 'TrustScore',
       'value': 0.72,
       'display': '72',
-      'color': Color(0xFF45DFA4),
+      'color': Color(0xFF1FA85C),
     },
     {
       'emoji': '⚡',
@@ -79,14 +78,14 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
       'title': '💰 The Bank',
       'name': 'Nam Trung',
       'desc': 'Carries the squad financially 💸',
-      'color': Color(0xFFD0BCFF),
+      'color': Color(0xFFC9B8FF),
     },
     {
       'rank': '3',
       'title': '📸 Content',
       'name': 'Hải Yến',
       'desc': '10,000 photos, 0 shared 📱',
-      'color': Color(0xFF45DFA4),
+      'color': Color(0xFF1FA85C),
     },
   ];
 
@@ -162,12 +161,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
               height: 260,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF45DFA4).withValues(alpha: 0.18),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -179,12 +173,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
               height: 240,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFD0BCFF).withValues(alpha: 0.15),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -194,16 +183,18 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
               children: [
                 // AppBar
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
                       Text(
                         'trip.mate',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFFD0BCFF),
+                          color: const Color(0xFFC9B8FF),
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -259,24 +250,17 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(24),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    const Color(0xFF45DFA4)
-                                        .withValues(alpha: isDark ? 0.12 : 0.1),
-                                    const Color(0xFFD0BCFF)
-                                        .withValues(alpha: isDark ? 0.1 : 0.08),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
+                                color: const Color(
+                                  0xFF1FA85C,
+                                ).withValues(alpha: isDark ? 0.12 : 0.1),
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: const Color(0xFF45DFA4)
-                                      .withValues(alpha: 0.2),
+                                  color: const Color(0xFF1FA85C),
+                                  width: 2,
                                 ),
                               ),
                               child: Column(
@@ -284,7 +268,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                 children: [
                                   Text(
                                     "Minh Nhật's Vibe",
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 22,
                                       fontWeight: FontWeight.w900,
                                       color: textPrimary,
@@ -293,7 +277,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                   const SizedBox(height: 4),
                                   Text(
                                     'Your travel reputation precedes you.',
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.body(
                                       fontSize: 13,
                                       color: textSecondary,
                                     ),
@@ -321,17 +305,19 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(18),
                               child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                filter: ImageFilter.blur(
+                                  sigmaX: 10,
+                                  sigmaY: 10,
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 14),
+                                    horizontal: 10,
+                                    vertical: 14,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: surface,
                                     borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color: color.withValues(alpha: 0.2),
-                                    ),
+                                    border: Border.all(color: color, width: 2),
                                   ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -345,14 +331,14 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                         animation: _pulseAnim,
                                         builder: (context, child) =>
                                             Transform.scale(
-                                          scale: value > 0.8
-                                              ? _pulseAnim.value
-                                              : 1.0,
-                                          child: child,
-                                        ),
+                                              scale: value > 0.8
+                                                  ? _pulseAnim.value
+                                                  : 1.0,
+                                              child: child,
+                                            ),
                                         child: Text(
                                           stat['display'] as String,
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 22,
                                             fontWeight: FontWeight.w900,
                                             color: color,
@@ -362,7 +348,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                       const SizedBox(height: 4),
                                       Text(
                                         stat['label'] as String,
-                                        style: GoogleFonts.inter(
+                                        style: AppFonts.body(
                                           fontSize: 9,
                                           color: textSecondary,
                                           fontWeight: FontWeight.w600,
@@ -372,15 +358,18 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                       ),
                                       const SizedBox(height: 6),
                                       ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
+                                        borderRadius: BorderRadius.circular(
+                                          100,
+                                        ),
                                         child: LinearProgressIndicator(
                                           value: value,
                                           minHeight: 3,
-                                          backgroundColor: color
-                                              .withValues(alpha: 0.12),
-                                          valueColor:
-                                              AlwaysStoppedAnimation(color),
+                                          backgroundColor: color.withValues(
+                                            alpha: 0.12,
+                                          ),
+                                          valueColor: AlwaysStoppedAnimation(
+                                            color,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -397,15 +386,15 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
                                 color: surface,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: const Color(0xFFD0BCFF)
-                                      .withValues(alpha: 0.2),
+                                  color: const Color(0xFFC9B8FF),
+                                  width: 2,
                                 ),
                               ),
                               child: Row(
@@ -416,16 +405,13 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                     height: 36,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFF7B2FF7),
-                                          Color(0xFF45DFA4),
-                                        ],
-                                      ),
+                                      color: Color(0xFF7B2FF7),
                                     ),
                                     child: const Center(
-                                      child: Text('✨',
-                                          style: TextStyle(fontSize: 16)),
+                                      child: Text(
+                                        '✨',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -436,16 +422,16 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                       children: [
                                         Text(
                                           'AI Summary',
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
-                                            color: const Color(0xFFD0BCFF),
+                                            color: const Color(0xFFC9B8FF),
                                           ),
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
                                           '"Reliable for finding coffee, completely unreliable with maps. Will carry your emotional baggage."',
-                                          style: GoogleFonts.inter(
+                                          style: AppFonts.body(
                                             fontSize: 13,
                                             color: textPrimary,
                                             height: 1.5,
@@ -466,7 +452,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                         // Squad MVPs
                         Text(
                           'Squad MVPs',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: textPrimary,
@@ -482,17 +468,19 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(18),
                               child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                filter: ImageFilter.blur(
+                                  sigmaX: 10,
+                                  sigmaY: 10,
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 14),
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: surface,
                                     borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color: color.withValues(alpha: 0.2),
-                                    ),
+                                    border: Border.all(color: color, width: 2),
                                   ),
                                   child: Row(
                                     children: [
@@ -503,16 +491,14 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                           shape: BoxShape.circle,
                                           color: color.withValues(alpha: 0.15),
                                           border: Border.all(
-                                            color:
-                                                color.withValues(alpha: 0.4),
-                                            width: 1.5,
+                                            color: color,
+                                            width: 2,
                                           ),
                                         ),
                                         child: Center(
                                           child: Text(
                                             mvp['rank'] as String,
-                                            style:
-                                                GoogleFonts.plusJakartaSans(
+                                            style: AppFonts.heading(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w900,
                                               color: color,
@@ -528,8 +514,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                           children: [
                                             Text(
                                               mvp['title'] as String,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w600,
                                                 color: color,
@@ -537,8 +522,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                             ),
                                             Text(
                                               mvp['name'] as String,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w800,
                                                 color: textPrimary,
@@ -546,7 +530,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                             ),
                                             Text(
                                               mvp['desc'] as String,
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 12,
                                                 color: textSecondary,
                                               ),
@@ -567,7 +551,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                         // Group Dynamics
                         Text(
                           'Group Dynamics',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: textPrimary,
@@ -578,7 +562,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
@@ -604,7 +588,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                           Expanded(
                                             child: Text(
                                               dyn['label'] as String,
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 13,
                                                 color: textPrimary,
                                                 fontWeight: FontWeight.w500,
@@ -613,7 +597,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                           ),
                                           Text(
                                             dyn['display'] as String,
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: AppFonts.heading(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w800,
                                               color: dynColor,
@@ -623,19 +607,21 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                                       ),
                                       const SizedBox(height: 8),
                                       ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
+                                        borderRadius: BorderRadius.circular(
+                                          100,
+                                        ),
                                         child: LinearProgressIndicator(
                                           value: dyn['value'] as double,
                                           minHeight: 6,
-                                          backgroundColor:
-                                              dynColor.withValues(alpha: 0.12),
+                                          backgroundColor: dynColor.withValues(
+                                            alpha: 0.12,
+                                          ),
                                           valueColor: AlwaysStoppedAnimation(
-                                              dynColor),
+                                            dynColor,
+                                          ),
                                         ),
                                       ),
-                                      if (!isLast)
-                                        const SizedBox(height: 16),
+                                      if (!isLast) const SizedBox(height: 16),
                                     ],
                                   );
                                 }),
@@ -673,7 +659,7 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
           decoration: BoxDecoration(
@@ -703,14 +689,15 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: isActive
-                            ? const Color(0xFF45DFA4).withValues(alpha: 0.18)
+                            ? const Color(0xFF1FA85C).withValues(alpha: 0.18)
                             : Colors.transparent,
                         boxShadow: isActive
                             ? [
                                 BoxShadow(
-                                  color: const Color(0xFF45DFA4)
-                                      .withValues(alpha: 0.3),
-                                  blurRadius: 14,
+                                  color: const Color(
+                                    0xFF1FA85C,
+                                  ).withValues(alpha: 0.3),
+                                  blurRadius: 0,
                                 ),
                               ]
                             : null,
@@ -719,22 +706,22 @@ class _SquadReputationScreenState extends State<SquadReputationScreen>
                         icons[i],
                         size: 22,
                         color: isActive
-                            ? const Color(0xFF45DFA4)
+                            ? const Color(0xFF1FA85C)
                             : isDark
-                                ? Colors.white.withValues(alpha: 0.4)
-                                : Colors.black.withValues(alpha: 0.3),
+                            ? Colors.white.withValues(alpha: 0.4)
+                            : Colors.black.withValues(alpha: 0.3),
                       ),
                     ),
                     if (labels[i].isNotEmpty)
                       Text(
                         labels[i],
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 10,
                           color: isActive
-                              ? const Color(0xFF45DFA4)
+                              ? const Color(0xFF1FA85C)
                               : isDark
-                                  ? Colors.white.withValues(alpha: 0.4)
-                                  : Colors.black.withValues(alpha: 0.3),
+                              ? Colors.white.withValues(alpha: 0.4)
+                              : Colors.black.withValues(alpha: 0.3),
                           fontWeight: isActive
                               ? FontWeight.w700
                               : FontWeight.normal,

@@ -1,17 +1,20 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../../discovery/presentation/pages/ai_vibe_match_screen.dart';
+import '../../../discovery/presentation/pages/vibe_swipe_deck_screen.dart';
 import '../../../moments/presentation/pages/ghost_cam_screen.dart';
 import '../../../gamification/gamification_screen.dart';
 import '../../../profile/profile_screen.dart';
 import '../../../ai/ai_hub_screen.dart';
 import '../../../premium/premium_hub_screen.dart';
-import '../../../system_states/system_states_hub_screen.dart';
-import '../../../marketing/marketing_hub_screen.dart';
-import '../../../expense_tracker/presentation/pages/expense_splitter_social_screen.dart';
+import '../../../expense_tracker/presentation/pages/trip_balances_screen.dart';
+import '../../../trips/presentation/pick_trip_sheet.dart';
+import '../../../trips/presentation/my_trips_screen.dart';
+import '../../../discovery/presentation/pages/photo_location_screen.dart';
+import '../../../../core/widgets/gen_z_widgets.dart';
 
 class QuickActionsPanel extends StatelessWidget {
   final bool isDarkMode;
@@ -23,81 +26,89 @@ class QuickActionsPanel extends StatelessWidget {
     required this.onThemeToggle,
   });
 
-  // Primary 4 actions shown as large pill grid (Stitch spec)
+  // ── Primary 4 actions (2×2 Spark-style colored cards) ────────────────────────
   static const List<Map<String, dynamic>> _primaryActions = [
-    {
-      'emoji': '💸',
-      'label': 'chia tiền',
-      'type': 'expense',
-      'glowColor': Color(0xFF34D399),
-      'borderColor': Color(0xFF10B981),
-    },
-    {
-      'emoji': '📸',
-      'label': 'ghost cam',
-      'type': 'ghost_cam',
-      'glowColor': Color(0xFF8B5CF6),
-      'borderColor': Color(0xFF7C3AED),
-    },
-    {
-      'emoji': '🎲',
-      'label': 'bingo',
-      'type': 'bingo',
-      'glowColor': Color(0xFFF472B6),
-      'borderColor': Color(0xFFDB2777),
-    },
-    {
-      'emoji': '🗺',
-      'label': 'vibe match',
-      'type': 'vibe_match',
-      'glowColor': Color(0xFF60A5FA),
-      'borderColor': Color(0xFF3B82F6),
-    },
+    {'labelKey': 'dashboard.split_money', 'type': 'expense', 'isPrimary': true},
+    {'labelKey': 'dashboard.ghost_cam', 'type': 'ghost_cam', 'isPrimary': false},
+    {'labelKey': 'dashboard.bingo', 'type': 'bingo', 'isPrimary': false},
+    {'labelKey': 'dashboard.vibe_match', 'type': 'vibe_match', 'isPrimary': true},
   ];
 
-  // Secondary actions shown in compact list row
+  // ── Secondary actions (compact horizontal row) ────────────────────────────────
   static const List<Map<String, dynamic>> _secondaryActions = [
-    {
-      'icon': Icons.person_outline,
-      'label': 'Cá Nhân',
-      'type': 'profile',
-      'color': Color(0xFFEBA83A),
-    },
-    {
-      'icon': Icons.psychology_outlined,
-      'label': 'Matey AI',
-      'type': 'ai_hub',
-      'color': Color(0xFFA855F7),
-    },
-    {
-      'icon': Icons.workspace_premium_outlined,
-      'label': 'Premium',
-      'type': 'premium',
-      'color': Color(0xFFF59E0B),
-    },
-    {
-      'icon': Icons.warning_amber_outlined,
-      'label': 'System',
-      'type': 'system',
-      'color': Color(0xFFEF4444),
-    },
-    {
-      'icon': Icons.campaign_outlined,
-      'label': 'Showcase',
-      'type': 'marketing',
-      'color': Color(0xFF3B82F6),
-    },
+    {'labelKey': 'dashboard.photo_map', 'type': 'photo_loc'},
+    {'labelKey': 'dashboard.trips', 'type': 'trips'},
+    {'labelKey': 'dashboard.profile', 'type': 'profile'},
+    {'labelKey': 'dashboard.matey_ai', 'type': 'ai_hub'},
+    {'labelKey': 'dashboard.premium', 'type': 'premium'},
   ];
 
-  void _handleTap(BuildContext context, String type) {
+  IconData _primaryIcon(String type) {
     switch (type) {
       case 'expense':
+        return PhosphorIcons.wallet();
+      case 'ghost_cam':
+        return PhosphorIcons.camera();
+      case 'bingo':
+        return PhosphorIcons.gameController();
+      default:
+        return PhosphorIcons.heartbeat();
+    }
+  }
+
+  IconData _secondaryIcon(String type) {
+    switch (type) {
+      case 'photo_loc':
+        return PhosphorIcons.mapPin();
+      case 'trips':
+        return PhosphorIcons.airplaneTilt();
+      case 'profile':
+        return PhosphorIcons.user();
+      case 'ai_hub':
+        return PhosphorIcons.robot();
+      default:
+        return PhosphorIcons.crown();
+    }
+  }
+
+  void _handleTap(BuildContext context, String type) {
+    HapticFeedback.mediumImpact();
+    switch (type) {
+      case 'photo_loc':
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const ExpenseSplitterSocialScreen(),
+            builder: (_) => PhotoLocationScreen(isDarkMode: isDarkMode),
           ),
         );
+      case 'trips':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MyTripsScreen(isDarkMode: isDarkMode),
+          ),
+        );
+      case 'expense':
+        // Chia tiền THẬT: chọn chuyến → màn số dư/quyết toán (wired backend).
+        () async {
+          final trip = await PickTripSheet.show(
+            context,
+            isDarkMode,
+            title: 'Chia tiền cho chuyến nào?',
+          );
+          if (trip != null && context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TripBalancesScreen(
+                  tripId: trip.id,
+                  tripName: trip.name,
+                  isDarkMode: isDarkMode,
+                ),
+              ),
+            );
+          }
+        }();
       case 'ghost_cam':
         Navigator.push(
           context,
@@ -117,7 +128,7 @@ class QuickActionsPanel extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => AIVibeMatchScreen(
+            builder: (_) => VibeSwipeDeckScreen(
               isDarkMode: isDarkMode,
               onThemeToggle: onThemeToggle,
             ),
@@ -138,136 +149,111 @@ class QuickActionsPanel extends StatelessWidget {
           context,
           MaterialPageRoute(builder: (_) => const PremiumHubScreen()),
         );
-      case 'system':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SystemStatesHubScreen()),
-        );
-      case 'marketing':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const MarketingHubScreen()),
-        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = isDarkMode;
+    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ── Section header ───────────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             children: [
               Text(
                 'dashboard.quick_actions'.tr(),
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                  color: isDark ? Colors.white : const Color(0xFF1E2022),
+                  fontSize: 18,
+                  letterSpacing: -0.5,
+                  color: ink,
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '⚡ quick',
-                  style: GoogleFonts.inter(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF8B5CF6),
-                  ),
-                ),
+              PillTag(
+                text: 'quick',
+                icon: PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+                color: GenZTokens.yellow,
               ),
             ],
           ),
         ),
         const SizedBox(height: 14),
 
-        // Primary 2x2 Stitch-style pill grid
+        // ── Primary 2×2 Spark-style colored cards ────────────────────────────
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
             childAspectRatio: 1.9,
           ),
           itemCount: _primaryActions.length,
           itemBuilder: (context, index) {
             final action = _primaryActions[index];
-            final glowColor = action['glowColor'] as Color;
-            final borderColor = action['borderColor'] as Color;
+            final type = action['type'] as String;
+            // Mỗi ô một khối màu accent đặc — chữ và viền LUÔN là ink
+            const cardColors = [
+              GenZTokens.yellow,
+              GenZTokens.lilac,
+              GenZTokens.green,
+              GenZTokens.pink,
+            ];
+            final bgColor = cardColors[index % cardColors.length];
 
-            return GestureDetector(
-              onTap: () => _handleTap(context, action['type'] as String),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: isDark
-                            ? [
-                                glowColor.withValues(alpha: 0.12),
-                                glowColor.withValues(alpha: 0.04),
-                              ]
-                            : [
-                                Colors.white.withValues(alpha: 0.9),
-                                glowColor.withValues(alpha: 0.06),
-                              ],
-                      ),
-                      border: Border.all(
-                        color: borderColor.withValues(alpha: isDark ? 0.4 : 0.3),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: glowColor.withValues(alpha: 0.15),
-                          blurRadius: 16,
-                          spreadRadius: 0,
-                          offset: const Offset(0, 4),
+            return PopIn(
+              index: index,
+              child: PressableCard(
+                onTap: () => _handleTap(context, type),
+                color: bgColor,
+                borderColor: ink,
+                shadowColor: ink,
+                radius: GenZTokens.radiusButton,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: GenZTokens.paper,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: GenZTokens.ink,
+                            width: GenZTokens.borderWidthThin,
+                          ),
                         ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      child: Row(
-                        children: [
-                          Text(
-                            action['emoji'] as String,
-                            style: const TextStyle(fontSize: 26),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              action['label'] as String,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
-                                color: isDark ? Colors.white : const Color(0xFF1E2022),
-                                letterSpacing: -0.3,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                        child: Icon(
+                          _primaryIcon(type),
+                          size: 18,
+                          color: GenZTokens.ink,
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          (action['labelKey'] as String).tr(),
+                          style: AppFonts.heading(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: GenZTokens.ink,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -275,48 +261,45 @@ class QuickActionsPanel extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
 
-        // Secondary actions horizontal scrollable row
+        // ── Secondary actions horizontal row ─────────────────────────────────
         SizedBox(
-          height: 56,
+          height: 52,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _secondaryActions.length,
             separatorBuilder: (context, index) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final action = _secondaryActions[index];
-              final color = action['color'] as Color;
+              final type = action['type'] as String;
 
-              return GestureDetector(
-                onTap: () => _handleTap(context, action['type'] as String),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: isDark
-                        ? color.withValues(alpha: 0.1)
-                        : Colors.white.withValues(alpha: 0.8),
-                    border: Border.all(
-                      color: color.withValues(alpha: 0.25),
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(action['icon'] as IconData, size: 16, color: color),
-                      const SizedBox(width: 6),
-                      Text(
-                        action['label'] as String,
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? Colors.white70 : const Color(0xFF1E2022),
-                        ),
+              return PressableCard(
+                onTap: () => _handleTap(context, type),
+                color: paper,
+                borderColor: ink,
+                shadowColor: ink,
+                borderWidth: GenZTokens.borderWidthThin,
+                radius: GenZTokens.radiusPill,
+                depth: 3,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(_secondaryIcon(type), size: 15, color: ink),
+                    const SizedBox(width: 6),
+                    Text(
+                      (action['labelKey'] as String).tr().toUpperCase(),
+                      style: AppFonts.mono(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: ink,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ShareChaosExportScreen extends StatefulWidget {
@@ -29,22 +30,26 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
     {
       'name': 'Tokyo Neon',
       'glowColor': const Color(0xFF00E5FF),
-      'image': 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?w=300&auto=format&fit=crop&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?w=300&auto=format&fit=crop&q=80',
     },
     {
       'name': 'VHS Nostalgia',
       'glowColor': const Color(0xFFFF2E93),
-      'image': 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=300&auto=format&fit=crop&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=300&auto=format&fit=crop&q=80',
     },
     {
       'name': 'Chaos Energy',
       'glowColor': const Color(0xFF68FCBF),
-      'image': 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=300&auto=format&fit=crop&q=80',
+      'image':
+          'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=300&auto=format&fit=crop&q=80',
     },
     {
       'name': 'Cinematic',
-      'glowColor': const Color(0xFF8B5CF6),
-      'image': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=300&auto=format&fit=crop&q=80',
+      'glowColor': const Color(0xFFF5822B),
+      'image':
+          'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=300&auto=format&fit=crop&q=80',
     },
   ];
 
@@ -79,7 +84,9 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Video exported successfully! Added to your gallery 🎞️🚀'),
+          content: Text(
+            'Video exported successfully! Added to your gallery 🎞️🚀',
+          ),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Color(0xFFFF2E93),
         ),
@@ -90,15 +97,23 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
     final neonPink = const Color(0xFFFF2E93);
-    
-    final bgColor = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
 
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.08);
+    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF262019);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+
+    final glassBorder = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.black.withValues(alpha: 0.08);
 
     // Aspect ratio mappings
     double aspect = 9 / 16;
@@ -112,15 +127,7 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
           // 1. Soft atmospheric light gradient
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.topRight,
-                  radius: 1.3,
-                  colors: isDark
-                      ? [const Color(0xFF3F1B68).withValues(alpha: 0.2), Colors.transparent]
-                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.5), Colors.transparent],
-                ),
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
             ),
           ),
 
@@ -129,7 +136,10 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
               children: [
                 // Top Custom App Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -139,7 +149,7 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                       ),
                       Text(
                         'Share Trip',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
                           color: textPrimary,
@@ -147,7 +157,9 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                       ),
                       IconButton(
                         icon: Icon(
-                          isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                          isDark
+                              ? Icons.light_mode_outlined
+                              : Icons.dark_mode_outlined,
                           color: textPrimary,
                         ),
                         onPressed: widget.onThemeToggle,
@@ -166,7 +178,7 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                         // Heading and description
                         Text(
                           '6 idiots. 1 unforgettable Đà Lạt trip.',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             color: textPrimary,
@@ -176,7 +188,10 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                         const SizedBox(height: 4),
                         Text(
                           'Select your favorite aesthetic aspect ratios & presets below:',
-                          style: GoogleFonts.inter(fontSize: 12, color: textSecondary),
+                          style: AppFonts.body(
+                            fontSize: 12,
+                            color: textSecondary,
+                          ),
                         ),
                         const SizedBox(height: 18),
 
@@ -193,13 +208,26 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                   color: Colors.black,
                                   borderRadius: BorderRadius.circular(24),
                                   border: Border.all(
-                                    color: _templates.firstWhere((t) => t['name'] == _selectedTemplate)['glowColor'] as Color,
+                                    color:
+                                        _templates.firstWhere(
+                                              (t) =>
+                                                  t['name'] ==
+                                                  _selectedTemplate,
+                                            )['glowColor']
+                                            as Color,
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: (_templates.firstWhere((t) => t['name'] == _selectedTemplate)['glowColor'] as Color).withValues(alpha: 0.3),
-                                      blurRadius: 15,
+                                      color:
+                                          (_templates.firstWhere(
+                                                    (t) =>
+                                                        t['name'] ==
+                                                        _selectedTemplate,
+                                                  )['glowColor']
+                                                  as Color)
+                                              .withValues(alpha: 0.3),
+                                      blurRadius: 0,
                                     ),
                                   ],
                                 ),
@@ -209,7 +237,12 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                     fit: StackFit.expand,
                                     children: [
                                       Image.network(
-                                        _templates.firstWhere((t) => t['name'] == _selectedTemplate)['image'] as String,
+                                        _templates.firstWhere(
+                                              (t) =>
+                                                  t['name'] ==
+                                                  _selectedTemplate,
+                                            )['image']
+                                            as String,
                                         fit: BoxFit.cover,
                                       ),
                                       // Dark fading gradient Protect Text
@@ -218,7 +251,11 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                           gradient: LinearGradient(
                                             begin: Alignment.topCenter,
                                             end: Alignment.bottomCenter,
-                                            colors: [Colors.black38, Colors.transparent, Colors.black87],
+                                            colors: [
+                                              Colors.black38,
+                                              Colors.transparent,
+                                              Colors.black87,
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -227,7 +264,11 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                         child: CircleAvatar(
                                           radius: 24,
                                           backgroundColor: Colors.white24,
-                                          child: Icon(Icons.play_arrow, color: Colors.white, size: 28),
+                                          child: Icon(
+                                            Icons.play_arrow,
+                                            color: Colors.white,
+                                            size: 28,
+                                          ),
                                         ),
                                       ),
                                       // Pinned description overlays
@@ -236,12 +277,13 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                         left: 12,
                                         right: 12,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
                                               'ĐÀ LẠT VIBES',
-                                              style: GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 color: Colors.white,
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.bold,
@@ -271,16 +313,44 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                         // Aspect Ratio selectors
                         Text(
                           'Aspect Ratio Presets',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: textPrimary),
+                          style: AppFonts.heading(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            _buildRatioBtn(0, Icons.smartphone, '9:16', 'TikTok / Reels', primaryColor, textPrimary, isDark),
+                            _buildRatioBtn(
+                              0,
+                              Icons.smartphone,
+                              '9:16',
+                              'TikTok / Reels',
+                              primaryColor,
+                              textPrimary,
+                              isDark,
+                            ),
                             const SizedBox(width: 10),
-                            _buildRatioBtn(1, Icons.crop_square, '1:1', 'Instagram', primaryColor, textPrimary, isDark),
+                            _buildRatioBtn(
+                              1,
+                              Icons.crop_square,
+                              '1:1',
+                              'Instagram',
+                              primaryColor,
+                              textPrimary,
+                              isDark,
+                            ),
                             const SizedBox(width: 10),
-                            _buildRatioBtn(2, Icons.crop_16_9, '16:9', 'Vlog', primaryColor, textPrimary, isDark),
+                            _buildRatioBtn(
+                              2,
+                              Icons.crop_16_9,
+                              '16:9',
+                              'Vlog',
+                              primaryColor,
+                              textPrimary,
+                              isDark,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 24),
@@ -288,7 +358,11 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                         // Template Selector Grid
                         Text(
                           'Aesthetic Templates',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: textPrimary),
+                          style: AppFonts.heading(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         SizedBox(
@@ -299,24 +373,31 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                             itemCount: _templates.length,
                             itemBuilder: (context, index) {
                               final item = _templates[index];
-                              final isSelected = _selectedTemplate == item['name'];
+                              final isSelected =
+                                  _selectedTemplate == item['name'];
                               final activeColor = item['glowColor'] as Color;
                               return GestureDetector(
-                                onTap: () => setState(() => _selectedTemplate = item['name']),
+                                onTap: () => setState(
+                                  () => _selectedTemplate = item['name'],
+                                ),
                                 child: Container(
                                   width: 90,
                                   margin: const EdgeInsets.only(right: 12),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: isSelected ? activeColor : Colors.transparent,
+                                      color: isSelected
+                                          ? activeColor
+                                          : Colors.transparent,
                                       width: 2,
                                     ),
                                     boxShadow: isSelected
                                         ? [
                                             BoxShadow(
-                                              color: activeColor.withValues(alpha: 0.3),
-                                              blurRadius: 10,
+                                              color: activeColor.withValues(
+                                                alpha: 0.3,
+                                              ),
+                                              blurRadius: 0,
                                             ),
                                           ]
                                         : null,
@@ -326,7 +407,10 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                     child: Stack(
                                       fit: StackFit.expand,
                                       children: [
-                                        Image.network(item['image'] as String, fit: BoxFit.cover),
+                                        Image.network(
+                                          item['image'] as String,
+                                          fit: BoxFit.cover,
+                                        ),
                                         Container(color: Colors.black26),
                                         Positioned(
                                           bottom: 8,
@@ -334,7 +418,7 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                           right: 8,
                                           child: Text(
                                             item['name'] as String,
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: AppFonts.heading(
                                               color: Colors.white,
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
@@ -363,9 +447,23 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                           ),
                           child: Column(
                             children: [
-                              _buildSettingsRow('🤖', 'Matey AI Audio Commentary', _voiceoverEnabled, (v) => setState(() => _voiceoverEnabled = v), textPrimary, textSecondary),
+                              _buildSettingsRow(
+                                '🤖',
+                                'Matey AI Audio Commentary',
+                                _voiceoverEnabled,
+                                (v) => setState(() => _voiceoverEnabled = v),
+                                textPrimary,
+                                textSecondary,
+                              ),
                               const Divider(height: 24),
-                              _buildSettingsRow('🎸', 'Vaporwave Lofi Beats', _bgMusicEnabled, (v) => setState(() => _bgMusicEnabled = v), textPrimary, textSecondary),
+                              _buildSettingsRow(
+                                '🎸',
+                                'Vaporwave Lofi Beats',
+                                _bgMusicEnabled,
+                                (v) => setState(() => _bgMusicEnabled = v),
+                                textPrimary,
+                                textSecondary,
+                              ),
                             ],
                           ),
                         ),
@@ -383,11 +481,25 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(_exportPhase, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: textPrimary)),
+                                Text(
+                                  _exportPhase,
+                                  style: AppFonts.heading(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: textPrimary,
+                                  ),
+                                ),
                                 const SizedBox(height: 8),
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(4),
-                                  child: LinearProgressIndicator(value: _exportProgress, backgroundColor: isDark ? Colors.white10 : Colors.black12, minHeight: 6, color: neonPink),
+                                  child: LinearProgressIndicator(
+                                    value: _exportProgress,
+                                    backgroundColor: isDark
+                                        ? Colors.white10
+                                        : Colors.black12,
+                                    minHeight: 6,
+                                    color: neonPink,
+                                  ),
                                 ),
                               ],
                             ),
@@ -400,13 +512,11 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                               height: 56,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(28),
-                                gradient: LinearGradient(
-                                  colors: [neonPink, const Color(0xFF6D3BD7)],
-                                ),
+                                color: neonPink,
                                 boxShadow: [
                                   BoxShadow(
                                     color: neonPink.withValues(alpha: 0.3),
-                                    blurRadius: 15,
+                                    blurRadius: 0,
                                     offset: const Offset(0, 5),
                                   ),
                                 ],
@@ -415,11 +525,19 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.share, color: Colors.white, size: 20),
+                                    const Icon(
+                                      Icons.share,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
                                     const SizedBox(width: 8),
                                     Text(
                                       'Share to TikTok',
-                                      style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                      style: AppFonts.heading(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -441,11 +559,19 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.video_library, color: textPrimary, size: 20),
+                                    Icon(
+                                      Icons.video_library,
+                                      color: textPrimary,
+                                      size: 20,
+                                    ),
                                     const SizedBox(width: 8),
                                     Text(
                                       'Post to Reels',
-                                      style: GoogleFonts.plusJakartaSans(color: textPrimary, fontWeight: FontWeight.bold, fontSize: 16),
+                                      style: AppFonts.heading(
+                                        color: textPrimary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -466,7 +592,15 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
     );
   }
 
-  Widget _buildRatioBtn(int index, IconData icon, String title, String subtitle, Color activeBg, Color textPrimary, bool isDark) {
+  Widget _buildRatioBtn(
+    int index,
+    IconData icon,
+    String title,
+    String subtitle,
+    Color activeBg,
+    Color textPrimary,
+    bool isDark,
+  ) {
     final isSelected = _selectedRatio == index;
     return Expanded(
       child: GestureDetector(
@@ -474,18 +608,39 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? activeBg : (isDark ? const Color(0xFF171F33) : Colors.white),
+            color: isSelected
+                ? activeBg
+                : (isDark ? const Color(0xFF262019) : Colors.white),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected ? Colors.transparent : (isDark ? Colors.white10 : Colors.black12),
+              color: isSelected
+                  ? Colors.transparent
+                  : (isDark ? Colors.white10 : Colors.black12),
             ),
           ),
           child: Column(
             children: [
-              Icon(icon, color: isSelected ? Colors.white : textPrimary, size: 20),
+              Icon(
+                icon,
+                color: isSelected ? Colors.white : textPrimary,
+                size: 20,
+              ),
               const SizedBox(height: 4),
-              Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: isSelected ? Colors.white : textPrimary)),
-              Text(subtitle, style: GoogleFonts.inter(fontSize: 8, color: isSelected ? Colors.white70 : Colors.grey)),
+              Text(
+                title,
+                style: AppFonts.heading(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? Colors.white : textPrimary,
+                ),
+              ),
+              Text(
+                subtitle,
+                style: AppFonts.body(
+                  fontSize: 8,
+                  color: isSelected ? Colors.white70 : Colors.grey,
+                ),
+              ),
             ],
           ),
         ),
@@ -493,7 +648,14 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
     );
   }
 
-  Widget _buildSettingsRow(String emoji, String title, bool value, ValueChanged<bool> onChanged, Color textPrimary, Color textSecondary) {
+  Widget _buildSettingsRow(
+    String emoji,
+    String title,
+    bool value,
+    ValueChanged<bool> onChanged,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Row(
       children: [
         Text(emoji, style: const TextStyle(fontSize: 22)),
@@ -502,8 +664,18 @@ class _ShareChaosExportScreenState extends State<ShareChaosExportScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold, color: textPrimary)),
-              Text('Live mock content commentary overlay.', style: GoogleFonts.inter(fontSize: 10, color: textSecondary)),
+              Text(
+                title,
+                style: AppFonts.heading(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: textPrimary,
+                ),
+              ),
+              Text(
+                'Live mock content commentary overlay.',
+                style: AppFonts.body(fontSize: 10, color: textSecondary),
+              ),
             ],
           ),
         ),

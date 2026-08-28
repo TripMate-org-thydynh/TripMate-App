@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/api_service.dart';
-import '../../../../core/theme/theme.dart';
+import '../../../../core/widgets/gen_z_widgets.dart';
 import '../../../social/presentation/pages/squad_chat_screen.dart';
 
 class FriendPresencePanel extends StatefulWidget {
@@ -28,34 +30,51 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
     {
       "name": "Nam Trung",
       "status": "ONLINE",
-      "vibe": "☕",
+      "vibe": "coffee",
       "avatarChar": "N",
     },
     {
       "name": "Thảo Ly",
       "status": "ONLINE",
-      "vibe": "📸",
+      "vibe": "camera",
       "avatarChar": "T",
     },
     {
       "name": "Minh Nhật",
       "status": "IN_TRIP",
-      "vibe": "🚶",
+      "vibe": "walk",
       "avatarChar": "M",
     },
-    {
-      "name": "Phú Khang",
-      "status": "IDLE",
-      "vibe": "😴",
-      "avatarChar": "P",
-    },
-    {
-      "name": "Hana",
-      "status": "OFFLINE",
-      "vibe": "🏡",
-      "avatarChar": "H",
-    },
+    {"name": "Phú Khang", "status": "IDLE", "vibe": "sleep", "avatarChar": "P"},
+    {"name": "Hana", "status": "OFFLINE", "vibe": "home", "avatarChar": "H"},
   ];
+
+  static IconData _vibeIcon(String vibe) {
+    switch (vibe) {
+      case "coffee":
+        return PhosphorIconsRegular.coffee;
+      case "camera":
+        return PhosphorIconsRegular.camera;
+      case "walk":
+        return PhosphorIconsRegular.personSimpleWalk;
+      case "sleep":
+        return PhosphorIconsRegular.moon;
+      case "home":
+        return PhosphorIconsRegular.house;
+      case "chill":
+        return PhosphorIconsRegular.leaf;
+      case "fire":
+        return PhosphorIconsRegular.flame;
+      case "food":
+        return PhosphorIconsRegular.forkKnife;
+      case "night":
+        return PhosphorIconsRegular.moon;
+      case "nature":
+        return PhosphorIconsRegular.tree;
+      default:
+        return PhosphorIconsRegular.airplane;
+    }
+  }
 
   @override
   void initState() {
@@ -96,34 +115,35 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
   }
 
   String _vibeFromTags(dynamic vibeTags) {
-    if (vibeTags == null) return '✈️';
+    if (vibeTags == null) return 'plane';
     final tags = vibeTags as List<dynamic>;
-    if (tags.isEmpty) return '✈️';
+    if (tags.isEmpty) return 'plane';
     final tag = tags[0].toString().toLowerCase();
-    if (tag.contains('chill')) return '🌿';
-    if (tag.contains('chaos')) return '🔥';
-    if (tag.contains('photo')) return '📸';
-    if (tag.contains('food')) return '🍜';
-    if (tag.contains('night')) return '🌃';
-    if (tag.contains('nature')) return '🏕';
-    return '✈️';
+    if (tag.contains('chill')) return 'chill';
+    if (tag.contains('chaos')) return 'fire';
+    if (tag.contains('photo')) return 'camera';
+    if (tag.contains('food')) return 'food';
+    if (tag.contains('night')) return 'night';
+    if (tag.contains('nature')) return 'nature';
+    return 'plane';
   }
 
   Color _statusColor(String status, bool isDark) {
     switch (status) {
       case 'ONLINE':
-        return Colors.greenAccent;
+        return GenZTokens.green;
       case 'IN_TRIP':
-        return isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary;
+        return GenZTokens.purple;
       case 'IDLE':
-        return Colors.amberAccent;
+        return GenZTokens.yellow;
       default:
-        return Colors.grey;
+        return GenZTokens.inkSoft;
     }
   }
 
-  int get _activeCount =>
-      _members.where((m) => m['status'] == 'ONLINE' || m['status'] == 'IN_TRIP').length;
+  int get _activeCount => _members
+      .where((m) => m['status'] == 'ONLINE' || m['status'] == 'IN_TRIP')
+      .length;
 
   @override
   Widget build(BuildContext context) {
@@ -139,29 +159,24 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                _tripName.isNotEmpty ? "$_tripName Squad" : "Squad Online Panel",
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              Expanded(
+                child: Text(
+                  _tripName.isNotEmpty
+                      ? 'dashboard.squad_named'.tr(namedArgs: {'name': _tripName})
+                      : 'dashboard.squad_online_panel'.tr(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.heading(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    letterSpacing: -0.5,
+                    color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               if (!_isLoading)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.greenAccent.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    "$_activeCount active",
-                    style: const TextStyle(
-                      color: Colors.greenAccent,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+                PillTag(text: "$_activeCount active", color: GenZTokens.green),
             ],
           ),
         ),
@@ -175,7 +190,9 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        colorScheme.primary,
+                      ),
                     ),
                   ),
                 )
@@ -186,7 +203,10 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                   itemBuilder: (context, index) {
                     final friend = _members[index];
                     final status = friend['status'] as String? ?? 'OFFLINE';
-                    final isActive = status == 'ONLINE' || status == 'IN_TRIP' || status == 'IDLE';
+                    final isActive =
+                        status == 'ONLINE' ||
+                        status == 'IN_TRIP' ||
+                        status == 'IDLE';
                     final statusColor = _statusColor(status, isDark);
 
                     return Padding(
@@ -206,70 +226,77 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                         child: Column(
                           children: [
                             Stack(
+                              clipBehavior: Clip.none,
                               children: [
-                                // Glow active circular avatar frame
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 350),
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
+                                // Avatar nảy nhẹ liên tục, so le theo index
+                                Bobbing(
+                                  amplitude: 3,
+                                  phase: index * 0.9,
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 350),
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
                                       color: isActive
-                                          ? statusColor.withValues(alpha: 0.8)
+                                          ? statusColor
                                           : Colors.transparent,
-                                      width: 2,
+                                      border: Border.all(
+                                        color: isDark
+                                            ? GenZTokens.inkDark
+                                            : GenZTokens.ink,
+                                        width: GenZTokens.borderWidthThin,
+                                      ),
                                     ),
-                                    boxShadow: isActive
-                                        ? [
-                                            BoxShadow(
-                                              color: statusColor.withValues(alpha: 0.3),
-                                              blurRadius: 8,
-                                              spreadRadius: 1,
+                                    child: CircleAvatar(
+                                      radius: 24,
+                                      backgroundImage:
+                                          friend['avatarUrl'] != null
+                                          ? NetworkImage(
+                                              friend['avatarUrl'] as String,
                                             )
-                                          ]
-                                        : null,
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 24,
-                                    backgroundImage: friend['avatarUrl'] != null
-                                        ? NetworkImage(friend['avatarUrl'] as String)
-                                        : null,
-                                    backgroundColor: isDark
-                                        ? TripMateTheme.darkSurface
-                                        : const Color(0xFFE2E8F0),
-                                    child: friend['avatarUrl'] == null
-                                        ? Text(
-                                            friend['avatarChar'] as String,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: colorScheme.primary,
-                                            ),
-                                          )
-                                        : null,
+                                          : null,
+                                      backgroundColor: GenZTokens.lilac,
+                                      child: friend['avatarUrl'] == null
+                                          ? Text(
+                                              friend['avatarChar'] as String,
+                                              style: AppFonts.heading(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w800,
+                                                color: GenZTokens.ink,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
                                   ),
                                 ),
-                                // Vibe emoji badge
+                                // Chấm online pulse cho thành viên đang hoạt động
+                                if (isActive)
+                                  Positioned(
+                                    top: -2,
+                                    left: -2,
+                                    child: PulseDot(
+                                      color: statusColor,
+                                      size: 9,
+                                    ),
+                                  ),
+                                // Vibe icon badge
                                 Positioned(
                                   right: 0,
                                   bottom: 0,
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: isDark
-                                          ? TripMateTheme.darkBackground
-                                          : Colors.white,
+                                      color: GenZTokens.yellow,
                                       shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.2),
-                                          blurRadius: 4,
-                                        )
-                                      ],
+                                      border: Border.all(
+                                        color: GenZTokens.ink,
+                                        width: 1.5,
+                                      ),
                                     ),
-                                    child: Text(
-                                      friend['vibe'] as String,
-                                      style: const TextStyle(fontSize: 10),
+                                    child: Icon(
+                                      _vibeIcon(friend['vibe'] as String),
+                                      size: 10,
+                                      color: GenZTokens.ink,
                                     ),
                                   ),
                                 ),
@@ -278,12 +305,12 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                             const SizedBox(height: 6),
                             Text(
                               friend['name'] as String,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                                 color: isDark
-                                    ? TripMateTheme.darkTextPrimary
-                                    : TripMateTheme.lightTextPrimary,
+                                    ? GenZTokens.inkDark
+                                    : GenZTokens.ink,
                               ),
                             ),
                           ],

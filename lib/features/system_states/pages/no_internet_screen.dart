@@ -1,14 +1,13 @@
 import '../../../core/theme/theme.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class NoInternetScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const NoInternetScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -32,7 +31,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
         SnackBar(
           content: Text(
             '⚡ Đã nối mạng thành công! Squad items đã cập nhật.',
-            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+            style: AppFonts.heading(fontWeight: FontWeight.bold),
           ),
           backgroundColor: TripMateTheme.darkSecondary,
           behavior: SnackBarBehavior.floating,
@@ -47,14 +46,16 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: widget.isDarkMode ? TripMateTheme.darkSurface : Colors.white,
+        backgroundColor: widget.isDarkMode
+            ? TripMateTheme.darkSurface
+            : Colors.white,
         title: Row(
           children: [
             const Text('🦖', style: TextStyle(fontSize: 28)),
             const SizedBox(width: 8),
             Text(
               'Chrome Dino Game',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+              style: AppFonts.heading(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -63,14 +64,15 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
           children: [
             Text(
               'Nhảy qua các bụi xương rồng để ghi điểm trong khi đợi mạng hồi sinh!',
-              style: GoogleFonts.inter(fontSize: 13, height: 1.4),
+              style: AppFonts.body(fontSize: 13, height: 1.4),
             ),
             const SizedBox(height: 24),
             Container(
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: (widget.isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                color: (widget.isDarkMode ? Colors.white : Colors.black)
+                    .withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: widget.isDarkMode ? Colors.white10 : Colors.black12,
@@ -80,7 +82,10 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 child: Text(
                   '🦖   🌵   🌵   🏃‍♂️💨\n\n[ Score: 1,420 ]',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -91,7 +96,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Đóng',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+              style: AppFonts.heading(fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -103,13 +108,27 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
-    final secondaryColor = isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary;
-    final bgColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
-    final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
-    final textPrimary = isDark ? TripMateTheme.darkTextPrimary : TripMateTheme.lightTextPrimary;
-    final textSecondary = isDark ? TripMateTheme.darkTextSecondary : TripMateTheme.lightTextSecondary;
-    final borderCol = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+    final primaryColor = isDark
+        ? TripMateTheme.darkPrimary
+        : TripMateTheme.lightPrimary;
+    final secondaryColor = isDark
+        ? TripMateTheme.darkSecondary
+        : TripMateTheme.lightSecondary;
+    final bgColor = isDark
+        ? TripMateTheme.darkBackground
+        : TripMateTheme.lightBackground;
+    final surfaceColor = isDark
+        ? TripMateTheme.darkSurface
+        : TripMateTheme.lightSurface;
+    final textPrimary = isDark
+        ? TripMateTheme.darkTextPrimary
+        : TripMateTheme.lightTextPrimary;
+    final textSecondary = isDark
+        ? TripMateTheme.darkTextSecondary
+        : TripMateTheme.lightTextSecondary;
+    final borderCol = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.black.withValues(alpha: 0.08);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -127,7 +146,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.red.withValues(alpha: 0.08),
-                    blurRadius: 90,
+                    blurRadius: 0,
                   ),
                 ],
               ),
@@ -137,7 +156,10 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -153,25 +175,34 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                         children: [
                           IconButton(
                             icon: Icon(
-                              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                              isDark
+                                  ? Icons.light_mode_outlined
+                                  : Icons.dark_mode_outlined,
                               color: primaryColor,
                             ),
                             onPressed: widget.onThemeToggle,
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.red.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.wifi_off, color: Colors.redAccent, size: 14),
+                                const Icon(
+                                  Icons.wifi_off,
+                                  color: Colors.redAccent,
+                                  size: 14,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   'NO SIGNAL',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 9,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.redAccent,
@@ -190,7 +221,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                   // Headline block
                   Text(
                     'bro the\ninternet died 😭',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 34,
                       fontWeight: FontWeight.w900,
                       height: 1.1,
@@ -200,7 +231,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                   const SizedBox(height: 10),
                   Text(
                     'wifi left the squad. still emotionally connected though.',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 14,
                       color: textSecondary,
                       height: 1.4,
@@ -225,11 +256,15 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.group_off, color: primaryColor, size: 24),
+                              Icon(
+                                Icons.group_off,
+                                color: primaryColor,
+                                size: 24,
+                              ),
                               const Spacer(),
                               Text(
                                 'Squad Offline Status',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12.5,
                                   color: textPrimary,
@@ -238,14 +273,17 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 'Offline',
-                                style: GoogleFonts.inter(fontSize: 10.5, color: textSecondary),
+                                style: AppFonts.body(
+                                  fontSize: 10.5,
+                                  color: textSecondary,
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
-                      
+
                       // Grid Item 2: Cached Memories Safe
                       Expanded(
                         child: Container(
@@ -259,11 +297,15 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.cloud_done, color: secondaryColor, size: 24),
+                              Icon(
+                                Icons.cloud_done,
+                                color: secondaryColor,
+                                size: 24,
+                              ),
                               const Spacer(),
                               Text(
                                 'Cached Memories Safe',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12.5,
                                   color: textPrimary,
@@ -272,7 +314,10 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 'Saved locally',
-                                style: GoogleFonts.inter(fontSize: 10.5, color: textSecondary),
+                                style: AppFonts.body(
+                                  fontSize: 10.5,
+                                  color: textSecondary,
+                                ),
                               ),
                             ],
                           ),
@@ -300,7 +345,11 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                             color: primaryColor.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.flight_takeoff, color: primaryColor, size: 20),
+                          child: Icon(
+                            Icons.flight_takeoff,
+                            color: primaryColor,
+                            size: 20,
+                          ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -309,7 +358,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                             children: [
                               Text(
                                 'Next Up',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 11,
                                   color: textSecondary,
                                   fontWeight: FontWeight.bold,
@@ -318,7 +367,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 'Tokyo Shibuya Crossing',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.bold,
                                   color: textPrimary,
@@ -342,18 +391,13 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                       height: 56,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999),
-                        gradient: LinearGradient(
-                          colors: [
-                            primaryColor,
-                            primaryColor.withValues(alpha: 0.8),
-                          ],
-                        ),
+                        color: primaryColor,
                         boxShadow: [
                           BoxShadow(
                             color: primaryColor.withValues(alpha: 0.3),
-                            blurRadius: 15,
+                            blurRadius: 0,
                             offset: const Offset(0, 5),
-                          )
+                          ),
                         ],
                       ),
                       child: Center(
@@ -369,11 +413,15 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.refresh, color: Colors.white, size: 18),
+                                  const Icon(
+                                    Icons.refresh,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Reconnect',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
                                       color: Colors.white,
@@ -394,12 +442,16 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                     child: OutlinedButton(
                       onPressed: _playDinoGame,
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: primaryColor.withValues(alpha: 0.35)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                        side: BorderSide(
+                          color: primaryColor.withValues(alpha: 0.35),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
                       ),
                       child: Text(
                         'Play Offline Dino Game',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontWeight: FontWeight.bold,
                           color: primaryColor,
                           fontSize: 14,

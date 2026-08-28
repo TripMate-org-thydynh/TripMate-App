@@ -1,14 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class AiTripSummaryScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const AiTripSummaryScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -23,18 +23,21 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
   final List<Map<String, dynamic>> _recapTemplates = [
     {
       'name': 'Tokyo Neon',
-      'glowColor': const Color(0xFFD0BCFF),
-      'image': 'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?w=400',
+      'glowColor': const Color(0xFFC9B8FF),
+      'image':
+          'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?w=400',
     },
     {
       'name': 'VHS Nostalgia',
       'glowColor': const Color(0xFFFFB783),
-      'image': 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',
+      'image':
+          'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',
     },
     {
       'name': 'Chaos Energy',
-      'glowColor': const Color(0xFF45DFA4),
-      'image': 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=400',
+      'glowColor': const Color(0xFF1FA85C),
+      'image':
+          'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=400',
     },
   ];
 
@@ -42,21 +45,37 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primary = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF6D3BD7);
-    final secondary = isDark ? const Color(0xFF45DFA4) : const Color(0xFF00BD85);
-    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
+    final primary = isDark ? const Color(0xFFC9B8FF) : const Color(0xFF6D3BD7);
+    final secondary = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFF00BD85);
+    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF5822B);
 
-    final bg = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
-    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
+    final bg = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF262019);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
+    final glassBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
 
     double aspect = 9 / 16;
     if (_selectedRatio == 1) aspect = 1 / 1;
 
-    final activeColor = _recapTemplates.firstWhere((t) => t['name'] == _selectedTemplate)['glowColor'] as Color;
-    final activeImage = _recapTemplates.firstWhere((t) => t['name'] == _selectedTemplate)['image'] as String;
+    final activeColor =
+        _recapTemplates.firstWhere(
+              (t) => t['name'] == _selectedTemplate,
+            )['glowColor']
+            as Color;
+    final activeImage =
+        _recapTemplates.firstWhere(
+              (t) => t['name'] == _selectedTemplate,
+            )['image']
+            as String;
 
     return Scaffold(
       backgroundColor: bg,
@@ -65,15 +84,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
           // Background soft aurora glow
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.topLeft,
-                  radius: 1.3,
-                  colors: isDark
-                      ? [const Color(0xFF3F1B68).withValues(alpha: 0.15), Colors.transparent]
-                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.4), Colors.transparent],
-                ),
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
             ),
           ),
 
@@ -82,7 +93,10 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
               children: [
                 // Top Custom App Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -101,11 +115,11 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                       ),
                       ShaderMask(
                         shaderCallback: (bounds) => LinearGradient(
-                          colors: [primary, secondary, tertiary],
+                          colors: [primary, primary],
                         ).createShader(bounds),
                         child: Text(
                           'trip.mate',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1.0,
@@ -118,7 +132,9 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                           if (widget.onThemeToggle != null)
                             IconButton(
                               icon: Icon(
-                                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                isDark
+                                    ? Icons.light_mode_rounded
+                                    : Icons.dark_mode_rounded,
                                 color: textPrimary.withValues(alpha: 0.7),
                               ),
                               onPressed: widget.onThemeToggle,
@@ -131,7 +147,11 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                               color: cardBg,
                               border: Border.all(color: glassBorder),
                             ),
-                            child: Icon(Icons.auto_awesome, color: primary, size: 18),
+                            child: Icon(
+                              Icons.auto_awesome,
+                              color: primary,
+                              size: 18,
+                            ),
                           ),
                         ],
                       ),
@@ -151,19 +171,26 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: primary.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: primary.withValues(alpha: 0.2)),
+                                border: Border.all(color: primary, width: 2),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.auto_awesome, color: primary, size: 12),
+                                  Icon(
+                                    Icons.auto_awesome,
+                                    color: primary,
+                                    size: 12,
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Trip Unlocked',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w800,
                                       color: primary,
@@ -178,7 +205,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         const SizedBox(height: 8),
                         Text(
                           'the chaos has\nbeen archived ✨',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 32,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
@@ -189,7 +216,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         const SizedBox(height: 8),
                         Text(
                           'Tokyo \'24 • 7 days, 4 missed trains, 1 unforgettable odyssey.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: textSecondary,
@@ -208,11 +235,14 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(24),
-                                  border: Border.all(color: activeColor.withValues(alpha: 0.4), width: 2),
+                                  border: Border.all(
+                                    color: activeColor,
+                                    width: 2,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: activeColor.withValues(alpha: 0.2),
-                                      blurRadius: 20,
+                                      blurRadius: 0,
                                     ),
                                   ],
                                 ),
@@ -233,43 +263,75 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                                         left: 16,
                                         right: 16,
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           child: BackdropFilter(
-                                            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                                            filter: ImageFilter.blur(
+                                              sigmaX: 16,
+                                              sigmaY: 16,
+                                            ),
                                             child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 12,
+                                                  ),
                                               decoration: BoxDecoration(
-                                                color: Colors.black.withValues(alpha: 0.5),
-                                                borderRadius: BorderRadius.circular(16),
-                                                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.5,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2,
+                                                ),
                                               ),
                                               child: Row(
                                                 children: [
-                                                  const Icon(Icons.play_circle_filled_rounded, color: Colors.white, size: 36),
+                                                  const Icon(
+                                                    Icons
+                                                        .play_circle_filled_rounded,
+                                                    color: Colors.white,
+                                                    size: 36,
+                                                  ),
                                                   const SizedBox(width: 12),
                                                   Expanded(
                                                     child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Text(
                                                           'Legendary',
-                                                          style: GoogleFonts.plusJakartaSans(
-                                                            color: Colors.white,
-                                                            fontSize: 14,
-                                                            fontWeight: FontWeight.w800,
-                                                          ),
+                                                          style:
+                                                              AppFonts.heading(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w800,
+                                                              ),
                                                         ),
                                                         Text(
                                                           'Click to play AI Cinema cut',
-                                                          style: GoogleFonts.inter(
-                                                            color: Colors.white70,
-                                                            fontSize: 11,
-                                                          ),
+                                                          style:
+                                                              AppFonts.body(
+                                                                color: Colors
+                                                                    .white70,
+                                                                fontSize: 11,
+                                                              ),
                                                         ),
                                                       ],
                                                     ),
                                                   ),
-                                                  Icon(Icons.play_arrow, color: activeColor, size: 20),
+                                                  Icon(
+                                                    Icons.play_arrow,
+                                                    color: activeColor,
+                                                    size: 20,
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -291,7 +353,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                           children: [
                             Text(
                               'Select Aspect Ratio',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: textPrimary,
@@ -315,15 +377,22 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                             itemCount: _recapTemplates.length,
                             itemBuilder: (context, index) {
                               final item = _recapTemplates[index];
-                              final isSelected = _selectedTemplate == item['name'];
+                              final isSelected =
+                                  _selectedTemplate == item['name'];
                               final glow = item['glowColor'] as Color;
                               return GestureDetector(
-                                onTap: () => setState(() => _selectedTemplate = item['name']),
+                                onTap: () => setState(
+                                  () => _selectedTemplate = item['name'],
+                                ),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
                                   margin: const EdgeInsets.only(right: 12),
                                   decoration: BoxDecoration(
-                                    color: isSelected ? glow.withValues(alpha: 0.15) : cardBg,
+                                    color: isSelected
+                                        ? glow.withValues(alpha: 0.15)
+                                        : cardBg,
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
                                       color: isSelected ? glow : glassBorder,
@@ -333,10 +402,12 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                                   child: Center(
                                     child: Text(
                                       item['name'],
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
-                                        color: isSelected ? textPrimary : textSecondary,
+                                        color: isSelected
+                                            ? textPrimary
+                                            : textSecondary,
                                       ),
                                     ),
                                   ),
@@ -350,7 +421,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         // The Vibe Section
                         Text(
                           'The Vibe',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: textPrimary,
@@ -360,11 +431,11 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: cardBg.withValues(alpha: 0.7),
+                                color: cardBg,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(color: glassBorder),
                               ),
@@ -377,16 +448,21 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                                       shape: BoxShape.circle,
                                       color: tertiary.withValues(alpha: 0.15),
                                     ),
-                                    child: Icon(Icons.local_cafe_rounded, color: tertiary, size: 24),
+                                    child: Icon(
+                                      Icons.local_cafe_rounded,
+                                      color: tertiary,
+                                      size: 24,
+                                    ),
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '"survived on caffeine\nand bad decisions"',
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w800,
                                             fontStyle: FontStyle.italic,
@@ -397,7 +473,11 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                                       ],
                                     ),
                                   ),
-                                  Icon(Icons.bolt_rounded, color: secondary, size: 24),
+                                  Icon(
+                                    Icons.bolt_rounded,
+                                    color: secondary,
+                                    size: 24,
+                                  ),
                                 ],
                               ),
                             ),
@@ -408,7 +488,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         // Chaos Stats (Bento Grid)
                         Text(
                           'Chaos Stats',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: textPrimary,
@@ -449,7 +529,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         // The Main Characters
                         Text(
                           'The Main Characters',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: textPrimary,
@@ -484,7 +564,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                         // The Journey Timeline
                         Text(
                           'The Journey',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: textPrimary,
@@ -525,23 +605,27 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                                 height: 56,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(28),
-                                  gradient: LinearGradient(
-                                    colors: [primary, secondary],
-                                  ),
+                                  color: primary,
                                   boxShadow: [
                                     BoxShadow(
                                       color: primary.withValues(alpha: 0.3),
-                                      blurRadius: 12,
+                                      blurRadius: 0,
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
                                 ),
                                 child: ElevatedButton.icon(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.ios_share_rounded, color: Colors.white, size: 20),
+                                  onPressed: () => showGlobalSnack(
+                                    'Tính năng đang được hoàn thiện 🚧',
+                                  ),
+                                  icon: const Icon(
+                                    Icons.ios_share_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
                                   label: Text(
                                     'Share the Glory',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 14,
                                       color: Colors.white,
@@ -550,7 +634,9 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.transparent,
                                     shadowColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(28),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -562,11 +648,17 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                           children: [
                             Expanded(
                               child: OutlinedButton.icon(
-                                onPressed: () {},
-                                icon: Icon(Icons.download_rounded, color: secondary, size: 20),
+                                onPressed: () => showGlobalSnack(
+                                  'Tính năng đang được hoàn thiện 🚧',
+                                ),
+                                icon: Icon(
+                                  Icons.download_rounded,
+                                  color: secondary,
+                                  size: 20,
+                                ),
                                 label: Text(
                                   'Download Scrapbook',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 14,
                                     color: secondary,
@@ -574,9 +666,16 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   minimumSize: const Size.fromHeight(56),
-                                  side: BorderSide(color: secondary.withValues(alpha: 0.5), width: 1.5),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-                                  backgroundColor: secondary.withValues(alpha: 0.05),
+                                  side: BorderSide(
+                                    color: secondary.withValues(alpha: 0.5),
+                                    width: 1.5,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(28),
+                                  ),
+                                  backgroundColor: secondary.withValues(
+                                    alpha: 0.05,
+                                  ),
                                 ),
                               ),
                             ),
@@ -607,7 +706,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
         ),
         child: Text(
           label,
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 12,
             fontWeight: FontWeight.bold,
             color: isSelected ? Colors.black87 : Colors.white70,
@@ -650,7 +749,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                 ),
                 child: Text(
                   'Legendary',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 8,
                     fontWeight: FontWeight.w800,
                     color: iconColor,
@@ -662,7 +761,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
           const Spacer(),
           Text(
             value,
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 28,
               fontWeight: FontWeight.w900,
               color: textPrimary,
@@ -672,7 +771,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
           const SizedBox(height: 4),
           Text(
             label,
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 11,
               fontWeight: FontWeight.w500,
               color: textSecondary,
@@ -722,7 +821,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                   children: [
                     Text(
                       role,
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color: iconColor,
@@ -733,7 +832,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                 ),
                 Text(
                   name,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: textPrimary,
@@ -742,10 +841,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                 const SizedBox(height: 2),
                 Text(
                   description,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: textSecondary,
-                  ),
+                  style: AppFonts.body(fontSize: 11, color: textSecondary),
                 ),
               ],
             ),
@@ -779,7 +875,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: iconBg,
-                  border: Border.all(color: iconColor.withValues(alpha: 0.3)),
+                  border: Border.all(color: iconColor, width: 2),
                 ),
                 child: Icon(icon, color: iconColor, size: 16),
               ),
@@ -799,7 +895,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
               children: [
                 Text(
                   time,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
                     color: iconColor,
@@ -808,7 +904,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                 ),
                 Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
@@ -816,10 +912,7 @@ class _AiTripSummaryScreenState extends State<AiTripSummaryScreen> {
                 ),
                 Text(
                   subtitle,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: textSecondary,
-                  ),
+                  style: AppFonts.body(fontSize: 12, color: textSecondary),
                 ),
                 const SizedBox(height: 20),
               ],

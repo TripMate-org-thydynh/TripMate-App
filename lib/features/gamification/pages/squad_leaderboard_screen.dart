@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/app_messenger.dart';
 class SquadLeaderboardScreen extends StatefulWidget {
   const SquadLeaderboardScreen({super.key});
 
@@ -14,7 +14,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
   final List<String> _tabs = [
     '👑 Chaos Score',
     '😂 Funny Moments',
-    '🛡️ Most Reliable'
+    '🛡️ Most Reliable',
   ];
 
   final Map<int, List<Map<String, dynamic>>> _rankingsData = {
@@ -122,11 +122,21 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     // Define adaptive color palette (TripMate color palette)
-    final Color bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final Color primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final Color surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
-    final Color textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final Color textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final Color bgColor = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final Color primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final Color surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final Color textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final Color textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     final currentList = _rankingsData[_selectedTab] ?? [];
 
@@ -134,23 +144,16 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
       backgroundColor: bgColor,
       body: Container(
         decoration: isDark
-            ? const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF0B1326),
-                    Color(0xFF131B2E),
-                    Color(0xFF060E20),
-                  ],
-                ),
-              )
+            ? const BoxDecoration(color: Color(0xFF1A1712))
             : null,
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -162,13 +165,15 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                         onPressed: () => Navigator.pop(context),
                         icon: Icon(Icons.arrow_back, color: textPrimary),
                         style: IconButton.styleFrom(
-                          backgroundColor: surfaceColor.withValues(alpha: isDark ? 0.3 : 0.8),
+                          backgroundColor: surfaceColor.withValues(
+                            alpha: isDark ? 0.3 : 0.8,
+                          ),
                           shape: const CircleBorder(),
                         ),
                       ),
                       Text(
                         'trip.mate',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontWeight: FontWeight.w800,
                           fontSize: 18,
                           color: primaryColor,
@@ -176,10 +181,17 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.add_reaction_outlined, color: primaryColor),
+                        onPressed: () => showGlobalSnack(
+                          'Tính năng đang được hoàn thiện 🚧',
+                        ),
+                        icon: Icon(
+                          Icons.add_reaction_outlined,
+                          color: primaryColor,
+                        ),
                         style: IconButton.styleFrom(
-                          backgroundColor: surfaceColor.withValues(alpha: isDark ? 0.3 : 0.8),
+                          backgroundColor: surfaceColor.withValues(
+                            alpha: isDark ? 0.3 : 0.8,
+                          ),
                           shape: const CircleBorder(),
                         ),
                       ),
@@ -190,7 +202,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                   // Title
                   Text(
                     'Squad Leaderboard',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: textPrimary,
@@ -218,34 +230,43 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
                             margin: const EdgeInsets.only(right: 12),
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? primaryColor
-                                  : surfaceColor.withValues(alpha: isDark ? 0.4 : 0.7),
+                                  : surfaceColor.withValues(
+                                      alpha: isDark ? 0.4 : 0.7,
+                                    ),
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
                                 color: isSelected
                                     ? primaryColor
                                     : (isDark
-                                        ? Colors.white.withValues(alpha: 0.08)
-                                        : Colors.black.withValues(alpha: 0.08)),
+                                          ? Colors.white.withValues(alpha: 0.08)
+                                          : Colors.black.withValues(
+                                              alpha: 0.08,
+                                            )),
                                 width: 1.5,
                               ),
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: primaryColor.withValues(alpha: 0.4),
-                                        blurRadius: 12,
+                                        color: primaryColor.withValues(
+                                          alpha: 0.4,
+                                        ),
+                                        blurRadius: 0,
                                         offset: const Offset(0, 4),
-                                      )
+                                      ),
                                     ]
                                   : [],
                             ),
                             child: Center(
                               child: Text(
                                 label,
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   color: isSelected
                                       ? Colors.white
                                       : textPrimary,
@@ -320,7 +341,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                   // Remaining Squad Title
                   Text(
                     'The Rest of the Squad',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: textPrimary,
@@ -333,28 +354,37 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: currentList.length > 3 ? currentList.length - 3 : 0,
+                    itemCount: currentList.length > 3
+                        ? currentList.length - 3
+                        : 0,
                     itemBuilder: (context, index) {
                       final actualIndex = index + 3;
                       final player = currentList[actualIndex];
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                         decoration: BoxDecoration(
-                          color: surfaceColor.withValues(alpha: isDark ? 0.5 : 0.8),
+                          color: surfaceColor.withValues(
+                            alpha: isDark ? 0.5 : 0.8,
+                          ),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isDark
                                 ? Colors.white.withValues(alpha: 0.05)
-                                : Colors.black.withValues(alpha: 0.05),
-                            width: 1,
+                                : Colors.black,
+                            width: 2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
-                              blurRadius: 10,
+                              color: Colors.black.withValues(
+                                alpha: isDark ? 0.15 : 0.02,
+                              ),
+                              blurRadius: 0,
                               offset: const Offset(0, 4),
-                            )
+                            ),
                           ],
                         ),
                         child: Row(
@@ -363,13 +393,14 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                               width: 32,
                               height: 32,
                               decoration: BoxDecoration(
-                                color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.06),
+                                color: (isDark ? Colors.white : Colors.black)
+                                    .withValues(alpha: 0.06),
                                 shape: BoxShape.circle,
                               ),
                               child: Center(
                                 child: Text(
                                   '#${actualIndex + 1}',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 14,
                                     color: textPrimary,
@@ -380,8 +411,12 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                             const SizedBox(width: 12),
                             CircleAvatar(
                               radius: 20,
-                              backgroundColor: primaryColor.withValues(alpha: 0.1),
-                              backgroundImage: NetworkImage(player['avatar'] as String),
+                              backgroundColor: primaryColor.withValues(
+                                alpha: 0.1,
+                              ),
+                              backgroundImage: NetworkImage(
+                                player['avatar'] as String,
+                              ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
@@ -390,7 +425,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                                 children: [
                                   Text(
                                     player['name'] as String,
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
                                       color: textPrimary,
@@ -399,7 +434,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                                   const SizedBox(height: 2),
                                   Text(
                                     player['badge'] as String,
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.body(
                                       fontSize: 12,
                                       color: textSecondary,
                                     ),
@@ -409,7 +444,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                             ),
                             Text(
                               '${player['points']}pts',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 15,
                                 color: primaryColor,
@@ -455,9 +490,9 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                 boxShadow: [
                   BoxShadow(
                     color: color.withValues(alpha: 0.4),
-                    blurRadius: 12,
+                    blurRadius: 0,
                     spreadRadius: 1,
-                  )
+                  ),
                 ],
               ),
               child: CircleAvatar(
@@ -470,10 +505,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
             if (rank == 1)
               Positioned(
                 top: -18,
-                child: Text(
-                  emoji,
-                  style: const TextStyle(fontSize: 20),
-                ),
+                child: Text(emoji, style: const TextStyle(fontSize: 20)),
               ),
             // Floating Medal Badge
             Positioned(
@@ -482,20 +514,20 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  color: isDark ? const Color(0xFF262019) : Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.5),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 4,
-                    )
+                      blurRadius: 0,
+                    ),
                   ],
                 ),
-                child: Text(
-                  medal,
-                  style: const TextStyle(fontSize: 14),
-                ),
+                child: Text(medal, style: const TextStyle(fontSize: 14)),
               ),
             ),
           ],
@@ -506,30 +538,29 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
           width: double.infinity,
           height: height,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                surfaceColor.withValues(alpha: isDark ? 0.35 : 0.8),
-                surfaceColor.withValues(alpha: isDark ? 0.1 : 0.4),
-              ],
-            ),
+            color: surfaceColor.withValues(alpha: isDark ? 0.35 : 0.8),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             border: Border(
               top: BorderSide(color: color, width: 4),
               left: BorderSide(color: color.withValues(alpha: 0.2), width: 1.5),
-              right: BorderSide(color: color.withValues(alpha: 0.2), width: 1.5),
+              right: BorderSide(
+                color: color.withValues(alpha: 0.2),
+                width: 1.5,
+              ),
             ),
             boxShadow: [
               BoxShadow(
                 color: color.withValues(alpha: 0.12),
-                blurRadius: 20,
+                blurRadius: 0,
                 offset: const Offset(0, 10),
-              )
+              ),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8.0,
+              vertical: 12.0,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -537,7 +568,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                   player['name'] as String,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontWeight: FontWeight.w800,
                     fontSize: rank == 1 ? 16 : 14,
                     color: textPrimary,
@@ -546,17 +577,20 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                 const SizedBox(height: 4),
                 // Badge Pill
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+                    border: Border.all(color: color, width: 2),
                   ),
                   child: Text(
                     player['badge'] as String,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: rank == 1 ? 10 : 9,
                       fontWeight: FontWeight.w600,
                       color: isDark ? color : color.withValues(alpha: 0.9),
@@ -566,7 +600,7 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
                 const SizedBox(height: 6),
                 Text(
                   '${player['points']}pts',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontWeight: FontWeight.w800,
                     fontSize: rank == 1 ? 15 : 13,
                     color: textPrimary,
@@ -580,4 +614,3 @@ class _SquadLeaderboardScreenState extends State<SquadLeaderboardScreen> {
     );
   }
 }
-

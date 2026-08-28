@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,6 +13,8 @@ import 'share_chaos_export_screen.dart';
 import 'collaborative_scrapbook_editor_screen.dart';
 import 'memory_timeline_screen.dart';
 import 'ai_caption_generator_screen.dart';
+import 'trip_recap_reel_screen.dart';
+import '../../../discovery/presentation/pages/photo_map_screen.dart';
 
 class MemoryWallScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -51,26 +54,27 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    
-    // TripMate color tokens
-    final bgGradStart = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDark ? const Color(0xFF171F33) : const Color(0xFFF3EFE9);
-    final primary = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final textPrimary = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
-    final surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
 
-    final mintColor = const Color(0xFF34D399);
+    // TripMate color tokens
+    final bgGradStart = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+
+    final mintColor = const Color(0xFF1FA85C);
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgGradStart),
         child: SafeArea(
           child: Stack(
             fit: StackFit.expand,
@@ -81,7 +85,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                 children: [
                   // App Bar Header
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -93,21 +100,27 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: surfaceColor.withValues(alpha: 0.8),
+                                  color: surfaceColor,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: textPrimary.withValues(alpha: 0.1),
-                                    width: 1,
+                                    color: textPrimary,
+                                    width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.05),
-                                      blurRadius: 10,
+                                      color: Colors.black.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      blurRadius: 0,
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
                                 ),
-                                child: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 16),
+                                child: Icon(
+                                  Icons.arrow_back_ios_new,
+                                  color: textPrimary,
+                                  size: 16,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -116,7 +129,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               children: [
                                 Text(
                                   'Hà Giang Loop 🏍️',
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.body(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: textPrimary,
@@ -125,7 +138,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                                 ),
                                 Text(
                                   'Oct 14, 2023 • Squad Album',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 11,
                                     color: textSecondary,
                                     fontWeight: FontWeight.w600,
@@ -142,14 +155,14 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: surfaceColor.withValues(alpha: 0.8),
+                              color: surfaceColor,
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: textPrimary.withValues(alpha: 0.1),
-                                  width: 1),
+                              border: Border.all(color: textPrimary, width: 2),
                             ),
                             child: Icon(
-                              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                              isDark
+                                  ? Icons.light_mode_outlined
+                                  : Icons.dark_mode_outlined,
                               color: textPrimary,
                               size: 20,
                             ),
@@ -174,11 +187,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               left: 16,
                               child: _buildPolaroid(
                                 context: context,
-                                imageUrl: 'https://images.unsplash.com/photo-1623091426177-38e21c322d7d?w=600',
+                                imageUrl:
+                                    'https://images.unsplash.com/photo-1623091426177-38e21c322d7d?w=600',
                                 time: '09:42 AM',
                                 caption: 'Climbing Heaven\'s Gate ⛰️',
                                 rotation: -0.04,
-                                badge: _buildStickerBadge("location_on Quan Ba", mintColor),
+                                badge: _buildStickerBadge(
+                                  "location_on Quan Ba",
+                                  mintColor,
+                                ),
                               ),
                             ),
 
@@ -188,7 +205,8 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               right: 16,
                               child: _buildPolaroid(
                                 context: context,
-                                imageUrl: 'https://images.unsplash.com/photo-1596422846543-75c6fc18a52b?w=600',
+                                imageUrl:
+                                    'https://images.unsplash.com/photo-1596422846543-75c6fc18a52b?w=600',
                                 time: '14:20 PM',
                                 caption: 'Chasing the Loop loops 🏍️💨',
                                 rotation: 0.05,
@@ -204,7 +222,8 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               right: 24,
                               child: _buildAIMemoryVibeCard(
                                 context: context,
-                                text: 'That morning climb out of Ha Giang: high adrenaline, numb hands, and absolute silence...',
+                                text:
+                                    'That morning climb out of Ha Giang: high adrenaline, numb hands, and absolute silence...',
                               ),
                             ),
 
@@ -214,7 +233,8 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               left: 16,
                               child: _buildStickyNote(
                                 context: context,
-                                quote: '"I think I lost feeling in my legs but... worth it."',
+                                quote:
+                                    '"I think I lost feeling in my legs but... worth it."',
                                 author: 'Alex',
                                 rotation: -0.06,
                               ),
@@ -226,7 +246,8 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               right: 16,
                               child: _buildPolaroid(
                                 context: context,
-                                imageUrl: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=600',
+                                imageUrl:
+                                    'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=600',
                                 time: '22:43 PM',
                                 caption: 'Under local starry skies ✨🏕️',
                                 rotation: 0.03,
@@ -264,20 +285,20 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: surfaceColor.withValues(alpha: 0.8),
+                          color: surfaceColor,
                           borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: textPrimary.withValues(alpha: 0.1),
-                            width: 1,
-                          ),
+                          border: Border.all(color: textPrimary, width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 16,
+                              blurRadius: 0,
                             ),
                           ],
                         ),
@@ -299,20 +320,27 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                             GestureDetector(
                               onTap: () => _showHubMenu(context),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: primary.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: primary.withValues(alpha: 0.3)),
+                                  border: Border.all(color: primary, width: 2),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.auto_awesome_mosaic_outlined, color: primary, size: 12),
+                                    Icon(
+                                      Icons.auto_awesome_mosaic_outlined,
+                                      color: primary,
+                                      size: 12,
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       "Hub Hub 🔮",
-                                      style: GoogleFonts.outfit(
+                                      style: AppFonts.body(
                                         color: primary,
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold,
@@ -321,7 +349,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                                   ],
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -341,15 +369,13 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     return GestureDetector(
       onTap: () {
         final double width = MediaQuery.of(context).size.width;
-        final double randomX = (width * 0.1) + (Random().nextDouble() * (width * 0.7));
+        final double randomX =
+            (width * 0.1) + (Random().nextDouble() * (width * 0.7));
         _addFloatingEmoji(emoji, randomX);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(
-          emoji,
-          style: const TextStyle(fontSize: 20),
-        ),
+        child: Text(emoji, style: const TextStyle(fontSize: 20)),
       ),
     );
   }
@@ -366,11 +392,11 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 6,
+              blurRadius: 0,
               offset: const Offset(2, 4),
             ),
           ],
-          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+          border: Border.all(color: color, width: 2),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -379,7 +405,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
             const SizedBox(width: 2),
             Text(
               label.replaceAll("location_on ", ""),
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 color: Colors.black87,
                 fontSize: 9,
                 fontWeight: FontWeight.bold,
@@ -403,8 +429,12 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     String? videoDuration,
   }) {
     final isDark = widget.isDarkMode;
-    final frameColor = isDark ? const Color(0xFF1E293B) : Colors.white;
-    final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
+    final frameColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final textColor = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
 
     return Transform.rotate(
       angle: rotation,
@@ -417,11 +447,14 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
             decoration: BoxDecoration(
               color: frameColor,
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4), width: 1),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.15),
-                  blurRadius: 10,
+                  blurRadius: 0,
                   offset: const Offset(0, 6),
                 ),
               ],
@@ -445,14 +478,9 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                             height: 156,
                             width: 156,
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-                                  isDark ? const Color(0xFF0F172A) : const Color(0xFFCBD5E1),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                              color: isDark
+                                  ? const Color(0xFF262019)
+                                  : const Color(0xFFE2E8F0),
                             ),
                             child: Center(
                               child: Column(
@@ -460,14 +488,18 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                                 children: [
                                   Icon(
                                     Icons.image_not_supported_outlined,
-                                    color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                                    color: isDark
+                                        ? const Color(0xFF64748B)
+                                        : const Color(0xFFB8AE9C),
                                     size: 28,
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
                                     "general.load_image_failed".tr(),
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+                                    style: AppFonts.heading(
+                                      color: isDark
+                                          ? const Color(0xFF64748B)
+                                          : const Color(0xFFB8AE9C),
                                       fontSize: 9,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -484,8 +516,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                             width: 156,
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF1E293B).withValues(alpha: 0.5)
-                                  : const Color(0xFFF1F5F9),
+                                  ? const Color(
+                                      0xFF262019,
+                                    ).withValues(alpha: 0.5)
+                                  : const Color(0xFFFDF6D3),
                             ),
                             child: Center(
                               child: SizedBox(
@@ -493,12 +527,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                                 height: 24,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  value: loadingProgress.expectedTotalBytes != null
+                                  value:
+                                      loadingProgress.expectedTotalBytes != null
                                       ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
+                                            loadingProgress.expectedTotalBytes!
                                       : null,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C),
+                                    isDark
+                                        ? const Color(0xFFF5822B)
+                                        : const Color(0xFFF5822B),
                                   ),
                                 ),
                               ),
@@ -519,7 +556,11 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                                 color: Colors.black.withValues(alpha: 0.65),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 24),
+                              child: const Icon(
+                                Icons.play_circle_fill_rounded,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                             ),
                           ),
                         ),
@@ -529,9 +570,14 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         top: 6,
                         right: 6,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEF4444).withValues(alpha: 0.85),
+                            color: const Color(
+                              0xFFD8422B,
+                            ).withValues(alpha: 0.85),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
@@ -564,7 +610,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                       bottom: 6,
                       left: 6,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(4),
@@ -600,12 +649,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
             ),
           ),
           // Sticker badge positioned on top
-          if (badge != null)
-            Positioned(
-              top: -8,
-              right: -8,
-              child: badge,
-            ),
+          if (badge != null) Positioned(top: -8, right: -8, child: badge),
         ],
       ),
     );
@@ -617,24 +661,16 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     required String text,
   }) {
     final isDark = widget.isDarkMode;
-    final primary = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondary = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
+    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [
-            primary.withValues(alpha: 0.5),
-            secondary.withValues(alpha: 0.5),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: primary.withValues(alpha: 0.5),
         boxShadow: [
           BoxShadow(
             color: primary.withValues(alpha: isDark ? 0.25 : 0.1),
-            blurRadius: 16,
+            blurRadius: 0,
             spreadRadius: 1,
           ),
         ],
@@ -643,11 +679,13 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(19),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: (isDark ? const Color(0xFF171F33) : Colors.white).withValues(alpha: 0.8),
+              color: (isDark
+                  ? const Color(0xFF262019)
+                  : const Color(0xFFFFFDF5)),
               borderRadius: BorderRadius.circular(19),
             ),
             child: Column(
@@ -659,7 +697,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                     const SizedBox(width: 6),
                     Text(
                       "AI Memory Vibe",
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.body(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: primary,
@@ -671,8 +709,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                 const SizedBox(height: 10),
                 Text(
                   text,
-                  style: GoogleFonts.plusJakartaSans(
-                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022),
+                  style: AppFonts.heading(
+                    color: isDark
+                        ? const Color(0xFFFDF6D3)
+                        : const Color(0xFF141210),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     height: 1.4,
@@ -695,7 +735,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
   }) {
     final isDark = widget.isDarkMode;
     const yellowPaperColor = Color(0xFFF4E4BC);
-    
+
     return Transform.rotate(
       angle: rotation,
       child: Container(
@@ -707,7 +747,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.12),
-              blurRadius: 10,
+              blurRadius: 0,
               offset: const Offset(4, 6),
             ),
           ],
@@ -769,20 +809,26 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     required double progressPercent,
   }) {
     final isDark = widget.isDarkMode;
-    final textPrimary = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
-    final surfaceColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: surfaceColor.withValues(alpha: 0.85),
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: textPrimary.withValues(alpha: 0.08)),
+        border: Border.all(color: textPrimary, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
-            blurRadius: 16,
+            blurRadius: 0,
           ),
         ],
       ),
@@ -791,11 +837,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.route_outlined, color: Color(0xFFFB923C), size: 16),
+              const Icon(
+                Icons.route_outlined,
+                color: Color(0xFFFB923C),
+                size: 16,
+              ),
               const SizedBox(width: 6),
               Text(
                 "Route Progress",
-                style: GoogleFonts.outfit(
+                style: AppFonts.body(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: textPrimary,
@@ -842,10 +892,14 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                       width: 10,
                       height: 10,
                       decoration: const BoxDecoration(
-                        color: Color(0xFF34D399),
+                        color: Color(0xFF1FA85C),
                         shape: BoxShape.circle,
                         boxShadow: [
-                          BoxShadow(color: Color(0xFF34D399), blurRadius: 8, spreadRadius: 1),
+                          BoxShadow(
+                            color: Color(0xFF1FA85C),
+                            blurRadius: 0,
+                            spreadRadius: 1,
+                          ),
                         ],
                       ),
                     ),
@@ -861,7 +915,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
             children: [
               Text(
                 progressText,
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   color: textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -869,8 +923,8 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
               ),
               Text(
                 "${(progressPercent * 100).toInt()}% Done",
-                style: GoogleFonts.outfit(
-                  color: const Color(0xFF34D399),
+                style: AppFonts.body(
+                  color: const Color(0xFF1FA85C),
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                 ),
@@ -891,9 +945,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                 widthFactor: progressPercent,
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF8B5CF6), Color(0xFF34D399)],
-                    ),
+                    color: Color(0xFFF5822B),
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -908,9 +960,13 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
   // Frosted bottom sheet Hub menu
   void _showHubMenu(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final surface = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
 
     showModalBottomSheet(
       context: context,
@@ -924,12 +980,13 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
             topRight: Radius.circular(32),
           ),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
             child: Container(
               color: surface.withValues(alpha: 0.9),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20).copyWith(
-                bottom: 24 + MediaQuery.of(context).padding.bottom,
-              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 20,
+              ).copyWith(bottom: 24 + MediaQuery.of(context).padding.bottom),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -946,12 +1003,88 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    'Memory Wall Hub 🔮',
-                    style: GoogleFonts.outfit(
+                    'Memory Wall Hub',
+                    style: AppFonts.body(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: textPrimary,
                       letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // ── Trip Wrapped hero banner ────────────────────────────────
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) =>
+                              TripRecapReelScreen(isDarkMode: isDark),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Color(0xFF8B4DE8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(
+                              0xFFF5822B,
+                            ).withValues(alpha: 0.3),
+                            blurRadius: 0,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Trip Wrapped',
+                                  style: AppFonts.heading(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    letterSpacing: -0.3,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Xem & chia sẻ tổng kết chuyến đi',
+                                  style: AppFonts.body(
+                                    fontSize: 12.5,
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -971,7 +1104,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: const Color(0xFF00F5FF),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => SharedAlbumScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => SharedAlbumScreen(
+                                isDarkMode: isDark,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
                         },
                       ),
                       _buildFeatureTile(
@@ -982,7 +1123,16 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: const Color(0xFFFF2E93),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => CollaborativeScrapbookEditorScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) =>
+                                  CollaborativeScrapbookEditorScreen(
+                                    isDarkMode: isDark,
+                                    onThemeToggle: widget.onThemeToggle,
+                                  ),
+                            ),
+                          );
                         },
                       ),
                       _buildFeatureTile(
@@ -993,7 +1143,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: const Color(0xFFFFB300),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => AICaptionGeneratorScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => AICaptionGeneratorScreen(
+                                isDarkMode: isDark,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
                         },
                       ),
                       _buildFeatureTile(
@@ -1004,7 +1162,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: Colors.lightGreenAccent,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => ShareChaosExportScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => ShareChaosExportScreen(
+                                isDarkMode: isDark,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
                         },
                       ),
                       _buildFeatureTile(
@@ -1015,7 +1181,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: primaryColor,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => MemoryTimelineScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => MemoryTimelineScreen(
+                                isDarkMode: isDark,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
                         },
                       ),
                       _buildFeatureTile(
@@ -1026,7 +1200,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: Colors.redAccent,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => FavoriteMemoriesScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => FavoriteMemoriesScreen(
+                                isDarkMode: isDark,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
                         },
                       ),
                       _buildFeatureTile(
@@ -1037,7 +1219,15 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: Colors.blueAccent,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => MemoryArchiveScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => MemoryArchiveScreen(
+                                isDarkMode: isDark,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
                         },
                       ),
                       _buildFeatureTile(
@@ -1048,7 +1238,34 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         color: Colors.tealAccent,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(builder: (c) => AIMemorySortingScreen(isDarkMode: isDark, onThemeToggle: widget.onThemeToggle)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => AIMemorySortingScreen(
+                                isDarkMode: isDark,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildFeatureTile(
+                        context,
+                        icon: Icons.map_outlined,
+                        title: 'Photo Map',
+                        desc: 'Moments on map',
+                        color: Colors.orangeAccent,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => PhotoMapScreen(
+                                tripId: 'hagiang-loop-123',
+                                isDarkMode: isDark,
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -1072,23 +1289,24 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     required VoidCallback onTap,
   }) {
     final isDark = widget.isDarkMode;
-    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: cardBg.withValues(alpha: 0.75),
+          color: cardBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withValues(alpha: 0.15)),
+          border: Border.all(color: color, width: 2),
           boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.02),
-              blurRadius: 10,
-            ),
+            BoxShadow(color: color.withValues(alpha: 0.02), blurRadius: 0),
           ],
         ),
         child: Row(
@@ -1106,13 +1324,20 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: textPrimary),
+                    style: AppFonts.body(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: textPrimary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     desc,
-                    style: GoogleFonts.plusJakartaSans(fontSize: 8, color: textSecondary),
+                    style: AppFonts.heading(
+                      fontSize: 8,
+                      color: textSecondary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -1143,7 +1368,8 @@ class FloatingEmojiWidget extends StatefulWidget {
   State<FloatingEmojiWidget> createState() => _FloatingEmojiWidgetState();
 }
 
-class _FloatingEmojiWidgetState extends State<FloatingEmojiWidget> with SingleTickerProviderStateMixin {
+class _FloatingEmojiWidgetState extends State<FloatingEmojiWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _yAnimation;
   late Animation<double> _opacityAnimation;
@@ -1157,20 +1383,22 @@ class _FloatingEmojiWidgetState extends State<FloatingEmojiWidget> with SingleTi
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     );
-    
-    _yAnimation = Tween<double>(begin: 0.0, end: -300.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
-    
+
+    _yAnimation = Tween<double>(
+      begin: 0.0,
+      end: -300.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
     _opacityAnimation = TweenSequence<double>([
       TweenSequenceItem(tween: Tween<double>(begin: 0.0, end: 1.0), weight: 15),
       TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 1.0), weight: 50),
       TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.0), weight: 35),
     ]).animate(_controller);
 
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.5).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.5,
+      end: 1.5,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
     // Random slight swaying values
     _swayOffset = (DateTime.now().millisecond % 50) - 25;
@@ -1197,10 +1425,7 @@ class _FloatingEmojiWidgetState extends State<FloatingEmojiWidget> with SingleTi
             opacity: _opacityAnimation.value,
             child: Transform.scale(
               scale: _scaleAnimation.value,
-              child: Text(
-                widget.emoji,
-                style: const TextStyle(fontSize: 32),
-              ),
+              child: Text(widget.emoji, style: const TextStyle(fontSize: 32)),
             ),
           ),
         );

@@ -6,14 +6,16 @@ class WeeklyChallengesScreen extends StatelessWidget {
   final List<Map<String, dynamic>> _challenges = const [
     {
       'title': 'Kẻ Bắn Tỉa Ghost Cam 📸',
-      'desc': 'Săn 3 bức hình dìm hàng của đồng đội bằng Ghost Cam trong các khoảnh khắc bất ngờ.',
+      'desc':
+          'Săn 3 bức hình dìm hàng của đồng đội bằng Ghost Cam trong các khoảnh khắc bất ngờ.',
       'progress': 1,
       'target': 3,
       'reward': '+400 XP',
     },
     {
       'title': 'Vua Tiết Kiệm Chi Tiêu 💸',
-      'desc': 'Tổng chi tiêu của cưng trong tuần này duy trì dưới hạn mức cảnh báo 80%.',
+      'desc':
+          'Tổng chi tiêu của cưng trong tuần này duy trì dưới hạn mức cảnh báo 80%.',
       'progress': 75,
       'target': 80,
       'reward': '+300 XP',
@@ -27,15 +29,23 @@ class WeeklyChallengesScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Thử Thách Tuần 📆', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Thử Thách Tuần 📆',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -52,9 +62,11 @@ class WeeklyChallengesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Mỗi tuần một loạt thử thách mới thách thức kỹ năng gắn kết du lịch của nhóm bạn!',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -73,8 +85,10 @@ class WeeklyChallengesScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
@@ -105,7 +119,9 @@ class WeeklyChallengesScreen extends StatelessWidget {
                           Text(
                             item['desc'] as String,
                             style: TextStyle(
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                              color: isDark
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
                               fontSize: 12,
                             ),
                           ),
@@ -117,8 +133,13 @@ class WeeklyChallengesScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(4),
                                   child: LinearProgressIndicator(
                                     value: progressValue,
-                                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
+                                    backgroundColor: isDark
+                                        ? Colors.grey[800]
+                                        : Colors.grey[200],
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                          Colors.purpleAccent,
+                                        ),
                                     minHeight: 8,
                                   ),
                                 ),

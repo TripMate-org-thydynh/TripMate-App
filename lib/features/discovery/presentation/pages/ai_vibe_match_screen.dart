@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,14 +20,14 @@ class AIVibeMatchScreen extends StatefulWidget {
   State<AIVibeMatchScreen> createState() => _AIVibeMatchScreenState();
 }
 
-class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProviderStateMixin {
+class _AIVibeMatchScreenState extends State<AIVibeMatchScreen>
+    with TickerProviderStateMixin {
   bool _isLoading = true;
   String _statusMessage = 'Nam Trung is typing... 💬';
-  
+
   late AnimationController _radialController;
-  late AnimationController _meshController;
-  late AnimationController _bobController;
-  late AnimationController _particleController;
+  // Single loop controller replaces mesh + bob + particle controllers
+  late AnimationController _loopController;
 
   final List<String> _typingSteps = [
     'Minh Nhật is mapping coordinates... 🗺️',
@@ -51,19 +52,10 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
       duration: const Duration(milliseconds: 2500),
     );
 
-    _meshController = AnimationController(
+    // Unified loop: 30s cycle; all perpetual animations derive from this
+    _loopController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 15),
-    )..repeat(reverse: true);
-
-    _bobController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-
-    _particleController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 30),
     )..repeat();
 
     // Generate background particles
@@ -108,7 +100,9 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
   void _startReactionEmitter() {
     final random = math.Random();
     final emojis = ['🔥', '❤️', '😂', '✨', '👍', '👀'];
-    _reactionTimer = Timer.periodic(const Duration(milliseconds: 1400), (timer) {
+    _reactionTimer = Timer.periodic(const Duration(milliseconds: 1400), (
+      timer,
+    ) {
       if (!mounted) {
         timer.cancel();
         return;
@@ -118,14 +112,20 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
           _activeReactions.add(
             FloatingReactionEmoji(
               emoji: emojis[random.nextInt(emojis.length)],
-              xOffset: (random.nextDouble() - 0.5) * 60, // random start horizontal jitter
-              controller: AnimationController(
-                vsync: this,
-                duration: const Duration(milliseconds: 2500),
-              )..forward().then((_) {
-                  // clean up when done
-                  _activeReactions.removeWhere((r) => r.emoji == emojis[random.nextInt(emojis.length)]);
-                }),
+              xOffset:
+                  (random.nextDouble() - 0.5) *
+                  60, // random start horizontal jitter
+              controller:
+                  AnimationController(
+                      vsync: this,
+                      duration: const Duration(milliseconds: 2500),
+                    )
+                    ..forward().then((_) {
+                      // clean up when done
+                      _activeReactions.removeWhere(
+                        (r) => r.emoji == emojis[random.nextInt(emojis.length)],
+                      );
+                    }),
             ),
           );
         });
@@ -136,9 +136,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
   @override
   void dispose() {
     _radialController.dispose();
-    _meshController.dispose();
-    _bobController.dispose();
-    _particleController.dispose();
+    _loopController.dispose();
     _reactionTimer?.cancel();
     for (var reaction in _activeReactions) {
       reaction.controller.dispose();
@@ -160,7 +158,9 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
             SnackBar(
               content: const Text("Successfully added to Itinerary! 🎉"),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: widget.isDarkMode ? const Color(0xFF34D399) : Colors.green,
+              backgroundColor: widget.isDarkMode
+                  ? const Color(0xFF1FA85C)
+                  : Colors.green,
             ),
           );
         },
@@ -171,20 +171,33 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6),
+      backgroundColor: isDark
+          ? const Color(0xFF1A1712)
+          : const Color(0xFFFDF6D3),
       body: Stack(
         children: [
           // 1. Mesh Breathing Ambient Background
           Positioned.fill(
             child: AnimatedBuilder(
-              animation: _meshController,
+              animation: _loopController,
               builder: (context, child) {
+                // Derives 15s reverse-repeat from 30s loop: 0→1→0
+                final meshProgress = _loopController.value < 0.5
+                    ? _loopController.value * 2
+                    : 2 - _loopController.value * 2;
                 return CustomPaint(
-                  painter: MatchMeshPainter(progress: _meshController.value, isDarkMode: isDark),
+                  painter: MatchMeshPainter(
+                    progress: meshProgress,
+                    isDarkMode: isDark,
+                  ),
                 );
               },
             ),
@@ -193,12 +206,14 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
           // 2. Floating Particle Backdrop
           Positioned.fill(
             child: AnimatedBuilder(
-              animation: _particleController,
+              animation: _loopController,
               builder: (context, child) {
+                // Derives 10s repeat from 30s loop: 3 cycles
+                final particleProgress = (_loopController.value * 3) % 1.0;
                 return CustomPaint(
                   painter: MatchParticlePainter(
                     particles: _particles,
-                    progress: _particleController.value,
+                    progress: particleProgress,
                   ),
                 );
               },
@@ -210,7 +225,10 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
               children: [
                 // Top Custom Navigation Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 12.0,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -219,10 +237,14 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                         height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? Colors.black26.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.7),
+                          color: isDark
+                              ? Colors.black26.withValues(alpha: 0.3)
+                              : Colors.white.withValues(alpha: 0.7),
                           border: Border.all(
-                            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
-                            width: 1.2,
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : Colors.black,
+                            width: 2,
                           ),
                         ),
                         child: Center(
@@ -238,7 +260,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                       ),
                       Text(
                         'trip.mate',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontWeight: FontWeight.w800,
                           fontSize: 20,
                           letterSpacing: -0.8,
@@ -258,7 +280,11 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                     switchOutCurve: Curves.easeInOutCubic,
                     child: _isLoading
                         ? _buildTypingView(primaryColor, secondaryColor, isDark)
-                        : _buildResultsView(primaryColor, secondaryColor, isDark),
+                        : _buildResultsView(
+                            primaryColor,
+                            secondaryColor,
+                            isDark,
+                          ),
                   ),
                 ),
               ],
@@ -270,7 +296,11 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
   }
 
   // Visual Mock Loading View
-  Widget _buildTypingView(Color primaryColor, Color secondaryColor, bool isDark) {
+  Widget _buildTypingView(
+    Color primaryColor,
+    Color secondaryColor,
+    bool isDark,
+  ) {
     return Center(
       key: const ValueKey('typing_view'),
       child: Column(
@@ -281,17 +311,14 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
             children: [
               // Rotating breathing circular loader rings
               AnimatedBuilder(
-                animation: _particleController,
+                animation: _loopController,
                 builder: (context, child) {
                   return Container(
                     width: 150,
                     height: 150,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: primaryColor.withValues(alpha: 0.12),
-                        width: 12,
-                      ),
+                      border: Border.all(color: primaryColor, width: 2),
                     ),
                   );
                 },
@@ -301,7 +328,9 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                 height: 120,
                 child: CircularProgressIndicator(
                   strokeWidth: 3.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFB783)), // Warm light indicator
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color(0xFFFFB783),
+                  ), // Warm light indicator
                 ),
               ),
               Container(
@@ -314,7 +343,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFFFFB783).withValues(alpha: 0.2),
-                      blurRadius: 15,
+                      blurRadius: 0,
                     ),
                   ],
                 ),
@@ -332,12 +361,12 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
             decoration: BoxDecoration(
               color: Colors.black26.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+              border: Border.all(color: Colors.white, width: 2),
             ),
             child: Text(
               _statusMessage,
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -353,16 +382,15 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                 height: 14,
                 child: CircularProgressIndicator(
                   strokeWidth: 1.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.4)),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.white.withValues(alpha: 0.4),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 'matching chemistry tags...',
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: Colors.white38,
-                ),
+                style: AppFonts.body(fontSize: 13, color: Colors.white38),
               ),
             ],
           ),
@@ -372,7 +400,11 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
   }
 
   // Fullscreen Cinematic Results View
-  Widget _buildResultsView(Color primaryColor, Color secondaryColor, bool isDark) {
+  Widget _buildResultsView(
+    Color primaryColor,
+    Color secondaryColor,
+    bool isDark,
+  ) {
     return Padding(
       key: const ValueKey('results_view'),
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
@@ -393,7 +425,8 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                           child: Image.network(
                             'https://lh3.googleusercontent.com/aida-public/AB6AXuB0YoMZ3ZBgI30lTMzDsoy25uXUOOcS8hp7Jh_gH5V8y_cMOjGQq8ikDCMXL2xlZA-Kw8wl9-jMX8KpWwdCaAfVU_1Ubxi_Icfu-MG4p9IWr9VDrh35IWf1A1pJhspj7DTvyoa6Tf5cd2z2WrNltqZkjUH4IrE_hA2lTzEeHMB9AbJtHYA2HzkcmrECmO6ay_6QRfqwlAHbtSZq1ZxdMfeq8UvQBKSGMNAZw0LXrtAbgpCYxirDwCM0zqRYry8cj9XaT4xWEsKNTqhW',
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(color: Colors.black87),
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(color: Colors.black87),
                           ),
                         ),
                         // Cinematic Dark overlay gradient
@@ -405,7 +438,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                                   Colors.transparent,
                                   Colors.black45,
                                   Colors.black87,
-                                  Color(0xFF0B1326),
+                                  Color(0xFF1A1712),
                                 ],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
@@ -439,7 +472,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                               boxShadow: [
                                 BoxShadow(
                                   color: secondaryColor.withValues(alpha: 0.08),
-                                  blurRadius: 20,
+                                  blurRadius: 0,
                                 ),
                               ],
                             ),
@@ -458,22 +491,24 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                             children: [
                               Text(
                                 '87%',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 32,
                                   fontWeight: FontWeight.w900,
                                   color: secondaryColor,
                                   letterSpacing: -1,
                                   shadows: [
                                     Shadow(
-                                      color: secondaryColor.withValues(alpha: 0.8),
-                                      blurRadius: 16,
+                                      color: secondaryColor.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                      blurRadius: 0,
                                     ),
                                   ],
                                 ),
                               ),
                               Text(
                                 'SQUAD MATCH',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 1.0,
@@ -513,10 +548,17 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.black38.withValues(alpha: 0.5),
-                                border: Border.all(color: Colors.white24, width: 1.0),
+                                border: Border.all(
+                                  color: Colors.white24,
+                                  width: 1.0,
+                                ),
                               ),
                               child: const Center(
-                                child: Icon(Icons.add, color: Colors.white54, size: 14),
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white54,
+                                  size: 14,
+                                ),
                               ),
                             ),
                           ),
@@ -530,10 +572,13 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                 Positioned(
                   top: 195,
                   child: AnimatedBuilder(
-                    animation: _bobController,
+                    animation: _loopController,
                     builder: (context, child) {
-                      final bobValue1 = math.sin(_bobController.value * math.pi * 2) * 6;
-                      final bobValue2 = math.cos((_bobController.value * math.pi * 2) + 1) * 5;
+                      // Derives 3s bob cycle: 10 cycles per 30s loop
+                      final bobPhase =
+                          (_loopController.value * 10 % 1.0) * math.pi * 2;
+                      final bobValue1 = math.sin(bobPhase) * 6;
+                      final bobValue2 = math.cos(bobPhase + 1) * 5;
 
                       return Column(
                         mainAxisSize: MainAxisSize.min,
@@ -564,11 +609,15 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                       // Address Header
                       Row(
                         children: [
-                          const Icon(Icons.location_on, color: Colors.red, size: 16),
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.red,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Old Town, Hội An',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.body(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: Colors.white70,
@@ -579,16 +628,13 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                       const SizedBox(height: 6),
                       Text(
                         'The Hill Station',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 34,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                           letterSpacing: -1,
                           shadows: const [
-                            Shadow(
-                              color: Colors.black54,
-                              blurRadius: 10,
-                            ),
+                            Shadow(color: Colors.black54, blurRadius: 0),
                           ],
                         ),
                       ),
@@ -597,20 +643,21 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                       // AI Magic Copywriter board
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              primaryColor.withValues(alpha: 0.12),
-                              secondaryColor.withValues(alpha: 0.04),
-                            ],
-                          ),
+                          color: primaryColor.withValues(alpha: 0.12),
                           borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(20),
                             bottomRight: Radius.circular(20),
                           ),
                           border: const Border(
-                            left: BorderSide(color: Color(0xFF8B5CF6), width: 3.5),
+                            left: BorderSide(
+                              color: Color(0xFFF5822B),
+                              width: 3.5,
+                            ),
                           ),
                         ),
                         child: Text(
@@ -643,7 +690,10 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                     left: 0,
                     bottom: 4,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.06),
                         borderRadius: const BorderRadius.only(
@@ -651,7 +701,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                           topRight: Radius.circular(16),
                           bottomRight: Radius.circular(16),
                         ),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                        border: Border.all(color: Colors.white, width: 2),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -668,7 +718,7 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                           const SizedBox(width: 8),
                           Text(
                             'Nam Trung is typing...',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.body(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w500,
                               color: Colors.white60,
@@ -692,7 +742,9 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                           builder: (context, child) {
                             final val = reaction.controller.value;
                             final yPos = (1.0 - val) * 44; // floating up
-                            final scale = math.sin(val * math.pi) * 1.3; // scale up and fade
+                            final scale =
+                                math.sin(val * math.pi) *
+                                1.3; // scale up and fade
                             final opacity = (1.0 - val).clamp(0.0, 1.0);
 
                             return Positioned(
@@ -735,7 +787,9 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Skipped The Hill Station! Next gem...'),
+                        content: const Text(
+                          'Skipped The Hill Station! Next gem...',
+                        ),
                         backgroundColor: Colors.redAccent,
                         behavior: SnackBarBehavior.floating,
                         key: const ValueKey('snack_skipped'),
@@ -787,18 +841,18 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 1.2),
+        border: Border.all(color: Colors.white, width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 10,
+            blurRadius: 0,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Text(
         text,
-        style: GoogleFonts.inter(
+        style: AppFonts.body(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -808,11 +862,17 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
   }
 
   // Floating squad avatars with bobbing animations
-  Widget _buildFloatingAvatar(String label, String url, Color borderColor, double initialPhase) {
+  Widget _buildFloatingAvatar(
+    String label,
+    String url,
+    Color borderColor,
+    double initialPhase,
+  ) {
     return AnimatedBuilder(
-      animation: _bobController,
+      animation: _loopController,
       builder: (context, child) {
-        final val = math.sin((_bobController.value * math.pi * 2) + initialPhase) * 6;
+        final bobPhase = (_loopController.value * 10 % 1.0) * math.pi * 2;
+        final val = math.sin(bobPhase + initialPhase) * 6;
         return Transform.translate(
           offset: Offset(0, val),
           child: Container(
@@ -820,11 +880,14 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white.withValues(alpha: 0.06),
-              border: Border.all(color: borderColor.withValues(alpha: 0.5), width: 1.2),
+              border: Border.all(
+                color: borderColor.withValues(alpha: 0.5),
+                width: 1.2,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 8,
+                  blurRadius: 0,
                 ),
               ],
             ),
@@ -857,21 +920,17 @@ class _AIVibeMatchScreenState extends State<AIVibeMatchScreen> with TickerProvid
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white.withValues(alpha: 0.03),
-          border: Border.all(color: glowColor.withValues(alpha: 0.25), width: 1.5),
+          border: Border.all(color: glowColor, width: 2),
           boxShadow: [
             BoxShadow(
               color: glowColor.withValues(alpha: 0.15),
-              blurRadius: 12,
+              blurRadius: 0,
               spreadRadius: 1,
             ),
           ],
         ),
         child: Center(
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: size * 0.5,
-          ),
+          child: Icon(icon, color: iconColor, size: size * 0.5),
         ),
       ),
     );
@@ -944,7 +1003,8 @@ class VisualMatchPercentPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     const strokeWidth = 5.0;
-    final rect = const Offset(strokeWidth / 2, strokeWidth / 2) &
+    final rect =
+        const Offset(strokeWidth / 2, strokeWidth / 2) &
         Size(size.width - strokeWidth, size.height - strokeWidth);
 
     final bgPaint = Paint()

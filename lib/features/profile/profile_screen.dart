@@ -1,8 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/app_messenger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../core/theme/theme_provider.dart';
+import '../../core/theme/gen_z_tokens.dart';
+import 'data/profile_provider.dart';
 
 import 'pages/badge_collection_screen.dart';
 import 'pages/edit_profile_screen.dart';
@@ -14,25 +20,29 @@ import 'pages/social_links_manager_screen.dart';
 import 'pages/squad_reputation_screen.dart';
 import 'pages/sticker_store_screen.dart';
 import 'pages/theme_marketplace_screen.dart';
-import '../../core/api_service.dart';
+import 'pages/travel_atlas_screen.dart';
+import 'pages/backup_restore_screen.dart';
+import 'pages/tripmate_mcp_screen.dart';
+import '../settings/presentation/account_privacy_screen.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   final bool? isDarkMode;
-  final VoidCallback? onThemeToggle;
+  final ValueChanged<Offset>? onThemeToggleWithPosition;
 
   const ProfileScreen({
     super.key,
     this.isDarkMode,
-    this.onThemeToggle,
+    this.onThemeToggleWithPosition,
   });
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateMixin {
+class _ProfileScreenState extends ConsumerState<ProfileScreen>
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
-  
+
   // Real-time backend databases loaded state
   Map<String, dynamic>? _userProfile;
   Map<String, dynamic>? _userStats;
@@ -46,34 +56,13 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
-    
-    _loadDashboardData();
-  }
 
-  Future<void> _loadDashboardData() async {
-    try {
-      final profile = await ApiService.get('/users/me');
-      final stats = await ApiService.get('/users/me/stats');
-      final badges = await ApiService.get('/users/me/badges');
-      
+    // Silently fetch fresh profile data in the background on entry
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        setState(() {
-          _userProfile = profile;
-          _userStats = stats;
-          if (badges is List) {
-            _userBadges = badges;
-          }
-          _isLoading = false;
-        });
+        ref.read(profileDataProvider.notifier).loadProfile(forceRefresh: true);
       }
-    } catch (_) {
-      // Fallback grace if API service errors out
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
+    });
   }
 
   @override
@@ -91,25 +80,24 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     return ClipRRect(
       borderRadius: BorderRadius.circular(32),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24.0, sigmaY: 24.0),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           decoration: BoxDecoration(
-            color: isDark
-                ? surfaceColor.withValues(alpha: 0.6)
-                : Colors.white.withValues(alpha: 0.7),
+            color: surfaceColor,
             borderRadius: BorderRadius.circular(32),
             border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.05),
-              width: 1.0,
+              color: isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210),
+              width: 2.5,
             ),
+            // Hard shadow brutalist (đặc, không blur).
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.03),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              )
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.6)
+                    : const Color(0xFF141210),
+                blurRadius: 0,
+                offset: const Offset(0, 6),
+              ),
             ],
           ),
           child: child,
@@ -136,10 +124,13 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0x332D3449) : Colors.black.withValues(alpha: 0.03),
+        color: isDark
+            ? const Color(0x332D3449)
+            : Colors.black.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black,
+          width: 2,
         ),
       ),
       child: Column(
@@ -150,20 +141,20 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
             children: [
               Row(
                 children: [
-                  Icon(Icons.military_tech, color: tertiaryColor, size: 20),
+                  Icon(Icons.military_tech, color: textPrimaryColor, size: 20),
                   const SizedBox(width: 4),
                   Text(
                     'Lvl $level',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: tertiaryColor,
+                      color: textPrimaryColor,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Global Nomad',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: textSecondaryColor,
@@ -174,10 +165,10 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               ),
               Text(
                 '${xp.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]},")} / 10,000 XP',
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: secondaryColor,
+                  color: textSecondaryColor,
                 ),
               ),
             ],
@@ -188,7 +179,9 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
           Container(
             height: 8,
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF060E20) : Colors.black.withValues(alpha: 0.08),
+              color: isDark
+                  ? const Color(0xFF060E20)
+                  : Colors.black.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Row(
@@ -197,16 +190,14 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                   flex: fillFlex,
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [secondaryColor, secondaryColor.withValues(alpha: 0.8)],
-                      ),
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(4),
                       boxShadow: isDark
                           ? [
                               BoxShadow(
-                                color: secondaryColor.withValues(alpha: 0.5),
-                                blurRadius: 8,
-                              )
+                                color: primaryColor.withValues(alpha: 0.5),
+                                blurRadius: 0,
+                              ),
                             ]
                           : null,
                     ),
@@ -223,7 +214,9 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SquadReputationScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const SquadReputationScreen(),
+                ),
               );
             },
             child: Row(
@@ -232,12 +225,18 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                 const SizedBox(width: 6),
                 RichText(
                   text: TextSpan(
-                    style: GoogleFonts.inter(fontSize: 12, color: textSecondaryColor),
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      color: textSecondaryColor,
+                    ),
                     children: [
                       const TextSpan(text: 'Squad Rep: '),
                       TextSpan(
                         text: reputation,
-                        style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
                       ),
                     ],
                   ),
@@ -252,26 +251,25 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildActiveBadgeChip(String label, Color accent, bool isDark, Color surface) {
+  Widget _buildActiveBadgeChip(
+    String label,
+    Color accent,
+    bool isDark,
+    Color surface,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
         color: isDark ? surface.withValues(alpha: 0.8) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: accent.withValues(alpha: 0.4),
-          width: 1.5,
-        ),
+        border: Border.all(color: accent, width: 2),
         boxShadow: [
-          BoxShadow(
-            color: accent.withValues(alpha: 0.1),
-            blurRadius: 10,
-          )
+          BoxShadow(color: accent.withValues(alpha: 0.1), blurRadius: 0),
         ],
       ),
       child: Text(
         label,
-        style: GoogleFonts.outfit(
+        style: AppFonts.body(
           fontSize: 12,
           fontWeight: FontWeight.bold,
           color: isDark ? accent : Colors.black87,
@@ -280,12 +278,18 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildStatItem(String val, String label, bool isDark, Color textPrimaryColor, Color primaryColor) {
+  Widget _buildStatItem(
+    String val,
+    String label,
+    bool isDark,
+    Color textPrimaryColor,
+    Color primaryColor,
+  ) {
     return Column(
       children: [
         Text(
           val,
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 28,
             fontWeight: FontWeight.w800,
             color: textPrimaryColor,
@@ -294,11 +298,11 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
         const SizedBox(height: 2),
         Text(
           label.toUpperCase(),
-          style: GoogleFonts.inter(
+          style: AppFonts.body(
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
-            color: primaryColor,
+            color: textPrimaryColor.withValues(alpha: 0.6),
           ),
         ),
       ],
@@ -314,6 +318,12 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     required VoidCallback onTap,
     required Color primaryColor,
   }) {
+    // Theme-aware để không bị chìm trên nền kem (trước đây chỉ hợp nền tối).
+    final isDark = widget.isDarkMode ?? false;
+    final ink = isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+    final sub = isDark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -321,56 +331,45 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
         margin: const EdgeInsets.only(right: 12),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         decoration: BoxDecoration(
-          color: isLocked
-              ? Colors.transparent
-              : (isRare
-                  ? const Color(0x44FFB783).withValues(alpha: 0.1)
-                  : const Color(0xFF171F33).withValues(alpha: 0.4)),
+          color: surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isLocked
-                ? Colors.white24
-                : (isRare ? const Color(0xFFFFDCC5).withValues(alpha: 0.4) : Colors.white12),
-            style: isLocked ? BorderStyle.none : BorderStyle.solid,
-            width: 1.5,
-          ),
-          boxShadow: isRare
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFFFFB783).withValues(alpha: 0.1),
-                    blurRadius: 10,
-                  )
-                ]
-              : null,
+          border: Border.all(color: ink, width: 2),
+          // Hard shadow brutalist cho card đã mở khoá.
+          boxShadow: isLocked
+              ? null
+              : [BoxShadow(color: ink, blurRadius: 0, offset: const Offset(0, 4))],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            isLocked
-                ? const Icon(Icons.lock, color: Colors.white30, size: 30)
-                : Text(emoji, style: const TextStyle(fontSize: 28)),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: isLocked ? Colors.white30 : const Color(0xFFFFB783),
+        child: Opacity(
+          opacity: isLocked ? 0.55 : 1.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              isLocked
+                  ? Icon(Icons.lock, color: sub, size: 30)
+                  : Text(emoji, style: const TextStyle(fontSize: 28)),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppFonts.heading(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: ink,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              tier,
-              style: GoogleFonts.inter(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: isLocked ? Colors.white24 : Colors.white54,
+              const SizedBox(height: 2),
+              Text(
+                tier,
+                style: AppFonts.body(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: sub,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -390,11 +389,11 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white, width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.3),
-              blurRadius: 16,
+              blurRadius: 0,
               offset: const Offset(0, 8),
             ),
           ],
@@ -405,21 +404,24 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               borderRadius: BorderRadius.circular(8),
               child: AspectRatio(
                 aspectRatio: 1.0,
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    child: const Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                child: imageUrl.startsWith('assets/')
+                    ? Image.asset(imageUrl, fit: BoxFit.cover)
+                    : CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.broken_image),
                       ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.broken_image),
-                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -428,7 +430,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               child: Text(
                 caption,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: textPrimary,
@@ -456,13 +458,18 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: isDark ? surfaceColor.withValues(alpha: 0.8) : Colors.white,
+            color: isDark ? surfaceColor : Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,14 +479,16 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF0B1326) : Colors.black.withValues(alpha: 0.03),
+                  color: isDark
+                      ? const Color(0xFF1A1712)
+                      : Colors.black.withValues(alpha: 0.03),
                   border: Border.all(color: accentColor, width: 1.5),
                   boxShadow: isDark
                       ? [
                           BoxShadow(
                             color: accentColor.withValues(alpha: 0.3),
-                            blurRadius: 10,
-                          )
+                            blurRadius: 0,
+                          ),
                         ]
                       : null,
                 ),
@@ -492,9 +501,15 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                   children: [
                     RichText(
                       text: TextSpan(
-                        style: GoogleFonts.inter(fontSize: 13.5, color: textPrimaryColor, height: 1.4),
+                        style: AppFonts.body(
+                          fontSize: 13.5,
+                          color: textPrimaryColor,
+                          height: 1.4,
+                        ),
                         children: [
-                          const TextSpan(text: 'Booked a chaotic weekend trip to '),
+                          const TextSpan(
+                            text: 'Booked a chaotic weekend trip to ',
+                          ),
                           TextSpan(
                             text: 'Taipei',
                             style: TextStyle(
@@ -509,7 +524,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                     const SizedBox(height: 6),
                     Text(
                       time.toUpperCase(),
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         color: primaryColor.withValues(alpha: 0.6),
@@ -523,16 +538,22 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const FriendsListScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const FriendsListScreen(),
+                          ),
                         );
                       },
                       child: Row(
                         children: [
                           SizedBox(
                             height: 32,
-                            width: 32.0 * friendAvatars.length - 12.0 * (friendAvatars.length - 1),
+                            width:
+                                32.0 * friendAvatars.length -
+                                12.0 * (friendAvatars.length - 1),
                             child: Stack(
-                              children: List.generate(friendAvatars.length, (idx) {
+                              children: List.generate(friendAvatars.length, (
+                                idx,
+                              ) {
                                 return Positioned(
                                   left: idx * 20.0,
                                   child: Container(
@@ -540,18 +561,30 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                     height: 32,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: const Color(0xFF171F33), width: 2.0),
+                                      border: Border.all(
+                                        color: const Color(0xFF262019),
+                                        width: 2.0,
+                                      ),
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(99),
-                                      child: CachedNetworkImage(
-                                        imageUrl: friendAvatars[idx],
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) => Container(
-                                          color: Colors.black.withValues(alpha: 0.1),
-                                        ),
-                                        errorWidget: (context, url, error) => const Icon(Icons.person, size: 16),
-                                      ),
+                                      child: friendAvatars[idx].startsWith('assets/')
+                                          ? Image.asset(
+                                              friendAvatars[idx],
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: friendAvatars[idx],
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Container(
+                                                    color: Colors.black.withValues(
+                                                      alpha: 0.1,
+                                                    ),
+                                                  ),
+                                              errorWidget: (context, url, error) =>
+                                                  const Icon(Icons.person, size: 16),
+                                            ),
                                     ),
                                   ),
                                 );
@@ -560,18 +593,27 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF0B1326) : Colors.black.withValues(alpha: 0.05),
+                              color: isDark
+                                  ? const Color(0xFF1A1712)
+                                  : Colors.black.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xFF45DFA4).withValues(alpha: 0.3)),
+                              border: Border.all(
+                                color: const Color(0xFF1FA85C),
+                                width: 2,
+                              ),
                             ),
                             child: Text(
                               '+$extraFriends',
-                              style: GoogleFonts.inter(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF45DFA4)),
+                              style: AppFonts.body(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF1FA85C),
+                              ),
                             ),
                           ),
                         ],
@@ -599,13 +641,18 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: isDark ? surfaceColor.withValues(alpha: 0.8) : Colors.white,
+            color: isDark ? surfaceColor : Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
+            ),
           ),
           child: Row(
             children: [
@@ -614,14 +661,16 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                 height: 52,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF0B1326) : Colors.black.withValues(alpha: 0.03),
+                  color: isDark
+                      ? const Color(0xFF1A1712)
+                      : Colors.black.withValues(alpha: 0.03),
                   border: Border.all(color: accentColor, width: 2.0),
                   boxShadow: isDark
                       ? [
                           BoxShadow(
                             color: accentColor.withValues(alpha: 0.3),
-                            blurRadius: 10,
-                          )
+                            blurRadius: 0,
+                          ),
                         ]
                       : null,
                 ),
@@ -631,7 +680,11 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               Expanded(
                 child: RichText(
                   text: TextSpan(
-                    style: GoogleFonts.inter(fontSize: 13.5, color: textPrimaryColor, height: 1.4),
+                    style: AppFonts.body(
+                      fontSize: 13.5,
+                      color: textPrimaryColor,
+                      height: 1.4,
+                    ),
                     children: [
                       const TextSpan(text: 'Settled up '),
                       TextSpan(
@@ -655,35 +708,63 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final profileState = ref.watch(profileDataProvider);
+    _userProfile = profileState.profile;
+    _userStats = profileState.stats;
+    _userBadges = profileState.badges;
+    _isLoading = profileState.isLoading;
+
     final theme = Theme.of(context);
     final isDark = widget.isDarkMode ?? (theme.brightness == Brightness.dark);
+    final currentAccent = ref.watch(accentProvider);
+    final currentMode = ref.watch(themeProvider);
 
-    // standard design tokens
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final tertiaryColor = isDark ? const Color(0xFFFB923C) : const Color(0xFFEBA83A);
-    final backgroundColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final surfaceColor = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimaryColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2022);
-    final textSecondaryColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
+    // standard design tokens — driven by selected accent
+    final primaryColor = currentAccent.accent;
+    final secondaryColor = currentAccent.lightSoft;
+    final tertiaryColor = currentAccent.accent;
+    final backgroundColor = isDark
+        ? const Color(0xFF1A1712)
+        : currentAccent.lightBackground;
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final textPrimaryColor = isDark
+        ? const Color(0xFFFFFDF5)
+        : const Color(0xFF141210);
+    final textSecondaryColor = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
 
     // dynamic variables
-    final name = _userProfile?['name'] ?? 'Minh Nhật';
-    final username = _userProfile?['username'] ?? 'mnhat_travels';
-    final level = _userProfile?['travelScore'] != null ? (_userProfile!['travelScore'] ~/ 500) + 1 : 24;
-    final xp = _userProfile?['travelScore'] != null ? _userProfile!['travelScore'] % 500 : 8420;
-    
-    final avatarUrl = _userProfile?['avatarUrl'] ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLEui7EjvkHqpOtxT75qvmlSCJ9wccTxZHFnkqbQ7m--E6HGrhKnsJtrL2GDihf2FhhrrhdSQNucxZbDJAO6aLatXSt85bB-l6x9IM5ATjoFNpWUBr8XexKHp-UAg1uq87dPwg4PWZ5YNCMSEEHcd0e_x7apUYsHB94fhhpnv3cua0_DqPuc2VvBOglqhzvDWgph7OzMrHd71mBP4_IYyAJES--uo8nLNq161e_1nhMmkf9ZNHQheEn4QZJGsbcFzUQrlWbUYmDTLA';
-    final bio = _userProfile?['bio'] ?? 'Planning Seoul';
-    
-    final totalTrips = _userStats?['totalTrips']?.toString() ?? '24';
-    final totalDistance = _userStats?['totalDistanceKm'] != null 
-        ? '${(_userStats!['totalDistanceKm'] as num).toInt()} km' 
-        : '8.4k';
-    final reputationScore = _userStats?['squadReputationScore'] != null
-        ? (_userStats!['squadReputationScore'] >= 90 ? 'Legendary' : 'Reliable')
-        : 'Legendary';
-    final countriesCount = _userStats?['chaosScore']?.toString() ?? '15';
+    final name = _userProfile?['name'] ?? 'Traveller';
+    final username = _userProfile?['username'] ?? 'traveller';
+    final level = _userProfile?['travelScore'] != null
+        ? (_userProfile!['travelScore'] ~/ 500) + 1
+        : 1;
+    final xp = _userProfile?['travelScore'] != null
+        ? _userProfile!['travelScore'] % 500
+        : 0;
+
+    final rawAvatar = _userProfile?['avatarUrl'] as String?;
+    // Không có avatar thật → sinh avatar chữ-cái-đầu theo tên (màu brand),
+    // mỗi user 1 avatar riêng thay vì cùng 1 ảnh stock giả.
+    final avatarUrl = (rawAvatar != null && rawAvatar.isNotEmpty)
+        ? rawAvatar
+        : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}'
+              '&background=FFD84D&color=141210&bold=true&size=256';
+    final bio = _userProfile?['bio'] ?? 'Sẵn sàng lên đường ✈️';
+
+    // Hiển thị số liệu THẬT (mặc định 0 khi backend chưa có), không dùng số giả.
+    final totalTrips = _userStats?['totalTrips']?.toString() ?? '0';
+    final totalDistance = _userStats?['totalDistanceKm'] != null
+        ? '${(_userStats!['totalDistanceKm'] as num).toInt()} km'
+        : '0 km';
+    final repScore = _userStats?['squadReputationScore'] as num?;
+    final reputationScore = repScore == null || repScore < 30
+        ? 'New'
+        : (repScore >= 90 ? 'Legendary' : 'Reliable');
+    final countriesCount = _userStats?['chaosScore']?.toString() ?? '0';
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -747,7 +828,8 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
             child: Opacity(
               opacity: 0.08,
               child: CachedNetworkImage(
-                imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
+                imageUrl:
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const SizedBox(),
                 errorWidget: (context, url, error) => const SizedBox(),
@@ -758,7 +840,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
           // Blur overlay
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
               child: Container(
                 color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
               ),
@@ -784,43 +866,66 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                       leading: Padding(
                         padding: const EdgeInsets.only(left: 16.0, top: 12.0),
                         child: Center(
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: primaryColor.withValues(alpha: 0.3), width: 1.5),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(99),
-                              child: CachedNetworkImage(
-                                imageUrl: avatarUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(color: Colors.black.withValues(alpha: 0.1)),
-                                errorWidget: (context, url, error) => const Icon(Icons.person),
-                              ),
-                            ),
-                          ),
+                          // Nếu màn được push (có thể pop) → nút Back để quay lại;
+                          // nếu là tab (không pop được) → avatar như cũ.
+                          child: Navigator.canPop(context)
+                              ? GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: surfaceColor,
+                                      border: Border.all(
+                                        color: textPrimaryColor,
+                                        width: 2.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.arrow_back_rounded,
+                                      color: textPrimaryColor,
+                                      size: 22,
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: textPrimaryColor,
+                                      width: 2.5,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(99),
+                                    child: CachedNetworkImage(
+                                      imageUrl: avatarUrl,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Container(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.person),
+                                    ),
+                                  ),
+                                ),
                         ),
                       ),
                       title: Padding(
                         padding: const EdgeInsets.only(top: 12.0),
                         child: Center(
-                          child: ShaderMask(
-                            shaderCallback: (bounds) {
-                              return LinearGradient(
-                                colors: [primaryColor, secondaryColor],
-                              ).createShader(bounds);
-                            },
-                            child: Text(
-                              'trip.mate',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.w800,
-                                fontStyle: FontStyle.italic,
-                                fontSize: 26,
-                                letterSpacing: -1.5,
-                                color: Colors.white,
-                              ),
+                          child: Text(
+                            'trip.mate',
+                            style: AppFonts.heading(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 26,
+                              letterSpacing: -1.5,
+                              color: textPrimaryColor,
                             ),
                           ),
                         ),
@@ -830,7 +935,8 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           padding: const EdgeInsets.only(top: 12.0),
                           child: GestureDetector(
                             onTap: () {
-                              final newLocale = context.locale.languageCode == 'vi'
+                              final newLocale =
+                                  context.locale.languageCode == 'vi'
                                   ? const Locale('en')
                                   : const Locale('vi');
                               context.setLocale(newLocale);
@@ -840,21 +946,19 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                               height: 36,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isDark 
-                                    ? Colors.white.withValues(alpha: 0.08) 
-                                    : Colors.black.withValues(alpha: 0.05),
+                                color: surfaceColor,
                                 border: Border.all(
-                                  color: primaryColor.withValues(alpha: 0.3),
-                                  width: 1.5,
+                                  color: textPrimaryColor,
+                                  width: 2.5,
                                 ),
                               ),
                               child: Center(
                                 child: Text(
-                                  context.locale.languageCode == 'vi' ? 'EN' : 'VI',
-                                  style: GoogleFonts.outfit(
+                                  context.locale.languageCode.toUpperCase(),
+                                  style: AppFonts.body(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w900,
-                                    color: primaryColor,
+                                    color: textPrimaryColor,
                                   ),
                                 ),
                               ),
@@ -862,37 +966,66 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           ),
                         ),
                         const SizedBox(width: 8),
-                        if (widget.onThemeToggle != null)
+                        if (widget.onThemeToggleWithPosition != null)
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
-                            child: IconButton(
-                              icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined, color: primaryColor),
-                              onPressed: widget.onThemeToggle,
+                            child: GestureDetector(
+                              onTapDown: (details) {
+                                widget.onThemeToggleWithPosition!(
+                                  details.globalPosition,
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  isDark
+                                      ? Icons.light_mode_outlined
+                                      : Icons.dark_mode_outlined,
+                                  color: textPrimaryColor,
+                                ),
+                              ),
                             ),
                           ),
                         Padding(
                           padding: const EdgeInsets.only(right: 8.0, top: 12.0),
                           child: Center(
                             child: IconButton(
-                              icon: Icon(Icons.palette_outlined, color: primaryColor, size: 26),
+                              icon: Icon(
+                                Icons.palette_outlined,
+                                color: textPrimaryColor,
+                                size: 26,
+                              ),
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const ThemeMarketplaceScreen()),
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ThemeMarketplaceScreen(),
+                                  ),
                                 );
                               },
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(right: 16.0, top: 12.0),
+                          padding: const EdgeInsets.only(
+                            right: 16.0,
+                            top: 12.0,
+                          ),
                           child: Center(
                             child: IconButton(
-                              icon: Icon(Icons.add_reaction_outlined, color: primaryColor, size: 26),
+                              icon: Icon(
+                                Icons.add_reaction_outlined,
+                                color: textPrimaryColor,
+                                size: 26,
+                              ),
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const StickerStoreScreen()),
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const StickerStoreScreen(),
+                                  ),
                                 );
                               },
                             ),
@@ -903,7 +1036,10 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
 
                     // Main Canvas body list
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 16.0,
+                      ),
                       sliver: SliverList(
                         delegate: SliverChildListDelegate([
                           const SizedBox(height: 24),
@@ -920,50 +1056,64 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                   primaryColor: primaryColor,
                                   surfaceColor: surfaceColor,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(top: 72.0, left: 16, right: 16, bottom: 24),
+                                    padding: const EdgeInsets.only(
+                                      top: 72.0,
+                                      left: 16,
+                                      right: 16,
+                                      bottom: 24,
+                                    ),
                                     child: Column(
                                       children: [
                                         // User name glow text
                                         Text(
                                           name,
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 32,
                                             fontWeight: FontWeight.w800,
                                             color: textPrimaryColor,
                                             shadows: isDark
                                                 ? [
                                                     Shadow(
-                                                      color: Colors.white.withValues(alpha: 0.3),
-                                                      blurRadius: 10,
-                                                    )
+                                                      color: Colors.white
+                                                          .withValues(
+                                                            alpha: 0.3,
+                                                          ),
+                                                      blurRadius: 0,
+                                                    ),
                                                   ]
                                                 : null,
                                           ),
                                         ),
                                         const SizedBox(height: 4),
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             GestureDetector(
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
-                                                  MaterialPageRoute(builder: (context) => const SocialLinksManagerScreen()),
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const SocialLinksManagerScreen(),
+                                                  ),
                                                 );
                                               },
                                               child: Icon(
                                                 Icons.link,
-                                                color: primaryColor.withValues(alpha: 0.6),
+                                                color: primaryColor.withValues(
+                                                  alpha: 0.6,
+                                                ),
                                                 size: 20,
                                               ),
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
                                               '@$username',
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600,
-                                                color: primaryColor,
+                                                color: textSecondaryColor,
                                               ),
                                             ),
                                           ],
@@ -978,7 +1128,8 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                           secondaryColor: secondaryColor,
                                           tertiaryColor: tertiaryColor,
                                           textPrimaryColor: textPrimaryColor,
-                                          textSecondaryColor: textSecondaryColor,
+                                          textSecondaryColor:
+                                              textSecondaryColor,
                                           level: level,
                                           xp: xp,
                                           reputation: reputationScore,
@@ -987,31 +1138,119 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
 
                                         // Badges row
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
-                                            _buildActiveBadgeChip('Chaos Planner 🔥', const Color(0xFFFF9E80), isDark, surfaceColor),
+                                            _buildActiveBadgeChip(
+                                              totalTrips == '0'
+                                                  ? 'Tân binh ✨'
+                                                  : 'Chaos Planner 🔥',
+                                              const Color(0xFFFF9E80),
+                                              isDark,
+                                              surfaceColor,
+                                            ),
                                             const SizedBox(width: 12),
-                                            _buildActiveBadgeChip('MVP Payer 💸', secondaryColor, isDark, surfaceColor),
+                                            _buildActiveBadgeChip(
+                                              reputationScore == 'Legendary'
+                                                  ? 'MVP Payer 💸'
+                                                  : (reputationScore ==
+                                                            'Reliable'
+                                                        ? 'Đáng tin 🤝'
+                                                        : 'Thành viên mới 🎒'),
+                                              secondaryColor,
+                                              isDark,
+                                              surfaceColor,
+                                            ),
                                           ],
                                         ),
                                         const SizedBox(height: 24),
-                                        const Divider(color: Colors.white12, height: 1),
+                                        const Divider(
+                                          color: Colors.white12,
+                                          height: 1,
+                                        ),
                                         const SizedBox(height: 20),
 
-                                        // Core Stats Row
+                                         // Travel Atlas Button
+                                         GestureDetector(
+                                           onTap: () {
+                                             Navigator.push(
+                                               context,
+                                               MaterialPageRoute(
+                                                 builder: (context) =>
+                                                     TravelAtlasScreen(isDarkMode: isDark),
+                                               ),
+                                             );
+                                           },
+                                           child: Container(
+                                             width: double.infinity,
+                                             padding: const EdgeInsets.symmetric(
+                                               vertical: 12,
+                                               horizontal: 16,
+                                             ),
+                                             decoration: BoxDecoration(
+                                               color: GenZTokens.yellow,
+                                               borderRadius: BorderRadius.circular(16),
+                                               border: Border.all(color: GenZTokens.ink, width: 2),
+                                               boxShadow: GenZTokens.hardShadow(GenZTokens.ink),
+                                             ),
+                                             child: Row(
+                                               mainAxisAlignment: MainAxisAlignment.center,
+                                               children: [
+                                                 const Icon(
+                                                   Icons.explore_outlined,
+                                                   color: GenZTokens.ink,
+                                                 ),
+                                                 const SizedBox(width: 8),
+                                                 Text(
+                                                   'profile.open_travel_atlas'.tr(),
+                                                   style: AppFonts.heading(
+                                                     fontWeight: FontWeight.w900,
+                                                     fontSize: 12,
+                                                     color: GenZTokens.ink,
+                                                   ),
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                         ),
+                                         const SizedBox(height: 20),
+
+                                         // Core Stats Row
                                         GestureDetector(
                                           onTap: () {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => const ProfileStatisticsScreen()),
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ProfileStatisticsScreen(),
+                                              ),
                                             );
                                           },
                                           child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
                                             children: [
-                                              _buildStatItem(totalTrips, 'Trips', isDark, textPrimaryColor, primaryColor),
-                                              _buildStatItem(totalDistance, 'Distance', isDark, textPrimaryColor, primaryColor),
-                                              _buildStatItem(countriesCount, 'Countries', isDark, textPrimaryColor, primaryColor),
+                                              _buildStatItem(
+                                                totalTrips,
+                                                'Trips',
+                                                isDark,
+                                                textPrimaryColor,
+                                                primaryColor,
+                                              ),
+                                              _buildStatItem(
+                                                totalDistance,
+                                                'Distance',
+                                                isDark,
+                                                textPrimaryColor,
+                                                primaryColor,
+                                              ),
+                                              _buildStatItem(
+                                                countriesCount,
+                                                'Countries',
+                                                isDark,
+                                                textPrimaryColor,
+                                                primaryColor,
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -1036,46 +1275,70 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => PublicProfileScreen(
-                                                userName: name,
-                                                avatarUrl: avatarUrl,
-                                              ),
+                                              builder: (context) =>
+                                                  PublicProfileScreen(
+                                                    userName: name,
+                                                    avatarUrl: avatarUrl,
+                                                  ),
                                             ),
                                           );
                                         },
                                         child: AnimatedBuilder(
                                           animation: _pulseController,
                                           builder: (context, child) {
-                                            final glowVal = 20.0 + (_pulseController.value * 20.0);
+                                            final glowVal =
+                                                20.0 +
+                                                (_pulseController.value * 20.0);
                                             return Container(
                                               width: 128,
                                               height: 128,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                border: Border.all(color: backgroundColor, width: 4.0),
+                                                border: Border.all(
+                                                  color: backgroundColor,
+                                                  width: 4.0,
+                                                ),
                                                 boxShadow: isDark
                                                     ? [
                                                         BoxShadow(
-                                                          color: primaryColor.withValues(alpha: 0.5),
+                                                          color: primaryColor
+                                                              .withValues(
+                                                                alpha: 0.5,
+                                                              ),
                                                           blurRadius: glowVal,
                                                           spreadRadius: 2,
-                                                        )
+                                                        ),
                                                       ]
                                                     : [
                                                         BoxShadow(
-                                                          color: primaryColor.withValues(alpha: 0.15),
-                                                          blurRadius: 10,
+                                                          color: primaryColor
+                                                              .withValues(
+                                                                alpha: 0.15,
+                                                              ),
+                                                          blurRadius: 0,
                                                           spreadRadius: 1,
-                                                        )
+                                                        ),
                                                       ],
                                               ),
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(99),
+                                                borderRadius:
+                                                    BorderRadius.circular(99),
                                                 child: CachedNetworkImage(
                                                   imageUrl: avatarUrl,
                                                   fit: BoxFit.cover,
-                                                  placeholder: (context, url) => Container(color: Colors.black.withValues(alpha: 0.1)),
-                                                  errorWidget: (context, url, error) => const Icon(Icons.person, size: 40),
+                                                  placeholder: (context, url) =>
+                                                      Container(
+                                                        color: Colors.black
+                                                            .withValues(
+                                                              alpha: 0.1,
+                                                            ),
+                                                      ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          const Icon(
+                                                            Icons.person,
+                                                            size: 40,
+                                                          ),
                                                 ),
                                               ),
                                             );
@@ -1086,35 +1349,54 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                       // Status Planning Seoul Capsule
                                       Positioned(
                                         bottom: -8,
-                                        left: -20,
-                                        right: -20,
+                                        left: -100,
+                                        right: -100,
                                         child: Center(
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
                                             decoration: BoxDecoration(
-                                              color: isDark ? const Color(0xFF0B1326) : Colors.white,
-                                              borderRadius: BorderRadius.circular(16),
+                                              color: isDark
+                                                  ? const Color(0xFF1A1712)
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                               border: Border.all(
-                                                  color: isDark ? Colors.white24 : Colors.black12, 
-                                                  width: 1.0),
+                                                color: isDark
+                                                    ? Colors.white24
+                                                    : Colors.black12,
+                                                width: 1.0,
+                                              ),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.black.withValues(alpha: 0.2),
-                                                  blurRadius: 10,
-                                                )
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.2),
+                                                  blurRadius: 0,
+                                                ),
                                               ],
                                             ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Text('✈️', style: TextStyle(fontSize: 12)),
+                                                const Text(
+                                                  '✈️',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
                                                 const SizedBox(width: 4),
-                                                Text(
-                                                  bio,
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: textPrimaryColor,
+                                                Flexible(
+                                                  child: Text(
+                                                    bio,
+                                                    style: AppFonts.body(
+                                                      fontSize: 11,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: textPrimaryColor,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                               ],
@@ -1135,17 +1417,31 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const EditProfileScreen(),
+                                      ),
                                     );
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: isDark ? const Color(0xFF171F33).withValues(alpha: 0.6) : Colors.white,
+                                      color: isDark
+                                          ? const Color(
+                                              0xFF262019,
+                                            ).withValues(alpha: 0.6)
+                                          : Colors.white,
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 2,
+                                      ),
                                     ),
-                                    child: Icon(Icons.edit, color: primaryColor, size: 18),
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: primaryColor,
+                                      size: 18,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1157,11 +1453,15 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           // Achievements Showcase Section
                           Row(
                             children: [
-                              Icon(Icons.workspace_premium, color: tertiaryColor, size: 24),
+                              Icon(
+                                Icons.workspace_premium,
+                                color: tertiaryColor,
+                                size: 24,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'profile.achievements'.tr(),
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: textPrimaryColor,
@@ -1184,7 +1484,13 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                         title: 'Chaos King',
                                         tier: 'Gold Tier',
                                         isRare: true,
-                                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen())),
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BadgeCollectionScreen(),
+                                          ),
+                                        ),
                                         primaryColor: primaryColor,
                                       ),
                                       _buildBadgeCard(
@@ -1192,7 +1498,13 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                         title: 'Pro Paparazzi',
                                         tier: 'Silver Tier',
                                         isRare: false,
-                                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen())),
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BadgeCollectionScreen(),
+                                          ),
+                                        ),
                                         primaryColor: primaryColor,
                                       ),
                                       _buildBadgeCard(
@@ -1200,7 +1512,13 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                         title: 'Street Food Legend',
                                         tier: 'Rare Tier',
                                         isRare: true,
-                                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen())),
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BadgeCollectionScreen(),
+                                          ),
+                                        ),
                                         primaryColor: primaryColor,
                                       ),
                                       _buildBadgeCard(
@@ -1209,32 +1527,55 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                         tier: 'Locked',
                                         isRare: false,
                                         isLocked: true,
-                                        onTap: () {},
+                                        onTap: () => showGlobalSnack(
+                                          'Tính năng đang được hoàn thiện 🚧',
+                                        ),
                                         primaryColor: primaryColor,
                                       ),
                                     ]
                                   : _userBadges.map<Widget>((badge) {
-                                      final isLocked = badge['unlockedAt'] == null;
-                                      final title = badge['title'] ?? 'Danh hiệu';
-                                      
+                                      final isLocked =
+                                          badge['unlockedAt'] == null;
+                                      final title =
+                                          badge['title'] ?? 'Danh hiệu';
+
                                       String emoji = '🏆';
                                       String cleanTitle = title;
-                                      
-                                      final RegExp emojiRegExp = RegExp(r'[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]', unicode: true);
-                                      final match = emojiRegExp.firstMatch(title);
+
+                                      final RegExp emojiRegExp = RegExp(
+                                        r'[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]',
+                                        unicode: true,
+                                      );
+                                      final match = emojiRegExp.firstMatch(
+                                        title,
+                                      );
                                       if (match != null) {
                                         emoji = match.group(0) ?? '🏆';
-                                        cleanTitle = title.replaceAll(emoji, '').trim();
+                                        cleanTitle = title
+                                            .replaceAll(emoji, '')
+                                            .trim();
                                       }
-                                      
+
                                       return _buildBadgeCard(
                                         emoji: emoji,
                                         title: cleanTitle,
-                                        tier: isLocked ? 'Locked' : (badge['id'] == 'b1' ? 'Gold Tier' : 'Silver Tier'),
-                                        isRare: badge['id'] == 'b1' || badge['id'] == 'b3',
+                                        tier: isLocked
+                                            ? 'Locked'
+                                            : (badge['id'] == 'b1'
+                                                  ? 'Gold Tier'
+                                                  : 'Silver Tier'),
+                                        isRare:
+                                            badge['id'] == 'b1' ||
+                                            badge['id'] == 'b3',
                                         isLocked: isLocked,
                                         onTap: () {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen()));
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const BadgeCollectionScreen(),
+                                            ),
+                                          );
                                         },
                                         primaryColor: primaryColor,
                                       );
@@ -1251,11 +1592,15 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.auto_awesome, color: primaryColor, size: 24),
+                                  Icon(
+                                    Icons.auto_awesome,
+                                    color: primaryColor,
+                                    size: 24,
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'profile.memories'.tr(),
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: textPrimaryColor,
@@ -1267,12 +1612,15 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                 onTap: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => const SharedTripsHistoryScreen()),
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SharedTripsHistoryScreen(),
+                                    ),
                                   );
                                 },
                                 child: Text(
                                   'profile.view_gallery'.tr(),
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: secondaryColor,
@@ -1292,9 +1640,11 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                 child: Transform.rotate(
                                   angle: -0.04, // -2 degrees
                                   child: _buildPolaroidCard(
-                                    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3GMXqvkv7uLzBEwA053VHefaRGTOBFv9pTiz4bGlwT3SitTC9LRaYcpcJyK9XvjTKlEwUO-HvGCy2RDEf8M6dn73NUnHiLBwHGLxd4UbzSIEYhZdeh_fpkxVnYibFtDcEsR3wv0XBn28SgESBBx4kMdBaxUpfQ8L9xvwOEvavloSBYj-cDYHYkHe9VeWkXgwWFNAqhRfYL42Z5Kg-btcNzHP-Th7tZinynYg64EpjYgPKaPNKWXrfexUy8vkEAtLTm5_zGCTYzd3L',
+                                    imageUrl: 'assets/images/polaroid_bkk.webp',
                                     caption: 'BKK Night out 🇹🇭',
-                                    onTap: () {},
+                                    onTap: () => showGlobalSnack(
+                                      'Tính năng đang được hoàn thiện 🚧',
+                                    ),
                                     surfaceColor: surfaceColor,
                                     textPrimary: textPrimaryColor,
                                   ),
@@ -1305,9 +1655,11 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                 child: Transform.rotate(
                                   angle: 0.05, // 3 degrees
                                   child: _buildPolaroidCard(
-                                    imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZqibfx7smwKzO4mXEfKGVEiX_kK0-wy5TgllNKWMgkxqqjeLrzctDOKWIW3k8iEM85WecgzRsWFOuIoU9vrPjTPJ7vf3zDZjT64e-dtMNGzl8CLi2mCtGn5ApWuYstm9__T6C8P4mq7HLfZ1OXH-MNKYlrtoIzWyDs_oTUcK6uLUHRXLFYaKNfz7Xe0Sl-rVBDhNScWn9i5usx4yH8CAQbpd66Etuz7AeEkKa4awoEEQNZh8wScKz1d3Cd-H8ZefRd-DDLlsyreO-',
+                                    imageUrl: 'assets/images/polaroid_seoul.webp',
                                     caption: 'Seoul Searching 🇰🇷',
-                                    onTap: () {},
+                                    onTap: () => showGlobalSnack(
+                                      'Tính năng đang được hoàn thiện 🚧',
+                                    ),
                                     surfaceColor: surfaceColor,
                                     textPrimary: textPrimaryColor,
                                   ),
@@ -1321,11 +1673,15 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           // Recent Activity Quest Log (Recent Chaos Log)
                           Row(
                             children: [
-                              Icon(Icons.history, color: secondaryColor, size: 24),
+                              Icon(
+                                Icons.history,
+                                color: secondaryColor,
+                                size: 24,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'profile.recent_log'.tr(),
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: textPrimaryColor,
@@ -1339,14 +1695,15 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           _buildChaosFeedCard(
                             icon: Icons.flight_takeoff,
                             accentColor: primaryColor,
-                            description: 'Booked a chaotic weekend trip to Taipei with 4 others.',
+                            description:
+                                'Booked a chaotic weekend trip to Taipei with 4 others.',
                             time: '2 hours ago',
                             isDark: isDark,
                             primaryColor: primaryColor,
                             textPrimaryColor: textPrimaryColor,
                             friendAvatars: const [
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuA1y6WvPiLYsHKlTRB6MQXUdfofDAc6F6zA_OUoxVJ44xDMfI-glkYPZlhkMe2pxgJGVzJNChT9ruLNSBIKZ1NmCuetbHgdFy8sWorqus-9PkpGJ5BYvl3O-EVPgkLrcPFiJ7Hg9oceWMywnHH2uxQIAYIhQn4jDPWvWZkrFHEZHk_sGAKdq0Jh_yzObuSjDut4SF7nrJ954zT44Qu_b9IKZ3XeeSTrUNwNvlYgjg4CKACygqOdPERGR8T1emC-4a3PtkSegIqbYqzj',
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuCjU3P9uI6vdJX8NmKFk1eCTAp1BznSiyFHQEsD4THJT-rmb9aYBo5zD7LuoTwnWk0SlnFaET0ARhhgcFuupzG3C24xoArHCnc_-VKF-KE7Z5877UM99Qu5BICeXj3_elnHXeue7zM4_uDLNjYpeUGCs7P3QZKCfH5YaIv1zfBhHk4GyNX4J4vK9KShs9rvLp_q9dDM6bLfrhlwX7LGjEa2arXGi5pn3TRkajwn6bsUYTWUQ6ITLMQa3IWiZjKXJOCg2FZqzHMKLMlM'
+                              'assets/images/avatar_minh_nhat.webp',
+                              'assets/images/avatar_thao_ly.webp',
                             ],
                             extraFriends: 2,
                             surfaceColor: surfaceColor,
@@ -1356,7 +1713,8 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           _buildChaosSettlementCard(
                             icon: Icons.account_balance_wallet,
                             accentColor: secondaryColor,
-                            description: 'Settled up \$420 for the Tokyo bender.',
+                            description:
+                                'Settled up \$420 for the Tokyo bender.',
                             isDark: isDark,
                             primaryColor: primaryColor,
                             textPrimaryColor: textPrimaryColor,
@@ -1364,13 +1722,30 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           ),
 
                           const SizedBox(height: 36),
+
+                          // ── Giao diện app ─────────────────────────────────
+                          _buildThemePicker(
+                            isDark: isDark,
+                            primaryColor: primaryColor,
+                            surfaceColor: surfaceColor,
+                            textPrimaryColor: textPrimaryColor,
+                            textSecondaryColor: textSecondaryColor,
+                            currentAccent: currentAccent,
+                            currentMode: currentMode,
+                          ),
+
+                          const SizedBox(height: 36),
                           Row(
                             children: [
-                              Icon(Icons.settings_outlined, color: primaryColor, size: 24),
+                              Icon(
+                                Icons.settings_outlined,
+                                color: primaryColor,
+                                size: 24,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 'general.settings'.tr(),
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: textPrimaryColor,
@@ -1382,13 +1757,18 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                           ClipRRect(
                             borderRadius: BorderRadius.circular(20),
                             child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                               child: Container(
                                 padding: const EdgeInsets.all(18),
                                 decoration: BoxDecoration(
-                                  color: isDark ? surfaceColor.withValues(alpha: 0.8) : Colors.white,
+                                  color: isDark ? surfaceColor : Colors.white,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.08)
+                                        : Colors.black,
+                                    width: 2,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
@@ -1397,19 +1777,31 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                       height: 44,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: isDark ? const Color(0xFF0B1326) : Colors.black.withValues(alpha: 0.03),
-                                        border: Border.all(color: primaryColor, width: 1.5),
+                                        color: isDark
+                                            ? const Color(0xFF1A1712)
+                                            : Colors.black.withValues(
+                                                alpha: 0.03,
+                                              ),
+                                        border: Border.all(
+                                          color: primaryColor,
+                                          width: 1.5,
+                                        ),
                                       ),
-                                      child: Icon(Icons.language_rounded, color: primaryColor, size: 20),
+                                      child: Icon(
+                                        Icons.language_rounded,
+                                        color: primaryColor,
+                                        size: 20,
+                                      ),
                                     ),
                                     const SizedBox(width: 14),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'profile.lang_label'.tr(),
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: AppFonts.heading(
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold,
                                               color: textPrimaryColor,
@@ -1418,7 +1810,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                           const SizedBox(height: 2),
                                           Text(
                                             'profile.lang_sub'.tr(),
-                                            style: GoogleFonts.inter(
+                                            style: AppFonts.body(
                                               fontSize: 11,
                                               color: textSecondaryColor,
                                             ),
@@ -1431,8 +1823,12 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                       children: [
                                         _buildLangOption(
                                           label: 'Tiếng Việt',
-                                          isSelected: context.locale.languageCode == 'vi',
-                                          onTap: () => context.setLocale(const Locale('vi')),
+                                          isSelected:
+                                              context.locale.languageCode ==
+                                              'vi',
+                                          onTap: () => context.setLocale(
+                                            const Locale('vi'),
+                                          ),
                                           isDark: isDark,
                                           primaryColor: primaryColor,
                                           surfaceColor: surfaceColor,
@@ -1440,8 +1836,12 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                                         const SizedBox(width: 8),
                                         _buildLangOption(
                                           label: 'English',
-                                          isSelected: context.locale.languageCode == 'en',
-                                          onTap: () => context.setLocale(const Locale('en')),
+                                          isSelected:
+                                              context.locale.languageCode ==
+                                              'en',
+                                          onTap: () => context.setLocale(
+                                            const Locale('en'),
+                                          ),
                                           isDark: isDark,
                                           primaryColor: primaryColor,
                                           surfaceColor: surfaceColor,
@@ -1454,6 +1854,246 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                             ),
                           ),
 
+                          const SizedBox(height: 12),
+                          // Quyền riêng tư & Tài khoản (PDPD)
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    AccountPrivacyScreen(isDarkMode: isDark),
+                              ),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.shield_outlined,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'profile.privacy_and_account'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'profile.privacy_sub'.tr(),
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    size: 14,
+                                    color: textSecondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+                          // Sao lưu & Khôi phục Offline
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    BackupRestoreScreen(isDarkMode: isDark),
+                              ),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.backup_outlined,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'system_phases.backup_title'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Offline JSON Backup & Restore',
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    size: 14,
+                                    color: textSecondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+                          // MCP AI Connection Setting
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    TripmateMcpScreen(isDarkMode: isDark),
+                              ),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.smart_toy_outlined,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'system_phases.mcp_title'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Model Context Protocol Config',
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    size: 14,
+                                    color: textSecondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
                           const SizedBox(height: 48),
                         ]),
                       ),
@@ -1461,6 +2101,452 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                   ],
                 ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildThemePicker({
+    required bool isDark,
+    required Color primaryColor,
+    required Color surfaceColor,
+    required Color textPrimaryColor,
+    required Color textSecondaryColor,
+    required AppAccent currentAccent,
+    required ThemeMode currentMode,
+  }) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final currentFont = ref.watch(fontProvider);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: ink, width: GenZTokens.borderWidth),
+            boxShadow: GenZTokens.hardShadow(ink),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDark
+                          ? const Color(0xFF1A1712)
+                          : Colors.black.withValues(alpha: 0.03),
+                      border: Border.all(color: primaryColor, width: 1.5),
+                    ),
+                    child: Icon(
+                      Icons.palette_outlined,
+                      color: primaryColor,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'profile.app_interface'.tr(),
+                          style: AppFonts.heading(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimaryColor,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'profile.theme_and_color'.tr(),
+                          style: AppFonts.body(
+                            fontSize: 11,
+                            color: textSecondaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Sáng / Tối toggle
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black.withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    padding: const EdgeInsets.all(2),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildModeBtn(
+                          icon: Icons.light_mode_outlined,
+                          label: 'profile.theme_light_short'.tr(),
+                          selected: currentMode == ThemeMode.light,
+                          primaryColor: primaryColor,
+                          isDark: isDark,
+                          textPrimaryColor: textPrimaryColor,
+                          onTap: (position) {
+                            if (currentMode != ThemeMode.light) {
+                              if (widget.onThemeToggleWithPosition != null) {
+                                widget.onThemeToggleWithPosition!(position);
+                              } else {
+                                ref.read(themeProvider.notifier).setThemeMode(ThemeMode.light);
+                              }
+                            }
+                          },
+                        ),
+                        _buildModeBtn(
+                          icon: Icons.dark_mode_outlined,
+                          label: 'profile.theme_dark_short'.tr(),
+                          selected: currentMode == ThemeMode.dark,
+                          primaryColor: primaryColor,
+                          isDark: isDark,
+                          textPrimaryColor: textPrimaryColor,
+                          onTap: (position) {
+                            if (currentMode != ThemeMode.dark) {
+                              if (widget.onThemeToggleWithPosition != null) {
+                                widget.onThemeToggleWithPosition!(position);
+                              } else {
+                                ref.read(themeProvider.notifier).setThemeMode(ThemeMode.dark);
+                              }
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // 4 colour swatches
+              Row(
+                children: AppAccent.values.map((accent) {
+                  final selected = accent == currentAccent;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () =>
+                          ref.read(accentProvider.notifier).setAccent(accent),
+                      child: Column(
+                        children: [
+                          // Swatch cặp màu preset (accent trên, pair dưới),
+                          // viền ink + hard shadow khi được chọn
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            height: 44,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: ink,
+                                width: selected ? GenZTokens.borderWidth : 1.5,
+                              ),
+                              boxShadow: selected
+                                  ? [
+                                      BoxShadow(
+                                        color: ink,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Stack(
+                                children: [
+                                  Column(
+                                    children: [
+                                      Expanded(
+                                        child: Container(color: accent.accent),
+                                      ),
+                                      Expanded(
+                                        child: Container(color: accent.pair),
+                                      ),
+                                    ],
+                                  ),
+                                  if (selected)
+                                    Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: GenZTokens.paper,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: GenZTokens.ink,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.check_rounded,
+                                          color: GenZTokens.ink,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            accent.label,
+                            style: AppFonts.body(
+                              fontSize: 10,
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: selected
+                                  ? primaryColor
+                                  : textSecondaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 16),
+              Divider(color: ink, thickness: 1.5),
+              const SizedBox(height: 16),
+
+              Text(
+                'Kiểu chữ (Font Style)',
+                style: AppFonts.heading(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: textPrimaryColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              Column(
+                children: AppFontOption.values.map((fontOpt) {
+                  final isSelected = fontOpt == currentFont;
+
+                  final textColor = isSelected 
+                      ? currentAccent.onAccent 
+                      : textPrimaryColor;
+                  final textSecColor = isSelected 
+                      ? currentAccent.onAccent.withValues(alpha: 0.7) 
+                      : textSecondaryColor;
+
+                  // Preview styles for each font option
+                  TextStyle previewHeading;
+                  TextStyle previewBody;
+
+                  switch (fontOpt) {
+                    case AppFontOption.playful:
+                      previewHeading = GoogleFonts.baloo2(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: textColor,
+                      );
+                      previewBody = GoogleFonts.nunito(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: textSecColor,
+                      );
+                      break;
+                    case AppFontOption.curly:
+                      previewHeading = GoogleFonts.grandstander(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: textColor,
+                      );
+                      previewBody = GoogleFonts.comfortaa(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: textSecColor,
+                      );
+                      break;
+                    case AppFontOption.handwriting:
+                      previewHeading = GoogleFonts.sriracha(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: textColor,
+                      );
+                      previewBody = GoogleFonts.patrickHand(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: textSecColor,
+                      );
+                      break;
+                    case AppFontOption.modern:
+                      previewHeading = GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: textColor,
+                      );
+                      previewBody = GoogleFonts.dmSans(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: textSecColor,
+                      );
+                      break;
+                    case AppFontOption.brutalist:
+                      previewHeading = GoogleFonts.spaceGrotesk(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: textColor,
+                      );
+                      previewBody = GoogleFonts.outfit(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: textSecColor,
+                      );
+                      break;
+                    case AppFontOption.clean:
+                      previewHeading = GoogleFonts.quicksand(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: textColor,
+                      );
+                      previewBody = GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: textSecColor,
+                      );
+                      break;
+                  }
+
+                  return GestureDetector(
+                    onTap: () => ref.read(fontProvider.notifier).setFontOption(fontOpt),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? primaryColor
+                            : isDark
+                                ? Colors.white.withValues(alpha: 0.05)
+                                : Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isSelected ? primaryColor : ink.withValues(alpha: 0.2),
+                          width: isSelected ? 2.5 : 1.5,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: ink,
+                                  offset: const Offset(0, 3),
+                                  blurRadius: 0,
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  fontOpt.label,
+                                  style: previewHeading,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  fontOpt.description,
+                                  style: previewBody,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          if (isSelected)
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: ink,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check_rounded,
+                                color: primaryColor,
+                                size: 14,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeBtn({
+    required IconData icon,
+    required String label,
+    required bool selected,
+    required Color primaryColor,
+    required bool isDark,
+    required Color textPrimaryColor,
+    required ValueChanged<Offset> onTap,
+  }) {
+    Offset tapPosition = Offset.zero;
+    return GestureDetector(
+      onTapDown: (details) {
+        tapPosition = details.globalPosition;
+      },
+      onTap: () => onTap(tapPosition),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected
+              ? (isDark ? Colors.white.withValues(alpha: 0.15) : Colors.white)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(999),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 0,
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: selected
+                  ? primaryColor
+                  : textPrimaryColor.withValues(alpha: 0.5),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: AppFonts.body(
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                color: selected
+                    ? primaryColor
+                    : textPrimaryColor.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1491,7 +2577,7 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(
+          style: AppFonts.body(
             fontSize: 11,
             fontWeight: FontWeight.bold,
             color: isSelected

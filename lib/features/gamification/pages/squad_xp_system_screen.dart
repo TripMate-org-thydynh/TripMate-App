@@ -20,15 +20,23 @@ class SquadXpSystemScreen extends StatelessWidget {
     final progress = _currentXP / _nextLevelXP;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Hệ Thống Squad XP 🚀', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Hệ Thống Squad XP 🚀',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -37,8 +45,10 @@ class SquadXpSystemScreen extends StatelessWidget {
           children: [
             // Circular level visual progress indicator
             Card(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              color: isDark ? const Color(0xFF262019) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -52,8 +62,12 @@ class SquadXpSystemScreen extends StatelessWidget {
                           child: CircularProgressIndicator(
                             value: progress,
                             strokeWidth: 12,
-                            backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
+                            backgroundColor: isDark
+                                ? Colors.grey[800]
+                                : Colors.grey[200],
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Colors.purpleAccent,
+                            ),
                           ),
                         ),
                         Column(
@@ -64,7 +78,9 @@ class SquadXpSystemScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.grey[400] : Colors.grey[600],
+                                color: isDark
+                                    ? Colors.grey[400]
+                                    : Colors.grey[600],
                               ),
                             ),
                             Text(
@@ -89,10 +105,13 @@ class SquadXpSystemScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Cần thêm 1,080 XP để thăng cấp tiếp theo và nhận các đặc quyền du lịch cực khủng!',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -125,10 +144,15 @@ class SquadXpSystemScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
-                      leading: const Icon(Icons.check_circle_outline, color: Colors.green),
+                      leading: const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green,
+                      ),
                       title: Text(
                         _unlockedPerks[index],
                         style: const TextStyle(fontWeight: FontWeight.bold),

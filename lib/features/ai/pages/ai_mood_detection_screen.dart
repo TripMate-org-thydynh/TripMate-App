@@ -11,15 +11,23 @@ class AiMoodDetectionScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Đo Chỉ Số Tâm Trạng Squad 🎭', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Đo Chỉ Số Tâm Trạng Squad 🎭',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -27,8 +35,10 @@ class AiMoodDetectionScreen extends StatelessWidget {
         child: Column(
           children: [
             Card(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              color: isDark ? const Color(0xFF262019) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -42,8 +52,12 @@ class AiMoodDetectionScreen extends StatelessWidget {
                           child: CircularProgressIndicator(
                             value: _tensionLevel / 5,
                             strokeWidth: 10,
-                            backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.orangeAccent),
+                            backgroundColor: isDark
+                                ? Colors.grey[800]
+                                : Colors.grey[200],
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Colors.orangeAccent,
+                            ),
                           ),
                         ),
                         Column(
@@ -59,7 +73,10 @@ class AiMoodDetectionScreen extends StatelessWidget {
                             ),
                             const Text(
                               'Độ hỗn loạn',
-                              style: TextStyle(fontSize: 11, color: Colors.grey),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
                             ),
                           ],
                         ),
@@ -68,13 +85,20 @@ class AiMoodDetectionScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     const Text(
                       'Tâm Trạng: Hơi Hỗn Loạn 🎢',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orangeAccent),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orangeAccent,
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Chỉ số này tự động tổng hợp dựa trên tần suất chia hóa đơn và số lượng tin nhắn chat dìm hàng nhau.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),

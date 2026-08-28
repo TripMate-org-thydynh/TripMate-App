@@ -6,11 +6,13 @@ class AiSavedPromptsScreen extends StatelessWidget {
   final List<Map<String, String>> _prompts = const [
     {
       'title': 'Tối ưu hóa hóa đơn của tôi 💸',
-      'prompt': 'Hãy quét và chỉ ra ai đang nợ tiền tôi nhiều nhất và đưa ra gợi ý đòi nợ hài hước.',
+      'prompt':
+          'Hãy quét và chỉ ra ai đang nợ tiền tôi nhiều nhất và đưa ra gợi ý đòi nợ hài hước.',
     },
     {
       'title': 'Lịch trình chill mây sớm 🌲',
-      'prompt': 'Gợi ý lịch trình ngắm mây 5h sáng tại Đà Lạt ít người nhất và địa điểm ăn sáng gần nhất.',
+      'prompt':
+          'Gợi ý lịch trình ngắm mây 5h sáng tại Đà Lạt ít người nhất và địa điểm ăn sáng gần nhất.',
     },
   ];
 
@@ -20,15 +22,23 @@ class AiSavedPromptsScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Các Câu Lệnh Đã Lưu 📌', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Các Câu Lệnh Đã Lưu 📌',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -46,10 +56,15 @@ class AiSavedPromptsScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
-                      leading: const Icon(Icons.bookmark_outline, color: Colors.purpleAccent),
+                      leading: const Icon(
+                        Icons.bookmark_outline,
+                        color: Colors.purpleAccent,
+                      ),
                       title: Text(
                         item['title']!,
                         style: const TextStyle(fontWeight: FontWeight.bold),

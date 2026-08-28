@@ -1,14 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class AiChatHistoryScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const AiChatHistoryScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -23,16 +23,24 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primary = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF6D3BD7);
-    final secondary = isDark ? const Color(0xFF45DFA4) : const Color(0xFF00BD85);
-    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
+    final primary = isDark ? const Color(0xFFC9B8FF) : const Color(0xFF6D3BD7);
+    final secondary = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFF00BD85);
+    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF5822B);
     final error = isDark ? const Color(0xFFFFB4AB) : const Color(0xFFD32F2F);
 
-    final bg = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
-    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
+    final bg = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF262019);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
+    final glassBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
 
     return Scaffold(
       backgroundColor: bg,
@@ -41,15 +49,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
           // Background soft aurora glow
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.topRight,
-                  radius: 1.3,
-                  colors: isDark
-                      ? [const Color(0xFF1B3F68).withValues(alpha: 0.12), Colors.transparent]
-                      : [const Color(0xFFEDF5FF).withValues(alpha: 0.4), Colors.transparent],
-                ),
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
             ),
           ),
 
@@ -58,7 +58,10 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
               children: [
                 // Custom App Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -77,11 +80,11 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                       ),
                       ShaderMask(
                         shaderCallback: (bounds) => LinearGradient(
-                          colors: [primary, secondary, tertiary],
+                          colors: [primary, primary],
                         ).createShader(bounds),
                         child: Text(
                           'trip.mate',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1.0,
@@ -94,7 +97,9 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                           if (widget.onThemeToggle != null)
                             IconButton(
                               icon: Icon(
-                                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                isDark
+                                    ? Icons.light_mode_rounded
+                                    : Icons.dark_mode_rounded,
                                 color: textPrimary.withValues(alpha: 0.7),
                               ),
                               onPressed: widget.onThemeToggle,
@@ -107,7 +112,11 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                               color: cardBg,
                               border: Border.all(color: glassBorder),
                             ),
-                            child: Icon(Icons.search, color: textPrimary, size: 18),
+                            child: Icon(
+                              Icons.search,
+                              color: textPrimary,
+                              size: 18,
+                            ),
                           ),
                         ],
                       ),
@@ -125,7 +134,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                         const SizedBox(height: 12),
                         Text(
                           'your squad\'s chaos archive.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: primary,
@@ -135,7 +144,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                         const SizedBox(height: 4),
                         Text(
                           'The Chaos Archive',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 32,
                             fontWeight: FontWeight.w900,
                             height: 1.1,
@@ -146,7 +155,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                         const SizedBox(height: 6),
                         Text(
                           'AI remembers the emotional damage.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             color: textSecondary,
@@ -165,19 +174,34 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.search, color: textSecondary, size: 20),
+                              Icon(
+                                Icons.search,
+                                color: textSecondary,
+                                size: 20,
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: TextField(
-                                  style: GoogleFonts.inter(fontSize: 14, color: textPrimary),
+                                  style: AppFonts.body(
+                                    fontSize: 14,
+                                    color: textPrimary,
+                                  ),
                                   decoration: InputDecoration(
                                     hintText: 'Search emotional damage...',
-                                    hintStyle: GoogleFonts.inter(color: textSecondary.withValues(alpha: 0.7)),
+                                    hintStyle: AppFonts.body(
+                                      color: textSecondary.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                    ),
                                     border: InputBorder.none,
                                   ),
                                 ),
                               ),
-                              Icon(Icons.filter_list_rounded, color: primary, size: 20),
+                              Icon(
+                                Icons.filter_list_rounded,
+                                color: primary,
+                                size: 20,
+                              ),
                             ],
                           ),
                         ),
@@ -190,10 +214,26 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             children: [
-                              _buildCategoryTag('All', Icons.all_inclusive_rounded, primary),
-                              _buildCategoryTag('Itineraries', Icons.folder_special, primary),
-                              _buildCategoryTag('Recommendations', Icons.star, tertiary),
-                              _buildCategoryTag('Squad Advice', Icons.forum, secondary),
+                              _buildCategoryTag(
+                                'All',
+                                Icons.all_inclusive_rounded,
+                                primary,
+                              ),
+                              _buildCategoryTag(
+                                'Itineraries',
+                                Icons.folder_special,
+                                primary,
+                              ),
+                              _buildCategoryTag(
+                                'Recommendations',
+                                Icons.star,
+                                tertiary,
+                              ),
+                              _buildCategoryTag(
+                                'Squad Advice',
+                                Icons.forum,
+                                secondary,
+                              ),
                             ],
                           ),
                         ),
@@ -202,11 +242,15 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                         // Pinned Gold
                         Row(
                           children: [
-                            Icon(Icons.push_pin_rounded, color: tertiary, size: 18),
+                            Icon(
+                              Icons.push_pin_rounded,
+                              color: tertiary,
+                              size: 18,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               'Pinned Gold',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: textPrimary,
@@ -220,7 +264,8 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                           iconColor: error,
                           badgeText: 'Critical',
                           title: 'Rain backup plan for Đà Lạt',
-                          desc: '"If it floods again, go to Maze Bar, don\'t try to scooter to the waterfall."',
+                          desc:
+                              '"If it floods again, go to Maze Bar, don\'t try to scooter to the waterfall."',
                           cardBg: cardBg,
                           glassBorder: glassBorder,
                           textPrimary: textPrimary,
@@ -232,7 +277,8 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                           iconColor: secondary,
                           badgeText: 'Saved',
                           title: 'Best late-night food spots',
-                          desc: '"That street food lady near the hostel stays open until 3AM. Legendary."',
+                          desc:
+                              '"That street food lady near the hostel stays open until 3AM. Legendary."',
                           cardBg: cardBg,
                           glassBorder: glassBorder,
                           textPrimary: textPrimary,
@@ -243,11 +289,15 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                         // Recent Processing (history)
                         Row(
                           children: [
-                            Icon(Icons.history_rounded, color: primary, size: 18),
+                            Icon(
+                              Icons.history_rounded,
+                              color: primary,
+                              size: 18,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               'Recent Processing',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: textPrimary,
@@ -259,7 +309,8 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                         _buildHistoryCard(
                           title: 'The Spicy Noodle Incident',
                           timeAgo: '2d ago',
-                          desc: 'AI Summary: Squad heavily debated spice levels. Mark cried. 10/10 would not recommend level 5 again.',
+                          desc:
+                              'AI Summary: Squad heavily debated spice levels. Mark cried. 10/10 would not recommend level 5 again.',
                           hashtag: '#FoodDamage',
                           location: 'Bangkok',
                           icon: Icons.local_fire_department_rounded,
@@ -274,7 +325,8 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                         _buildHistoryCard(
                           title: 'Lost in Shibuya',
                           timeAgo: '1w ago',
-                          desc: 'AI Summary: 45 minutes spent trying to find the specific matcha place. Resulted in accidental karaoke.',
+                          desc:
+                              'AI Summary: 45 minutes spent trying to find the specific matcha place. Resulted in accidental karaoke.',
                           hashtag: '#RouteChaos',
                           location: 'Tokyo',
                           icon: Icons.navigation_rounded,
@@ -308,7 +360,9 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected
+              ? color.withValues(alpha: 0.15)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : Colors.white24,
@@ -321,7 +375,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
             const SizedBox(width: 8),
             Text(
               label,
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: isSelected ? color : Colors.grey,
@@ -372,14 +426,17 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: iconColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         badgeText.toUpperCase(),
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 9,
                           fontWeight: FontWeight.w800,
                           color: iconColor,
@@ -392,7 +449,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                 const SizedBox(height: 6),
                 Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
@@ -401,7 +458,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                 const SizedBox(height: 4),
                 Text(
                   desc,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 12,
                     color: textSecondary,
                     height: 1.35,
@@ -448,7 +505,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
                   const SizedBox(width: 8),
                   Text(
                     title,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: textPrimary,
@@ -458,7 +515,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
               ),
               Text(
                 timeAgo,
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 11,
                   color: textSecondary.withValues(alpha: 0.7),
                 ),
@@ -468,7 +525,7 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
           const SizedBox(height: 8),
           Text(
             desc,
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 12,
               color: textSecondary,
               height: 1.4,
@@ -478,14 +535,17 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   hashtag,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: primaryColor,
@@ -494,14 +554,17 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white10,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   location,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: textSecondary,
@@ -516,7 +579,12 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
   }
 
   Widget _buildBottomNav(
-      Color surface, Color primary, Color secondary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return Positioned(
       bottom: 20,
       left: 20,
@@ -524,17 +592,17 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(32),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             height: 72,
             decoration: BoxDecoration(
               color: surface.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              border: Border.all(color: Colors.white, width: 2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 20,
+                  blurRadius: 0,
                   offset: const Offset(0, 8),
                 ),
               ],
@@ -542,27 +610,50 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.explore_rounded, 'explore', false, textMuted, primary),
+                _buildNavItem(
+                  Icons.explore_rounded,
+                  'explore',
+                  false,
+                  textMuted,
+                  primary,
+                ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () =>
+                      showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: secondary.withValues(alpha: 0.15),
-                      border: Border.all(color: secondary.withValues(alpha: 0.3)),
+                      border: Border.all(color: secondary, width: 2),
                       boxShadow: [
                         BoxShadow(
                           color: secondary.withValues(alpha: 0.3),
-                          blurRadius: 10,
+                          blurRadius: 0,
                         ),
                       ],
                     ),
-                    child: Icon(Icons.group_rounded, color: secondary, size: 24),
+                    child: Icon(
+                      Icons.group_rounded,
+                      color: secondary,
+                      size: 24,
+                    ),
                   ),
                 ),
-                _buildNavItem(Icons.map_rounded, 'map', false, textMuted, primary),
-                _buildNavItem(Icons.person_rounded, 'person', false, textMuted, primary),
+                _buildNavItem(
+                  Icons.map_rounded,
+                  'map',
+                  false,
+                  textMuted,
+                  primary,
+                ),
+                _buildNavItem(
+                  Icons.person_rounded,
+                  'person',
+                  false,
+                  textMuted,
+                  primary,
+                ),
               ],
             ),
           ),
@@ -571,7 +662,13 @@ class _AiChatHistoryScreenState extends State<AiChatHistoryScreen> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive, Color textMuted, Color primary) {
+  Widget _buildNavItem(
+    IconData icon,
+    String label,
+    bool isActive,
+    Color textMuted,
+    Color primary,
+  ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

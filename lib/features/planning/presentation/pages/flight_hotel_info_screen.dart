@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FlightHotelInfoScreen extends StatelessWidget {
@@ -15,15 +16,21 @@ class FlightHotelInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = isDarkMode;
 
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF06B6D4) : const Color(0xFFEBA83A);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF3D8BFF)
+        : const Color(0xFFFFD84D);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6),
+      backgroundColor: isDark
+          ? const Color(0xFF1A1712)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         title: Text(
           'Tickets & Booking Passes',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -45,7 +52,7 @@ class FlightHotelInfoScreen extends StatelessWidget {
                 // Digital Boarding Pass
                 Text(
                   'Active Flight Passes',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: isDark ? Colors.white : Colors.black87,
@@ -56,15 +63,18 @@ class FlightHotelInfoScreen extends StatelessWidget {
                 // ticket pass container card
                 Container(
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black,
+                      width: 2,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 15,
+                        blurRadius: 0,
                         offset: const Offset(0, 4),
                       ),
                     ],
@@ -86,16 +96,31 @@ class FlightHotelInfoScreen extends StatelessWidget {
                           children: [
                             const Text(
                               'TRIPMATE AIRLINES',
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(6)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
                               child: const Text(
                                 'TM-420',
-                                style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -110,16 +135,50 @@ class FlightHotelInfoScreen extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('HAN', style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87)),
-                                    const Text('Hanoi Airport', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                                    Text(
+                                      'HAN',
+                                      style: AppFonts.heading(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w900,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Hanoi Airport',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                                Icon(Icons.flight_takeoff, color: primaryColor, size: 28),
+                                Icon(
+                                  Icons.flight_takeoff,
+                                  color: primaryColor,
+                                  size: 28,
+                                ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Text('DLI', style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black87)),
-                                    const Text('Dalat Airport', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                                    Text(
+                                      'DLI',
+                                      style: AppFonts.heading(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w900,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Dalat Airport',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -142,7 +201,9 @@ class FlightHotelInfoScreen extends StatelessWidget {
                               height: 60,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                                color: isDark
+                                    ? Colors.white10
+                                    : Colors.black.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -150,14 +211,16 @@ class FlightHotelInfoScreen extends StatelessWidget {
                                   '|||||  ||||  |||  |||||  ||  |||||',
                                   style: GoogleFonts.libreBarcode128(
                                     fontSize: 32,
-                                    color: isDark ? Colors.white54 : Colors.black54,
+                                    color: isDark
+                                        ? Colors.white54
+                                        : Colors.black54,
                                   ),
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -166,7 +229,7 @@ class FlightHotelInfoScreen extends StatelessWidget {
                 // Hotel Details Card
                 Text(
                   'Hotel Check-Ins',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: isDark ? Colors.white : Colors.black87,
@@ -176,10 +239,13 @@ class FlightHotelInfoScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08),
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black,
+                      width: 2,
                     ),
                   ),
                   child: Row(
@@ -187,8 +253,15 @@ class FlightHotelInfoScreen extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: secondaryColor.withValues(alpha: 0.1), shape: BoxShape.circle),
-                        child: const Icon(Icons.hotel, color: Colors.orange, size: 24),
+                        decoration: BoxDecoration(
+                          color: secondaryColor.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.hotel,
+                          color: Colors.orange,
+                          size: 24,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -197,32 +270,47 @@ class FlightHotelInfoScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Ryokan Ryoko • Kyoto Koto',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: isDark ? Colors.white : Colors.black87,
                               ),
                             ),
                             const SizedBox(height: 6),
-                            const Text('Check-in: June 15, 2026 • 2:00 PM', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                            const Text(
+                              'Check-in: June 15, 2026 • 2:00 PM',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
                             const SizedBox(height: 4),
-                            const Text('Room: Traditional Tatami Room', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                            const Text(
+                              'Room: Traditional Tatami Room',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
                             const SizedBox(height: 12),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.green.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                 'Key Code: *420*',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -244,12 +332,16 @@ class FlightHotelInfoScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 8, color: Colors.grey, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 8,
+            color: Colors.grey,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,

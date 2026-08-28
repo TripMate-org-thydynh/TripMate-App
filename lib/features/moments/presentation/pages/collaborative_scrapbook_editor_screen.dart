@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,10 +14,12 @@ class CollaborativeScrapbookEditorScreen extends StatefulWidget {
   });
 
   @override
-  State<CollaborativeScrapbookEditorScreen> createState() => _CollaborativeScrapbookEditorScreenState();
+  State<CollaborativeScrapbookEditorScreen> createState() =>
+      _CollaborativeScrapbookEditorScreenState();
 }
 
-class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapbookEditorScreen> {
+class _CollaborativeScrapbookEditorScreenState
+    extends State<CollaborativeScrapbookEditorScreen> {
   final List<Map<String, dynamic>> _canvasItems = [
     {
       'id': '1',
@@ -35,7 +38,8 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
       'title': 'Chạy booooo! 🛵💨',
       'author': '- Thảo Ly -',
       'location': '📍 Đồi Đa Phú',
-      'url': 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400',
+      'url':
+          'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400',
       'angle': 0.05,
       'x': 180.0,
       'y': 150.0,
@@ -49,14 +53,25 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
       'angle': -0.02,
       'x': 50.0,
       'y': 320.0,
-    }
+    },
   ];
 
   bool _isBrushMode = false;
   Color _selectedBrushColor = const Color(0xFFFF2E93);
   final List<Offset> _simulatedStroke = [];
 
-  final List<String> _stickerTray = ['🔥', '🍻', '🌿', '🍵', '💀', '🤡', '💅', '🚀', '💖', '🍿'];
+  final List<String> _stickerTray = [
+    '🔥',
+    '🍻',
+    '🌿',
+    '🍵',
+    '💀',
+    '🤡',
+    '💅',
+    '🚀',
+    '💖',
+    '🍿',
+  ];
 
   void _spawnSticker(String emoji) {
     final random = Random();
@@ -77,7 +92,9 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Spawned sticker $emoji on canvas! Drag or customize it! ✨'),
+        content: Text(
+          'Spawned sticker $emoji on canvas! Drag or customize it! ✨',
+        ),
         duration: const Duration(seconds: 1),
         backgroundColor: const Color(0xFFFF2E93),
         behavior: SnackBarBehavior.floating,
@@ -107,11 +124,12 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bgGradStart = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDark ? const Color(0xFF151926) : const Color(0xFFF3EFE9);
+    final bgGradStart = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
     final textPrimary = isDark ? Colors.white : Colors.black87;
     final textSecondary = isDark ? Colors.white60 : Colors.black54;
-    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
 
     final neonPink = const Color(0xFFFF2E93);
     final neonCyan = const Color(0xFF00F5FF);
@@ -119,13 +137,7 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgGradStart),
         child: SafeArea(
           child: Stack(
             children: [
@@ -134,20 +146,26 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                 children: [
                   // App Bar
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+                              icon: Icon(
+                                Icons.arrow_back_ios_new,
+                                color: textPrimary,
+                              ),
                               onPressed: () => Navigator.pop(context),
                             ),
                             const SizedBox(width: 8),
                             Text(
                               'Scrapbook Editor',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.body(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: textPrimary,
@@ -157,7 +175,9 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                         ),
                         IconButton(
                           icon: Icon(
-                            isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                            isDark
+                                ? Icons.light_mode_outlined
+                                : Icons.dark_mode_outlined,
                             color: textPrimary,
                           ),
                           onPressed: widget.onThemeToggle,
@@ -182,7 +202,7 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                         const SizedBox(width: 6),
                         Text(
                           'Collaborative Session Live • 4 mates active',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 11,
                             color: textSecondary,
                             fontWeight: FontWeight.bold,
@@ -223,18 +243,25 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                           onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: const Text('Saved Scrapbook canvas layout & synced to DB! 🎨🗄️'),
+                                content: const Text(
+                                  'Saved Scrapbook canvas layout & synced to DB! 🎨🗄️',
+                                ),
                                 backgroundColor: neonPink,
                                 behavior: SnackBarBehavior.floating,
                               ),
                             );
                           },
-                          icon: const Icon(Icons.cloud_upload_outlined, size: 14),
+                          icon: const Icon(
+                            Icons.cloud_upload_outlined,
+                            size: 14,
+                          ),
                           label: const Text('Save Board'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: neonPink,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
                         ),
                       ],
@@ -244,10 +271,20 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                   // Neon Brush Colors selector if brush active
                   if (_isBrushMode)
                     Padding(
-                      padding: const EdgeInsets.only(left: 24, top: 12, right: 24),
+                      padding: const EdgeInsets.only(
+                        left: 24,
+                        top: 12,
+                        right: 24,
+                      ),
                       child: Row(
                         children: [
-                          Text('Select Neon Pen:', style: GoogleFonts.outfit(color: textPrimary, fontSize: 12)),
+                          Text(
+                            'Select Neon Pen:',
+                            style: AppFonts.body(
+                              color: textPrimary,
+                              fontSize: 12,
+                            ),
+                          ),
                           const SizedBox(width: 12),
                           _buildBrushColorDot(neonPink),
                           _buildBrushColorDot(neonCyan),
@@ -262,18 +299,25 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                   // Creative Canvas Box
                   Expanded(
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: isDark ? const Color(0xFF131A26) : Colors.white,
                         borderRadius: BorderRadius.circular(32),
                         border: Border.all(
-                          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
-                          width: 1.5,
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.05)
+                              : Colors.black,
+                          width: 2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-                            blurRadius: 20,
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.3 : 0.05,
+                            ),
+                            blurRadius: 0,
                           ),
                         ],
                       ),
@@ -282,8 +326,11 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                         child: GestureDetector(
                           onPanUpdate: _isBrushMode
                               ? (details) {
-                                  RenderBox box = context.findRenderObject() as RenderBox;
-                                  Offset local = box.globalToLocal(details.globalPosition);
+                                  RenderBox box =
+                                      context.findRenderObject() as RenderBox;
+                                  Offset local = box.globalToLocal(
+                                    details.globalPosition,
+                                  );
                                   setState(() {
                                     _simulatedStroke.add(local);
                                   });
@@ -302,7 +349,11 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                               // Render dynamic list of items on canvas
                               ..._canvasItems.map((item) {
                                 if (item['type'] == 'polaroid') {
-                                  return _buildCanvasPolaroid(item, textPrimary, cardBg);
+                                  return _buildCanvasPolaroid(
+                                    item,
+                                    textPrimary,
+                                    cardBg,
+                                  );
                                 } else if (item['type'] == 'note') {
                                   return _buildCanvasNote(item, textPrimary);
                                 } else if (item['type'] == 'sticker') {
@@ -328,14 +379,20 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                                   top: 12,
                                   left: 20,
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.black87,
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Text(
                                       '🎨 Drag finger to paint neon patterns',
-                                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 10),
+                                      style: AppFonts.body(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -354,10 +411,17 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 4,
+                          ),
                           child: Text(
                             'Tap Sticker to Spawn: ',
-                            style: GoogleFonts.outfit(color: textSecondary, fontSize: 11, fontWeight: FontWeight.bold),
+                            style: AppFonts.body(
+                              color: textSecondary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         Expanded(
@@ -377,16 +441,25 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                                   decoration: BoxDecoration(
                                     color: cardBg,
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: isDark ? Colors.white10 : Colors.black12),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white10
+                                          : Colors.black12,
+                                    ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.1),
-                                        blurRadius: 4,
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        blurRadius: 0,
                                       ),
                                     ],
                                   ),
                                   child: Center(
-                                    child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                                    child: Text(
+                                      emoji,
+                                      style: const TextStyle(fontSize: 20),
+                                    ),
                                   ),
                                 ),
                               );
@@ -419,10 +492,14 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? color : (isDark ? const Color(0xFF1E293B) : Colors.white),
+          color: active
+              ? color
+              : (isDark ? const Color(0xFF262019) : Colors.white),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: active ? Colors.transparent : (isDark ? Colors.white10 : Colors.black12),
+            color: active
+                ? Colors.transparent
+                : (isDark ? Colors.white10 : Colors.black12),
           ),
         ),
         child: Row(
@@ -431,10 +508,12 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
             const SizedBox(width: 6),
             Text(
               label,
-              style: GoogleFonts.outfit(
+              style: AppFonts.body(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: active ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                color: active
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : Colors.black87),
               ),
             ),
           ],
@@ -464,7 +543,11 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
     );
   }
 
-  Widget _buildCanvasPolaroid(Map<String, dynamic> item, Color textCol, Color cardBg) {
+  Widget _buildCanvasPolaroid(
+    Map<String, dynamic> item,
+    Color textCol,
+    Color cardBg,
+  ) {
     return Positioned(
       left: item['x'] as double,
       top: item['y'] as double,
@@ -479,7 +562,7 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 8,
+                blurRadius: 0,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -532,7 +615,7 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
                 item['author'] as String,
                 style: GoogleFonts.caveat(
                   fontSize: 11,
-                  color: Colors.black54,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -555,12 +638,12 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
           decoration: BoxDecoration(
             color: noteColor.withValues(alpha: 0.25),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: noteColor.withValues(alpha: 0.6), width: 1.5),
+            border: Border.all(
+              color: noteColor.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
             boxShadow: [
-              BoxShadow(
-                color: noteColor.withValues(alpha: 0.1),
-                blurRadius: 6,
-              ),
+              BoxShadow(color: noteColor.withValues(alpha: 0.1), blurRadius: 0),
             ],
           ),
           child: Column(
@@ -568,7 +651,7 @@ class _CollaborativeScrapbookEditorScreenState extends State<CollaborativeScrapb
             children: [
               Text(
                 item['text'] as String,
-                style: GoogleFonts.outfit(
+                style: AppFonts.body(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   color: widget.isDarkMode ? Colors.white : Colors.black87,
@@ -615,7 +698,9 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03)
+      ..color = isDark
+          ? Colors.white.withValues(alpha: 0.04)
+          : Colors.black.withValues(alpha: 0.03)
       ..strokeWidth = 1.0;
 
     double gridSpace = 25.0;

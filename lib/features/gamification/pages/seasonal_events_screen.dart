@@ -6,7 +6,8 @@ class SeasonalEventsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> _events = const [
     {
       'title': 'Kyoto Matsuri Vibe 🌸',
-      'desc': 'Chụp hình tập thể trong trang phục Kimono truyền thống tại đền thờ Fushimi Inari.',
+      'desc':
+          'Chụp hình tập thể trong trang phục Kimono truyền thống tại đền thờ Fushimi Inari.',
       'reward': '+1000 XP & Huy hiệu Độc Quyền',
       'timeLeft': 'Còn 4 ngày',
     },
@@ -25,15 +26,23 @@ class SeasonalEventsScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Sự Kiện Mùa Giải 🎉', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Sự Kiện Mùa Giải 🎉',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -50,9 +59,11 @@ class SeasonalEventsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Nhận các thử thách đặc biệt giới hạn thời gian theo mùa để nhận cúp phượt thủ độc quyền!',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -68,8 +79,10 @@ class SeasonalEventsScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
@@ -79,17 +92,24 @@ class SeasonalEventsScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: isExpired
                                       ? Colors.grey.withValues(alpha: 0.12)
-                                      : Colors.pinkAccent.withValues(alpha: 0.12),
+                                      : Colors.pinkAccent.withValues(
+                                          alpha: 0.12,
+                                        ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   item['timeLeft'] as String,
                                   style: TextStyle(
-                                    color: isExpired ? Colors.grey : Colors.pinkAccent,
+                                    color: isExpired
+                                        ? Colors.grey
+                                        : Colors.pinkAccent,
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -98,7 +118,9 @@ class SeasonalEventsScreen extends StatelessWidget {
                               Text(
                                 item['reward'] as String,
                                 style: TextStyle(
-                                  color: isExpired ? Colors.grey : Colors.purpleAccent,
+                                  color: isExpired
+                                      ? Colors.grey
+                                      : Colors.purpleAccent,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -111,14 +133,20 @@ class SeasonalEventsScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: isExpired ? Colors.grey : (isDark ? Colors.white : Colors.black87),
+                              color: isExpired
+                                  ? Colors.grey
+                                  : (isDark ? Colors.white : Colors.black87),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             item['desc'] as String,
                             style: TextStyle(
-                              color: isExpired ? Colors.grey[500] : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                              color: isExpired
+                                  ? Colors.grey[500]
+                                  : (isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[600]),
                               fontSize: 13,
                               height: 1.4,
                             ),
@@ -132,7 +160,9 @@ class SeasonalEventsScreen extends StatelessWidget {
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('🎉 Bạn đã đăng ký tham gia sự kiện mùa giải Kyoto!'),
+                                      content: Text(
+                                        '🎉 Bạn đã đăng ký tham gia sự kiện mùa giải Kyoto!',
+                                      ),
                                       backgroundColor: Colors.purple,
                                     ),
                                   );
@@ -144,7 +174,10 @@ class SeasonalEventsScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: const Text('Tham gia sự kiện 🎏', style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: const Text(
+                                  'Tham gia sự kiện 🎏',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                         ],

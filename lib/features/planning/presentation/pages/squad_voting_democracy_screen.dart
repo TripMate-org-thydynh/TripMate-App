@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -13,7 +14,8 @@ class SquadVotingDemocracyScreen extends StatefulWidget {
   });
 
   @override
-  State<SquadVotingDemocracyScreen> createState() => _SquadVotingDemocracyScreenState();
+  State<SquadVotingDemocracyScreen> createState() =>
+      _SquadVotingDemocracyScreenState();
 }
 
 class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
@@ -36,15 +38,14 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
       duration: const Duration(milliseconds: 400),
     );
 
-    _cardOffsetAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut));
+    _cardOffsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut),
+        );
 
-    _cardRotateAnimation = Tween<double>(
-      begin: 0.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut));
+    _cardRotateAnimation = Tween<double>(begin: 0.0, end: 0.0).animate(
+      CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut),
+    );
   }
 
   @override
@@ -68,15 +69,18 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
       }
     });
 
-    _cardOffsetAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: Offset(isRight ? 3.0 : -3.0, 0.5),
-    ).animate(CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut));
+    _cardOffsetAnimation =
+        Tween<Offset>(
+          begin: Offset.zero,
+          end: Offset(isRight ? 3.0 : -3.0, 0.5),
+        ).animate(
+          CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut),
+        );
 
-    _cardRotateAnimation = Tween<double>(
-      begin: 0.0,
-      end: isRight ? 0.3 : -0.3,
-    ).animate(CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut));
+    _cardRotateAnimation = Tween<double>(begin: 0.0, end: isRight ? 0.3 : -0.3)
+        .animate(
+          CurvedAnimation(parent: _cardSwipeController, curve: Curves.easeOut),
+        );
 
     _cardSwipeController.forward().then((_) {
       // Reset card position after animation
@@ -91,9 +95,9 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
         SnackBar(
           content: Text(
             _lastActionMessage,
-            style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+            style: AppFonts.body(fontWeight: FontWeight.bold),
           ),
-          backgroundColor: isRight ? const Color(0xFF10B981) : Colors.redAccent,
+          backgroundColor: isRight ? const Color(0xFF1FA85C) : Colors.redAccent,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -115,16 +119,32 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
     final isDark = widget.isDarkMode;
 
     // Harmonious palettes
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final backgroundColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final cardColor = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+    final backgroundColor = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final cardColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     final totalVotes = _vibeVotes + _nopeVotes;
-    final percentVibe = totalVotes > 0 ? (_vibeVotes / totalVotes * 100).toInt() : 50;
-    final percentNope = totalVotes > 0 ? (_nopeVotes / totalVotes * 100).toInt() : 50;
+    final percentVibe = totalVotes > 0
+        ? (_vibeVotes / totalVotes * 100).toInt()
+        : 50;
+    final percentNope = totalVotes > 0
+        ? (_nopeVotes / totalVotes * 100).toInt()
+        : 50;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -142,7 +162,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 boxShadow: [
                   BoxShadow(
                     color: primaryColor.withValues(alpha: 0.08),
-                    blurRadius: 80,
+                    blurRadius: 0,
                     spreadRadius: 35,
                   ),
                 ],
@@ -160,7 +180,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 boxShadow: [
                   BoxShadow(
                     color: secondaryColor.withValues(alpha: 0.08),
-                    blurRadius: 80,
+                    blurRadius: 0,
                     spreadRadius: 40,
                   ),
                 ],
@@ -178,14 +198,17 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Screen Title
                         Text(
                           'democracy but make it chaotic.',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             color: textPrimary,
@@ -198,11 +221,24 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                         const SizedBox(height: 28),
 
                         // Tinder Swiper Card Area
-                        _buildTinderCard(isDark, cardColor, textPrimary, textSecondary),
+                        _buildTinderCard(
+                          isDark,
+                          cardColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
                         const SizedBox(height: 24),
 
                         // Vote Progress Results
-                        _buildResultsBars(isDark, percentVibe, percentNope, textPrimary, textSecondary, primaryColor, secondaryColor),
+                        _buildResultsBars(
+                          isDark,
+                          percentVibe,
+                          percentNope,
+                          textPrimary,
+                          textSecondary,
+                          primaryColor,
+                          secondaryColor,
+                        ),
                         const SizedBox(height: 28),
 
                         // Matey Speech Bubble
@@ -229,7 +265,9 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.05),
           ),
         ),
       ),
@@ -240,7 +278,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
             children: [
               Text(
                 'trip.mate',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
                   color: textPrimary,
@@ -255,15 +293,20 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
               GestureDetector(
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Squad Energy status: Pure Chaos! ⚡🔥')),
+                    const SnackBar(
+                      content: Text('Squad Energy status: Pure Chaos! ⚡🔥'),
+                    ),
                   );
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.amber.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+                    border: Border.all(color: Colors.amber, width: 2),
                   ),
                   child: Row(
                     children: [
@@ -271,7 +314,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                       const SizedBox(width: 6),
                       Text(
                         'Current Squad Energy: Chaotic',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Colors.amber.shade400,
@@ -302,20 +345,19 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black,
+            width: 2,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.timer,
-              color: Colors.amber,
-              size: 16,
-            ),
+            const Icon(Icons.timer, color: Colors.amber, size: 16),
             const SizedBox(width: 8),
             // Required text: timerDecision in 02:45
             RichText(
@@ -327,7 +369,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                   ),
                   TextSpan(
                     text: 'Decision in 02:45',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       color: Colors.amber,
@@ -342,7 +384,12 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
     );
   }
 
-  Widget _buildTinderCard(bool isDark, Color cardColor, Color textPrimary, Color textSecondary) {
+  Widget _buildTinderCard(
+    bool isDark,
+    Color cardColor,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Column(
       children: [
         // Swiping Tinder Card
@@ -353,21 +400,25 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(28),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                 child: Container(
                   width: double.infinity,
                   height: 280,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.85),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.white.withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(
-                      color: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08),
-                      width: 1.5,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : Colors.black,
+                      width: 2,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 20,
+                        blurRadius: 0,
                         offset: const Offset(0, 10),
                       ),
                     ],
@@ -382,14 +433,17 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                           opacity: _swipeRightIntensity,
                           duration: Duration.zero,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.green, width: 3),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               'VIBE',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 color: Colors.green,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
@@ -405,14 +459,20 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                           opacity: _swipeLeftIntensity,
                           duration: Duration.zero,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.redAccent, width: 3),
+                              border: Border.all(
+                                color: Colors.redAccent,
+                                width: 3,
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               'NOPE',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 color: Colors.redAccent,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
@@ -425,7 +485,10 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                       // NOPEVIBE hidden span requirements
                       Text(
                         'NOPEVIBE',
-                        style: const TextStyle(fontSize: 0, color: Colors.transparent),
+                        style: const TextStyle(
+                          fontSize: 0,
+                          color: Colors.transparent,
+                        ),
                       ),
 
                       // Card Details
@@ -435,14 +498,19 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
-                                color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.1)
+                                    : Colors.black.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                 'Option A',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                   color: textSecondary,
@@ -452,7 +520,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                             const Spacer(),
                             Text(
                               'Coffee hopping ☕',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                                 color: textPrimary,
@@ -461,7 +529,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                             const SizedBox(height: 8),
                             Text(
                               'Exploring 3 hidden aesthetic cafes in Shibuya.',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.body(
                                 fontSize: 14,
                                 color: textSecondary,
                               ),
@@ -501,15 +569,12 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 height: 64,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF171F33) : Colors.white,
-                  border: Border.all(
-                    color: Colors.redAccent.withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
+                  color: isDark ? const Color(0xFF262019) : Colors.white,
+                  border: Border.all(color: Colors.redAccent, width: 2),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.redAccent.withValues(alpha: 0.1),
-                      blurRadius: 15,
+                      blurRadius: 0,
                     ),
                   ],
                 ),
@@ -529,21 +594,18 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 height: 64,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF171F33) : Colors.white,
-                  border: Border.all(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
+                  color: isDark ? const Color(0xFF262019) : Colors.white,
+                  border: Border.all(color: const Color(0xFF1FA85C), width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                      blurRadius: 15,
+                      color: const Color(0xFF1FA85C).withValues(alpha: 0.1),
+                      blurRadius: 0,
                     ),
                   ],
                 ),
                 child: const Icon(
                   Icons.favorite,
-                  color: Color(0xFF10B981),
+                  color: Color(0xFF1FA85C),
                   size: 28,
                 ),
               ),
@@ -562,12 +624,9 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          border: Border.all(color: Colors.white, width: 2),
         ),
-        child: Text(
-          emoji,
-          style: const TextStyle(fontSize: 20),
-        ),
+        child: Text(emoji, style: const TextStyle(fontSize: 20)),
       ),
     );
   }
@@ -586,7 +645,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
       children: [
         Text(
           'Live Democracy Results',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: textPrimary,
@@ -604,7 +663,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 // Required text: Coffee hopping
                 Text(
                   'Coffee hopping',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
@@ -613,7 +672,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 // Required text: 65% (matching live change)
                 Text(
                   '$percentVibe%',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
                     color: secondaryColor,
@@ -627,7 +686,9 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
               child: LinearProgressIndicator(
                 value: percentVibe / 100,
                 minHeight: 10,
-                backgroundColor: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                backgroundColor: isDark
+                    ? Colors.white10
+                    : Colors.black.withValues(alpha: 0.05),
                 valueColor: AlwaysStoppedAnimation<Color>(secondaryColor),
               ),
             ),
@@ -650,7 +711,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 // Required text: Night market
                 Text(
                   'Night market',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
@@ -659,7 +720,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
                 // Required text: 35%
                 Text(
                   '$percentNope%',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
                     color: primaryColor,
@@ -673,7 +734,9 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
               child: LinearProgressIndicator(
                 value: percentNope / 100,
                 minHeight: 10,
-                backgroundColor: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                backgroundColor: isDark
+                    ? Colors.white10
+                    : Colors.black.withValues(alpha: 0.05),
                 valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
               ),
             ),
@@ -688,16 +751,17 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
     );
   }
 
-  Widget _buildMateyAdvice(bool isDark, Color textPrimary, Color textSecondary) {
+  Widget _buildMateyAdvice(
+    bool isDark,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF262019) : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Colors.blueAccent.withValues(alpha: 0.2),
-          width: 1.5,
-        ),
+        border: Border.all(color: Colors.blueAccent, width: 2),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -721,7 +785,7 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
               children: [
                 Text(
                   'Matey says:',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     color: Colors.blueAccent,
@@ -745,17 +809,25 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
     );
   }
 
-  Widget _buildBottomNavigation(bool isDark, Color textSecondary, Color secondaryColor) {
+  Widget _buildBottomNavigation(
+    bool isDark,
+    Color textSecondary,
+    Color secondaryColor,
+  ) {
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           height: 80,
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.9),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.white.withValues(alpha: 0.9),
             border: Border(
               top: BorderSide(
-                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.06),
                 width: 1.5,
               ),
             ),
@@ -763,10 +835,38 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildBottomNavItem(Icons.explore, 'explore', false, isDark, textSecondary, secondaryColor),
-              _buildBottomNavItem(Icons.map, 'map', false, isDark, textSecondary, secondaryColor),
-              _buildBottomNavItem(Icons.chat_bubble, 'chat_bubble', true, isDark, textSecondary, secondaryColor),
-              _buildBottomNavItem(Icons.person, 'person', false, isDark, textSecondary, secondaryColor),
+              _buildBottomNavItem(
+                Icons.explore,
+                'explore',
+                false,
+                isDark,
+                textSecondary,
+                secondaryColor,
+              ),
+              _buildBottomNavItem(
+                Icons.map,
+                'map',
+                false,
+                isDark,
+                textSecondary,
+                secondaryColor,
+              ),
+              _buildBottomNavItem(
+                Icons.chat_bubble,
+                'chat_bubble',
+                true,
+                isDark,
+                textSecondary,
+                secondaryColor,
+              ),
+              _buildBottomNavItem(
+                Icons.person,
+                'person',
+                false,
+                isDark,
+                textSecondary,
+                secondaryColor,
+              ),
             ],
           ),
         ),
@@ -787,20 +887,16 @@ class _SquadVotingDemocracyScreenState extends State<SquadVotingDemocracyScreen>
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Navigating to $label')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Navigating to $label')));
         },
         child: Container(
           color: Colors.transparent,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: finalColor,
-                size: 26,
-              ),
+              Icon(icon, color: finalColor, size: 26),
               const SizedBox(height: 4),
               // Invisible text node for testing requirements exactly
               Text(

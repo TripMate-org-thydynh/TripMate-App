@@ -1,6 +1,6 @@
 import '../../../core/theme/theme.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/api_service.dart';
 
 class ReferralRewardsScreen extends StatefulWidget {
@@ -38,21 +38,34 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
 
     if (!mounted) return;
 
-    if (response != null && response['success'] == true) {
-      final String msg = response['message'] ?? 'Mã giới thiệu hợp lệ! ⚡🏆';
+    // ApiService đã unwrap envelope → thành công khi response khác null.
+    if (response != null) {
+      final String msg =
+          (response is Map ? response['message'] : null) as String? ??
+          'Mã giới thiệu hợp lệ! ⚡🏆';
       _codeController.clear();
-      
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          backgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E293B) : Colors.white,
-          title: Text('Thành công! 🎉', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-          content: Text(msg, style: GoogleFonts.plusJakartaSans(fontSize: 13.5)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF262019)
+              : Colors.white,
+          title: Text(
+            'Thành công! 🎉',
+            style: AppFonts.heading(fontWeight: FontWeight.bold),
+          ),
+          content: Text(msg, style: AppFonts.heading(fontSize: 13.5)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Tuyệt vời!', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+              child: Text(
+                'Tuyệt vời!',
+                style: AppFonts.heading(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -60,7 +73,9 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('❌ Không thể tự giới thiệu bản thân hoặc mã không hợp lệ!'),
+          content: Text(
+            '❌ Không thể tự giới thiệu bản thân hoặc mã không hợp lệ!',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -77,12 +92,17 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Brand design system tokens
-    final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
-    final secondaryColor = isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary;
-    final backgroundColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
-    final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
+    final primaryColor = isDark
+        ? TripMateTheme.darkPrimary
+        : TripMateTheme.lightPrimary;
+    final backgroundColor = isDark
+        ? TripMateTheme.darkBackground
+        : TripMateTheme.lightBackground;
+    final surfaceColor = isDark
+        ? TripMateTheme.darkSurface
+        : TripMateTheme.lightSurface;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -90,12 +110,15 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Giới Thiệu Bạn Bè 🎁',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
           ),
@@ -112,14 +135,12 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [primaryColor, secondaryColor],
-                ),
+                color: primaryColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: primaryColor.withValues(alpha: 0.25),
-                    blurRadius: 16,
+                    blurRadius: 0,
                   ),
                 ],
               ),
@@ -127,7 +148,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                 children: [
                   Text(
                     'MÃ GIỚI THIỆU CỦA CƯNG 🎒',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       color: Colors.white70,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
@@ -137,7 +158,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                   const SizedBox(height: 12),
                   SelectableText(
                     'MATEYCHILL',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
@@ -148,7 +169,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                   Text(
                     'Chia sẻ mã này! Mỗi khi một đứa bạn nhập mã và đăng ký thành công, cả hai sẽ nhận ngay 500 XP bứt tốc cấp độ!',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 12,
                       height: 1.4,
@@ -159,7 +180,9 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('📋 Đã sao chép mã "MATEYCHILL" vào khay nhớ tạm!'),
+                          content: Text(
+                            '📋 Đã sao chép mã "MATEYCHILL" vào khay nhớ tạm!',
+                          ),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -167,11 +190,15 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     child: Text(
                       'Sao Chép Mã ⚡',
-                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+                      style: AppFonts.heading(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -183,7 +210,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
             // Submit friend's code block
             Text(
               'Nhập mã từ bạn bè 🎫',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
                 color: isDark ? Colors.white : Colors.black87,
@@ -204,14 +231,17 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                   Expanded(
                     child: TextField(
                       controller: _codeController,
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         color: isDark ? Colors.white : Colors.black87,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
                         hintText: 'Mã của bạn bè (Ví dụ: SELF)',
-                        hintStyle: GoogleFonts.plusJakartaSans(color: Colors.grey, fontSize: 13),
+                        hintStyle: AppFonts.heading(
+                          color: Colors.grey,
+                          fontSize: 13,
+                        ),
                         border: InputBorder.none,
                       ),
                     ),
@@ -220,13 +250,16 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.purpleAccent),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.purpleAccent,
+                          ),
                         )
                       : TextButton(
                           onPressed: _submitReferralCode,
                           child: Text(
                             'Gửi Mã',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               color: primaryColor,
                               fontWeight: FontWeight.bold,
                             ),
@@ -240,7 +273,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
 
             Text(
               'Danh sách đã giới thiệu (${_referrals.length})',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
                 color: isDark ? Colors.white : Colors.black87,
@@ -258,20 +291,31 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Card(
                     color: surfaceColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
-                      leading: Icon(Icons.person_add_alt_1_outlined, color: primaryColor),
+                      leading: Icon(
+                        Icons.person_add_alt_1_outlined,
+                        color: primaryColor,
+                      ),
                       title: Text(
                         ref['name']!,
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13.5),
+                        style: AppFonts.heading(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13.5,
+                        ),
                       ),
                       subtitle: Text(
                         ref['status']!,
-                        style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: Colors.grey),
+                        style: AppFonts.heading(
+                          fontSize: 11.5,
+                          color: Colors.grey,
+                        ),
                       ),
                       trailing: Text(
                         ref['xp']!,
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
                           fontSize: 13,

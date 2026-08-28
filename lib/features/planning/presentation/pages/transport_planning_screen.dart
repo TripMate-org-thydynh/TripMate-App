@@ -1,7 +1,6 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class TransportPlanningScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -13,10 +12,12 @@ class TransportPlanningScreen extends StatefulWidget {
   });
 
   @override
-  State<TransportPlanningScreen> createState() => _TransportPlanningScreenState();
+  State<TransportPlanningScreen> createState() =>
+      _TransportPlanningScreenState();
 }
 
-class _TransportPlanningScreenState extends State<TransportPlanningScreen> with SingleTickerProviderStateMixin {
+class _TransportPlanningScreenState extends State<TransportPlanningScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -43,15 +44,29 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
     final isDark = widget.isDarkMode;
 
     // HSL-tailored premium colors
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C); // Electric Purple / Coral
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A); // Mint Green / Soft Amber
-    final bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6); // Obsidian Deep Indigo / Warm Ivory
-    
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B); // Electric Purple / Coral
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D); // Mint Green / Soft Amber
+    final bgColor = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3); // Obsidian Deep Indigo / Warm Ivory
+
     // Glass styling colors
-    final cardBg = isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.03);
-    final borderColor = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final cardBg = isDark
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.black.withValues(alpha: 0.03);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -66,12 +81,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    primaryColor.withValues(alpha: isDark ? 0.25 : 0.15),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -83,12 +93,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    secondaryColor.withValues(alpha: isDark ? 0.2 : 0.1),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -96,10 +101,8 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
           // Blur Overlay
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(
-                color: Colors.transparent,
-              ),
+              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+              child: Container(color: Colors.transparent),
             ),
           ),
 
@@ -115,24 +118,57 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 12.0,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Header title card
-                          _buildHeaderCard(isDark, textPrimary, textSecondary, primaryColor, secondaryColor, cardBg, borderColor),
+                          _buildHeaderCard(
+                            isDark,
+                            textPrimary,
+                            textSecondary,
+                            primaryColor,
+                            secondaryColor,
+                            cardBg,
+                            borderColor,
+                          ),
                           const SizedBox(height: 20),
 
                           // Grab Car Card
-                          _buildGrabCard(isDark, textPrimary, textSecondary, primaryColor, cardBg, borderColor),
+                          _buildGrabCard(
+                            isDark,
+                            textPrimary,
+                            textSecondary,
+                            primaryColor,
+                            cardBg,
+                            borderColor,
+                          ),
                           const SizedBox(height: 16),
 
                           // Walking Card
-                          _buildWalkingCard(isDark, textPrimary, textSecondary, secondaryColor, cardBg, borderColor),
+                          _buildWalkingCard(
+                            isDark,
+                            textPrimary,
+                            textSecondary,
+                            secondaryColor,
+                            cardBg,
+                            borderColor,
+                          ),
                           const SizedBox(height: 16),
 
                           // Scooter Squad Card
-                          _buildScooterCard(isDark, textPrimary, textSecondary, primaryColor, secondaryColor, cardBg, borderColor),
+                          _buildScooterCard(
+                            isDark,
+                            textPrimary,
+                            textSecondary,
+                            primaryColor,
+                            secondaryColor,
+                            cardBg,
+                            borderColor,
+                          ),
                           const SizedBox(height: 30),
                         ],
                       ),
@@ -148,7 +184,12 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
             left: 0,
             right: 0,
             bottom: 0,
-            child: _buildBottomNavigationBar(isDark, textPrimary, primaryColor, secondaryColor),
+            child: _buildBottomNavigationBar(
+              isDark,
+              textPrimary,
+              primaryColor,
+              secondaryColor,
+            ),
           ),
         ],
       ),
@@ -162,7 +203,9 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
         color: Colors.transparent,
         border: Border(
           bottom: BorderSide(
-            color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.04)
+                : Colors.black.withValues(alpha: 0.03),
             width: 1,
           ),
         ),
@@ -174,13 +217,18 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
           ClipRRect(
             borderRadius: BorderRadius.circular(99),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.04),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.black.withValues(alpha: 0.04),
                   border: Border.all(
-                    color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black,
+                    width: 2,
                   ),
                 ),
                 child: IconButton(
@@ -196,13 +244,17 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
             shaderCallback: (bounds) {
               return LinearGradient(
                 colors: isDark
-                    ? [const Color(0xFFC084FC), const Color(0xFF8B5CF6), const Color(0xFF60A5FA)]
-                    : [const Color(0xFFE0533C), const Color(0xFFF59E0B)],
+                    ? [
+                        const Color(0xFFC084FC),
+                        const Color(0xFFF5822B),
+                        const Color(0xFF60A5FA),
+                      ]
+                    : [const Color(0xFFF5822B), const Color(0xFFF5822B)],
               ).createShader(bounds);
             },
             child: Text(
               'trip.mate',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
                 fontStyle: FontStyle.italic,
@@ -217,7 +269,9 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
             children: [
               IconButton(
                 icon: Icon(
-                  widget.isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  widget.isDarkMode
+                      ? Icons.light_mode_outlined
+                      : Icons.dark_mode_outlined,
                   color: textPrimary.withValues(alpha: 0.7),
                   size: 22,
                 ),
@@ -251,11 +305,11 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                         shape: BoxShape.circle,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -278,8 +332,10 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
         border: Border.all(color: borderColor, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.05),
-            blurRadius: 20,
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.15)
+                : Colors.grey.withValues(alpha: 0.05),
+            blurRadius: 0,
             offset: const Offset(0, 8),
           ),
         ],
@@ -287,7 +343,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -299,9 +355,18 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     // Active squad avatar indicator
                     Row(
                       children: [
-                        _buildSquadAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100', 0),
-                        _buildSquadAvatar('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100', -8),
-                        _buildSquadAvatar('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', -16),
+                        _buildSquadAvatar(
+                          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                          0,
+                        ),
+                        _buildSquadAvatar(
+                          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100',
+                          -8,
+                        ),
+                        _buildSquadAvatar(
+                          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100',
+                          -16,
+                        ),
                         Transform.translate(
                           offset: const Offset(-24, 0),
                           child: Container(
@@ -309,10 +374,13 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                             height: 28,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: [primaryColor, secondaryColor],
+                              color: primaryColor,
+                              border: Border.all(
+                                color: isDark
+                                    ? const Color(0xFF1A1712)
+                                    : Colors.white,
+                                width: 1.5,
                               ),
-                              border: Border.all(color: isDark ? const Color(0xFF0B1326) : Colors.white, width: 1.5),
                             ),
                             child: const Center(
                               child: Text(
@@ -325,17 +393,20 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
 
                     // Pulse badge "syncing..."
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: secondaryColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(99),
-                        border: Border.all(color: secondaryColor.withValues(alpha: 0.3), width: 1),
+                        border: Border.all(color: secondaryColor, width: 2),
                       ),
                       child: Row(
                         children: [
@@ -353,7 +424,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                           const SizedBox(width: 6),
                           Text(
                             'syncing the squad...',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
                               color: secondaryColor,
@@ -369,7 +440,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                 // Main Heading
                 Text(
                   'the squad is moving.',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
                     color: textPrimary,
@@ -387,12 +458,16 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                         shape: BoxShape.circle,
                         color: primaryColor.withValues(alpha: 0.1),
                       ),
-                      child: Icon(Icons.my_location, color: primaryColor, size: 14),
+                      child: Icon(
+                        Icons.my_location,
+                        color: primaryColor,
+                        size: 14,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Hidden Cafe',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: textPrimary,
@@ -400,14 +475,19 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.04),
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.black.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         'Vibe: Aesthetic',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                           color: textSecondary,
@@ -420,27 +500,40 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
 
                 // Playlist suggestion bar (Pulsing glass element)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent.withValues(alpha: isDark ? 0.08 : 0.05),
+                    color: Colors.blueAccent.withValues(
+                      alpha: isDark ? 0.08 : 0.05,
+                    ),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.15)),
+                    border: Border.all(color: Colors.blueAccent, width: 2),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.music_note, color: Colors.blueAccent, size: 18),
+                      const Icon(
+                        Icons.music_note,
+                        color: Colors.blueAccent,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'Perfect time for a playlist 🎵',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: Colors.blueAccent,
                           ),
                         ),
                       ),
-                      const Icon(Icons.arrow_forward_ios, size: 10, color: Colors.blueAccent),
+                      const Icon(
+                        Icons.arrow_forward,
+                        size: 10,
+                        color: Colors.blueAccent,
+                      ),
                     ],
                   ),
                 ),
@@ -461,7 +554,10 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
-          border: Border.all(color: widget.isDarkMode ? const Color(0xFF0B1326) : Colors.white, width: 1.5),
+          border: Border.all(
+            color: widget.isDarkMode ? const Color(0xFF1A1712) : Colors.white,
+            width: 1.5,
+          ),
         ),
       ),
     );
@@ -485,7 +581,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -499,10 +595,15 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                            color: const Color(
+                              0xFF1FA85C,
+                            ).withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: const Text('🚕', style: TextStyle(fontSize: 22)),
+                          child: const Text(
+                            '🚕',
+                            style: TextStyle(fontSize: 22),
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Column(
@@ -510,7 +611,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                           children: [
                             Text(
                               'Grab Car',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                                 color: textPrimary,
@@ -519,9 +620,9 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                             const SizedBox(height: 2),
                             Text(
                               '4 mins away',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.body(
                                 fontSize: 12,
-                                color: const Color(0xFF10B981),
+                                color: const Color(0xFF1FA85C),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -531,7 +632,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     ),
                     Text(
                       '45k VND',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
                         color: textPrimary,
@@ -546,7 +647,9 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Booking request sent. Splitting 45k VND Grab ride with squad! 🚕💸'),
+                        content: Text(
+                          'Booking request sent. Splitting 45k VND Grab ride with squad! 🚕💸',
+                        ),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -555,16 +658,14 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: isDark
-                            ? [const Color(0xFF8B5CF6), const Color(0xFFDDA6FF)]
-                            : [const Color(0xFFE0533C), const Color(0xFFFCA5A5)],
-                      ),
+                      color: isDark
+                          ? const Color(0xFFF5822B)
+                          : const Color(0xFFF5822B),
                       borderRadius: BorderRadius.circular(999),
                       boxShadow: [
                         BoxShadow(
                           color: primaryColor.withValues(alpha: 0.35),
-                          blurRadius: 15,
+                          blurRadius: 0,
                           offset: const Offset(0, 5),
                         ),
                       ],
@@ -572,11 +673,15 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.call_split, color: Colors.white, size: 18),
+                        const Icon(
+                          Icons.call_split,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Split with squad',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -612,7 +717,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -632,7 +737,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     children: [
                       Text(
                         '12 min walk',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: textPrimary,
@@ -641,7 +746,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                       const SizedBox(height: 3),
                       Text(
                         'to Hidden Cafe',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 12,
                           color: textSecondary,
                         ),
@@ -650,14 +755,17 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blueAccent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     'Active Vibe',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: Colors.blueAccent,
@@ -691,7 +799,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -708,7 +816,10 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                             color: secondaryColor.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: const Text('🛵', style: TextStyle(fontSize: 22)),
+                          child: const Text(
+                            '🛵',
+                            style: TextStyle(fontSize: 22),
+                          ),
                         ),
                         const SizedBox(width: 14),
                         Column(
@@ -716,7 +827,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                           children: [
                             Text(
                               'Scooter Squad',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                                 color: textPrimary,
@@ -725,7 +836,7 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                             const SizedBox(height: 2),
                             Text(
                               'Split 2 bikes',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.body(
                                 fontSize: 12,
                                 color: textSecondary,
                               ),
@@ -737,13 +848,18 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     ClipRRect(
                       borderRadius: BorderRadius.circular(999),
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : Colors.black.withValues(alpha: 0.05),
                             border: Border.all(
-                              color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.08),
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.1)
+                                  : Colors.black,
+                              width: 2,
                             ),
                           ),
                           child: IconButton(
@@ -751,7 +867,9 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Adding squad member to scooter crew! 🛵'),
+                                  content: Text(
+                                    'Adding squad member to scooter crew! 🛵',
+                                  ),
                                   behavior: SnackBarBehavior.floating,
                                 ),
                               );
@@ -770,11 +888,15 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.people_outline, color: textSecondary, size: 16),
+                        Icon(
+                          Icons.people_outline,
+                          color: textSecondary,
+                          size: 16,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           "Vy's bike (2/2)",
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 12,
                             color: textSecondary,
                             fontWeight: FontWeight.w500,
@@ -784,10 +906,10 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
                     ),
                     Text(
                       'chaos is 8 mins away.',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFFF59E0B),
+                        color: const Color(0xFFF5822B),
                       ),
                     ),
                   ],
@@ -800,7 +922,12 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
     );
   }
 
-  Widget _buildBottomNavigationBar(bool isDark, Color textPrimary, Color primaryColor, Color secondaryColor) {
+  Widget _buildBottomNavigationBar(
+    bool isDark,
+    Color textPrimary,
+    Color primaryColor,
+    Color secondaryColor,
+  ) {
     return Container(
       margin: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
       height: 72,
@@ -808,13 +935,13 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
         color: isDark ? const Color(0x95171F33) : const Color(0xD8FFFFFF),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
-          width: 1.5,
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+          width: 2,
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
-            blurRadius: 30,
+            blurRadius: 0,
             offset: const Offset(0, 10),
           ),
         ],
@@ -822,17 +949,57 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
       child: ClipRRect(
         borderRadius: BorderRadius.circular(999),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.home_outlined, false, 'home', isDark, textPrimary, primaryColor, secondaryColor),
-                _buildNavItem(Icons.explore_outlined, true, 'explore', isDark, textPrimary, primaryColor, secondaryColor),
-                _buildNavItem(Icons.smart_toy_outlined, false, 'smart_toy', isDark, textPrimary, primaryColor, secondaryColor),
-                _buildNavItem(Icons.payments_outlined, false, 'payments', isDark, textPrimary, primaryColor, secondaryColor),
-                _buildNavItem(Icons.group_outlined, false, 'group', isDark, textPrimary, primaryColor, secondaryColor),
+                _buildNavItem(
+                  Icons.home_outlined,
+                  false,
+                  'home',
+                  isDark,
+                  textPrimary,
+                  primaryColor,
+                  secondaryColor,
+                ),
+                _buildNavItem(
+                  Icons.explore_outlined,
+                  true,
+                  'explore',
+                  isDark,
+                  textPrimary,
+                  primaryColor,
+                  secondaryColor,
+                ),
+                _buildNavItem(
+                  Icons.smart_toy_outlined,
+                  false,
+                  'smart_toy',
+                  isDark,
+                  textPrimary,
+                  primaryColor,
+                  secondaryColor,
+                ),
+                _buildNavItem(
+                  Icons.payments_outlined,
+                  false,
+                  'payments',
+                  isDark,
+                  textPrimary,
+                  primaryColor,
+                  secondaryColor,
+                ),
+                _buildNavItem(
+                  Icons.group_outlined,
+                  false,
+                  'group',
+                  isDark,
+                  textPrimary,
+                  primaryColor,
+                  secondaryColor,
+                ),
               ],
             ),
           ),
@@ -856,20 +1023,18 @@ class _TransportPlanningScreenState extends State<TransportPlanningScreen> with 
         height: 48,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: isDark ? [secondaryColor, const Color(0xFF10B981)] : [secondaryColor, const Color(0xFFFBBF24)],
-          ),
+          color: isDark ? secondaryColor : secondaryColor,
           boxShadow: [
             BoxShadow(
               color: secondaryColor.withValues(alpha: 0.4),
-              blurRadius: 12,
+              blurRadius: 0,
               offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Icon(
           icon,
-          color: isDark ? const Color(0xFF0B1326) : Colors.white,
+          color: isDark ? const Color(0xFF1A1712) : Colors.white,
           size: 24,
         ),
       );

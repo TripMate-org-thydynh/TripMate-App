@@ -1,14 +1,14 @@
 import '../../../core/theme/theme.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class ReferralCampaignScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const ReferralCampaignScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -28,7 +28,9 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
           topRight: Radius.circular(28),
         ),
       ),
-      backgroundColor: widget.isDarkMode ? TripMateTheme.darkSurface : Colors.white,
+      backgroundColor: widget.isDarkMode
+          ? TripMateTheme.darkSurface
+          : Colors.white,
       builder: (context) => Padding(
         padding: const EdgeInsets.all(28.0),
         child: Column(
@@ -37,7 +39,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
           children: [
             Text(
               'Chia sẻ liên kết giới thiệu 🔗',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
                 color: widget.isDarkMode ? Colors.white : Colors.black87,
@@ -46,7 +48,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
             const SizedBox(height: 8),
             Text(
               'Gửi link này cho bạn thân của cưng. Khi họ tải ứng dụng và tham gia squad, cưng sẽ nhận ngay 1 dấu mốc Elite!',
-              style: GoogleFonts.inter(
+              style: AppFonts.body(
                 fontSize: 12.5,
                 color: Colors.grey,
                 height: 1.4,
@@ -56,7 +58,8 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: (widget.isDarkMode ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                color: (widget.isDarkMode ? Colors.white : Colors.black)
+                    .withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: widget.isDarkMode ? Colors.white10 : Colors.black12,
@@ -69,9 +72,11 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                   Expanded(
                     child: Text(
                       'https://tripmate.app/invite/ryo_neon',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 13,
-                        color: widget.isDarkMode ? Colors.white : Colors.black87,
+                        color: widget.isDarkMode
+                            ? Colors.white
+                            : Colors.black87,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -84,7 +89,9 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('📋 Đã sao chép liên kết vào khay nhớ tạm!'),
+                          content: Text(
+                            '📋 Đã sao chép liên kết vào khay nhớ tạm!',
+                          ),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -111,21 +118,23 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: widget.isDarkMode ? TripMateTheme.darkSurface : Colors.white,
+        backgroundColor: widget.isDarkMode
+            ? TripMateTheme.darkSurface
+            : Colors.white,
         title: Text(
           'How does it work?',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+          style: AppFonts.heading(fontWeight: FontWeight.bold),
         ),
         content: Text(
           '1. Chia sẻ link giới thiệu độc quyền của cưng cho 3 đứa bạn.\n\n2. Họ tải app và kết nối tài khoản.\n\n3. Mở khóa TRỌN ĐỜI gói TripMate Elite cực VIP, miễn phí hoàn toàn!',
-          style: GoogleFonts.inter(fontSize: 13, height: 1.5),
+          style: AppFonts.body(fontSize: 13, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Đã Hiểu',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+              style: AppFonts.heading(fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -137,13 +146,27 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
-    final tertiaryColor = isDark ? TripMateTheme.darkTertiary : TripMateTheme.lightSecondary;
-    final bgColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
-    final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
-    final textPrimary = isDark ? TripMateTheme.darkTextPrimary : TripMateTheme.lightTextPrimary;
-    final textSecondary = isDark ? TripMateTheme.darkTextSecondary : TripMateTheme.lightTextSecondary;
-    final borderCol = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+    final primaryColor = isDark
+        ? TripMateTheme.darkPrimary
+        : TripMateTheme.lightPrimary;
+    final tertiaryColor = isDark
+        ? TripMateTheme.darkTertiary
+        : TripMateTheme.lightSecondary;
+    final bgColor = isDark
+        ? TripMateTheme.darkBackground
+        : TripMateTheme.lightBackground;
+    final surfaceColor = isDark
+        ? TripMateTheme.darkSurface
+        : TripMateTheme.lightSurface;
+    final textPrimary = isDark
+        ? TripMateTheme.darkTextPrimary
+        : TripMateTheme.lightTextPrimary;
+    final textSecondary = isDark
+        ? TripMateTheme.darkTextSecondary
+        : TripMateTheme.lightTextSecondary;
+    final borderCol = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.black.withValues(alpha: 0.08);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -157,13 +180,13 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withValues(alpha: 0.15),
-                      blurRadius: 100,
-                    ),
-                  ],
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withValues(alpha: 0.15),
+                    blurRadius: 0,
+                  ),
+                ],
               ),
             ),
           ),
@@ -189,7 +212,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                             const SizedBox(width: 4),
                             Text(
                               'trip.mate',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.body(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w900,
                                 color: primaryColor,
@@ -202,7 +225,9 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                           children: [
                             IconButton(
                               icon: Icon(
-                                isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                                isDark
+                                    ? Icons.light_mode_outlined
+                                    : Icons.dark_mode_outlined,
                                 color: primaryColor,
                               ),
                               onPressed: widget.onThemeToggle,
@@ -214,8 +239,13 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                                 border: Border.all(color: borderCol),
                               ),
                               child: IconButton(
-                                icon: Icon(Icons.notifications_none, color: textPrimary),
-                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.notifications_none,
+                                  color: textPrimary,
+                                ),
+                                onPressed: () => showGlobalSnack(
+                                  'Tính năng đang được hoàn thiện 🚧',
+                                ),
                               ),
                             ),
                           ],
@@ -228,7 +258,10 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
 
                   // Campaign Exclusive tag banner
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: tertiaryColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
@@ -236,11 +269,15 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.workspace_premium, color: tertiaryColor, size: 12),
+                        Icon(
+                          Icons.workspace_premium,
+                          color: tertiaryColor,
+                          size: 12,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'EXCLUSIVE OFFER',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                             color: tertiaryColor,
@@ -255,7 +292,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                   // Slogans
                   Text(
                     'bring the squad.\nunlock elite vibes.',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
                       height: 1.2,
@@ -265,7 +302,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Refer 3 friends to get trip.mate Elite for life.',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 14,
                       color: textSecondary,
                     ),
@@ -290,7 +327,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                           children: [
                             Text(
                               'Your Squad',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                                 color: textPrimary,
@@ -298,7 +335,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                             ),
                             Text(
                               '$_spotsFilled / 3',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.body(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 18,
                                 color: primaryColor,
@@ -309,7 +346,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                         const SizedBox(height: 6),
                         Text(
                           '${3 - _spotsFilled} spots remaining for lifetime Elite access.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 11,
                             color: textSecondary,
                           ),
@@ -339,29 +376,28 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                       height: 56,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999),
-                        gradient: LinearGradient(
-                          colors: [
-                            primaryColor,
-                            tertiaryColor,
-                          ],
-                        ),
+                        color: primaryColor,
                         boxShadow: [
                           BoxShadow(
                             color: primaryColor.withValues(alpha: 0.35),
-                            blurRadius: 15,
+                            blurRadius: 0,
                             offset: const Offset(0, 5),
-                          )
+                          ),
                         ],
                       ),
                       child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.ios_share, color: Colors.white, size: 18),
+                            const Icon(
+                              Icons.ios_share,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Share Invite Link',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
@@ -381,7 +417,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                       onPressed: _showInstruction,
                       child: Text(
                         'How does it work?',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontWeight: FontWeight.bold,
                           color: textSecondary,
                           fontSize: 13,
@@ -408,17 +444,14 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isFilled ? color.withValues(alpha: 0.15) : Colors.transparent,
-        border: Border.all(
-          color: isFilled ? color : Colors.grey.withValues(alpha: 0.4),
-          width: 2.0,
-        ),
+        border: Border.all(color: isFilled ? color : Colors.grey, width: 2),
       ),
       child: Center(
         child: isFilled
             ? Icon(Icons.star, color: color, size: 24)
             : Text(
                 '$spotNum',
-                style: GoogleFonts.outfit(
+                style: AppFonts.body(
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
                   fontSize: 16,

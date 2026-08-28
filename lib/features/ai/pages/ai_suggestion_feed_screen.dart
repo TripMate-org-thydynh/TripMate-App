@@ -1,14 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class AiSuggestionFeedScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const AiSuggestionFeedScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -21,15 +21,23 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primary = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF6D3BD7);
-    final secondary = isDark ? const Color(0xFF45DFA4) : const Color(0xFF00BD85);
-    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
+    final primary = isDark ? const Color(0xFFC9B8FF) : const Color(0xFF6D3BD7);
+    final secondary = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFF00BD85);
+    final tertiary = isDark ? const Color(0xFFFFB783) : const Color(0xFFF5822B);
 
-    final bg = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
-    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
+    final bg = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF262019);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
+    final glassBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
 
     return Scaffold(
       backgroundColor: bg,
@@ -38,15 +46,7 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
           // Background soft aurora glow
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.bottomLeft,
-                  radius: 1.3,
-                  colors: isDark
-                      ? [const Color(0xFF2C1B4D).withValues(alpha: 0.12), Colors.transparent]
-                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.35), Colors.transparent],
-                ),
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
             ),
           ),
 
@@ -55,7 +55,10 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
               children: [
                 // Custom App Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -69,16 +72,20 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                             color: cardBg,
                             border: Border.all(color: glassBorder),
                           ),
-                          child: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 16),
+                          child: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: textPrimary,
+                            size: 16,
+                          ),
                         ),
                       ),
                       ShaderMask(
                         shaderCallback: (bounds) => LinearGradient(
-                          colors: [primary, secondary, tertiary],
+                          colors: [primary, primary],
                         ).createShader(bounds),
                         child: Text(
                           'trip.mate',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -1.0,
@@ -91,7 +98,9 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                           if (widget.onThemeToggle != null)
                             IconButton(
                               icon: Icon(
-                                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                isDark
+                                    ? Icons.light_mode_rounded
+                                    : Icons.dark_mode_rounded,
                                 color: textPrimary.withValues(alpha: 0.7),
                               ),
                               onPressed: widget.onThemeToggle,
@@ -104,7 +113,11 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                               color: cardBg,
                               border: Border.all(color: glassBorder),
                             ),
-                            child: Icon(Icons.notifications, color: primary, size: 18),
+                            child: Icon(
+                              Icons.notifications,
+                              color: primary,
+                              size: 18,
+                            ),
                           ),
                         ],
                       ),
@@ -124,19 +137,26 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: tertiary.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: tertiary.withValues(alpha: 0.25)),
+                                border: Border.all(color: tertiary, width: 2),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.local_cafe_rounded, color: tertiary, size: 14),
+                                  Icon(
+                                    Icons.local_cafe_rounded,
+                                    color: tertiary,
+                                    size: 14,
+                                  ),
                                   const SizedBox(width: 6),
                                   RichText(
                                     text: TextSpan(
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
                                         color: textPrimary,
@@ -145,7 +165,10 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                         const TextSpan(text: 'Squad Vibe: '),
                                         TextSpan(
                                           text: 'Caffeine-Deprived',
-                                          style: TextStyle(color: tertiary, fontWeight: FontWeight.w800),
+                                          style: TextStyle(
+                                            color: tertiary,
+                                            fontWeight: FontWeight.w800,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -158,7 +181,7 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                         const SizedBox(height: 16),
                         Text(
                           'Squad Suggestion Feed',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -0.5,
@@ -167,7 +190,7 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                         ),
                         Text(
                           'AI-powered updates keeping your squad synced in real-time.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 12,
                             color: textSecondary,
                           ),
@@ -183,8 +206,10 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                           textSecondary: textSecondary,
                           tagText: 'Matey AI Insight',
                           tagColor: primary,
-                          headline: '☔ rain starts in 30 mins— switching to cafe mode.',
-                          description: 'the AI knows your chaos too well. Found a highly-rated spot 5 mins away.',
+                          headline:
+                              '☔ rain starts in 30 mins— switching to cafe mode.',
+                          description:
+                              'the AI knows your chaos too well. Found a highly-rated spot 5 mins away.',
                           actions: Row(
                             children: [
                               Expanded(
@@ -192,16 +217,20 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                   height: 48,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    gradient: LinearGradient(
-                                      colors: [primary, const Color(0xFF8B5CF6)],
-                                    ),
+                                    color: primary,
                                   ),
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
-                                    icon: const Icon(Icons.route, color: Colors.white, size: 16),
+                                    onPressed: () => showGlobalSnack(
+                                      'Tính năng đang được hoàn thiện 🚧',
+                                    ),
+                                    icon: const Icon(
+                                      Icons.route,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
                                     label: Text(
                                       'Route Me',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
                                         color: Colors.white,
@@ -210,7 +239,9 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.transparent,
                                       shadowColor: Colors.transparent,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -225,8 +256,14 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                   border: Border.all(color: glassBorder),
                                 ),
                                 child: IconButton(
-                                  icon: const Icon(Icons.favorite_rounded, color: Colors.white, size: 20),
-                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.favorite_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  onPressed: () => showGlobalSnack(
+                                    'Tính năng đang được hoàn thiện 🚧',
+                                  ),
                                 ),
                               ),
                             ],
@@ -243,8 +280,10 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                           textSecondary: textSecondary,
                           tagText: 'Matey AI Insight',
                           tagColor: secondary,
-                          headline: '🍜 your squad would destroy this BBQ place.',
-                          description: 'Matches 4/4 squad dietary preferences. High energy vibe.',
+                          headline:
+                              '🍜 your squad would destroy this BBQ place.',
+                          description:
+                              'Matches 4/4 squad dietary preferences. High energy vibe.',
                           actions: Row(
                             children: [
                               Expanded(
@@ -252,16 +291,20 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                   height: 48,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    gradient: LinearGradient(
-                                      colors: [secondary, const Color(0xFF00AD75)],
-                                    ),
+                                    color: secondary,
                                   ),
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
-                                    icon: const Icon(Icons.done_all_rounded, color: Colors.white, size: 16),
+                                    onPressed: () => showGlobalSnack(
+                                      'Tính năng đang được hoàn thiện 🚧',
+                                    ),
+                                    icon: const Icon(
+                                      Icons.done_all_rounded,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
                                     label: Text(
                                       'Vibe Check',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
                                         color: Colors.white,
@@ -270,7 +313,9 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.transparent,
                                       shadowColor: Colors.transparent,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -285,19 +330,29 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                   border: Border.all(color: glassBorder),
                                 ),
                                 child: IconButton(
-                                  icon: const Icon(Icons.share_rounded, color: Colors.white, size: 20),
-                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.share_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  onPressed: () => showGlobalSnack(
+                                    'Tính năng đang được hoàn thiện 🚧',
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                           extraInfo: Row(
                             children: [
-                              Icon(Icons.check_circle_rounded, color: secondary, size: 12),
+                              Icon(
+                                Icons.check_circle_rounded,
+                                color: secondary,
+                                size: 12,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 '+1 ready to eat',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: secondary,
@@ -318,7 +373,8 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                           tagText: 'Time Sensitive',
                           tagColor: tertiary,
                           headline: '📸 golden hour starts in 18 mins',
-                          description: 'Head to the rooftop for peak lighting. It\'s giving main character energy.',
+                          description:
+                              'Head to the rooftop for peak lighting. It\'s giving main character energy.',
                           actions: Row(
                             children: [
                               Expanded(
@@ -326,16 +382,20 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                   height: 48,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    gradient: LinearGradient(
-                                      colors: [tertiary, const Color(0xFFD67C00)],
-                                    ),
+                                    color: tertiary,
                                   ),
                                   child: ElevatedButton.icon(
-                                    onPressed: () {},
-                                    icon: const Icon(Icons.directions_walk_rounded, color: Colors.white, size: 16),
+                                    onPressed: () => showGlobalSnack(
+                                      'Tính năng đang được hoàn thiện 🚧',
+                                    ),
+                                    icon: const Icon(
+                                      Icons.directions_walk_rounded,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
                                     label: Text(
                                       'Let\'s Go',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
                                         color: Colors.white,
@@ -344,7 +404,9 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.transparent,
                                       shadowColor: Colors.transparent,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -399,7 +461,7 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
                   const SizedBox(width: 8),
                   Text(
                     tagText,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: tagColor,
@@ -414,7 +476,7 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
           const SizedBox(height: 16),
           Text(
             headline,
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 18,
               fontWeight: FontWeight.w900,
               color: textPrimary,
@@ -424,7 +486,7 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
           const SizedBox(height: 8),
           Text(
             description,
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 13,
               color: textSecondary,
               height: 1.4,
@@ -438,7 +500,12 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
   }
 
   Widget _buildBottomNav(
-      Color surface, Color primary, Color secondary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return Positioned(
       bottom: 20,
       left: 20,
@@ -446,17 +513,17 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(32),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             height: 72,
             decoration: BoxDecoration(
               color: surface.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              border: Border.all(color: Colors.white, width: 2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 20,
+                  blurRadius: 0,
                   offset: const Offset(0, 8),
                 ),
               ],
@@ -465,26 +532,49 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () =>
+                      showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: secondary.withValues(alpha: 0.15),
-                      border: Border.all(color: secondary.withValues(alpha: 0.3)),
+                      border: Border.all(color: secondary, width: 2),
                       boxShadow: [
                         BoxShadow(
                           color: secondary.withValues(alpha: 0.3),
-                          blurRadius: 10,
+                          blurRadius: 0,
                         ),
                       ],
                     ),
-                    child: Icon(Icons.explore_rounded, color: secondary, size: 24),
+                    child: Icon(
+                      Icons.explore_rounded,
+                      color: secondary,
+                      size: 24,
+                    ),
                   ),
                 ),
-                _buildNavItem(Icons.group_rounded, 'group', false, textMuted, primary),
-                _buildNavItem(Icons.map_rounded, 'map', false, textMuted, primary),
-                _buildNavItem(Icons.person_rounded, 'person', false, textMuted, primary),
+                _buildNavItem(
+                  Icons.group_rounded,
+                  'group',
+                  false,
+                  textMuted,
+                  primary,
+                ),
+                _buildNavItem(
+                  Icons.map_rounded,
+                  'map',
+                  false,
+                  textMuted,
+                  primary,
+                ),
+                _buildNavItem(
+                  Icons.person_rounded,
+                  'person',
+                  false,
+                  textMuted,
+                  primary,
+                ),
               ],
             ),
           ),
@@ -493,7 +583,13 @@ class _AiSuggestionFeedScreenState extends State<AiSuggestionFeedScreen> {
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive, Color textMuted, Color primary) {
+  Widget _buildNavItem(
+    IconData icon,
+    String label,
+    bool isActive,
+    Color textMuted,
+    Color primary,
+  ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

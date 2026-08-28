@@ -1,5 +1,7 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/app_messenger.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SquadActivityFeedScreen extends StatefulWidget {
@@ -13,7 +15,8 @@ class SquadActivityFeedScreen extends StatefulWidget {
   });
 
   @override
-  State<SquadActivityFeedScreen> createState() => _SquadActivityFeedScreenState();
+  State<SquadActivityFeedScreen> createState() =>
+      _SquadActivityFeedScreenState();
 }
 
 class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
@@ -38,11 +41,15 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final primaryColor = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF7C3AED);
-    final secondaryColor = isDark ? const Color(0xFF45DFA4) : const Color(0xFF059669);
-    final bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final cardBg = isDark ? const Color(0xFF1A2340) : Colors.white;
-    final textPrimary = isDark ? Colors.white : const Color(0xFF0F172A);
+    final primaryColor = isDark
+        ? const Color(0xFFC9B8FF)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFF059669);
+    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF141210);
     final textMuted = isDark ? Colors.white60 : Colors.black54;
 
     return Scaffold(
@@ -66,7 +73,7 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                     children: [
                       Text(
                         'Squad Activity',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 26,
                           fontWeight: FontWeight.w900,
                           color: textPrimary,
@@ -75,7 +82,10 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                       ),
                       Text(
                         'Live updates from the trip ⚡️',
-                        style: GoogleFonts.inter(fontSize: 13, color: textMuted),
+                        style: AppFonts.body(
+                          fontSize: 13,
+                          color: textMuted,
+                        ),
                       ),
                     ],
                   ),
@@ -83,19 +93,26 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                   AnimatedBuilder(
                     animation: _livePulse,
                     builder: (_, child) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1A2340) : Colors.white,
+                        color: isDark ? const Color(0xFF262019) : Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: primaryColor.withValues(alpha: 0.4 + 0.3 * _livePulse.value),
+                          color: primaryColor.withValues(
+                            alpha: 0.4 + 0.3 * _livePulse.value,
+                          ),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: primaryColor.withValues(alpha: 0.2 * _livePulse.value),
-                            blurRadius: 12,
-                          )
+                            color: primaryColor.withValues(
+                              alpha: 0.2 * _livePulse.value,
+                            ),
+                            blurRadius: 0,
+                          ),
                         ],
                       ),
                       child: Row(
@@ -108,17 +125,19 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                               color: const Color(0xFF4ADE80),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF4ADE80).withValues(alpha: 0.7 * _livePulse.value),
-                                  blurRadius: 6,
+                                  color: const Color(
+                                    0xFF4ADE80,
+                                  ).withValues(alpha: 0.7 * _livePulse.value),
+                                  blurRadius: 0,
                                   spreadRadius: 1,
-                                )
+                                ),
                               ],
                             ),
                           ),
                           const SizedBox(width: 6),
                           Text(
                             'Live',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.body(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: textPrimary,
@@ -141,36 +160,68 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                 physics: const BouncingScrollPhysics(),
                 children: [
                   // ITEM 1: Thảo Ly uploaded memories
-                  _buildMemoryUploadItem(isDark, primaryColor, secondaryColor, cardBg, textPrimary, textMuted),
+                  _buildMemoryUploadItem(
+                    isDark,
+                    primaryColor,
+                    secondaryColor,
+                    cardBg,
+                    textPrimary,
+                    textMuted,
+                  ),
                   const SizedBox(height: 14),
 
                   // ITEM 2: Nam Trung paid
-                  _buildPaymentItem(isDark, primaryColor, secondaryColor, cardBg, textPrimary, textMuted),
+                  _buildPaymentItem(
+                    isDark,
+                    primaryColor,
+                    secondaryColor,
+                    cardBg,
+                    textPrimary,
+                    textMuted,
+                  ),
                   const SizedBox(height: 14),
 
                   // ITEM 3: Phú Khang unlocked chaos bingo
-                  _buildBingoItem(isDark, primaryColor, secondaryColor, cardBg, textPrimary, textMuted),
+                  _buildBingoItem(
+                    isDark,
+                    primaryColor,
+                    secondaryColor,
+                    cardBg,
+                    textPrimary,
+                    textMuted,
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(isDark, primaryColor, secondaryColor),
+      bottomNavigationBar: _buildBottomNav(
+        isDark,
+        primaryColor,
+        secondaryColor,
+      ),
     );
   }
 
-  Widget _buildAppBar(bool isDark, Color primaryColor, Color secondaryColor, Color textPrimary) {
+  Widget _buildAppBar(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color textPrimary,
+  ) {
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           decoration: BoxDecoration(
             color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
             border: Border(
               bottom: BorderSide(
-                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -184,14 +235,16 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                   height: 38,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.05),
                   ),
                   child: Icon(Icons.diamond, color: primaryColor, size: 20),
                 ),
               ),
               Text(
                 'trip.mate',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 22,
                   fontWeight: FontWeight.w900,
                   fontStyle: FontStyle.italic,
@@ -214,14 +267,22 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
     );
   }
 
-  Widget _buildMemoryUploadItem(bool isDark, Color primaryColor, Color secondaryColor, Color cardBg, Color textPrimary, Color textMuted) {
+  Widget _buildMemoryUploadItem(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color cardBg,
+    Color textPrimary,
+    Color textMuted,
+  ) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+          width: 2,
         ),
       ),
       child: Column(
@@ -236,9 +297,11 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: primaryColor.withValues(alpha: 0.15),
-                  border: Border.all(color: primaryColor.withValues(alpha: 0.4), width: 1.5),
+                  border: Border.all(color: primaryColor, width: 2),
                 ),
-                child: const Center(child: Text('📸', style: TextStyle(fontSize: 18))),
+                child: const Center(
+                  child: Text('📸', style: TextStyle(fontSize: 18)),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -250,7 +313,7 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                         children: [
                           TextSpan(
                             text: 'Thảo Ly ',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.body(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: textPrimary,
@@ -258,7 +321,7 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                           ),
                           TextSpan(
                             text: 'uploaded 6 memories 📸',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.body(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               color: textMuted,
@@ -267,7 +330,10 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                         ],
                       ),
                     ),
-                    Text('2m ago', style: TextStyle(fontSize: 11, color: textMuted)),
+                    Text(
+                      '2m ago',
+                      style: TextStyle(fontSize: 11, color: textMuted),
+                    ),
                   ],
                 ),
               ),
@@ -285,9 +351,11 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: primaryColor.withValues(alpha: 0.1 + e.key * 0.03),
-                    border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+                    border: Border.all(color: primaryColor, width: 2),
                   ),
-                  child: Center(child: Text(e.value, style: const TextStyle(fontSize: 24))),
+                  child: Center(
+                    child: Text(e.value, style: const TextStyle(fontSize: 24)),
+                  ),
                 );
               }),
               Container(
@@ -301,7 +369,7 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                 child: Center(
                   child: Text(
                     '+4',
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.body(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: primaryColor,
@@ -320,14 +388,19 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
               _buildReactionChip('😍', '2', isDark),
               const Spacer(),
               GestureDetector(
-                onTap: () {},
+                onTap: () =>
+                    showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
                 child: Container(
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
-                    border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.05),
+                    border: Border.all(
+                      color: isDark ? Colors.white12 : Colors.black12,
+                    ),
                   ),
                   child: Icon(Icons.add_reaction, size: 16, color: textMuted),
                 ),
@@ -339,14 +412,22 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
     );
   }
 
-  Widget _buildPaymentItem(bool isDark, Color primaryColor, Color secondaryColor, Color cardBg, Color textPrimary, Color textMuted) {
+  Widget _buildPaymentItem(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color cardBg,
+    Color textPrimary,
+    Color textMuted,
+  ) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+          width: 2,
         ),
       ),
       child: Row(
@@ -357,7 +438,11 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
               shape: BoxShape.circle,
               color: Colors.green.withValues(alpha: 0.12),
             ),
-            child: const Icon(Icons.payments_outlined, color: Colors.green, size: 22),
+            child: const Icon(
+              Icons.payments_outlined,
+              color: Colors.green,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -369,19 +454,36 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                     children: [
                       TextSpan(
                         text: 'Nam Trung ',
-                        style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: textPrimary),
+                        style: AppFonts.body(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: textPrimary,
+                        ),
                       ),
                       TextSpan(
                         text: 'paid 120k 💸',
-                        style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w500, color: textMuted),
+                        style: AppFonts.body(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: textMuted,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text('Late night Pho runs', style: GoogleFonts.inter(fontSize: 13, color: textMuted)),
+                Text(
+                  'Late night Pho runs',
+                  style: AppFonts.body(fontSize: 13, color: textMuted),
+                ),
                 const SizedBox(height: 4),
-                Text('45m ago', style: TextStyle(fontSize: 11, color: textMuted.withValues(alpha: 0.7))),
+                Text(
+                  '45m ago',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: textMuted.withValues(alpha: 0.7),
+                  ),
+                ),
               ],
             ),
           ),
@@ -393,7 +495,7 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
             ),
             child: Text(
               '120k ₫',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
                 color: Colors.green,
@@ -405,14 +507,22 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
     );
   }
 
-  Widget _buildBingoItem(bool isDark, Color primaryColor, Color secondaryColor, Color cardBg, Color textPrimary, Color textMuted) {
+  Widget _buildBingoItem(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color cardBg,
+    Color textPrimary,
+    Color textMuted,
+  ) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+          width: 2,
         ),
       ),
       child: Column(
@@ -427,7 +537,9 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                   shape: BoxShape.circle,
                   color: Colors.orange.withValues(alpha: 0.15),
                 ),
-                child: const Center(child: Text('🛵', style: TextStyle(fontSize: 20))),
+                child: const Center(
+                  child: Text('🛵', style: TextStyle(fontSize: 20)),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -439,16 +551,27 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                         children: [
                           TextSpan(
                             text: 'Phú Khang ',
-                            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: textPrimary),
+                            style: AppFonts.body(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: textPrimary,
+                            ),
                           ),
                           TextSpan(
                             text: 'unlocked chaos bingo 🔥',
-                            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w500, color: textMuted),
+                            style: AppFonts.body(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: textMuted,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    Text('2h ago', style: TextStyle(fontSize: 11, color: textMuted)),
+                    Text(
+                      '2h ago',
+                      style: TextStyle(fontSize: 11, color: textMuted),
+                    ),
                   ],
                 ),
               ),
@@ -459,10 +582,13 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: isDark ? Colors.white12 : Colors.black.withValues(alpha: 0.06),
+                color: isDark ? Colors.white12 : Colors.black,
+                width: 2,
               ),
             ),
             child: Text(
@@ -482,7 +608,11 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
               const SizedBox(width: 6),
               Text(
                 '3/9 Bingo squares completed',
-                style: GoogleFonts.inter(fontSize: 12, color: textMuted, fontWeight: FontWeight.w600),
+                style: AppFonts.body(
+                  fontSize: 12,
+                  color: textMuted,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Spacer(),
               // Mini 3x3 bingo grid
@@ -502,8 +632,8 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                       color: i < 3
                           ? Colors.orange.withValues(alpha: 0.5)
                           : isDark
-                              ? Colors.white12
-                              : Colors.black12,
+                          ? Colors.white12
+                          : Colors.black12,
                     ),
                   ),
                 ),
@@ -517,44 +647,67 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
 
   Widget _buildReactionChip(String emoji, String count, bool isDark) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () => showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          color: isDark ? Colors.white.withValues(alpha: 0.07) : Colors.black.withValues(alpha: 0.05),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.07)
+              : Colors.black.withValues(alpha: 0.05),
           border: Border.all(color: isDark ? Colors.white12 : Colors.black12),
         ),
         child: Row(
           children: [
             Text(emoji, style: const TextStyle(fontSize: 14)),
             const SizedBox(width: 5),
-            Text(count, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isDark ? Colors.white70 : Colors.black54)),
+            Text(
+              count,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBottomNav(bool isDark, Color primaryColor, Color secondaryColor) {
+  Widget _buildBottomNav(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+  ) {
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           height: 80,
           decoration: BoxDecoration(
             color: isDark ? const Color(0x80171F33) : const Color(0xC0FFFFFF),
             border: Border(
               top: BorderSide(
-                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.06),
               ),
             ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Icon(Icons.map_outlined, color: isDark ? Colors.white38 : Colors.black38, size: 26),
-              Icon(Icons.add_circle_outline, color: isDark ? Colors.white38 : Colors.black38, size: 26),
+              Icon(
+                Icons.map_outlined,
+                color: isDark ? Colors.white38 : Colors.black38,
+                size: 26,
+              ),
+              Icon(
+                Icons.add_circle_outline,
+                color: isDark ? Colors.white38 : Colors.black38,
+                size: 26,
+              ),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -563,8 +716,16 @@ class _SquadActivityFeedScreenState extends State<SquadActivityFeedScreen>
                 ),
                 child: Icon(Icons.auto_awesome, color: primaryColor, size: 26),
               ),
-              Icon(Icons.search_outlined, color: isDark ? Colors.white38 : Colors.black38, size: 26),
-              Icon(Icons.person_outline, color: isDark ? Colors.white38 : Colors.black38, size: 26),
+              Icon(
+                Icons.search_outlined,
+                color: isDark ? Colors.white38 : Colors.black38,
+                size: 26,
+              ),
+              Icon(
+                Icons.person_outline,
+                color: isDark ? Colors.white38 : Colors.black38,
+                size: 26,
+              ),
             ],
           ),
         ),

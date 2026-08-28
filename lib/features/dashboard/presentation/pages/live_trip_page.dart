@@ -1,7 +1,6 @@
 import 'dart:math';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../../discovery/presentation/pages/live_map_squad_tracking_screen.dart';
 
 class LiveTripPage extends StatefulWidget {
@@ -18,7 +17,8 @@ class LiveTripPage extends StatefulWidget {
   State<LiveTripPage> createState() => _LiveTripPageState();
 }
 
-class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMixin {
+class _LiveTripPageState extends State<LiveTripPage>
+    with TickerProviderStateMixin {
   late final AnimationController _shakeController;
   late final AnimationController _particlesController;
   final List<Particle> _particles = [];
@@ -32,12 +32,11 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _particlesController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..addListener(() {
-        setState(() {});
-      });
+    _particlesController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2))
+          ..addListener(() {
+            setState(() {});
+          });
   }
 
   @override
@@ -81,15 +80,23 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    
-    final bgColor = isDark ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
-    final cardBg = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+
+    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
+    final glassBorder = textPrimary; // viền ink brutalist
 
     if (_particlesController.isAnimating) {
       for (var p in _particles) {
@@ -103,21 +110,6 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
       backgroundColor: bgColor,
       body: Stack(
         children: [
-          // Background aura glow
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.topRight,
-                  radius: 1.2,
-                  colors: isDark
-                      ? [const Color(0xFF3F1B68).withValues(alpha: 0.15), Colors.transparent]
-                      : [const Color(0xFFF5EDFF).withValues(alpha: 0.4), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -133,12 +125,12 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [Color(0xFFD0BCFF), Color(0xFF45DFA4)],
+                            shaderCallback: (bounds) => LinearGradient(
+                              colors: [textPrimary, textPrimary],
                             ).createShader(bounds),
                             child: Text(
                               'Đà Lạt Chill 🌲',
-                              style: GoogleFonts.outfit(
+                              style: AppFonts.body(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white,
@@ -148,7 +140,7 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                           ),
                           Text(
                             'Active squad members: 6 idiots',
-                            style: GoogleFonts.inter(
+                            style: AppFonts.body(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: secondaryColor,
@@ -169,19 +161,30 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                           );
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
                           ),
-                          child: const Row(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD8422B),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(color: glassBorder, width: 2),
+                          ),
+                          child: Row(
                             children: [
-                              Icon(Icons.gps_fixed, color: Colors.redAccent, size: 14),
-                              SizedBox(width: 6),
+                              const Icon(
+                                Icons.gps_fixed,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 6),
                               Text(
                                 'LIVE MAP',
-                                style: TextStyle(color: Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold),
+                                style: AppFonts.mono(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
@@ -209,11 +212,11 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(24),
                         color: cardBg,
-                        border: Border.all(color: glassBorder),
+                        border: Border.all(color: glassBorder, width: 2),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 15,
+                            color: glassBorder,
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -223,13 +226,32 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                           children: [
                             Positioned.fill(
                               child: CustomPaint(
-                                painter: MiniMapGridPainter(isDark: isDark, primaryColor: primaryColor),
+                                painter: MiniMapGridPainter(
+                                  isDark: isDark,
+                                  primaryColor: primaryColor,
+                                ),
                               ),
                             ),
                             // Small simplified pin bubbles overlay
-                            _buildMiniMapPin(top: 30, left: 50, name: 'Nam Trung', color: Colors.greenAccent),
-                            _buildMiniMapPin(top: 100, left: 140, name: 'Ly (Me)', color: primaryColor, isMe: true),
-                            _buildMiniMapPin(top: 60, left: 240, name: 'Nhật', color: secondaryColor),
+                            _buildMiniMapPin(
+                              top: 30,
+                              left: 50,
+                              name: 'Nam Trung',
+                              color: Colors.greenAccent,
+                            ),
+                            _buildMiniMapPin(
+                              top: 100,
+                              left: 140,
+                              name: 'Ly (Me)',
+                              color: primaryColor,
+                              isMe: true,
+                            ),
+                            _buildMiniMapPin(
+                              top: 60,
+                              left: 240,
+                              name: 'Nhật',
+                              color: secondaryColor,
+                            ),
                           ],
                         ),
                       ),
@@ -248,7 +270,13 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                           decoration: BoxDecoration(
                             color: cardBg,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: glassBorder),
+                            border: Border.all(color: glassBorder, width: 2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: glassBorder,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
                           ),
                           child: Stack(
                             alignment: Alignment.center,
@@ -258,7 +286,9 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                                 painter: EnergyCirclePainter(
                                   progress: _energyLevel,
                                   color: secondaryColor,
-                                  backgroundColor: isDark ? Colors.white10 : Colors.black12,
+                                  backgroundColor: isDark
+                                      ? Colors.white10
+                                      : Colors.black12,
                                 ),
                               ),
                               Column(
@@ -266,7 +296,7 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                                 children: [
                                   Text(
                                     '${(_energyLevel * 100).toInt()}%',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       fontSize: 24,
                                       fontWeight: FontWeight.w900,
                                       color: secondaryColor,
@@ -274,7 +304,11 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                                   ),
                                   Text(
                                     'vibe energy',
-                                    style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.bold, color: textSecondary),
+                                    style: AppFonts.body(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                      color: textSecondary,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -283,7 +317,9 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                                 Positioned.fill(
                                   child: IgnorePointer(
                                     child: CustomPaint(
-                                      painter: FallingParticlesPainter(particles: _particles),
+                                      painter: FallingParticlesPainter(
+                                        particles: _particles,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -299,16 +335,12 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                           child: Container(
                             height: 180,
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [primaryColor, primaryColor.withValues(alpha: 0.8)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+                              color: primaryColor,
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
                                   color: primaryColor.withValues(alpha: 0.3),
-                                  blurRadius: 15,
+                                  blurRadius: 0,
                                 ),
                               ],
                             ),
@@ -317,12 +349,16 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.vibration, size: 40, color: Colors.white),
+                                  const Icon(
+                                    Icons.vibration,
+                                    size: 40,
+                                    color: Colors.white,
+                                  ),
                                   const SizedBox(height: 12),
                                   Text(
                                     'Shake to Vibe Boost',
                                     textAlign: TextAlign.center,
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: AppFonts.heading(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13,
@@ -341,7 +377,7 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                   // Real-time Live Updates timeline list section
                   Text(
                     'Live Updates',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: textPrimary,
@@ -349,9 +385,33 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                   ),
                   const SizedBox(height: 12),
 
-                  _buildLiveFeedItem('☕', 'Minh Nhật is at The Hill Station', 'Just now', cardBg, glassBorder, textPrimary, textSecondary),
-                  _buildLiveFeedItem('📸', 'Thảo Ly uploaded 3 moments', '5m ago', cardBg, glassBorder, textPrimary, textSecondary),
-                  _buildLiveFeedItem('🛵', 'Nam Trung is cruising Dalat Night Market', '15m ago', cardBg, glassBorder, textPrimary, textSecondary),
+                  _buildLiveFeedItem(
+                    '☕',
+                    'Minh Nhật is at The Hill Station',
+                    'Just now',
+                    cardBg,
+                    glassBorder,
+                    textPrimary,
+                    textSecondary,
+                  ),
+                  _buildLiveFeedItem(
+                    '📸',
+                    'Thảo Ly uploaded 3 moments',
+                    '5m ago',
+                    cardBg,
+                    glassBorder,
+                    textPrimary,
+                    textSecondary,
+                  ),
+                  _buildLiveFeedItem(
+                    '🛵',
+                    'Nam Trung is cruising Dalat Night Market',
+                    '15m ago',
+                    cardBg,
+                    glassBorder,
+                    textPrimary,
+                    textSecondary,
+                  ),
 
                   const SizedBox(height: 48),
                 ],
@@ -376,13 +436,17 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         decoration: BoxDecoration(
-          color: isMe ? const Color(0xFF8B5CF6) : Colors.black87,
+          color: isMe ? const Color(0xFFF5822B) : Colors.black87,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: color, width: 1),
         ),
         child: Text(
           name,
-          style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 8,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
@@ -403,7 +467,8 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: glassBorder),
+        border: Border.all(color: glassBorder, width: 2),
+        boxShadow: [BoxShadow(color: glassBorder, offset: const Offset(0, 3))],
       ),
       child: Row(
         children: [
@@ -415,7 +480,7 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                     color: textPrimary,
@@ -424,7 +489,7 @@ class _LiveTripPageState extends State<LiveTripPage> with TickerProviderStateMix
                 const SizedBox(height: 2),
                 Text(
                   time,
-                  style: GoogleFonts.inter(fontSize: 10, color: textSecondary),
+                  style: AppFonts.body(fontSize: 10, color: textSecondary),
                 ),
               ],
             ),
@@ -482,7 +547,7 @@ class EnergyCirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final strokeWidth = 8.0;
-    
+
     // Background complete ring
     final bgPaint = Paint()
       ..color = backgroundColor
@@ -491,7 +556,12 @@ class EnergyCirclePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     canvas.drawArc(
-      Rect.fromLTWH(strokeWidth/2, strokeWidth/2, size.width - strokeWidth, size.height - strokeWidth),
+      Rect.fromLTWH(
+        strokeWidth / 2,
+        strokeWidth / 2,
+        size.width - strokeWidth,
+        size.height - strokeWidth,
+      ),
       pi * 0.75,
       pi * 1.5,
       false,
@@ -506,7 +576,12 @@ class EnergyCirclePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     canvas.drawArc(
-      Rect.fromLTWH(strokeWidth/2, strokeWidth/2, size.width - strokeWidth, size.height - strokeWidth),
+      Rect.fromLTWH(
+        strokeWidth / 2,
+        strokeWidth / 2,
+        size.width - strokeWidth,
+        size.height - strokeWidth,
+      ),
       pi * 0.75,
       pi * 1.5 * progress,
       false,
@@ -527,7 +602,9 @@ class MiniMapGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.02)
+      ..color = isDark
+          ? Colors.white.withValues(alpha: 0.02)
+          : Colors.black.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
 
     for (double i = 0; i < size.width; i += 30) {
@@ -538,7 +615,9 @@ class MiniMapGridPainter extends CustomPainter {
     }
 
     final roadPaint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04)
+      ..color = isDark
+          ? Colors.white.withValues(alpha: 0.05)
+          : Colors.black.withValues(alpha: 0.04)
       ..strokeWidth = 6.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;

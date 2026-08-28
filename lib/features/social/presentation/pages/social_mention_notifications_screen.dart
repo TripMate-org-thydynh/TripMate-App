@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
 class SocialMentionNotificationsScreen extends StatelessWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -13,13 +12,18 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgGradStart = isDarkMode ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDarkMode ? const Color(0xFF151926) : const Color(0xFFF3EFE9);
-    final cardBg = isDarkMode ? const Color(0xFF1E293B) : Colors.white;
+    final bgGradStart = isDarkMode
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final cardBg = isDarkMode
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
     final textPrimary = isDarkMode ? Colors.white : Colors.black87;
     final textSecondary = isDarkMode ? Colors.white60 : Colors.black54;
 
-    final primaryColor = isDarkMode ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final primaryColor = isDarkMode
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
     final neonPink = const Color(0xFFFF2E93);
     final neonCyan = const Color(0xFF00F5FF);
 
@@ -28,7 +32,8 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
         'user': '@kai_travels',
         'avatar': '🦖',
         'type': 'mention',
-        'content': 'mentioned you: "@alex_escapes did you check the Ryokan dinner menu yet? It looks crazy good!"',
+        'content':
+            'mentioned you: "@alex_escapes did you check the Ryokan dinner menu yet? It looks crazy good!"',
         'time': '5 mins ago',
         'trip': 'Kyoto Drift Squad 🛵',
         'unread': true,
@@ -37,7 +42,8 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
         'user': '@sarah_wander',
         'avatar': '🦊',
         'type': 'poll',
-        'content': 'added a option to your poll: "Tenryu-ji Garden Coffee Stop 🍵"',
+        'content':
+            'added a option to your poll: "Tenryu-ji Garden Coffee Stop 🍵"',
         'time': '1 hour ago',
         'trip': 'Kyoto Drift Squad 🛵',
         'unread': true,
@@ -46,7 +52,8 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
         'user': '@minh_nhat',
         'avatar': '🐱',
         'type': 'mention',
-        'content': 'tagged the crew: "@squad we need to split the Grab booking fee of ¥3500 immediately!"',
+        'content':
+            'tagged the crew: "@squad we need to split the Grab booking fee of ¥3500 immediately!"',
         'time': '2 hours ago',
         'trip': 'Phú Quốc Escape 🌴',
         'unread': false,
@@ -55,42 +62,43 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
         'user': '@thao_ly',
         'avatar': '🦄',
         'type': 'status',
-        'content': 'sent a location ping: "I am literally lost in Gion. Help 😭"',
+        'content':
+            'sent a location ping: "I am literally lost in Gion. Help 😭"',
         'time': '5 hours ago',
         'trip': 'Kyoto Drift Squad 🛵',
         'unread': false,
-      }
+      },
     ];
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgGradStart),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+                          icon: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: textPrimary,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           '@ Mentions',
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.body(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: textPrimary,
@@ -100,7 +108,9 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(
-                        isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                        isDarkMode
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
                         color: textPrimary,
                       ),
                       onPressed: onThemeToggle,
@@ -111,10 +121,13 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
 
               // Sub-info
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 4,
+                ),
                 child: Text(
                   'Keep track of your squad callouts & chaos mentions.',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 13,
                     color: textSecondary,
                   ),
@@ -126,7 +139,10 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
               // Notifications List
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8,
+                  ),
                   physics: const BouncingScrollPhysics(),
                   itemCount: notifications.length,
                   itemBuilder: (context, index) {
@@ -139,20 +155,22 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(bottom: 14),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isUnread 
-                            ? primaryColor.withValues(alpha: 0.08) 
-                            : cardBg.withValues(alpha: 0.7),
+                        color: isUnread
+                            ? primaryColor.withValues(alpha: 0.08)
+                            : cardBg,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color: isUnread
                               ? primaryColor.withValues(alpha: 0.3)
-                              : (isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05)),
+                              : (isDarkMode
+                                    ? Colors.white.withValues(alpha: 0.08)
+                                    : Colors.black.withValues(alpha: 0.05)),
                           width: isUnread ? 1.5 : 1.0,
                         ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.02),
-                            blurRadius: 8,
+                            blurRadius: 0,
                           ),
                         ],
                       ),
@@ -171,7 +189,7 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   Text(
                                     notify['user'] as String,
-                                    style: GoogleFonts.outfit(
+                                    style: AppFonts.body(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                       color: textPrimary,
@@ -179,31 +197,42 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: isMention 
-                                          ? neonPink.withValues(alpha: 0.15) 
-                                          : isPoll ? neonCyan.withValues(alpha: 0.15) : Colors.green.withValues(alpha: 0.15),
+                                      color: isMention
+                                          ? neonPink.withValues(alpha: 0.15)
+                                          : isPoll
+                                          ? neonCyan.withValues(alpha: 0.15)
+                                          : Colors.green.withValues(
+                                              alpha: 0.15,
+                                            ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
-                                      isMention 
-                                          ? 'mention' 
-                                          : isPoll ? 'poll' : 'ping',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      isMention
+                                          ? 'mention'
+                                          : isPoll
+                                          ? 'poll'
+                                          : 'ping',
+                                      style: AppFonts.heading(
                                         fontSize: 9,
                                         fontWeight: FontWeight.bold,
-                                        color: isMention 
-                                            ? neonPink 
-                                            : isPoll ? neonCyan : Colors.green,
+                                        color: isMention
+                                            ? neonPink
+                                            : isPoll
+                                            ? neonCyan
+                                            : Colors.green,
                                       ),
                                     ),
-                                  )
+                                  ),
                                 ],
                               ),
                               Text(
                                 notify['time'] as String,
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 10,
                                   color: textSecondary,
                                 ),
@@ -213,7 +242,7 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                           const SizedBox(height: 10),
                           Text(
                             notify['content'] as String,
-                            style: GoogleFonts.inter(
+                            style: AppFonts.body(
                               fontSize: 13,
                               color: textPrimary,
                               height: 1.4,
@@ -225,7 +254,7 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 '💬 ${notify['trip']}',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.body(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: textSecondary,
@@ -235,7 +264,9 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Jumping to conversation thread in ${notify['trip']}... 🚀'),
+                                      content: Text(
+                                        'Jumping to conversation thread in ${notify['trip']}... 🚀',
+                                      ),
                                       backgroundColor: primaryColor,
                                       behavior: SnackBarBehavior.floating,
                                     ),
@@ -245,7 +276,7 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       'Jump to chat',
-                                      style: GoogleFonts.outfit(
+                                      style: AppFonts.body(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
                                         color: primaryColor,
@@ -253,13 +284,13 @@ class SocialMentionNotificationsScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 4),
                                     Icon(
-                                      Icons.arrow_forward_ios,
+                                      Icons.arrow_forward,
                                       size: 10,
                                       color: primaryColor,
                                     ),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ],

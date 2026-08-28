@@ -1,7 +1,6 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'place_detail_screen.dart';
 
 class LiveMapSquadTrackingScreen extends StatefulWidget {
@@ -15,10 +14,12 @@ class LiveMapSquadTrackingScreen extends StatefulWidget {
   });
 
   @override
-  State<LiveMapSquadTrackingScreen> createState() => _LiveMapSquadTrackingScreenState();
+  State<LiveMapSquadTrackingScreen> createState() =>
+      _LiveMapSquadTrackingScreenState();
 }
 
-class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen> {
+class _LiveMapSquadTrackingScreenState
+    extends State<LiveMapSquadTrackingScreen> {
   int _selectedSpotIndex = 0;
 
   final List<Map<String, dynamic>> _magicSpots = [
@@ -43,18 +44,30 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
       'emoji': '📸',
       'lat': 260.0,
       'lng': 180.0,
-    }
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    final cardBg = isDark ? const Color(0xDD171F33) : Colors.white.withValues(alpha: 0.95);
-    final glassBorder = isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF262019);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
+    final cardBg = isDark
+        ? const Color(0xDD171F33)
+        : Colors.white.withValues(alpha: 0.95);
+    final glassBorder = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.black.withValues(alpha: 0.08);
 
     return Scaffold(
       body: Stack(
@@ -62,18 +75,50 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
           // 1. Full Screen custom painted road grid map canvas
           Positioned.fill(
             child: Container(
-              color: isDark ? const Color(0xFF040914) : const Color(0xFFF3EFE9),
+              color: isDark ? const Color(0xFF1A1712) : const Color(0xFFF3EFE9),
               child: CustomPaint(
-                painter: LiveMapPainter(isDark: isDark, primaryColor: primaryColor, secondaryColor: secondaryColor),
+                painter: LiveMapPainter(
+                  isDark: isDark,
+                  primaryColor: primaryColor,
+                  secondaryColor: secondaryColor,
+                ),
               ),
             ),
           ),
 
           // 2. Animated floating squad coordinates pin bubbles
-          _buildMapPin(top: 100, left: 60, name: 'Nam Trung', emoji: '☕', color: Colors.greenAccent, isMe: false),
-          _buildMapPin(top: 240, left: 160, name: 'Thảo Ly (Me)', emoji: '📸', color: primaryColor, isMe: true),
-          _buildMapPin(top: 160, left: 280, name: 'Minh Nhật', emoji: '🚶‍♀️', color: secondaryColor, isMe: false),
-          _buildMapPin(top: 330, left: 80, name: 'Phú Khang', emoji: '😴', color: Colors.amberAccent, isMe: false),
+          _buildMapPin(
+            top: 100,
+            left: 60,
+            name: 'Nam Trung',
+            emoji: '☕',
+            color: Colors.greenAccent,
+            isMe: false,
+          ),
+          _buildMapPin(
+            top: 240,
+            left: 160,
+            name: 'Thảo Ly (Me)',
+            emoji: '📸',
+            color: primaryColor,
+            isMe: true,
+          ),
+          _buildMapPin(
+            top: 160,
+            left: 280,
+            name: 'Minh Nhật',
+            emoji: '🚶‍♀️',
+            color: secondaryColor,
+            isMe: false,
+          ),
+          _buildMapPin(
+            top: 330,
+            left: 80,
+            name: 'Phú Khang',
+            emoji: '😴',
+            color: Colors.amberAccent,
+            isMe: false,
+          ),
 
           // Magic Places indicators on the canvas
           ..._magicSpots.asMap().entries.map((entry) {
@@ -96,28 +141,45 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                         border: Border.all(color: Colors.white, width: 2),
                         boxShadow: [
                           BoxShadow(
-                            color: primaryColor.withValues(alpha: isSelected ? 0.5 : 0.1),
-                            blurRadius: 12,
+                            color: primaryColor.withValues(
+                              alpha: isSelected ? 0.5 : 0.1,
+                            ),
+                            blurRadius: 0,
                           ),
                         ],
                       ),
-                      child: Text(spot['emoji'], style: const TextStyle(fontSize: 16)),
+                      child: Text(
+                        spot['emoji'],
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     ),
                     if (isSelected) ...[
                       const SizedBox(height: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: primaryColor,
                           borderRadius: BorderRadius.circular(8),
-                          boxShadow: [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 8)],
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.3),
+                              blurRadius: 0,
+                            ),
+                          ],
                         ),
                         child: Text(
                           spot['title'],
-                          style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      )
-                    ]
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -137,7 +199,7 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                      filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -145,7 +207,11 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                           shape: BoxShape.circle,
                           border: Border.all(color: glassBorder),
                         ),
-                        child: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 18),
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: textPrimary,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -153,9 +219,12 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                 ClipRRect(
                   borderRadius: BorderRadius.circular(24),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       decoration: BoxDecoration(
                         color: cardBg,
                         borderRadius: BorderRadius.circular(24),
@@ -166,12 +235,15 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                           Container(
                             width: 8,
                             height: 8,
-                            decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
+                            decoration: const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Đà Lạt • Squad Tracking',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: textPrimary,
@@ -187,7 +259,7 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                      filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -196,7 +268,9 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                           border: Border.all(color: glassBorder),
                         ),
                         child: Icon(
-                          isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                          isDark
+                              ? Icons.light_mode_outlined
+                              : Icons.dark_mode_outlined,
                           color: textPrimary,
                           size: 18,
                         ),
@@ -216,7 +290,7 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -226,9 +300,9 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.2),
-                        blurRadius: 20,
+                        blurRadius: 0,
                         offset: const Offset(0, 4),
-                      )
+                      ),
                     ],
                   ),
                   child: Column(
@@ -239,14 +313,17 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: primaryColor.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               _magicSpots[_selectedSpotIndex]['vibe'],
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 color: primaryColor,
@@ -255,11 +332,19 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                           ),
                           Row(
                             children: [
-                              const Icon(Icons.star, color: Colors.amber, size: 14),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 14,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 _magicSpots[_selectedSpotIndex]['rating'],
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textPrimary),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: textPrimary,
+                                ),
                               ),
                             ],
                           ),
@@ -268,7 +353,7 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                       const SizedBox(height: 12),
                       Text(
                         _magicSpots[_selectedSpotIndex]['title'],
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: textPrimary,
@@ -277,7 +362,10 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                       const SizedBox(height: 4),
                       Text(
                         _magicSpots[_selectedSpotIndex]['description'],
-                        style: GoogleFonts.inter(fontSize: 12, color: textSecondary),
+                        style: AppFonts.body(
+                          fontSize: 12,
+                          color: textSecondary,
+                        ),
                       ),
                       const SizedBox(height: 14),
                       const Divider(color: Colors.white10),
@@ -290,7 +378,7 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                             children: [
                               Text(
                                 _magicSpots[_selectedSpotIndex]['distance'],
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
                                   color: secondaryColor,
@@ -298,7 +386,10 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                               ),
                               Text(
                                 _magicSpots[_selectedSpotIndex]['status'],
-                                style: TextStyle(fontSize: 10, color: textSecondary),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: textSecondary,
+                                ),
                               ),
                             ],
                           ),
@@ -310,20 +401,34 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                                   builder: (context) => PlaceDetailScreen(
                                     isDarkMode: widget.isDarkMode,
                                     onThemeToggle: widget.onThemeToggle,
-                                    placeName: _magicSpots[_selectedSpotIndex]['title'],
-                                    placeDescription: _magicSpots[_selectedSpotIndex]['description'],
+                                    placeName:
+                                        _magicSpots[_selectedSpotIndex]['title'],
+                                    placeDescription:
+                                        _magicSpots[_selectedSpotIndex]['description'],
                                   ),
                                 ),
                               );
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
                               decoration: BoxDecoration(
                                 color: primaryColor,
                                 borderRadius: BorderRadius.circular(14),
-                                boxShadow: [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 10)],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: primaryColor.withValues(alpha: 0.3),
+                                    blurRadius: 0,
+                                  ),
+                                ],
                               ),
-                              child: const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
+                              child: const Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                             ),
                           ),
                         ],
@@ -333,7 +438,7 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -355,12 +460,16 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isMe ? const Color(0xFF8B5CF6) : Colors.black87,
+              color: isMe ? const Color(0xFFF5822B) : Colors.black87,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               name,
-              style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(height: 2),
@@ -377,7 +486,7 @@ class _LiveMapSquadTrackingScreenState extends State<LiveMapSquadTrackingScreen>
                   boxShadow: [
                     BoxShadow(
                       color: color.withValues(alpha: 0.3),
-                      blurRadius: 10,
+                      blurRadius: 0,
                     ),
                   ],
                 ),
@@ -396,12 +505,18 @@ class LiveMapPainter extends CustomPainter {
   final Color primaryColor;
   final Color secondaryColor;
 
-  LiveMapPainter({required this.isDark, required this.primaryColor, required this.secondaryColor});
+  LiveMapPainter({
+    required this.isDark,
+    required this.primaryColor,
+    required this.secondaryColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.03)
+      ..color = isDark
+          ? Colors.white.withValues(alpha: 0.03)
+          : Colors.black.withValues(alpha: 0.03)
       ..strokeWidth = 1.0;
 
     for (double i = 0; i < size.width; i += 40) {
@@ -413,7 +528,9 @@ class LiveMapPainter extends CustomPainter {
 
     // Modern glowing schematic road pathways
     final roadPaint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.05)
+      ..color = isDark
+          ? Colors.white.withValues(alpha: 0.06)
+          : Colors.black.withValues(alpha: 0.05)
       ..strokeWidth = 14.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -430,7 +547,9 @@ class LiveMapPainter extends CustomPainter {
     canvas.drawPath(path1, roadPaint);
 
     final streetPaint = Paint()
-      ..color = isDark ? Colors.white.withValues(alpha: 0.09) : Colors.black.withValues(alpha: 0.07)
+      ..color = isDark
+          ? Colors.white.withValues(alpha: 0.09)
+          : Colors.black.withValues(alpha: 0.07)
       ..strokeWidth = 6.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;

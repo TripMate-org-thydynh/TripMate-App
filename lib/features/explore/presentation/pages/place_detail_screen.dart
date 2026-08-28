@@ -1,6 +1,7 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   final String? placeName;
@@ -49,10 +50,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final primaryColor = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF7C3AED);
-    final secondaryColor = isDark ? const Color(0xFF45DFA4) : const Color(0xFF059669);
-    final bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final textPrimary = isDark ? Colors.white : const Color(0xFF0F172A);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFFFFD84D)
+        : const Color(0xFFFFD84D);
+    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF141210);
     final textMuted = isDark ? Colors.white60 : Colors.black54;
 
     return Scaffold(
@@ -61,7 +66,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
         children: [
           // FULLSCREEN HERO IMAGE
           Positioned(
-            top: 0, left: 0, right: 0,
+            top: 0,
+            left: 0,
+            right: 0,
             height: 340,
             child: Stack(
               children: [
@@ -72,7 +79,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                   height: 340,
                   errorBuilder: (context, error, stackTrace) => Container(
                     color: primaryColor.withValues(alpha: 0.2),
-                    child: Center(child: Icon(Icons.landscape, size: 80, color: primaryColor)),
+                    child: Center(
+                      child: Icon(
+                        Icons.landscape,
+                        size: 80,
+                        color: primaryColor,
+                      ),
+                    ),
                   ),
                 ),
                 // Gradient over image
@@ -96,7 +109,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
               children: [
                 // GLASS HEADER
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -104,7 +120,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                           child: GestureDetector(
                             onTap: () => Navigator.pop(context),
                             child: Container(
@@ -112,9 +128,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                               decoration: BoxDecoration(
                                 color: Colors.black.withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
                               ),
-                              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+                              child: const Icon(
+                                Icons.arrow_back_ios_new,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                             ),
                           ),
                         ),
@@ -123,21 +146,30 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                           child: GestureDetector(
                             onTap: () {
                               setState(() => _isSaved = !_isSaved);
-                              _saveController.forward().then((_) => _saveController.reverse());
+                              _saveController.forward().then(
+                                (_) => _saveController.reverse(),
+                              );
                             },
                             child: Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: _isSaved ? Colors.red.withValues(alpha: 0.8) : Colors.black.withValues(alpha: 0.3),
+                                color: _isSaved
+                                    ? Colors.red.withValues(alpha: 0.8)
+                                    : Colors.black.withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
                               ),
                               child: Icon(
-                                _isSaved ? Icons.favorite : Icons.favorite_border,
+                                _isSaved
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
                                 color: Colors.white,
                                 size: 18,
                               ),
@@ -160,7 +192,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                         Container(
                           decoration: BoxDecoration(
                             color: bgColor,
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(32),
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,17 +202,21 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                               const SizedBox(height: 24),
                               // PLACE NAME
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            widget.placeName ?? 'The Hill Station',
-                                            style: GoogleFonts.plusJakartaSans(
+                                            widget.placeName ??
+                                                'The Hill Station',
+                                            style: AppFonts.heading(
                                               fontSize: 26,
                                               fontWeight: FontWeight.w900,
                                               color: textPrimary,
@@ -188,11 +226,18 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                           const SizedBox(height: 6),
                                           Row(
                                             children: [
-                                              Icon(Icons.location_on, size: 14, color: textMuted),
+                                              Icon(
+                                                Icons.location_on,
+                                                size: 14,
+                                                color: textMuted,
+                                              ),
                                               const SizedBox(width: 4),
                                               Text(
                                                 'Đà Lạt, Lâm Đồng',
-                                                style: GoogleFonts.inter(fontSize: 13, color: textMuted),
+                                                style: AppFonts.body(
+                                                  fontSize: 13,
+                                                  color: textMuted,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -200,15 +245,24 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                           // Rating & Reviews
                                           Row(
                                             children: [
-                                              ...List.generate(5, (i) => Icon(
-                                                i < 4 ? Icons.star : Icons.star_half,
-                                                size: 16,
-                                                color: Colors.amber[500],
-                                              )),
+                                              ...List.generate(
+                                                5,
+                                                (i) => Icon(
+                                                  i < 4
+                                                      ? Icons.star
+                                                      : Icons.star_half,
+                                                  size: 16,
+                                                  color: Colors.amber[500],
+                                                ),
+                                              ),
                                               const SizedBox(width: 8),
                                               Text(
                                                 '4.8  ·  2,341 reviews',
-                                                style: GoogleFonts.inter(fontSize: 13, color: textMuted, fontWeight: FontWeight.w600),
+                                                style: AppFonts.body(
+                                                  fontSize: 13,
+                                                  color: textMuted,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -217,18 +271,36 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                     ),
                                     // Crew Match Badge
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: Colors.green.withValues(alpha: 0.1),
+                                        color: Colors.green.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
+                                        border: Border.all(
+                                          color: Colors.green,
+                                          width: 2,
+                                        ),
                                       ),
                                       child: Column(
                                         children: [
-                                          Text('🧠', style: const TextStyle(fontSize: 20)),
+                                          Icon(
+                                            PhosphorIcons.brain(
+                                              PhosphorIconsStyle.fill,
+                                            ),
+                                            size: 20,
+                                            color: Colors.green,
+                                          ),
                                           Text(
                                             'Matey Pick',
-                                            style: GoogleFonts.inter(fontSize: 9, color: Colors.green, fontWeight: FontWeight.bold),
+                                            style: AppFonts.body(
+                                              fontSize: 9,
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -240,32 +312,56 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
 
                               // TABS
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
                                 child: Row(
-                                  children: ['Overview', 'Photos', 'Reviews'].asMap().entries.map((e) {
-                                    return GestureDetector(
-                                      onTap: () => setState(() => _selectedTab = e.key),
-                                      child: AnimatedContainer(
-                                        duration: const Duration(milliseconds: 200),
-                                        margin: const EdgeInsets.only(right: 12),
-                                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                                        decoration: BoxDecoration(
-                                          color: _selectedTab == e.key
-                                              ? primaryColor
-                                              : isDark ? Colors.white.withValues(alpha: 0.07) : Colors.black.withValues(alpha: 0.05),
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        child: Text(
-                                          e.value,
-                                          style: GoogleFonts.outfit(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w700,
-                                            color: _selectedTab == e.key ? Colors.white : textMuted,
+                                  children: ['Overview', 'Photos', 'Reviews']
+                                      .asMap()
+                                      .entries
+                                      .map((e) {
+                                        return GestureDetector(
+                                          onTap: () => setState(
+                                            () => _selectedTab = e.key,
                                           ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                              milliseconds: 200,
+                                            ),
+                                            margin: const EdgeInsets.only(
+                                              right: 12,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 18,
+                                              vertical: 9,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: _selectedTab == e.key
+                                                  ? primaryColor
+                                                  : isDark
+                                                  ? Colors.white.withValues(
+                                                      alpha: 0.07,
+                                                    )
+                                                  : Colors.black.withValues(
+                                                      alpha: 0.05,
+                                                    ),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Text(
+                                              e.value,
+                                              style: AppFonts.body(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w700,
+                                                color: _selectedTab == e.key
+                                                    ? Colors.white
+                                                    : textMuted,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      })
+                                      .toList(),
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -273,16 +369,38 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                               // INFO PILLS ROW
                               SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
                                 child: Row(
                                   children: [
-                                    _buildPill('🕘', 'Open Now', Colors.green, isDark),
+                                    _buildPill(
+                                      Icons.schedule_outlined,
+                                      'Open Now',
+                                      Colors.green,
+                                      isDark,
+                                    ),
                                     const SizedBox(width: 10),
-                                    _buildPill('💰', '150k - 400k ₫', primaryColor, isDark),
+                                    _buildPill(
+                                      Icons.payments_outlined,
+                                      '150k - 400k ₫',
+                                      primaryColor,
+                                      isDark,
+                                    ),
                                     const SizedBox(width: 10),
-                                    _buildPill('🕑', '2h avg stay', Colors.amber[600]!, isDark),
+                                    _buildPill(
+                                      Icons.timer_outlined,
+                                      '2h avg stay',
+                                      Colors.amber[600]!,
+                                      isDark,
+                                    ),
                                     const SizedBox(width: 10),
-                                    _buildPill('🅿️', 'Free Parking', primaryColor, isDark),
+                                    _buildPill(
+                                      Icons.local_parking_outlined,
+                                      'Free Parking',
+                                      primaryColor,
+                                      isDark,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -290,34 +408,50 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
 
                               // DESCRIPTION
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
                                 child: Text(
                                   'The Hill Station is a Dalat landmark celebrated for its charming colonial architecture, curated vintage decor, and spectacular valley views. Famous for its signature cold cuts and fine wine selection.',
-                                  style: GoogleFonts.inter(fontSize: 14, color: textMuted, height: 1.6),
+                                  style: AppFonts.body(
+                                    fontSize: 14,
+                                    color: textMuted,
+                                    height: 1.6,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 20),
 
                               // AI MATCHCARD
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: primaryColor.withValues(alpha: 0.07),
                                     borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(color: primaryColor.withValues(alpha: 0.25)),
+                                    border: Border.all(
+                                      color: primaryColor,
+                                      width: 2,
+                                    ),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
-                                          Icon(Icons.auto_awesome, color: primaryColor, size: 16),
+                                          Icon(
+                                            Icons.auto_awesome,
+                                            color: primaryColor,
+                                            size: 16,
+                                          ),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Why Matey picked this 🤖',
-                                            style: GoogleFonts.plusJakartaSans(
+                                            'Why Matey picked this',
+                                            style: AppFonts.heading(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w800,
                                               color: primaryColor,
@@ -328,7 +462,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                       const SizedBox(height: 10),
                                       Text(
                                         '"3 crew members bookmarked this. Matches your Chill + Nature vibes at 94%. Best slot: 9-11AM for crowd-free golden light."',
-                                        style: GoogleFonts.inter(fontSize: 13, color: textMuted.withValues(alpha: 0.9), height: 1.5),
+                                        style: AppFonts.body(
+                                          fontSize: 13,
+                                          color: textMuted.withValues(
+                                            alpha: 0.9,
+                                          ),
+                                          height: 1.5,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -358,39 +498,49 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
     );
   }
 
-  Widget _buildPill(String emoji, String text, Color color, bool isDark) {
+  Widget _buildPill(IconData icon, String text, Color color, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color, width: 2),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 13)),
+          Icon(icon, size: 13, color: color),
           const SizedBox(width: 6),
           Text(
             text,
-            style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: color),
+            style: AppFonts.body(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBottomAction(bool isDark, Color primaryColor, Color secondaryColor) {
+  Widget _buildBottomAction(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+  ) {
     return ClipRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 36),
           decoration: BoxDecoration(
             color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
             border: Border(
               top: BorderSide(
-                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -400,7 +550,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
               if (!_isAdded) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('The Hill Station added to your itinerary! 📅'),
+                    content: Text('The Hill Station added to your itinerary!'),
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -422,16 +572,21 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                   color: _isAdded ? primaryColor.withValues(alpha: 0.15) : null,
                   borderRadius: BorderRadius.circular(28),
                   border: _isAdded
-                      ? Border.all(color: primaryColor.withValues(alpha: 0.5), width: 1.5)
+                      ? Border.all(
+                          color: primaryColor.withValues(alpha: 0.5),
+                          width: 1.5,
+                        )
                       : null,
                   boxShadow: _isAdded
                       ? []
                       : [
                           BoxShadow(
-                            color: primaryColor.withValues(alpha: 0.3 + 0.1 * _pulseController.value),
-                            blurRadius: 20,
+                            color: primaryColor.withValues(
+                              alpha: 0.3 + 0.1 * _pulseController.value,
+                            ),
+                            blurRadius: 0,
                             offset: const Offset(0, 4),
-                          )
+                          ),
                         ],
                 ),
                 child: Row(
@@ -445,7 +600,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                     const SizedBox(width: 8),
                     Text(
                       _isAdded ? 'Added to Itinerary' : 'Add to Itinerary',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: _isAdded ? primaryColor : Colors.white,

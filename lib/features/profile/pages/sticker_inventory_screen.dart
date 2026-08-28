@@ -1,6 +1,9 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import '../../../core/app_messenger.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/api_service.dart';
 
 class StickerInventoryScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -8,7 +11,7 @@ class StickerInventoryScreen extends StatefulWidget {
 
   const StickerInventoryScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -19,6 +22,8 @@ class StickerInventoryScreen extends StatefulWidget {
 class _StickerInventoryScreenState extends State<StickerInventoryScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _floatController;
+  List<dynamic> _ownedStickers = [];
+  bool _isLoading = true;
 
   final List<Map<String, dynamic>> _ownedPacks = const [
     {
@@ -31,7 +36,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
     {
       'icon': Icons.payments,
       'rarity': 'Epic',
-      'rarityColor': Color(0xFFD0BCFF),
+      'rarityColor': Color(0xFFC9B8FF),
       'name': 'Financial Damage',
       'desc': 'For splitting the exorbitant dinner bill.',
     },
@@ -45,7 +50,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
     {
       'icon': Icons.map_outlined,
       'rarity': 'Common',
-      'rarityColor': Color(0xFF45DFA4),
+      'rarityColor': Color(0xFF1FA85C),
       'name': 'Lost Again',
       'desc': 'Send when GPS fails entirely.',
     },
@@ -60,7 +65,6 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
     '✈️',
   ];
 
-
   @override
   void initState() {
     super.initState();
@@ -68,6 +72,27 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
+    _fetchInventory();
+  }
+
+  Future<void> _fetchInventory() async {
+    try {
+      final response = await ApiService.get('/users/me/stickers');
+      if (mounted) {
+        setState(() {
+          if (response is List) {
+            _ownedStickers = response;
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -104,12 +129,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
               height: 280,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF45DFA4).withValues(alpha: 0.18),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -121,12 +141,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
               height: 240,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFD0BCFF).withValues(alpha: 0.15),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -136,16 +151,18 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
               children: [
                 // AppBar
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: [
                       Text(
                         'trip.mate',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFFD0BCFF),
+                          color: const Color(0xFFC9B8FF),
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -202,7 +219,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                         // Page Title
                         Text(
                           'Sticker Inventory',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
                             color: textPrimary,
@@ -212,7 +229,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                         const SizedBox(height: 4),
                         Text(
                           'reaction energy fully stocked',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 14,
                             color: textSecondary,
                           ),
@@ -223,7 +240,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                         // Equipped Pack
                         Text(
                           'Equipped Pack',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: textPrimary,
@@ -234,28 +251,24 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(24),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    const Color(0xFFFFD700)
-                                        .withValues(alpha: isDark ? 0.12 : 0.1),
-                                    const Color(0xFFFFA500)
-                                        .withValues(alpha: isDark ? 0.08 : 0.06),
-                                  ],
-                                ),
+                                color: const Color(
+                                  0xFFFFD700,
+                                ).withValues(alpha: isDark ? 0.12 : 0.1),
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: const Color(0xFFFFD700)
-                                      .withValues(alpha: 0.3),
+                                  color: const Color(0xFFFFD700),
+                                  width: 2,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFFFD700)
-                                        .withValues(alpha: 0.1),
-                                    blurRadius: 20,
+                                    color: const Color(
+                                      0xFFFFD700,
+                                    ).withValues(alpha: 0.1),
+                                    blurRadius: 0,
                                   ),
                                 ],
                               ),
@@ -267,18 +280,13 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                     height: 80,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(16),
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFFFFD700),
-                                          Color(0xFFFFA500),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
+                                      color: Color(0xFFFFD700),
                                     ),
                                     child: const Center(
-                                      child: Text('👑',
-                                          style: TextStyle(fontSize: 36)),
+                                      child: Text(
+                                        '👑',
+                                        style: TextStyle(fontSize: 36),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 16),
@@ -292,21 +300,24 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 3),
+                                                    horizontal: 8,
+                                                    vertical: 3,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(8),
-                                                color: const Color(0xFFFFD700)
-                                                    .withValues(alpha: 0.2),
+                                                color: const Color(
+                                                  0xFFFFD700,
+                                                ).withValues(alpha: 0.2),
                                               ),
                                               child: Text(
                                                 'Legendary',
-                                                style:
-                                                    GoogleFonts.plusJakartaSans(
+                                                style: AppFonts.heading(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w700,
-                                                  color: const Color(0xFFFFD700),
+                                                  color: const Color(
+                                                    0xFFFFD700,
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -314,21 +325,24 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                             Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 3),
+                                                    horizontal: 8,
+                                                    vertical: 3,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(8),
-                                                color: const Color(0xFF45DFA4)
-                                                    .withValues(alpha: 0.2),
+                                                color: const Color(
+                                                  0xFF1FA85C,
+                                                ).withValues(alpha: 0.2),
                                               ),
                                               child: Text(
                                                 'Active',
-                                                style:
-                                                    GoogleFonts.plusJakartaSans(
+                                                style: AppFonts.heading(
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.w700,
-                                                  color: const Color(0xFF45DFA4),
+                                                  color: const Color(
+                                                    0xFF1FA85C,
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -337,7 +351,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                         const SizedBox(height: 8),
                                         Text(
                                           'Chaos Squad',
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w800,
                                             color: textPrimary,
@@ -346,7 +360,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                         const SizedBox(height: 4),
                                         Text(
                                           'chaos sticker collection upgraded. Perfect for when the group chat plans inevitably fall apart.',
-                                          style: GoogleFonts.inter(
+                                          style: AppFonts.body(
                                             fontSize: 11,
                                             color: textSecondary,
                                             height: 1.4,
@@ -368,12 +382,15 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                         // Owned Collections
                         Row(
                           children: [
-                            const Icon(Icons.inventory_2_outlined,
-                                size: 18, color: Color(0xFFD0BCFF)),
+                            const Icon(
+                              Icons.inventory_2_outlined,
+                              size: 18,
+                              color: Color(0xFFC9B8FF),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Owned Collections',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: textPrimary,
@@ -392,11 +409,15 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(18),
                               child: BackdropFilter(
-                                filter:
-                                    ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                                filter: ImageFilter.blur(
+                                  sigmaX: 20,
+                                  sigmaY: 20,
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 14),
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: surface,
                                     borderRadius: BorderRadius.circular(18),
@@ -409,8 +430,9 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                         height: 48,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: rarityColor
-                                              .withValues(alpha: 0.15),
+                                          color: rarityColor.withValues(
+                                            alpha: 0.15,
+                                          ),
                                         ),
                                         child: Icon(
                                           pack['icon'] as IconData,
@@ -429,23 +451,28 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                                 Container(
                                                   padding:
                                                       const EdgeInsets.symmetric(
-                                                          horizontal: 7,
-                                                          vertical: 2),
+                                                        horizontal: 7,
+                                                        vertical: 2,
+                                                      ),
                                                   decoration: BoxDecoration(
                                                     borderRadius:
-                                                        BorderRadius.circular(6),
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
                                                     color: rarityColor
-                                                        .withValues(alpha: 0.15),
+                                                        .withValues(
+                                                          alpha: 0.15,
+                                                        ),
                                                   ),
                                                   child: Text(
                                                     pack['rarity'] as String,
-                                                    style: GoogleFonts
-                                                        .plusJakartaSans(
-                                                      fontSize: 9,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: rarityColor,
-                                                    ),
+                                                    style:
+                                                        GoogleFonts.plusJakartaSans(
+                                                          fontSize: 9,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: rarityColor,
+                                                        ),
                                                   ),
                                                 ),
                                               ],
@@ -453,8 +480,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                             const SizedBox(height: 4),
                                             Text(
                                               pack['name'] as String,
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w700,
                                                 color: textPrimary,
@@ -462,7 +488,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                                             ),
                                             Text(
                                               pack['desc'] as String,
-                                              style: GoogleFonts.inter(
+                                              style: AppFonts.body(
                                                 fontSize: 11,
                                                 color: textSecondary,
                                               ),
@@ -483,17 +509,133 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                           );
                         }),
 
+                        const SizedBox(height: 28),
+
+                        // Owned Stickers
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.face_retouching_natural_outlined,
+                              size: 18,
+                              color: Color(0xFFFFB783),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Nhãn dán sở hữu (${_ownedStickers.length})',
+                              style: AppFonts.heading(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        _isLoading
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.purple,
+                                ),
+                              )
+                            : _ownedStickers.isEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: Text(
+                                      'Bạn chưa mua nhãn dán nào. Hãy ghé Cửa hàng Sticker nhé!',
+                                      style: AppFonts.body(
+                                        fontSize: 12,
+                                        color: textSecondary,
+                                      ),
+                                    ),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: GridView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3,
+                                            crossAxisSpacing: 12,
+                                            mainAxisSpacing: 12,
+                                            childAspectRatio: 0.9,
+                                          ),
+                                      itemCount: _ownedStickers.length,
+                                      itemBuilder: (context, index) {
+                                        final item = _ownedStickers[index];
+                                        final label =
+                                            item['label'] as String? ??
+                                            'Sticker';
+                                        final count = item['count'] ?? 1;
+                                        final emoji = label.split(' ').last;
+
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: isDark
+                                                ? const Color(0xFF262019)
+                                                : Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                            border: Border.all(
+                                              color: borderColor,
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.all(8),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                emoji,
+                                                style: const TextStyle(
+                                                  fontSize: 28,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                label,
+                                                style: AppFonts.body(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: textPrimary,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                'Số lượng: $count',
+                                                style: AppFonts.body(
+                                                  fontSize: 9,
+                                                  color: Colors.purpleAccent,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+
                         const SizedBox(height: 20),
 
                         // Recently Used
                         Row(
                           children: [
-                            const Icon(Icons.history,
-                                size: 18, color: Color(0xFFD0BCFF)),
+                            const Icon(
+                              Icons.history,
+                              size: 18,
+                              color: Color(0xFFC9B8FF),
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Recently Used',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: AppFonts.heading(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: textPrimary,
@@ -514,34 +656,38 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                             itemBuilder: (context, i) {
                               final sticker = _recentStickers[i];
                               return GestureDetector(
-                                onTap: () {},
+                                onTap: () => showGlobalSnack(
+                                  'Tính năng đang được hoàn thiện 🚧',
+                                ),
                                 child: AnimatedBuilder(
                                   animation: _floatController,
                                   builder: (context, child) =>
-                                      Transform.scale(
-                                    scale: 1.0,
-                                    child: child,
-                                  ),
+                                      Transform.scale(scale: 1.0, child: child),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(16),
                                     child: BackdropFilter(
                                       filter: ImageFilter.blur(
-                                          sigmaX: 10, sigmaY: 10),
+                                        sigmaX: 10,
+                                        sigmaY: 10,
+                                      ),
                                       child: Container(
                                         width: 64,
                                         height: 64,
                                         decoration: BoxDecoration(
                                           color: surface,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border:
-                                              Border.all(color: borderColor),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          border: Border.all(
+                                            color: borderColor,
+                                          ),
                                         ),
                                         child: Center(
                                           child: Text(
                                             sticker,
                                             style: const TextStyle(
-                                                fontSize: 30),
+                                              fontSize: 30,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -582,7 +728,7 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(
@@ -602,21 +748,23 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
             children: List.generate(icons.length, (i) {
               final isActive = i == activeIdx;
               return GestureDetector(
-                onTap: () {},
+                onTap: () =>
+                    showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
                 child: Container(
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isActive
-                        ? const Color(0xFF45DFA4).withValues(alpha: 0.18)
+                        ? const Color(0xFF1FA85C).withValues(alpha: 0.18)
                         : Colors.transparent,
                     boxShadow: isActive
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF45DFA4)
-                                  .withValues(alpha: 0.25),
-                              blurRadius: 12,
+                              color: const Color(
+                                0xFF1FA85C,
+                              ).withValues(alpha: 0.25),
+                              blurRadius: 0,
                             ),
                           ]
                         : null,
@@ -625,10 +773,10 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                     icons[i],
                     size: 24,
                     color: isActive
-                        ? const Color(0xFF45DFA4)
+                        ? const Color(0xFF1FA85C)
                         : isDark
-                            ? Colors.white.withValues(alpha: 0.4)
-                            : Colors.black.withValues(alpha: 0.3),
+                        ? Colors.white.withValues(alpha: 0.4)
+                        : Colors.black.withValues(alpha: 0.3),
                   ),
                 ),
               );

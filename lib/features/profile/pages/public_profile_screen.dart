@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class PublicProfileScreen extends StatelessWidget {
@@ -16,15 +17,23 @@ class PublicProfileScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Xem Profile Bạn Bè 👀', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Xem Profile Bạn Bè 👀',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -32,19 +41,19 @@ class PublicProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             // Center Profile info
-            CircleAvatar(
-              radius: 54,
-              backgroundImage: NetworkImage(avatarUrl),
-            ),
+            CircleAvatar(radius: 54, backgroundImage: NetworkImage(avatarUrl)),
             const SizedBox(height: 16),
             Text(
               userName,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               '@tripmate_buddy',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: 16),
             Padding(
@@ -64,29 +73,73 @@ class PublicProfileScreen extends StatelessWidget {
 
             // Statistics row
             Card(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              child: const Padding(
+              color: isDark ? const Color(0xFF262019) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
                 padding: EdgeInsets.all(20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Column(
                       children: [
-                        Text('12', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Chuyến đi', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                        Text(
+                          '12',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Chuyến đi',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                     Column(
                       children: [
-                        Text('3.2k', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Điểm XP', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                        Text(
+                          '3.2k',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'profile.xp_points'.tr(),
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                     Column(
                       children: [
-                        Text('98%', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Độ uy tín', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                        Text(
+                          '98%',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Độ uy tín',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                   ],

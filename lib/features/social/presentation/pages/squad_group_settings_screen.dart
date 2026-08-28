@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
 class SquadGroupSettingsScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -14,7 +13,8 @@ class SquadGroupSettingsScreen extends StatefulWidget {
   });
 
   @override
-  State<SquadGroupSettingsScreen> createState() => _SquadGroupSettingsScreenState();
+  State<SquadGroupSettingsScreen> createState() =>
+      _SquadGroupSettingsScreenState();
 }
 
 class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
@@ -49,7 +49,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
       'role': 'MEMBER',
       'avatar': '🦖',
       'status': '🟢 Active Online',
-    }
+    },
   ];
 
   @override
@@ -66,7 +66,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
 
   void _showMemberActions(Map<String, String> member) {
     final isDark = widget.isDarkMode;
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -74,7 +74,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
         return Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            color: isDark ? const Color(0xFF262019) : Colors.white,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
@@ -85,7 +85,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
             children: [
               Text(
                 'Manage ${member['name']}',
-                style: GoogleFonts.outfit(
+                style: AppFonts.body(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: isDark ? Colors.white : Colors.black87,
@@ -100,7 +100,11 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                   onTap: () {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Transferred control to ${member['name']}! 🔑')),
+                      SnackBar(
+                        content: Text(
+                          'Transferred control to ${member['name']}! 🔑',
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -112,17 +116,26 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                   onTap: () {
                     Navigator.pop(context);
                     setState(() {
-                      _members.removeWhere((m) => m['username'] == member['username']);
+                      _members.removeWhere(
+                        (m) => m['username'] == member['username'],
+                      );
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Removed ${member['name']} from the squad.')),
+                      SnackBar(
+                        content: Text(
+                          'Removed ${member['name']} from the squad.',
+                        ),
+                      ),
                     );
                   },
                 ),
               ] else ...[
                 Text(
                   'No actions available for group creator.',
-                  style: GoogleFonts.plusJakartaSans(color: Colors.grey, fontSize: 13),
+                  style: AppFonts.heading(
+                    color: Colors.grey,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -143,17 +156,23 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
   }) {
     final isDark = widget.isDarkMode;
     return ListTile(
-      leading: Icon(icon, color: color ?? (isDark ? Colors.white70 : Colors.black87)),
+      leading: Icon(
+        icon,
+        color: color ?? (isDark ? Colors.white70 : Colors.black87),
+      ),
       title: Text(
         title,
-        style: GoogleFonts.outfit(
+        style: AppFonts.body(
           fontWeight: FontWeight.bold,
           color: color ?? (isDark ? Colors.white : Colors.black87),
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey),
+        style: AppFonts.heading(
+          fontSize: 11,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
       onTap: onTap,
     );
@@ -162,45 +181,47 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bgGradStart = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDark ? const Color(0xFF151926) : const Color(0xFFF3EFE9);
-    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final bgGradStart = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final textPrimary = isDark ? Colors.white : Colors.black87;
     final textSecondary = isDark ? Colors.white60 : Colors.black54;
 
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final neonPink = const Color(0xFFFF2E93);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
     final neonCyan = const Color(0xFF00F5FF);
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgGradStart),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Settings Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+                          icon: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: textPrimary,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Squad Settings',
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.body(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: textPrimary,
@@ -210,7 +231,9 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                     ),
                     IconButton(
                       icon: Icon(
-                        isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                        isDark
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
                         color: textPrimary,
                       ),
                       onPressed: widget.onThemeToggle,
@@ -236,16 +259,14 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                                   width: 100,
                                   height: 100,
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [primaryColor, neonPink],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
+                                    color: primaryColor,
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: primaryColor.withValues(alpha: 0.3),
-                                        blurRadius: 15,
+                                        color: primaryColor.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        blurRadius: 0,
                                         offset: const Offset(0, 6),
                                       ),
                                     ],
@@ -281,7 +302,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                               child: TextField(
                                 controller: _nameController,
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.body(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   color: textPrimary,
@@ -290,21 +311,26 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                                   border: InputBorder.none,
                                   hintText: 'Group Crew Name',
                                   focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.blueAccent),
+                                    borderSide: BorderSide(
+                                      color: Colors.blueAccent,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: neonCyan.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(15),
-                                border: Border.all(color: neonCyan.withValues(alpha: 0.3)),
+                                border: Border.all(color: neonCyan, width: 2),
                               ),
                               child: Text(
                                 '🔥 Coastal Vibe Match',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: isDark ? neonCyan : Colors.teal[800],
@@ -320,7 +346,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                       // Crew Share Code Invite
                       Text(
                         'INVITE CODE',
-                        style: GoogleFonts.outfit(
+                        style: AppFonts.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.5,
@@ -331,10 +357,13 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: cardBg.withValues(alpha: 0.6),
+                          color: cardBg,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : Colors.black,
+                            width: 2,
                           ),
                         ),
                         child: Row(
@@ -345,7 +374,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                               children: [
                                 Text(
                                   'KYOTODRIFT',
-                                  style: GoogleFonts.outfit(
+                                  style: AppFonts.body(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: primaryColor,
@@ -355,7 +384,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   'Share this code with your friends to join.',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 11,
                                     color: textSecondary,
                                   ),
@@ -365,7 +394,9 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                             ElevatedButton.icon(
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Invite Code Copied! 📋')),
+                                  const SnackBar(
+                                    content: Text('Invite Code Copied! 📋'),
+                                  ),
                                 );
                               },
                               icon: const Icon(Icons.copy, size: 14),
@@ -391,7 +422,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                             children: [
                               Text(
                                 'Mute Group Notifications',
-                                style: GoogleFonts.outfit(
+                                style: AppFonts.body(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: textPrimary,
@@ -400,7 +431,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 'Mutes message alert notifications.',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 12,
                                   color: textSecondary,
                                 ),
@@ -427,7 +458,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                         children: [
                           Text(
                             'SQUAD MEMBERS (${_members.length})',
-                            style: GoogleFonts.outfit(
+                            style: AppFonts.body(
                               fontSize: 12,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.5,
@@ -437,7 +468,11 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                           TextButton.icon(
                             onPressed: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Opening friend lists to invite... 🦖')),
+                                const SnackBar(
+                                  content: Text(
+                                    'Opening friend lists to invite... 🦖',
+                                  ),
+                                ),
                               );
                             },
                             icon: const Icon(Icons.add, size: 14),
@@ -461,10 +496,13 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                               margin: const EdgeInsets.only(bottom: 12),
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: cardBg.withValues(alpha: 0.7),
+                                color: cardBg,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
                                 ),
                               ),
                               child: Row(
@@ -476,13 +514,14 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                                   const SizedBox(width: 14),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
                                             Text(
                                               member['name']!,
-                                              style: GoogleFonts.outfit(
+                                              style: AppFonts.body(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold,
                                                 color: textPrimary,
@@ -491,18 +530,26 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                                             const SizedBox(width: 8),
                                             if (isCreator)
                                               Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  color: primaryColor.withValues(alpha: 0.15),
-                                                  borderRadius: BorderRadius.circular(8),
+                                                  color: primaryColor
+                                                      .withValues(alpha: 0.15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
                                                 ),
                                                 child: Text(
                                                   'creator',
-                                                  style: GoogleFonts.plusJakartaSans(
-                                                    fontSize: 8,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: primaryColor,
-                                                  ),
+                                                  style:
+                                                      AppFonts.heading(
+                                                        fontSize: 8,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: primaryColor,
+                                                      ),
                                                 ),
                                               ),
                                           ],
@@ -510,7 +557,7 @@ class _SquadGroupSettingsScreenState extends State<SquadGroupSettingsScreen> {
                                         const SizedBox(height: 2),
                                         Text(
                                           member['status']!,
-                                          style: GoogleFonts.plusJakartaSans(
+                                          style: AppFonts.heading(
                                             fontSize: 11,
                                             color: textSecondary,
                                           ),

@@ -1,20 +1,165 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/app_messenger.dart';
 import 'theme_preview_screen.dart';
-import '../../../core/theme/theme.dart';
 import '../../../core/api_service.dart';
+import '../../../core/widgets/gen_z_widgets.dart';
 
 class ThemeMarketplaceScreen extends StatefulWidget {
-  const ThemeMarketplaceScreen({super.key});
+  final bool? isDarkMode;
+  final VoidCallback? onThemeToggle;
+
+  const ThemeMarketplaceScreen({
+    super.key,
+    this.isDarkMode,
+    this.onThemeToggle,
+  });
 
   @override
   State<ThemeMarketplaceScreen> createState() => _ThemeMarketplaceScreenState();
 }
 
-class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with TickerProviderStateMixin {
+class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen>
+    with TickerProviderStateMixin {
   late AnimationController _rotationController;
   late AnimationController _pulseController;
+  int _activeTabIdx = 1;
+
+  final List<Map<String, dynamic>> _stickers = const [
+    {
+      'id': 'sticker-1',
+      'name': 'Kiếp Nạn 82 ⛈️',
+      'desc': 'Chuyến đi bất ổn bão táp.',
+      'price': '100 XP',
+      'image': 'assets/images/sticker_kiep_nan_82.webp',
+    },
+    {
+      'id': 'sticker-2',
+      'name': 'Squad Bất Ổn 🗺️',
+      'desc': 'Lạc lối cùng đồng bọn.',
+      'price': '150 XP',
+      'image': 'assets/images/sticker_squad_bat_on.webp',
+    },
+    {
+      'id': 'sticker-3',
+      'name': 'Overthink Packer 🧳',
+      'desc': 'Xếp đồ dư thừa quá mức.',
+      'price': '120 XP',
+      'image': 'assets/images/sticker_overthinking_packer.webp',
+    },
+    {
+      'id': 'sticker-4',
+      'name': 'Let Him Cook 🍳',
+      'desc': 'Chảo cháy trollface siêu bựa.',
+      'price': '200 XP',
+      'image': 'assets/images/sticker_burnt_egg.webp',
+    },
+    {
+      'id': 'sticker-5',
+      'name': 'Overthinker 🧠',
+      'desc': 'Chúa tể lo âu bộ não phồng to.',
+      'price': '180 XP',
+      'image': 'assets/images/sticker_brain_explode.webp',
+    },
+    {
+      'id': 'sticker-6',
+      'name': 'Khóc Thét 😿',
+      'desc': 'Meme mèo khóc ôm bánh mì cực bựa.',
+      'price': '130 XP',
+      'image': 'assets/images/sticker_sad_cat_bread.webp',
+    },
+    {
+      'id': 'sticker-7',
+      'name': 'Balo Cột Sống 🎒',
+      'desc': 'Doge ngáo đeo balo khổng lồ gánh tạ.',
+      'price': '140 XP',
+      'image': 'assets/images/sticker_doge_backpack.webp',
+    },
+    {
+      'id': 'sticker-8',
+      'name': 'Ví Hết Cứu 💸',
+      'desc': 'Ví rách bay bướm khóc ròng rã.',
+      'price': '160 XP',
+      'image': 'assets/images/sticker_no_money.webp',
+    },
+    {
+      'id': 'sticker-9',
+      'name': 'Tôm Flexing 💪',
+      'desc': 'Tôm lực điền đeo kính mát cool ngầu.',
+      'price': '220 XP',
+      'image': 'assets/images/sticker_flex_shrimp.webp',
+    },
+    {
+      'id': 'sticker-10',
+      'name': 'Báo Thủ Du Lịch 🐆',
+      'desc': 'Báo nhà báo bạn, báo luôn cả tour.',
+      'price': '170 XP',
+      'image': 'assets/images/sticker_bao_thu.webp',
+    },
+    {
+      'id': 'sticker-11',
+      'name': 'Hết Cứu / Cooked 🍚',
+      'desc': 'Nồi cơm điện đầu hàng bốc khói khét.',
+      'price': '190 XP',
+      'image': 'assets/images/sticker_het_cuu.webp',
+    },
+    {
+      'id': 'sticker-12',
+      'name': 'Mãi Keo dính chặt 🧪',
+      'desc': 'Dính keo cứng ngắc cùng bạn thân.',
+      'price': '150 XP',
+      'image': 'assets/images/sticker_mai_keo.webp',
+    },
+    {
+      'id': 'sticker-13',
+      'name': 'Ăn Hại Vô Cực 🍗',
+      'desc': 'Lười ôm đùi gà cười ngạo nghễ.',
+      'price': '110 XP',
+      'image': 'assets/images/sticker_an_hai.webp',
+    },
+    {
+      'id': 'sticker-14',
+      'name': 'Đúng Nhận Sai Cãi 🔮',
+      'desc': 'Bổ quả cau ra meme trollface bựa.',
+      'price': '160 XP',
+      'image': 'assets/images/sticker_dung_nhan_sai_cai.webp',
+    },
+    {
+      'id': 'sticker-15',
+      'name': 'Chằm Zn 😩',
+      'desc': 'Viên kẽm khóc lóc trầm cảm xó tường.',
+      'price': '120 XP',
+      'image': 'assets/images/sticker_cham_zn.webp',
+    },
+    {
+      'id': 'sticker-16',
+      'name': 'Hảo Hán Cat 🐱',
+      'desc': 'Mèo hiệp sĩ đeo kính ngầu lòi.',
+      'price': '180 XP',
+      'image': 'assets/images/sticker_hao_han.webp',
+    },
+    {
+      'id': 'sticker-17',
+      'name': 'Hết Nước Chấm 🌶️',
+      'desc': 'Bát nước chấm rỗng tuếch thèm thuồng.',
+      'price': '130 XP',
+      'image': 'assets/images/sticker_het_nuoc_cham.webp',
+    },
+    {
+      'id': 'sticker-18',
+      'name': 'Ú Òa / Mono 🤡',
+      'desc': 'Chú hề ú òa nhảy khỏi hộp quà.',
+      'price': '140 XP',
+      'image': 'assets/images/sticker_u_oa.webp',
+    },
+    {
+      'id': 'sticker-19',
+      'name': 'Cạn Lời 😐',
+      'desc': 'Mặt bất lực đảo mắt khinh bỉ.',
+      'price': '100 XP',
+      'image': 'assets/images/sticker_can_loi.webp',
+    },
+  ];
 
   final List<Map<String, dynamic>> _themes = const [
     {
@@ -24,7 +169,7 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
       'tag': 'Premium',
       'price': '500 XP',
       'gradient': [Color(0xFFFF007F), Color(0xFF00F0FF)],
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsV3mIuZwEyG2G5czO4qHzki5pHZTpRkZbSVCMunr5zTvE5uZRmE9llK25ivjTMB2t0vyKeGK7n2ahZV0mOxljA_IcpjQJiJtGIIrvvS9c5Q9Y4vqx-0UQMflh38CHCWVtOOkTVSjKJ7Y-7FOSbYUd0be2sgMGgD7zMuYj2RW_PQlrGxQXWfGmecLUqYhRVnUBxbsITgGvy_tkMljB9Y10i02bSOJgkxZOrpl2UBKniOAa10B7fJiFab_zhM4iFldrSMHpcbKIx5aW',
+      'imageUrl': 'assets/images/cover_theme_tokyo_neon.webp',
     },
     {
       'id': 'theme-2',
@@ -32,8 +177,8 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
       'desc': 'Soft greens & foggy mornings.',
       'tag': 'Standard',
       'price': '300 XP',
-      'gradient': [Color(0xFF34D399), Color(0xFF131B2E)],
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuB25fRGRahnZUdo9FqcZAql_W78jRkxvyCZXStpzZ2UXKrRH1LYdEzYU-ktFKy3QrhIV5YhoGbnhYglXx-3Ql5VsjZ1GHr0t7PKtglZjTV352szwnDH7pm0ztFoG24bs77V3jGiN1fh8a61qLfF0lwYF9kSuf5QVxxRbt5rFq_WGGTOxLrc_eQwuOmV6kYOY128HUJnQ9TwjQf-FOoHrSNP0RyU1_yEyQHqaqOSjnOnjZL_nqsdIotwrQTu6h909L75pirMpPPnJAaT',
+      'gradient': [Color(0xFF1FA85C), Color(0xFF131B2E)],
+      'imageUrl': 'assets/images/cover_theme_dalat_mist.webp',
     },
     {
       'id': 'theme-3',
@@ -41,8 +186,8 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
       'desc': 'Vibrant orange & electric cyan.',
       'tag': 'Standard',
       'price': '400 XP',
-      'gradient': [Color(0xFFFB923C), Color(0xFF06B6D4)],
-      'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBTd_kXDKHr6hHwGknehx3UfhrR2XKSB8QOxZinTer8wuc06LOGPCmFBgcQJ_GLtz-Qe_UBWFVHE6Tztp-Gcgq6iLEvPJ759s_55QVe0lMOkpzvB5E__dDScMecK-Z15yRfigSUZVson-CCtBQ6paOdu-IRB8cwSe3Uwn29A-xIDVEmS3uObwGsrTK6DWAz3-TyI0-G1IS9HfP0beZ4MbfHcrTorXA8XSZ1QZeL0t8LX7WBVnbFUQDZWzwOXVEIRbIrxuBwILGXtWMN',
+      'gradient': [Color(0xFFFB923C), Color(0xFF3D8BFF)],
+      'imageUrl': 'assets/images/cover_theme_beach_chaos.webp',
     },
   ];
 
@@ -79,13 +224,13 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                 'tag': 'Premium',
                 'price': '${backendItem['priceXP']} XP',
                 'gradient': [const Color(0xFFFF8A00), const Color(0xFFDA1B60)],
-                'imageUrl': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsV3mIuZwEyG2G5czO4qHzki5pHZTpRkZbSVCMunr5zTvE5uZRmE9llK25ivjTMB2t0vyKeGK7n2ahZV0mOxljA_IcpjQJiJtGIIrvvS9c5Q9Y4vqx-0UQMflh38CHCWVtOOkTVSjKJ7Y-7FOSbYUd0be2sgMGgD7zMuYj2RW_PQlrGxQXWfGmecLUqYhRVnUBxbsITgGvy_tkMljB9Y10i02bSOJgkxZOrpl2UBKniOAa10B7fJiFab_zhM4iFldrSMHpcbKIx5aW',
+                'imageUrl': 'assets/images/cover_theme_tokyo_neon.webp',
               },
             );
 
             return {
               ...localMatch,
-              'name': backendItem['name'] ?? localMatch['name'],
+              'name': localMatch['name'] ?? backendItem['name'],
               'price': '${backendItem['priceXP'] ?? 500} XP',
             };
           }).toList();
@@ -109,100 +254,54 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
 
   @override
   Widget build(BuildContext context) {
-    // Force always dark to match the premium cinematic dark onboarding screen
-    final isDark = context.mounted;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final paper = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
-    // Stitch Token Integration mapped to premium Tailwind hex color tokens
-    final primaryColor = const Color(0xFFD0BCFF);
-    final secondaryColor = const Color(0xFF45DFA4);
-    final backgroundColor = TripMateTheme.darkBackground;
-    final surfaceColor = TripMateTheme.darkSurface;
-    final textPrimaryColor = TripMateTheme.darkTextPrimary;
-    final textSecondaryColor = TripMateTheme.darkTextSecondary;
+    // Stitch Token Integration
+    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final secondaryColor = GenZTokens.green;
+    final textPrimaryColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondaryColor = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: bg,
       body: Stack(
         children: [
-          // 1. Ambient Background Layer (Mesh Gradients)
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.8, -0.6),
-                radius: 1.2,
-                colors: [
-                  Color(0x3D8B5CF6), // Soft Stitch Purple mesh glow
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(-0.8, 0.2),
-                radius: 1.5,
-                colors: [
-                  Color(0x2834D399), // Soft Stitch Mint mesh glow
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.0, 0.8),
-                radius: 1.3,
-                colors: [
-                  Color(0x20FB923C), // Soft Stitch Orange mesh glow
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-
-          // 2. Cinematic Karst Landscape Backdrop
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.15,
-              child: Image.network(
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const SizedBox(),
-              ),
-            ),
-          ),
-
-          // Blur overlay
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.12),
-              ),
-            ),
-          ),
-
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Top Blurry Header Bar
+              // Top Neo-Brutalist AppBar
               SliverAppBar(
                 expandedHeight: 88.0,
                 floating: false,
                 pinned: true,
-                backgroundColor: backgroundColor.withValues(alpha: 0.6),
+                backgroundColor: bg,
                 elevation: 0,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(color: Colors.transparent),
                 ),
                 leading: Padding(
-                  padding: const EdgeInsets.only(left: 8.0, top: 12.0),
+                  padding: const EdgeInsets.only(left: 16.0, top: 12.0),
                   child: Center(
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back, color: textPrimaryColor, size: 24),
-                      onPressed: () => Navigator.pop(context),
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: bg,
+                          border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+                        ),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: ink,
+                          size: 20,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -212,16 +311,16 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                     child: ShaderMask(
                       shaderCallback: (bounds) {
                         return LinearGradient(
-                          colors: [primaryColor, secondaryColor],
+                          colors: [ink, ink],
                         ).createShader(bounds);
                       },
                       child: Text(
                         'TripMate',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontWeight: FontWeight.w800,
                           fontSize: 26,
                           letterSpacing: -1.5,
-                          color: Colors.white,
+                          color: ink,
                         ),
                       ),
                     ),
@@ -236,14 +335,15 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                         height: 38,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: textPrimaryColor.withValues(alpha: 0.12), width: 1.5),
+                          border: Border.all(color: ink, width: 2),
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(99),
-                          child: Image.network(
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuAHv_wMKIY-_-fuY5MX_0fgt720aCkJF6IqOZh7Ee-UvfG2q_t_rHUFw3ufFKAIC0rW0StnBZPkR-7-WGrPMdJ-UR3mk_NJJVBa_mIyaVw2Dn6GHrVDVz7RlHlb0pv_gh816-8gkQb7udbrZwr_VdaV65AlLGb2LNEIQvk_c_soo9hGLsT4uj0TJlBAy3sLBxnNx5C9-E6quRqsjOfrouyKCo-2mqWi-ACFyUVCiyrbPAKws-vCq3rzcSLBnflNoRdcbuIns8WHFz0b',
+                          child: Image.asset(
+                            'assets/images/avatar_user.webp',
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.person),
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.person),
                           ),
                         ),
                       ),
@@ -254,34 +354,27 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
 
               // Main Canvas
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 16.0,
+                ),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     // Hero Section
                     Text(
-                      'Style Your Trip.',
-                      style: GoogleFonts.plusJakartaSans(
+                      _activeTabIdx == 2 ? 'Slap Some Vibes.' : 'Style Your Trip.',
+                      style: AppFonts.heading(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
                         color: textPrimaryColor,
-                        shadows: isDark
-                            ? [
-                                Shadow(
-                                  color: primaryColor.withValues(alpha: 0.5),
-                                  blurRadius: 20,
-                                ),
-                                Shadow(
-                                  color: primaryColor.withValues(alpha: 0.25),
-                                  blurRadius: 10,
-                                ),
-                              ]
-                            : null,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Discover premium themes crafted by top vibe creators.',
-                      style: GoogleFonts.inter(
+                      _activeTabIdx == 2
+                          ? 'Collect chaotic stickers to style your squad chat and itinerary.'
+                          : 'Discover premium themes crafted by top vibe creators.',
+                      style: AppFonts.body(
                         fontSize: 15,
                         color: textSecondaryColor,
                         height: 1.4,
@@ -295,319 +388,55 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          'Trending Now',
-                          style: GoogleFonts.plusJakartaSans(
+                          _activeTabIdx == 2 ? 'Chaotic Stickers' : 'Trending Now',
+                          style: AppFonts.heading(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: textPrimaryColor,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Text(
-                            'See All',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: secondaryColor,
+                        if (_activeTabIdx == 1)
+                          GestureDetector(
+                            onTap: () => showGlobalSnack(
+                              'Tính năng đang được hoàn thiện 🚧',
+                            ),
+                            child: Text(
+                              'See All',
+                              style: AppFonts.body(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: secondaryColor,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             height: 430,
                             child: Center(
-                              child: CircularProgressIndicator(color: Color(0xFFD0BCFF)),
+                              child: CircularProgressIndicator(
+                                color: primaryColor,
+                              ),
                             ),
                           )
-                        : SizedBox(
-                            height: 430,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: _liveThemes.length,
-                              itemBuilder: (context, index) {
-                                final item = _liveThemes[index];
-                                final themeId = item['id'] as String;
-                                final themeName = item['name'] as String;
-                                final themeDesc = item['desc'] as String;
-                                final themeTag = item['tag'] as String;
-                                final themePrice = item['price'] as String;
-                                final isPremium = themeTag == 'Premium';
-                                final gradientColors = item['gradient'] as List<Color>;
-                                final imageUrl = item['imageUrl'] as String;
-
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 16.0),
-                                  child: _GlassTouchCard(
-                                    onTap: () {},
-                                    isPremium: isPremium,
-                                    primaryColor: primaryColor,
-                                    textPrimaryColor: textPrimaryColor,
-                                    isDark: isDark,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        // Mockup Image & UI preview container
-                                        SizedBox(
-                                          height: 220,
-                                          child: Stack(
-                                            children: [
-                                              // Background visual network image
-                                              Positioned.fill(
-                                                child: Image.network(
-                                                  imageUrl,
-                                                  fit: BoxFit.cover,
-                                                  loadingBuilder: (context, child, loadingProgress) {
-                                                    if (loadingProgress == null) return child;
-                                                    return Container(
-                                                      color: Colors.black26,
-                                                      child: const Center(child: CircularProgressIndicator()),
-                                                    );
-                                                  },
-                                                  errorBuilder: (context, error, stackTrace) => Container(color: Colors.black38),
-                                                ),
-                                              ),
-
-                                              // Blend Overlay Gradient
-                                              Positioned.fill(
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      colors: [
-                                                        gradientColors[0].withValues(alpha: 0.3),
-                                                        gradientColors[1].withValues(alpha: 0.3)
-                                                      ],
-                                                      begin: Alignment.topLeft,
-                                                      end: Alignment.bottomRight,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-
-                                              // Dark gradient fade for text contrast - NOT const because of Colors elements
-                                              Positioned.fill(
-                                                child: Container(
-                                                  decoration: const BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      colors: [
-                                                        Colors.transparent,
-                                                        Colors.black54,
-                                                        Colors.black87,
-                                                      ],
-                                                      begin: Alignment.topCenter,
-                                                      end: Alignment.bottomCenter,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-
-                                              // Tag/Premium Badge
-                                              Positioned(
-                                                top: 14,
-                                                right: 14,
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black54.withValues(alpha: 0.7),
-                                                    borderRadius: BorderRadius.circular(16),
-                                                    border: Border.all(
-                                                      color: isPremium
-                                                          ? primaryColor.withValues(alpha: 0.4)
-                                                          : Colors.white24,
-                                                      width: 1.2,
-                                                    ),
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      if (isPremium) ...[
-                                                        Icon(Icons.verified, color: primaryColor, size: 14),
-                                                        const SizedBox(width: 4),
-                                                      ],
-                                                      Text(
-                                                        themeTag.toUpperCase(),
-                                                        style: GoogleFonts.inter(
-                                                          fontSize: 10,
-                                                          fontWeight: FontWeight.w700,
-                                                          letterSpacing: 1.0,
-                                                          color: isPremium ? primaryColor : Colors.white70,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-
-                                              // Mock UI preview overlays based on themeId
-                                              Positioned(
-                                                bottom: 16,
-                                                left: 16,
-                                                right: 16,
-                                                child: _buildMockUiPreview(themeId, gradientColors),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        // Details Section
-                                        Padding(
-                                          padding: const EdgeInsets.all(20.0),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    themeName,
-                                                    style: GoogleFonts.plusJakartaSans(
-                                                      fontSize: 20,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: textPrimaryColor,
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                    decoration: BoxDecoration(
-                                                      color: primaryColor.withValues(alpha: 0.08),
-                                                      borderRadius: BorderRadius.circular(8),
-                                                    ),
-                                                    child: Text(
-                                                      themePrice,
-                                                      style: GoogleFonts.inter(
-                                                        fontSize: 12,
-                                                        fontWeight: FontWeight.w800,
-                                                        color: primaryColor,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 6),
-                                              Text(
-                                                themeDesc,
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 13.5,
-                                                  color: textSecondaryColor,
-                                                  height: 1.3,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 18),
-
-                                              // CTA buttons
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: OutlinedButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) => ThemePreviewScreen(
-                                                              initialTheme: themeName,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                      style: OutlinedButton.styleFrom(
-                                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                                        side: BorderSide(color: textPrimaryColor.withValues(alpha: 0.12)),
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(16),
-                                                        ),
-                                                      ),
-                                                      child: Text(
-                                                        'Xem Trước',
-                                                        style: GoogleFonts.inter(
-                                                          fontWeight: FontWeight.w600,
-                                                          fontSize: 13,
-                                                          color: textPrimaryColor,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Expanded(
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(16),
-                                                        gradient: LinearGradient(
-                                                          colors: [primaryColor, primaryColor.withValues(alpha: 0.8)],
-                                                        ),
-                                                        boxShadow: isPremium
-                                                            ? [
-                                                                BoxShadow(
-                                                                  color: primaryColor.withValues(alpha: 0.35),
-                                                                  blurRadius: 10,
-                                                                  offset: const Offset(0, 4),
-                                                                )
-                                                              ]
-                                                            : null,
-                                                      ),
-                                                      child: ElevatedButton(
-                                                        onPressed: () async {
-                                                          final res = await ApiService.patch('/users/me', {'theme': themeId});
-                                                          if (context.mounted) {
-                                                            if (res != null) {
-                                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                                SnackBar(
-                                                                  content: Text('🎉 Đã mua và áp dụng thành công theme $themeName!'),
-                                                                  backgroundColor: primaryColor,
-                                                                  behavior: SnackBarBehavior.floating,
-                                                                ),
-                                                              );
-                                                            } else {
-                                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                                const SnackBar(
-                                                                  content: Text('❌ Không thể giao dịch theme. Vui lòng kết nối server!'),
-                                                                  backgroundColor: Colors.redAccent,
-                                                                  behavior: SnackBarBehavior.floating,
-                                                                ),
-                                                              );
-                                                            }
-                                                          }
-                                                        },
-                                                        style: ElevatedButton.styleFrom(
-                                                          backgroundColor: Colors.transparent,
-                                                          shadowColor: Colors.transparent,
-                                                          padding: const EdgeInsets.symmetric(vertical: 12),
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(16),
-                                                          ),
-                                                        ),
-                                                        child: Text(
-                                                          'Đổi Ngay 🚀',
-                                                          style: GoogleFonts.inter(
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 13,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                        : _buildMainContent(
+                            activeTabIdx: _activeTabIdx,
+                            primaryColor: primaryColor,
+                            secondaryColor: secondaryColor,
+                            textPrimaryColor: textPrimaryColor,
+                            textSecondaryColor: textSecondaryColor,
+                            isDark: isDark,
+                            paper: paper,
+                            ink: ink,
                           ),
                     const SizedBox(height: 36),
 
                     // Collections Grid Section
                     Text(
                       'Collections',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: textPrimaryColor,
@@ -618,39 +447,44 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                     _buildCollectionCard(
                       title: 'Vibe Creators',
                       subtitle: 'Curated by top influencers',
-                      gradient: const [Color(0xFF8B5CF6), Color(0x008B5CF6)],
-                      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDe7bElYKv_IFYAkEgdHHDg67c88YjI4JUUiJkdbuWEWCGSzVIMp-b9u95uNQndi_yoPqE19UT-d7rfyAzoW5u9R2mp0cNPPGiXf8NMs6CyfrVsUbr9BoTuLYFoAtJkvOcMw0XIc_Y3TSN99Y-DRCu5Lh1b3gNvN88NrMM3ase99SkmyaPsbVs9lDQnij-mGo49-B3EKgJhkzLOuizgMHJsBKEmyjpeDJz62gncToBNK_pSCSuncESFXD50meCsZ6ZL74feHdsmp0sA',
-                      surfaceColor: surfaceColor,
+                      gradient: const [Color(0xFFF5822B), Color(0x008B5CF6)],
+                      imageUrl: 'assets/images/cover_collection_vibe.webp',
+                      surfaceColor: paper,
                       textPrimary: textPrimaryColor,
                       textSecondary: textSecondaryColor,
+                      ink: ink,
                     ),
                     _buildCollectionCard(
                       title: 'Classic Squad',
                       subtitle: 'Nostalgic film & polaroid',
-                      gradient: const [Color(0xFF34D399), Color(0x0034D399)],
-                      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAzssXlFo6f58hzL924X1vsqxflySyEiBHCNaNYn6MpXL5vjNQhAhab3sZBthfTMmUnOJr5Nm1ZcO4isvsUQmcbBeVVBQwO8Tcim45tb7VObCLzUJIsjulWzT7PUv4G3oNoWv7TnyUdGFK3VnRfLMq6gfO4lTWU0S6acyYdAVVaWAhEzbjP_hvXkmKtklddSyrtk4NdLltGqt54C8GNPA8nhkyUYiK5ugsvAMThwXtLcIRvxApHk4jGWJdK5a2KX-KsDJ0ss4-fXrMp',
-                      surfaceColor: surfaceColor,
+                      gradient: const [Color(0xFF1FA85C), Color(0x0034D399)],
+                      imageUrl: 'assets/images/cover_collection_classic.webp',
+                      surfaceColor: paper,
                       textPrimary: textPrimaryColor,
                       textSecondary: textSecondaryColor,
+                      ink: ink,
                     ),
                     _buildCollectionCard(
                       title: 'Cyber Night',
                       subtitle: 'High-contrast dark modes',
                       gradient: const [Color(0xFFFF007F), Color(0x00FF007F)],
-                      imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBDoBZIhEqpc4_FgvCITjG6XMEyzUAfVz4owm_sXWub5SQg_RA1BOdyQcRXuGqHaFU2rmHoYZ4LR03VIUz4mgOtKNSwU5Fa_EGHT3-Cme8ymjn-kTke87p3vTuHll03Pcy_RbO9sQo8oZ3AkAjvPcG_C2x5i8Qgm5IBinXXZlRiYnhKtft4w-gEGqAWkaeoeNN_2Ni7TzFPcw9oQoZGP2OGpQ_MrUyBF1MsOvSGApGvG8ox0SBVcTfQwuCupFWjHDJ0hJAwkZ3lCe8N',
-                      surfaceColor: surfaceColor,
+                      imageUrl: 'assets/images/cover_collection_cyber.webp',
+                      surfaceColor: paper,
                       textPrimary: textPrimaryColor,
                       textSecondary: textSecondaryColor,
+                      ink: ink,
                     ),
 
-                    const SizedBox(height: 120), // Bottom padding for floating nav
+                    const SizedBox(
+                      height: 120,
+                    ), // Bottom padding for floating nav
                   ]),
                 ),
               ),
             ],
           ),
 
-          // Floating Translucent Bottom Navigation Bar
+          // Floating Brutalist Bottom Navigation Bar
           Positioned(
             bottom: 24,
             left: 20,
@@ -658,71 +492,65 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
             child: Center(
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark
-                          ? secondaryColor.withValues(alpha: 0.25)
-                          : Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(24),
+                  color: paper,
+                  border: Border.all(
+                    color: ink,
+                    width: GenZTokens.borderWidth,
+                  ),
+                  boxShadow: GenZTokens.hardShadow(ink),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 24.0, sigmaY: 24.0),
-                    child: Container(
-                      height: 76,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.03)
-                            : Colors.white.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(40),
-                        border: Border.all(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.1)
-                              : Colors.black.withValues(alpha: 0.08),
-                          width: 1.5,
+                  borderRadius: BorderRadius.circular(22),
+                  child: Container(
+                    height: 76,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildBottomNavItem(
+                          icon: Icons.movie_filter,
+                          label: 'Showcase',
+                          isActive: _activeTabIdx == 0,
+                          onTap: () => setState(() => _activeTabIdx = 0),
+                          secondaryColor: secondaryColor,
+                          ink: ink,
+                          isDark: isDark,
                         ),
-                      ),
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildBottomNavItem(
-                        icon: Icons.movie_filter,
-                        label: 'Showcase',
-                        isActive: false,
-                        secondaryColor: secondaryColor,
-                      ),
-                      _buildBottomNavItem(
-                        icon: Icons.palette,
-                        label: 'Themes',
-                        isActive: true,
-                        secondaryColor: secondaryColor,
-                      ),
-                      _buildBottomNavItem(
-                        icon: Icons.stadium,
-                        label: 'Stickers',
-                        isActive: false,
-                        secondaryColor: secondaryColor,
-                      ),
-                      _buildBottomNavItem(
-                        icon: Icons.local_mall,
-                        label: 'Vault',
-                        isActive: false,
-                        secondaryColor: secondaryColor,
-                      ),
-                    ],
+                        _buildBottomNavItem(
+                          icon: Icons.palette,
+                          label: 'Themes',
+                          isActive: _activeTabIdx == 1,
+                          onTap: () => setState(() => _activeTabIdx = 1),
+                          secondaryColor: secondaryColor,
+                          ink: ink,
+                          isDark: isDark,
+                        ),
+                        _buildBottomNavItem(
+                          icon: Icons.stadium,
+                          label: 'Stickers',
+                          isActive: _activeTabIdx == 2,
+                          onTap: () => setState(() => _activeTabIdx = 2),
+                          secondaryColor: secondaryColor,
+                          ink: ink,
+                          isDark: isDark,
+                        ),
+                        _buildBottomNavItem(
+                          icon: Icons.local_mall,
+                          label: 'Vault',
+                          isActive: _activeTabIdx == 3,
+                          onTap: () => setState(() => _activeTabIdx = 3),
+                          secondaryColor: secondaryColor,
+                          ink: ink,
+                          isDark: isDark,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
         ],
       ),
     );
@@ -763,7 +591,14 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Container(width: 60, height: 6, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(3))),
+                    Container(
+                      width: 60,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -784,9 +619,23 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(width: 90, height: 8, decoration: BoxDecoration(color: Colors.white38, borderRadius: BorderRadius.circular(4))),
+                        Container(
+                          width: 90,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: Colors.white38,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
                         const SizedBox(height: 6),
-                        Container(width: 50, height: 6, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(3))),
+                        Container(
+                          width: 50,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
                       ],
                     ),
                     Container(
@@ -798,11 +647,15 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                         boxShadow: [
                           BoxShadow(
                             color: colors[0].withValues(alpha: 0.6),
-                            blurRadius: 10,
+                            blurRadius: 0,
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.play_arrow, color: Colors.white, size: 16),
+                      child: const Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -825,13 +678,26 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(width: 120, height: 10, decoration: BoxDecoration(color: Colors.white30, borderRadius: BorderRadius.circular(5))),
+            Container(
+              width: 120,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Colors.white30,
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
             const SizedBox(height: 10),
             Row(
               children: [
-                CircleAvatar(radius: 12, backgroundColor: colors[0].withValues(alpha: 0.8)),
+                CircleAvatar(
+                  radius: 12,
+                  backgroundColor: colors[0].withValues(alpha: 0.8),
+                ),
                 const SizedBox(width: 8),
-                CircleAvatar(radius: 12, backgroundColor: colors[0].withValues(alpha: 0.5)),
+                CircleAvatar(
+                  radius: 12,
+                  backgroundColor: colors[0].withValues(alpha: 0.5),
+                ),
                 const SizedBox(width: 8),
                 // BorderStyle.dashed is NOT defined in Flutter's BorderSide, use a clean solid instead
                 Container(
@@ -841,7 +707,16 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                     shape: BoxShape.circle,
                     border: Border.all(color: colors[0], width: 1.0),
                   ),
-                  child: Center(child: Text('+', style: TextStyle(color: colors[0], fontSize: 12, fontWeight: FontWeight.bold))),
+                  child: Center(
+                    child: Text(
+                      '+',
+                      style: TextStyle(
+                        color: colors[0],
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -866,15 +741,610 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                 ),
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFF0B1326),
+                    color: Color(0xFF1A1712),
                     shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: Transform.rotate(
                       angle: -_rotationController.value * 2 * 3.1415,
-                      child: Icon(Icons.flight_takeoff, color: colors[0], size: 28),
+                      child: Icon(
+                        Icons.flight_takeoff,
+                        color: colors[0],
+                        size: 28,
+                      ),
                     ),
                   ),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildEmptyStateCard({
+    required String title,
+    required String subtitle,
+    required Color ink,
+    required Color paper,
+    required Color textColor,
+  }) {
+    return Container(
+      height: 240,
+      width: double.infinity,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: paper,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(ink),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.bubble_chart_outlined, color: textColor.withValues(alpha: 0.4), size: 48),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: AppFonts.heading(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: ink,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: AppFonts.body(
+              fontSize: 13,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainContent({
+    required int activeTabIdx,
+    required Color primaryColor,
+    required Color secondaryColor,
+    required Color textPrimaryColor,
+    required Color textSecondaryColor,
+    required bool isDark,
+    required Color paper,
+    required Color ink,
+  }) {
+    if (activeTabIdx == 0) {
+      return _buildEmptyStateCard(
+        title: 'Showcase Coming Soon! 🎬',
+        subtitle: 'Watch awesome squad highlights and memories here.',
+        ink: ink,
+        paper: paper,
+        textColor: textSecondaryColor,
+      );
+    } else if (activeTabIdx == 2) {
+      return SizedBox(
+        height: 430,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          itemCount: _stickers.length,
+          itemBuilder: (context, index) {
+            final sticker = _stickers[index];
+            final stickerName = sticker['name']!;
+            final stickerDesc = sticker['desc']!;
+            final stickerPrice = sticker['price']!;
+            final stickerImage = sticker['image']!;
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 16.0, bottom: 8.0),
+              child: _GlassTouchCard(
+                onTap: () {},
+                isPremium: false,
+                primaryColor: primaryColor,
+                textPrimaryColor: textPrimaryColor,
+                isDark: isDark,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sticker Preview Box
+                    Container(
+                      height: 220,
+                      width: 300,
+                      color: isDark ? const Color(0xFF1E1914) : const Color(0xFFFFFDF8),
+                      padding: const EdgeInsets.all(24),
+                      child: Center(
+                        child: Image.asset(
+                          stickerImage,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.broken_image, size: 48),
+                        ),
+                      ),
+                    ),
+                    // Details
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  stickerName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppFonts.heading(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: textPrimaryColor,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: secondaryColor.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: secondaryColor.withValues(alpha: 0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  stickerPrice,
+                                  style: AppFonts.mono(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            stickerDesc,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.body(
+                              fontSize: 13.5,
+                              color: textSecondaryColor,
+                              height: 1.3,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          // Action Button
+                          PressableCard(
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '🎉 Đã mua và mở khóa sticker $stickerName thành công!',
+                                  ),
+                                  backgroundColor: secondaryColor,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            },
+                            color: secondaryColor,
+                            borderColor: ink,
+                            shadowColor: ink,
+                            borderWidth: GenZTokens.borderWidthThin,
+                            radius: GenZTokens.radiusButton,
+                            depth: 3,
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Center(
+                              child: Text(
+                                'SỞ HỮU NGAY 🌟',
+                                style: AppFonts.heading(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 12,
+                                  color: GenZTokens.ink,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    } else if (activeTabIdx == 3) {
+      return _buildEmptyStateCard(
+        title: 'Vault is empty! 🧳',
+        subtitle: 'Collect stickers and themes to fill your locker.',
+        ink: ink,
+        paper: paper,
+        textColor: textSecondaryColor,
+      );
+    } else {
+      // Default: Tab Themes (activeTabIdx == 1)
+      return SizedBox(
+        height: 430,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          itemCount: _liveThemes.length,
+          itemBuilder: (context, index) {
+            final item = _liveThemes[index];
+            final themeId = item['id'] as String;
+            final themeName = item['name'] as String;
+            final themeDesc = item['desc'] as String;
+            final themeTag = item['tag'] as String;
+            final themePrice = item['price'] as String;
+            final isPremium = themeTag == 'Premium';
+            final gradientColors =
+                item['gradient'] as List<Color>;
+            final imageUrl = item['imageUrl'] as String;
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 16.0, bottom: 8.0),
+              child: _GlassTouchCard(
+                onTap: () => showGlobalSnack(
+                  'Tính năng đang được hoàn thiện 🚧',
+                ),
+                isPremium: isPremium,
+                primaryColor: primaryColor,
+                textPrimaryColor: textPrimaryColor,
+                isDark: isDark,
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    // Mockup Image & UI preview container
+                    SizedBox(
+                      height: 220,
+                      child: Stack(
+                        children: [
+                          // Background visual image (Asset or Network)
+                          Positioned.fill(
+                            child: imageUrl.startsWith('assets/')
+                                ? Image.asset(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.network(
+                                    imageUrl,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (
+                                          context,
+                                          child,
+                                          loadingProgress,
+                                        ) {
+                                          if (loadingProgress ==
+                                              null) {
+                                            return child;
+                                          }
+                                          return Container(
+                                            color: Colors.black26,
+                                            child: const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          );
+                                        },
+                                    errorBuilder:
+                                        (
+                                          context,
+                                          error,
+                                          stackTrace,
+                                        ) => Container(
+                                          color: Colors.black38,
+                                        ),
+                                  ),
+                          ),
+
+                          // Blend Overlay Gradient
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: gradientColors[0]
+                                    .withValues(alpha: 0.3),
+                              ),
+                            ),
+                          ),
+
+                          // Dark gradient fade for text contrast
+                          Positioned.fill(
+                            child: Container(
+                              decoration:
+                                  const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black54,
+                                        Colors.black87,
+                                      ],
+                                      begin: Alignment
+                                          .topCenter,
+                                      end: Alignment
+                                          .bottomCenter,
+                                    ),
+                                  ),
+                            ),
+                          ),
+
+                          // Tag/Premium Badge
+                          Positioned(
+                            top: 14,
+                            right: 14,
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                              decoration: BoxDecoration(
+                                color: Colors.black54
+                                    .withValues(alpha: 0.7),
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      16,
+                                    ),
+                                border: Border.all(
+                                  color: isPremium
+                                      ? primaryColor
+                                            .withValues(
+                                              alpha: 0.4,
+                                            )
+                                      : Colors.white24,
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize:
+                                    MainAxisSize.min,
+                                children: [
+                                  if (isPremium) ...[
+                                    Icon(
+                                      Icons.verified,
+                                      color: primaryColor,
+                                      size: 14,
+                                    ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                  ],
+                                  Text(
+                                    themeTag.toUpperCase(),
+                                    style:
+                                        AppFonts.body(
+                                          fontSize: 10,
+                                          fontWeight:
+                                              FontWeight
+                                                  .w700,
+                                          letterSpacing:
+                                              1.0,
+                                          color: isPremium
+                                              ? primaryColor
+                                              : Colors
+                                                    .white70,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // Mock UI preview overlays based on themeId
+                          Positioned(
+                            bottom: 16,
+                            left: 16,
+                            right: 16,
+                            child: _buildMockUiPreview(
+                              themeId,
+                              gradientColors,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Details Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  themeName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      AppFonts.heading(
+                                        fontSize: 18,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            textPrimaryColor,
+                                      ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                decoration: BoxDecoration(
+                                  color: primaryColor
+                                      .withValues(
+                                        alpha: 0.12,
+                                      ),
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        8,
+                                      ),
+                                  border: Border.all(
+                                    color: primaryColor.withValues(alpha: 0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  themePrice,
+                                  style: AppFonts.mono(
+                                    fontSize: 11,
+                                    fontWeight:
+                                        FontWeight.w700,
+                                    color: primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            themeDesc,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.body(
+                              fontSize: 13.5,
+                              color: textSecondaryColor,
+                              height: 1.3,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+
+                          // CTA buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: PressableCard(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ThemePreviewScreen(
+                                              initialTheme:
+                                                  themeName,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  color: paper,
+                                  borderColor: ink,
+                                  shadowColor: ink,
+                                  borderWidth: GenZTokens.borderWidthThin,
+                                  radius: GenZTokens.radiusButton,
+                                  depth: 3,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 8,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Xem Trước',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppFonts.heading(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12,
+                                        color: ink,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: PressableCard(
+                                  onTap: () async {
+                                    final res =
+                                        await ApiService.patch(
+                                          '/users/me',
+                                          {
+                                            'theme':
+                                                themeId,
+                                          },
+                                        );
+                                    if (context.mounted) {
+                                      if (res != null) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              '🎉 Đã áp dụng theme $themeName!',
+                                            ),
+                                            backgroundColor:
+                                                primaryColor,
+                                            behavior:
+                                                SnackBarBehavior
+                                                    .floating,
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              '❌ Không thể giao dịch. Vui lòng thử lại!',
+                                            ),
+                                            backgroundColor:
+                                                Colors
+                                                    .redAccent,
+                                            behavior:
+                                                SnackBarBehavior
+                                                    .floating,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  color: primaryColor,
+                                  borderColor: ink,
+                                  shadowColor: ink,
+                                  borderWidth: GenZTokens.borderWidthThin,
+                                  radius: GenZTokens.radiusButton,
+                                  depth: 3,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 8,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Đổi Ngay 🚀',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppFonts.heading(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 12,
+                                        color: GenZTokens.ink,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -892,15 +1362,17 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
     required Color surfaceColor,
     required Color textPrimary,
     required Color textSecondary,
+    required Color ink,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: surfaceColor.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: textPrimary.withValues(alpha: 0.08), width: 1.2),
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: ink, width: GenZTokens.borderWidth),
+          boxShadow: GenZTokens.hardShadow(ink),
         ),
         child: Row(
           children: [
@@ -914,7 +1386,9 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: Image.network(imageUrl, fit: BoxFit.cover),
+                    child: imageUrl.startsWith('assets/')
+                        ? Image.asset(imageUrl, fit: BoxFit.cover)
+                        : Image.network(imageUrl, fit: BoxFit.cover),
                   ),
                   Positioned.fill(
                     child: Container(
@@ -937,7 +1411,7 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: textPrimary,
@@ -946,7 +1420,7 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 12.5,
                       color: textSecondary,
                     ),
@@ -965,11 +1439,14 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
     required IconData icon,
     required String label,
     required bool isActive,
+    required VoidCallback onTap,
     required Color secondaryColor,
+    required Color ink,
+    required bool isDark,
   }) {
     return Expanded(
       child: GestureDetector(
-        onTap: () {},
+        onTap: onTap,
         child: Container(
           color: Colors.transparent,
           child: Column(
@@ -977,43 +1454,29 @@ class _ThemeMarketplaceScreenState extends State<ThemeMarketplaceScreen> with Ti
             children: [
               isActive
                   ? Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: secondaryColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: secondaryColor.withValues(alpha: 0.24)),
+                        color: secondaryColor,
+                        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(icon, color: secondaryColor, size: 20),
-                          const SizedBox(width: 6),
-                          Text(
-                            label,
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: secondaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: Icon(icon, color: GenZTokens.ink, size: 20),
                     )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(icon, color: Colors.white38, size: 22),
-                        const SizedBox(height: 4),
-                        Text(
-                          label,
-                          style: GoogleFonts.inter(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white38,
-                          ),
-                        ),
-                      ],
-                    ),
+                  : Icon(icon, color: isDark ? Colors.white38 : Colors.black38, size: 22),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AppFonts.body(
+                  fontSize: 10,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                  color: isActive
+                      ? (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                      : (isDark ? Colors.white38 : Colors.black38),
+                ),
+              ),
             ],
           ),
         ),
@@ -1048,6 +1511,9 @@ class _GlassTouchCardState extends State<_GlassTouchCard> {
 
   @override
   Widget build(BuildContext context) {
+    final ink = widget.isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final paper = widget.isDark ? GenZTokens.paperDark : GenZTokens.paper;
+
     return AnimatedScale(
       scale: _scale,
       duration: const Duration(milliseconds: 150),
@@ -1057,30 +1523,19 @@ class _GlassTouchCardState extends State<_GlassTouchCard> {
         onTapUp: (_) => setState(() => _scale = 1.0),
         onTapCancel: () => setState(() => _scale = 1.0),
         onTap: widget.onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(32),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 24.0, sigmaY: 24.0),
-            child: Container(
-              width: 290,
-              decoration: BoxDecoration(
-                color: widget.isDark
-                    ? Colors.white.withValues(alpha: 0.03)
-                    : Colors.white.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: widget.isPremium
-                      ? widget.primaryColor.withValues(alpha: 0.3)
-                      : (widget.isDark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : widget.textPrimaryColor.withValues(alpha: 0.08)),
-                  width: 1.5,
-                ),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: widget.child,
+        child: Container(
+          width: 300,
+          decoration: BoxDecoration(
+            color: paper,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            border: Border.all(
+              color: ink,
+              width: GenZTokens.borderWidth,
             ),
+            boxShadow: GenZTokens.hardShadow(ink),
           ),
+          clipBehavior: Clip.antiAlias,
+          child: widget.child,
         ),
       ),
     );
@@ -1091,10 +1546,7 @@ class _AnimatedTapButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;
 
-  const _AnimatedTapButton({
-    required this.child,
-    required this.onTap,
-  });
+  const _AnimatedTapButton({required this.child, required this.onTap});
 
   @override
   State<_AnimatedTapButton> createState() => _AnimatedTapButtonState();

@@ -1,71 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/theme.dart';
-import 'core/theme/theme_provider.dart';
+import 'core/theme/theme_provider.dart'; // themeProvider + accentProvider
+import 'core/router/app_router.dart';
+import 'core/app_messenger.dart';
 import 'core/api_service.dart';
-import 'features/splash/presentation/splash_screen.dart';
+import 'core/network/api_client.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
   runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('vi'), Locale('en')],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('vi'),
-      child: const MyApp(),
+    ProviderScope(
+      child: EasyLocalization(
+        supportedLocales: const [Locale('vi'), Locale('en')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('vi'),
+        child: const MyApp(),
+      ),
     ),
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Update API client languages dynamically when locale changes
+    ApiService.currentLanguage = context.locale.languageCode;
+    ApiClient.currentLanguage = context.locale.languageCode;
 
-class _MyAppState extends State<MyApp> {
-  final ThemeProvider _themeProvider = ThemeProvider();
+    final themeMode = ref.watch(themeProvider);
+    final accent    = ref.watch(accentProvider);
+    final _         = ref.watch(fontProvider); // Watch font changes to trigger global rebuild
+    final router    = ref.watch(appRouterProvider);
 
-  @override
-  void initState() {
-    super.initState();
-    // Watch for theme changes to rebuild the MaterialApp
-    _themeProvider.addListener(_onThemeChanged);
-  }
-
-  @override
-  void dispose() {
-    _themeProvider.removeListener(_onThemeChanged);
-    super.dispose();
-  }
-
-  void _onThemeChanged() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: ApiService.navigatorKey,
+    return MaterialApp.router(
+      routerConfig: router,
+      scaffoldMessengerKey: rootMessengerKey,
       title: 'TripMate',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      theme: TripMateTheme.lightTheme,
-      darkTheme: TripMateTheme.darkTheme,
-      themeMode: _themeProvider.themeMode,
-      home: SplashScreen(
-        isDarkMode: _themeProvider.isDarkMode,
-        onThemeToggle: () {
-          setState(() {
-            _themeProvider.toggleTheme();
-          });
-        },
-      ),
+      theme:     TripMateTheme.buildLight(accent),
+      darkTheme: TripMateTheme.buildDark(accent),
+      themeMode: themeMode,
     );
   }
 }

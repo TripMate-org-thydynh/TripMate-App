@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
 class SquadChecklistPackingScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -12,10 +11,13 @@ class SquadChecklistPackingScreen extends StatefulWidget {
   });
 
   @override
-  State<SquadChecklistPackingScreen> createState() => _SquadChecklistPackingScreenState();
+  State<SquadChecklistPackingScreen> createState() =>
+      _SquadChecklistPackingScreenState();
 }
 
-class _SquadChecklistPackingScreenState extends State<SquadChecklistPackingScreen> with SingleTickerProviderStateMixin {
+class _SquadChecklistPackingScreenState
+    extends State<SquadChecklistPackingScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   final List<Map<String, dynamic>> _checklistItems = [
@@ -48,14 +50,18 @@ class _SquadChecklistPackingScreenState extends State<SquadChecklistPackingScree
   void _toggleChecklist(int idx) {
     setState(() {
       _checklistItems[idx]['done'] = !_checklistItems[idx]['done'];
-      _checklistItems[idx]['by'] = _checklistItems[idx]['done'] ? 'Thảo Ly (Me)' : '';
+      _checklistItems[idx]['by'] = _checklistItems[idx]['done']
+          ? 'Thảo Ly (Me)'
+          : '';
     });
   }
 
   void _togglePacking(int idx) {
     setState(() {
       _packingItems[idx]['packed'] = !_packingItems[idx]['packed'];
-      _packingItems[idx]['by'] = _packingItems[idx]['packed'] ? 'Thảo Ly (Me)' : '';
+      _packingItems[idx]['by'] = _packingItems[idx]['packed']
+          ? 'Thảo Ly (Me)'
+          : '';
     });
   }
 
@@ -63,15 +69,21 @@ class _SquadChecklistPackingScreenState extends State<SquadChecklistPackingScree
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF06B6D4) : const Color(0xFFEBA83A);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
+    final secondaryColor = isDark
+        ? const Color(0xFF3D8BFF)
+        : const Color(0xFFFFD84D);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6),
+      backgroundColor: isDark
+          ? const Color(0xFF1A1712)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         title: Text(
           'Squad Prep List',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -117,10 +129,13 @@ class _SquadChecklistPackingScreenState extends State<SquadChecklistPackingScree
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            color: isDark ? const Color(0xFF262019) : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
           ),
           child: ListTile(
@@ -131,17 +146,22 @@ class _SquadChecklistPackingScreenState extends State<SquadChecklistPackingScree
             ),
             title: Text(
               item['title'],
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 decoration: done ? TextDecoration.lineThrough : null,
-                color: done ? Colors.grey : (isDark ? Colors.white : Colors.black87),
+                color: done
+                    ? Colors.grey
+                    : (isDark ? Colors.white : Colors.black87),
               ),
             ),
             subtitle: done
                 ? Text(
                     'Checked off by ${item['by']}',
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   )
                 : null,
           ),
@@ -161,10 +181,13 @@ class _SquadChecklistPackingScreenState extends State<SquadChecklistPackingScree
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E293B) : Colors.white,
+            color: isDark ? const Color(0xFF262019) : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
           ),
           child: ListTile(
@@ -175,21 +198,30 @@ class _SquadChecklistPackingScreenState extends State<SquadChecklistPackingScree
             ),
             title: Text(
               item['title'],
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 decoration: packed ? TextDecoration.lineThrough : null,
-                color: packed ? Colors.grey : (isDark ? Colors.white : Colors.black87),
+                color: packed
+                    ? Colors.grey
+                    : (isDark ? Colors.white : Colors.black87),
               ),
             ),
             subtitle: packed
                 ? Text(
                     'Packed by ${item['by']} 🎒',
-                    style: TextStyle(fontSize: 10, color: secondaryColor, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: secondaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   )
-                : const Text(
+                : Text(
                     'Needs packing',
-                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
           ),
         );

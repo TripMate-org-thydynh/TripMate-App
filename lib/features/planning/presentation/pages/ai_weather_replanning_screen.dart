@@ -1,7 +1,6 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class AIWeatherReplanningScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -13,7 +12,8 @@ class AIWeatherReplanningScreen extends StatefulWidget {
   });
 
   @override
-  State<AIWeatherReplanningScreen> createState() => _AIWeatherReplanningScreenState();
+  State<AIWeatherReplanningScreen> createState() =>
+      _AIWeatherReplanningScreenState();
 }
 
 class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
@@ -30,10 +30,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
     )..repeat();
 
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
 
@@ -48,13 +45,27 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
     final isDark = widget.isDarkMode;
 
     // HSL/Brand Color Palettes
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C); // Electric Purple vs Coral
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A); // Mint Green vs Amber
-    final tertiaryColor = isDark ? const Color(0xFFFB923C) : const Color(0xFFE0533C); 
-    final backgroundColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final cardColor = isDark ? const Color(0xFF171F33) : Colors.white;
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B); // Electric Purple vs Coral
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D); // Mint Green vs Amber
+    final tertiaryColor = isDark
+        ? const Color(0xFFFB923C)
+        : const Color(0xFFF5822B);
+    final backgroundColor = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final cardColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -72,7 +83,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                 boxShadow: [
                   BoxShadow(
                     color: primaryColor.withValues(alpha: isDark ? 0.15 : 0.1),
-                    blurRadius: 80,
+                    blurRadius: 0,
                     spreadRadius: 40,
                   ),
                 ],
@@ -89,8 +100,10 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: secondaryColor.withValues(alpha: isDark ? 0.15 : 0.1),
-                    blurRadius: 90,
+                    color: secondaryColor.withValues(
+                      alpha: isDark ? 0.15 : 0.1,
+                    ),
+                    blurRadius: 0,
                     spreadRadius: 45,
                   ),
                 ],
@@ -108,7 +121,10 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -119,7 +135,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                         // 2. Title & Status
                         Text(
                           'your night market plan is cooked 😭',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                             color: textPrimary,
@@ -145,11 +161,14 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                                 children: [
                                   TextSpan(
                                     text: 'autorenew',
-                                    style: TextStyle(color: Colors.transparent, fontSize: 0),
+                                    style: TextStyle(
+                                      color: Colors.transparent,
+                                      fontSize: 0,
+                                    ),
                                   ),
                                   TextSpan(
                                     text: 'switching to cozy cafe mode',
-                                    style: GoogleFonts.inter(
+                                    style: AppFonts.body(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       color: secondaryColor,
@@ -163,20 +182,32 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                         const SizedBox(height: 28),
 
                         // 3. Swap Comparison Cards (Vertical Flow with arrow downward)
-                        _buildComparisonFlow(isDark, primaryColor, secondaryColor, cardColor, textPrimary, textSecondary),
+                        _buildComparisonFlow(
+                          isDark,
+                          primaryColor,
+                          secondaryColor,
+                          cardColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
                         const SizedBox(height: 32),
 
                         // 4. Vibe Forecast Section
                         Text(
                           'Vibe Forecast',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: textPrimary,
                           ),
                         ),
                         const SizedBox(height: 16),
-                        _buildForecastRow(isDark, cardColor, textPrimary, textSecondary),
+                        _buildForecastRow(
+                          isDark,
+                          cardColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
                         const SizedBox(height: 28),
 
                         // 5. Rerouting Loader/Chip
@@ -184,7 +215,12 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                         const SizedBox(height: 36),
 
                         // 6. Action Buttons
-                        _buildActionButtons(isDark, primaryColor, secondaryColor, tertiaryColor),
+                        _buildActionButtons(
+                          isDark,
+                          primaryColor,
+                          secondaryColor,
+                          tertiaryColor,
+                        ),
                         const SizedBox(height: 32),
                       ],
                     ),
@@ -204,7 +240,9 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.05),
           ),
         ),
       ),
@@ -214,13 +252,17 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 20),
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: textPrimary,
+                  size: 20,
+                ),
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 8),
               Text(
                 'TripMate AI',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: textPrimary,
@@ -244,16 +286,15 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDark ? Colors.red.withValues(alpha: 0.12) : Colors.red.withValues(alpha: 0.08),
+            color: isDark
+                ? Colors.red.withValues(alpha: 0.12)
+                : Colors.red.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.red.withValues(alpha: 0.25),
-              width: 1.5,
-            ),
+            border: Border.all(color: Colors.red, width: 2),
           ),
           child: Row(
             children: [
@@ -280,14 +321,19 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                         children: [
                           TextSpan(
                             text: 'cloud_sync',
-                            style: TextStyle(color: Colors.transparent, fontSize: 0),
+                            style: TextStyle(
+                              color: Colors.transparent,
+                              fontSize: 0,
+                            ),
                           ),
                           TextSpan(
                             text: 'rain detected ☔ saving the vibe...',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFFB91C1C),
+                              color: isDark
+                                  ? const Color(0xFFFCA5A5)
+                                  : const Color(0xFFB91C1C),
                             ),
                           ),
                         ],
@@ -296,9 +342,11 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                     const SizedBox(height: 2),
                     Text(
                       'Matey has got your back!',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 12,
-                        color: isDark ? Colors.red.shade100 : Colors.red.shade800,
+                        color: isDark
+                            ? Colors.red.shade100
+                            : Colors.red.shade800,
                       ),
                     ),
                   ],
@@ -325,16 +373,15 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
         ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.black.withValues(alpha: 0.02),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.03)
+                    : Colors.black.withValues(alpha: 0.02),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.red.withValues(alpha: 0.2),
-                  width: 1.5,
-                ),
+                border: Border.all(color: Colors.red, width: 2),
               ),
               child: Row(
                 children: [
@@ -357,7 +404,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                       children: [
                         Text(
                           'Raohe Night Market',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: textPrimary.withValues(alpha: 0.6),
@@ -367,7 +414,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                         const SizedBox(height: 4),
                         Text(
                           'Outdoor • 7:00 PM',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 12,
                             color: Colors.redAccent.withValues(alpha: 0.8),
                           ),
@@ -375,11 +422,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.cancel,
-                    color: Colors.redAccent,
-                    size: 24,
-                  ),
+                  const Icon(Icons.cancel, color: Colors.redAccent, size: 24),
                 ],
               ),
             ),
@@ -410,20 +453,19 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
         ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.8),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.white.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: secondaryColor.withValues(alpha: 0.4),
-                  width: 1.5,
-                ),
+                border: Border.all(color: secondaryColor, width: 2),
                 boxShadow: [
                   BoxShadow(
                     color: secondaryColor.withValues(alpha: 0.1),
-                    blurRadius: 15,
+                    blurRadius: 0,
                     spreadRadius: 2,
                   ),
                 ],
@@ -449,7 +491,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                       children: [
                         Text(
                           'Cloud Nine Roastery',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                             color: textPrimary,
@@ -458,7 +500,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                         const SizedBox(height: 4),
                         Text(
                           'Indoor • 5 min walk',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 12,
                             color: secondaryColor,
                             fontWeight: FontWeight.bold,
@@ -473,11 +515,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                       color: secondaryColor.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.check,
-                      color: secondaryColor,
-                      size: 16,
-                    ),
+                    child: Icon(Icons.check, color: secondaryColor, size: 16),
                   ),
                 ],
               ),
@@ -508,14 +546,14 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
         'desc': 'thunderstorm',
         'temp': '17°',
         'icon': Icons.thunderstorm,
-        'color': const Color(0xFFF59E0B),
+        'color': const Color(0xFFF5822B),
       },
       {
         'label': 'Tmrw',
         'desc': 'clear_day',
         'temp': '24°',
         'icon': Icons.wb_sunny,
-        'color': const Color(0xFF10B981),
+        'color': const Color(0xFF1FA85C),
       },
     ];
 
@@ -526,17 +564,22 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
             margin: const EdgeInsets.symmetric(horizontal: 4),
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black,
+                width: 2,
               ),
             ),
             child: Column(
               children: [
                 Text(
                   item['label']!,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: textSecondary,
@@ -551,7 +594,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                 const SizedBox(height: 12),
                 Text(
                   item['temp']!,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: textPrimary,
@@ -560,15 +603,15 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                 const SizedBox(height: 4),
                 Text(
                   item['desc']!,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: textSecondary,
-                  ),
+                  style: AppFonts.body(fontSize: 11, color: textSecondary),
                 ),
                 // Invisible span matching requirements exactly
                 Text(
                   '${item['label']}${item['desc']}${item['temp']}',
-                  style: const TextStyle(fontSize: 0, color: Colors.transparent),
+                  style: const TextStyle(
+                    fontSize: 0,
+                    color: Colors.transparent,
+                  ),
                 ),
               ],
             ),
@@ -578,14 +621,20 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
     );
   }
 
-  Widget _buildReroutingChip(bool isDark, Color textPrimary, Color textSecondary) {
+  Widget _buildReroutingChip(
+    bool isDark,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.black.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
@@ -607,7 +656,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
                     ),
                     TextSpan(
                       text: 'Rerouting...',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: textPrimary,
@@ -623,7 +672,12 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
     );
   }
 
-  Widget _buildActionButtons(bool isDark, Color primaryColor, Color secondaryColor, Color tertiaryColor) {
+  Widget _buildActionButtons(
+    bool isDark,
+    Color primaryColor,
+    Color secondaryColor,
+    Color tertiaryColor,
+  ) {
     return Column(
       children: [
         GestureDetector(
@@ -632,7 +686,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
               SnackBar(
                 content: Text(
                   'Approved New Plan! Cozy Cafe mode activated ☔☕',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                  style: AppFonts.body(fontWeight: FontWeight.bold),
                 ),
                 backgroundColor: secondaryColor,
                 behavior: SnackBarBehavior.floating,
@@ -644,16 +698,12 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
             width: double.infinity,
             height: 56,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [primaryColor, secondaryColor],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: primaryColor,
               borderRadius: BorderRadius.circular(999),
               boxShadow: [
                 BoxShadow(
                   color: primaryColor.withValues(alpha: 0.35),
-                  blurRadius: 20,
+                  blurRadius: 0,
                   offset: const Offset(0, 8),
                 ),
               ],
@@ -661,7 +711,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
             child: Center(
               child: Text(
                 'Approve New Plan',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
@@ -678,7 +728,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
               SnackBar(
                 content: Text(
                   'Skipped! Embracing the chaos! 🌧️🔥',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                  style: AppFonts.body(fontWeight: FontWeight.bold),
                 ),
                 backgroundColor: tertiaryColor,
                 behavior: SnackBarBehavior.floating,
@@ -700,7 +750,7 @@ class _AIWeatherReplanningScreenState extends State<AIWeatherReplanningScreen>
             child: Center(
               child: Text(
                 "I'm feeling chaotic (Skip)",
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: tertiaryColor,

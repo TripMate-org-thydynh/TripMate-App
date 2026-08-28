@@ -1,52 +1,63 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/app_messenger.dart';
+import '../../../core/widgets/gen_z_widgets.dart';
 
 class MateyAiEmotionalChaosScreen extends StatefulWidget {
   const MateyAiEmotionalChaosScreen({super.key});
 
   @override
-  State<MateyAiEmotionalChaosScreen> createState() => _MateyAiEmotionalChaosScreenState();
+  State<MateyAiEmotionalChaosScreen> createState() =>
+      _MateyAiEmotionalChaosScreenState();
 }
 
-class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScreen> with TickerProviderStateMixin {
+class _MateyAiEmotionalChaosScreenState
+    extends State<MateyAiEmotionalChaosScreen>
+    with TickerProviderStateMixin {
   late final AnimationController _orbFloatController;
   late final AnimationController _typingController;
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
-  bool _isDarkMode = true; // State of theme, will default to system or manual switch
+
+  bool _isDarkMode =
+      true; // State of theme, will default to system or manual switch
 
   final List<Map<String, dynamic>> _messages = [
     {
       'type': 'ai',
-      'text': 'You probably shouldn’t schedule 5 cafes in 2 hours 😭 Trừ khi các bồ muốn cả team xỉu up xỉu down vibrating through the streets of Tokyo. Let\'s space it out a bit?',
+      'text':
+          'You probably shouldn’t schedule 5 cafes in 2 hours 😭 Trừ khi các bồ muốn cả team xỉu up xỉu down vibrating through the streets of Tokyo. Let\'s space it out a bit?',
       'time': 'just now',
       'likes': 12,
     },
     {
       'type': 'alert_broke',
-      'title': '💸 broke alert',
-      'text': 'That omakase place is gonna eat 40% of the daily budget. Tìm quán khác hạt dẻ hơn nha?',
+      'title': 'broke alert',
+      'text':
+          'That omakase place is gonna eat 40% of the daily budget. Tìm quán khác hạt dẻ hơn nha?',
     },
     {
       'type': 'alert_weather',
       'title': 'weather savior',
-      'text': 'rain detected ☔ saving the vibe... Trời sắp mưa rào rùi, tui đổi Tsukiji Market sang chiều nha?',
+      'text':
+          'rain detected ☔ saving the vibe... Trời sắp mưa rào rùi, tui đổi Tsukiji Market sang chiều nha?',
     },
     {
       'type': 'user',
-      'text': 'Fair point. What\'s a good alternative near Shibuya right now? Cần chỗ nào aesthetic xíu để sống ảo nha.',
+      'text':
+          'Fair point. What\'s a good alternative near Shibuya right now? Cần chỗ nào aesthetic xíu để sống ảo nha.',
       'time': 'just now',
     },
     {
       'type': 'vibe_match',
-      'title': 'vibe match ✧',
+      'title': 'vibe match',
       'placeName': 'Neon Light Cafe',
       'match': '98% match',
-      'text': '"Đỉnh chóp luôn. Góc này lên hình bao cháy, matches your squad\'s chaotic energy perfectly."',
-      'imageUrl': 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&auto=format&fit=crop&q=80',
-    }
+      'text':
+          '"Đỉnh chóp luôn. Góc này lên hình bao cháy, matches your squad\'s chaotic energy perfectly."',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&auto=format&fit=crop&q=80',
+    },
   ];
 
   @override
@@ -100,7 +111,8 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
       setState(() {
         _messages.add({
           'type': 'ai',
-          'text': 'OMG 😱 Đã ghi nhận ý kiến! Để tui tính toán lại lịch trình tối nay cho cả đội quẩy tẹt ga nha! ⚡🕺',
+          'text':
+              'OMG 😱 Đã ghi nhận ý kiến! Để tui tính toán lại lịch trình tối nay cho cả đội quẩy tẹt ga nha! ⚡🕺',
           'time': 'just now',
           'likes': 0,
         });
@@ -110,51 +122,27 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
 
   @override
   Widget build(BuildContext context) {
-    // Determine dynamic theme properties based on internal state
-    final primaryColor = _isDarkMode ? const Color(0xFFD0BCFF) : const Color(0xFF8B5CF6);
-    final secondaryColor = _isDarkMode ? const Color(0xFF45DFA4) : const Color(0xFF34D399);
-    final tertiaryColor = _isDarkMode ? const Color(0xFFFFB783) : const Color(0xFFF59E0B);
-    
-    final backgroundColor = _isDarkMode ? const Color(0xFF040914) : const Color(0xFFFCFAF6);
-    final textPrimary = _isDarkMode ? const Color(0xFFDAE2FD) : const Color(0xFF1E293B);
-    final textSecondary = _isDarkMode ? const Color(0xFFCBC3D7) : const Color(0xFF6B7280);
-    
-    final glassBg = _isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03);
-    final glassBorder = _isDarkMode ? Colors.white.withValues(alpha: 0.12) : Colors.black.withValues(alpha: 0.08);
+    // Token Gen Z Neo-Brutalist — nền cream phẳng, viền/chữ ink
+    const primaryColor = GenZTokens.purple;
+    const secondaryColor = GenZTokens.green;
+    const tertiaryColor = GenZTokens.orange;
+
+    final backgroundColor = _isDarkMode
+        ? GenZTokens.creamDark
+        : GenZTokens.cream;
+    final textPrimary = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary = _isDarkMode
+        ? GenZTokens.inkSoftDark
+        : GenZTokens.inkSoft;
+
+    final glassBg = _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+    final glassBorder = textPrimary;
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(
         children: [
-          // 1. Aurora gradients flowing in background
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.topLeft,
-                  radius: 1.2,
-                  colors: _isDarkMode
-                      ? [const Color(0xFF6D3BD7).withValues(alpha: 0.15), Colors.transparent]
-                      : [const Color(0xFFE9DDFF).withValues(alpha: 0.4), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.bottomRight,
-                  radius: 1.2,
-                  colors: _isDarkMode
-                      ? [const Color(0xFF45DFA4).withValues(alpha: 0.08), Colors.transparent]
-                      : [const Color(0xFFE8FFF5).withValues(alpha: 0.4), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-
-          // 2. Custom Scroll View accommodating Hero & Chat bubbles
+          // 1. Custom Scroll View accommodating Hero & Chat bubbles
           SafeArea(
             child: Column(
               children: [
@@ -169,8 +157,14 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                     child: Column(
                       children: [
                         // Orb Hero section
-                        _buildOrbHero(primaryColor, secondaryColor, glassBg, glassBorder, textSecondary),
-                        
+                        _buildOrbHero(
+                          primaryColor,
+                          secondaryColor,
+                          glassBg,
+                          glassBorder,
+                          textSecondary,
+                        ),
+
                         const SizedBox(height: 16),
 
                         // Chat Flow list
@@ -182,15 +176,38 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                             final msg = _messages[index];
                             switch (msg['type']) {
                               case 'ai':
-                                return _buildAiBubble(msg, glassBg, glassBorder, textPrimary, textSecondary);
+                                return _buildAiBubble(
+                                  msg,
+                                  glassBg,
+                                  glassBorder,
+                                  textPrimary,
+                                  textSecondary,
+                                );
                               case 'alert_broke':
-                                return _buildBrokeAlert(msg, glassBg, textPrimary);
+                                return _buildBrokeAlert(
+                                  msg,
+                                  glassBg,
+                                  textPrimary,
+                                );
                               case 'alert_weather':
-                                return _buildWeatherSavior(msg, glassBg, secondaryColor, textPrimary);
+                                return _buildWeatherSavior(
+                                  msg,
+                                  glassBg,
+                                  secondaryColor,
+                                  textPrimary,
+                                );
                               case 'user':
                                 return _buildUserBubble(msg, primaryColor);
                               case 'vibe_match':
-                                return _buildVibeMatchCard(msg, glassBg, glassBorder, primaryColor, tertiaryColor, textPrimary, textSecondary);
+                                return _buildVibeMatchCard(
+                                  msg,
+                                  glassBg,
+                                  glassBorder,
+                                  primaryColor,
+                                  tertiaryColor,
+                                  textPrimary,
+                                  textSecondary,
+                                );
                               default:
                                 return const SizedBox.shrink();
                             }
@@ -198,7 +215,11 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                         ),
 
                         // Typing indicator
-                        _buildTypingIndicator(glassBg, glassBorder, primaryColor),
+                        _buildTypingIndicator(
+                          glassBg,
+                          glassBorder,
+                          primaryColor,
+                        ),
 
                         const SizedBox(height: 120), // Bottom input spacing
                       ],
@@ -214,7 +235,12 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
             bottom: 96,
             left: 20,
             right: 20,
-            child: _buildMessageInput(glassBg, glassBorder, primaryColor, textPrimary),
+            child: _buildMessageInput(
+              glassBg,
+              glassBorder,
+              primaryColor,
+              textPrimary,
+            ),
           ),
 
           // 4. Breathtaking Floating Bottom Nav Bar
@@ -222,7 +248,12 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
             bottom: 20,
             left: 20,
             right: 20,
-            child: _buildBottomNav(glassBg, glassBorder, secondaryColor, primaryColor),
+            child: _buildBottomNav(
+              glassBg,
+              glassBorder,
+              secondaryColor,
+              primaryColor,
+            ),
           ),
         ],
       ),
@@ -230,7 +261,12 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
   }
 
   // Header App Bar
-  Widget _buildHeader(Color primaryColor, Color glassBg, Color glassBorder, Color textPrimary) {
+  Widget _buildHeader(
+    Color primaryColor,
+    Color glassBg,
+    Color glassBorder,
+    Color textPrimary,
+  ) {
     return Container(
       height: 64,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -245,18 +281,13 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
             icon: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
-          ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [Color(0xFFD0BCFF), Color(0xFF45DFA4), Color(0xFFFFB783)],
-            ).createShader(bounds),
-            child: Text(
-              'trip.mate',
-              style: GoogleFonts.outfit(
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-                letterSpacing: -1.5,
-              ),
+          Text(
+            'trip.mate',
+            style: AppFonts.heading(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: textPrimary,
+              letterSpacing: -1.5,
             ),
           ),
           IconButton(
@@ -276,7 +307,13 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
   }
 
   // Floating Animated AI Orb Hero
-  Widget _buildOrbHero(Color primaryColor, Color secondaryColor, Color glassBg, Color glassBorder, Color textSecondary) {
+  Widget _buildOrbHero(
+    Color primaryColor,
+    Color secondaryColor,
+    Color glassBg,
+    Color glassBorder,
+    Color textSecondary,
+  ) {
     return Column(
       children: [
         const SizedBox(height: 24),
@@ -284,106 +321,47 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
           animation: _orbFloatController,
           builder: (context, child) {
             final dy = _orbFloatController.value * -12.0;
-            return Transform.translate(
-              offset: Offset(0, dy),
-              child: child,
-            );
+            return Transform.translate(offset: Offset(0, dy), child: child);
           },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Outer Planning Glow Aura
-              Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      primaryColor.withValues(alpha: 0.25),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
+          // Orb sticker brutalist: khối tím viền ink + hard shadow
+          child: Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: primaryColor,
+              border: Border.all(
+                color: _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
+                width: GenZTokens.borderWidth,
               ),
-              // Inner glowing core
-              Container(
-                width: 110,
-                height: 110,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [primaryColor, secondaryColor],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withValues(alpha: 0.4),
-                      blurRadius: 30,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(3),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _isDarkMode ? const Color(0xFF060E20) : Colors.white,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.auto_awesome,
-                      size: 48,
-                      color: primaryColor,
-                    ),
-                  ),
-                ),
+              boxShadow: GenZTokens.hardShadow(
+                _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
               ),
-            ],
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.auto_awesome,
+                size: 48,
+                color: GenZTokens.paper,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 12),
         Text(
           'hey, i\'m matey ✧',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 26,
+          style: AppFonts.heading(
+            fontSize: 28,
             fontWeight: FontWeight.w800,
-            color: _isDarkMode ? Colors.white : const Color(0xFF1E293B),
+            color: _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
             letterSpacing: -0.5,
+            height: 1.05,
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          decoration: BoxDecoration(
-            color: glassBg,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: glassBorder),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: secondaryColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'SQUAD ENERGY: CHAOTIC GOOD (85%)',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                  color: textSecondary,
-                ),
-              ),
-            ],
-          ),
+        const PillTag(
+          text: 'Squad Energy: Chaotic Good 85%',
+          color: GenZTokens.lilac,
         ),
         const SizedBox(height: 24),
       ],
@@ -391,12 +369,20 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
   }
 
   // AI Advice Bubble
-  Widget _buildAiBubble(Map<String, dynamic> msg, Color glassBg, Color glassBorder, Color textPrimary, Color textSecondary) {
+  Widget _buildAiBubble(
+    Map<String, dynamic> msg,
+    Color glassBg,
+    Color glassBorder,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.8,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -410,32 +396,31 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                   bottomRight: Radius.circular(20),
                   bottomLeft: Radius.circular(4),
                 ),
-                border: Border.all(color: glassBorder),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.15),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                border: Border.all(
+                  color: glassBorder,
+                  width: GenZTokens.borderWidthThin,
+                ),
+                boxShadow: GenZTokens.hardShadow(glassBorder),
               ),
               child: Text(
                 msg['text'],
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 14,
+                  fontWeight: FontWeight.w500,
                   height: 1.5,
                   color: textPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.only(left: 4),
               child: Text(
-                msg['time'],
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: textSecondary.withValues(alpha: 0.6),
+                (msg['time'] as String).toUpperCase(),
+                style: AppFonts.mono(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: textSecondary,
                 ),
               ),
             ),
@@ -445,23 +430,21 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
     );
   }
 
-  // Broke Alert Card
-  Widget _buildBrokeAlert(Map<String, dynamic> msg, Color glassBg, Color textPrimary) {
-    final alertRed = const Color(0xFFFFB4AB);
-    final alertRedBg = const Color(0x22FFB4AB);
+  // Broke Alert Card — khối đỏ sticker, viền ink, hard shadow
+  Widget _buildBrokeAlert(
+    Map<String, dynamic> msg,
+    Color glassBg,
+    Color textPrimary,
+  ) {
+    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _isDarkMode ? alertRedBg : Colors.red.shade50.withValues(alpha: 0.8),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: alertRed.withValues(alpha: 0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: alertRed.withValues(alpha: 0.1),
-            blurRadius: 20,
-          ),
-        ],
+        color: GenZTokens.red,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -471,9 +454,13 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: alertRed.withValues(alpha: 0.15),
+              color: GenZTokens.paper,
+              border: Border.all(
+                color: GenZTokens.ink,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
-            child: Icon(Icons.warning, color: _isDarkMode ? alertRed : Colors.redAccent, size: 20),
+            child: const Icon(Icons.warning, color: GenZTokens.ink, size: 20),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -481,21 +468,22 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  msg['title'],
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                    color: _isDarkMode ? alertRed : Colors.red.shade800,
-                    letterSpacing: 0.5,
+                  (msg['title'] as String).toUpperCase(),
+                  style: AppFonts.mono(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: GenZTokens.paper,
+                    letterSpacing: 1.0,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   msg['text'],
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     height: 1.4,
-                    color: textPrimary,
+                    color: GenZTokens.paper,
                   ),
                 ),
               ],
@@ -507,19 +495,20 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
   }
 
   // Weather Savior Card
-  Widget _buildWeatherSavior(Map<String, dynamic> msg, Color glassBg, Color secondaryColor, Color textPrimary) {
+  Widget _buildWeatherSavior(
+    Map<String, dynamic> msg,
+    Color glassBg,
+    Color secondaryColor,
+    Color textPrimary,
+  ) {
+    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _isDarkMode ? Colors.teal.withValues(alpha: 0.08) : Colors.teal.shade50.withValues(alpha: 0.8),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: secondaryColor.withValues(alpha: 0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: secondaryColor.withValues(alpha: 0.1),
-            blurRadius: 20,
-          ),
-        ],
+        color: GenZTokens.green,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -529,83 +518,62 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: secondaryColor.withValues(alpha: 0.15),
+              color: GenZTokens.paper,
+              border: Border.all(
+                color: GenZTokens.ink,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
-            child: Icon(Icons.thunderstorm, color: secondaryColor, size: 24),
+            child: const Icon(
+              Icons.thunderstorm,
+              color: GenZTokens.ink,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      msg['title'],
-                      style: GoogleFonts.plusJakartaSans(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 13,
-                        color: secondaryColor,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
+                Text(
+                  (msg['title'] as String).toUpperCase(),
+                  style: AppFonts.mono(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: GenZTokens.ink,
+                    letterSpacing: 1.0,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   msg['text'],
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     height: 1.4,
-                    color: textPrimary,
+                    color: GenZTokens.ink,
                   ),
                 ),
                 const SizedBox(height: 14),
                 Row(
                   children: [
                     Expanded(
-                      child: Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          gradient: LinearGradient(
-                            colors: [secondaryColor, secondaryColor.withValues(alpha: 0.8)],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: secondaryColor.withValues(alpha: 0.3),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
+                      child: ChunkyButton(
+                        color: GenZTokens.yellow,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
                         ),
-                        child: InkWell(
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Rerouting squad itinerary to dry aesthetic spots... 🗺️⚡')),
-                            );
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                          child: Center(
-                            child: Text(
-                              'reroute itinerary',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: Colors.white,
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Rerouting squad itinerary to dry aesthetic spots...',
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
+                        child: const Text('reroute itinerary'),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -613,14 +581,28 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                       width: 44,
                       height: 40,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: _isDarkMode ? Colors.white24 : Colors.black12),
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusInput,
+                        ),
+                        color: GenZTokens.paper,
+                        border: Border.all(
+                          color: GenZTokens.ink,
+                          width: GenZTokens.borderWidthThin,
+                        ),
                       ),
                       child: InkWell(
-                        onTap: () {},
-                        borderRadius: BorderRadius.circular(12),
-                        child: Center(
-                          child: Icon(Icons.close, color: textPrimary, size: 18),
+                        onTap: () => showGlobalSnack(
+                          'Tính năng đang được hoàn thiện 🚧',
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusInput,
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.close,
+                            color: GenZTokens.ink,
+                            size: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -640,47 +622,50 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
       alignment: Alignment.centerRight,
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.8,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // Bubble user: nền VÀNG, chữ ink, viền ink + hard shadow (spec)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [primaryColor, primaryColor.withValues(alpha: 0.8)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: GenZTokens.yellow,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(4),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: primaryColor.withValues(alpha: 0.25),
-                    blurRadius: 15,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                border: Border.all(
+                  color: _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
+                  width: GenZTokens.borderWidthThin,
+                ),
+                boxShadow: GenZTokens.hardShadow(
+                  _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
+                ),
               ),
               child: Text(
                 msg['text'],
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 14,
+                  fontWeight: FontWeight.w600,
                   height: 1.4,
-                  color: Colors.white,
+                  color: GenZTokens.ink,
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Text(
-              msg['time'],
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                color: _isDarkMode ? Colors.white60 : Colors.black45,
+              (msg['time'] as String).toUpperCase(),
+              style: AppFonts.mono(
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                color: _isDarkMode
+                    ? GenZTokens.inkSoftDark
+                    : GenZTokens.inkSoft,
               ),
             ),
           ],
@@ -703,36 +688,19 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: surfaceColorBorderGuard(),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: glassBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 15,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: glassBorder, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(glassBorder),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: tertiaryColor.withValues(alpha: 0.15),
-                ),
-                child: Icon(Icons.group, color: tertiaryColor, size: 16),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                msg['title'],
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: tertiaryColor,
-                ),
+              PillTag(
+                text: msg['title'] as String,
+                icon: Icons.group,
+                color: GenZTokens.orange,
               ),
             ],
           ),
@@ -747,28 +715,30 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(
-                        msg['imageUrl'],
-                        fit: BoxFit.cover,
-                      ),
-                      Container(
-                        color: Colors.black.withValues(alpha: 0.2),
-                      ),
+                      Image.network(msg['imageUrl'], fit: BoxFit.cover),
+                      Container(color: Colors.black.withValues(alpha: 0.2)),
                       Positioned(
                         bottom: 6,
                         right: 6,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: Colors.black87,
+                            color: GenZTokens.yellow,
                             borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: GenZTokens.ink,
+                              width: 1.5,
+                            ),
                           ),
                           child: Text(
-                            msg['match'],
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
+                            (msg['match'] as String).toUpperCase(),
+                            style: AppFonts.mono(
+                              color: GenZTokens.ink,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -784,16 +754,17 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                   children: [
                     Text(
                       msg['placeName'],
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.3,
                         color: textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       msg['text'],
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 12,
                         color: textSecondary,
                         fontStyle: FontStyle.italic,
@@ -806,29 +777,45 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
                     InkWell(
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Added ${msg['placeName']} to Dalat trip! 🌲')),
+                          SnackBar(
+                            content: Text(
+                              'Added ${msg['placeName']} to Dalat trip!',
+                            ),
+                          ),
                         );
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+                          color: GenZTokens.lilac,
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusPill,
+                          ),
+                          border: Border.all(
+                            color: GenZTokens.ink,
+                            width: GenZTokens.borderWidthThin,
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'add to itinerary',
-                              style: GoogleFonts.plusJakartaSans(
-                                color: primaryColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
+                              'ADD TO ITINERARY',
+                              style: AppFonts.mono(
+                                color: GenZTokens.ink,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 9,
                               ),
                             ),
                             const SizedBox(width: 4),
-                            Icon(Icons.add, color: primaryColor, size: 10),
+                            const Icon(
+                              Icons.add,
+                              color: GenZTokens.ink,
+                              size: 10,
+                            ),
                           ],
                         ),
                       ),
@@ -844,7 +831,11 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
   }
 
   // Typing indicator dots
-  Widget _buildTypingIndicator(Color glassBg, Color glassBorder, Color primaryColor) {
+  Widget _buildTypingIndicator(
+    Color glassBg,
+    Color glassBorder,
+    Color primaryColor,
+  ) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -853,7 +844,10 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
         decoration: BoxDecoration(
           color: surfaceColorBorderGuard(),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: glassBorder),
+          border: Border.all(
+            color: glassBorder,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -861,7 +855,13 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
             return AnimatedBuilder(
               animation: _typingController,
               builder: (context, child) {
-                final wave = (1.0 + double.parse(((index - _typingController.value * 2) % 3).toStringAsFixed(2))) / 3.0;
+                final wave =
+                    (1.0 +
+                        double.parse(
+                          ((index - _typingController.value * 2) % 3)
+                              .toStringAsFixed(2),
+                        )) /
+                    3.0;
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   width: 6,
@@ -879,100 +879,86 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
     );
   }
 
-  // Custom pill input text field
-  Widget _buildMessageInput(Color glassBg, Color glassBorder, Color primaryColor, Color textPrimary) {
-    return Stack(
-      children: [
-        // Aura glow underneath
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: primaryColor.withValues(alpha: 0.15),
-                  blurRadius: 20,
-                  spreadRadius: 2,
+  // Thanh nhập tin nhắn brutalist: nền paper, viền ink dày, hard shadow
+  Widget _buildMessageInput(
+    Color glassBg,
+    Color glassBorder,
+    Color primaryColor,
+    Color textPrimary,
+  ) {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: glassBg,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: glassBorder, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(glassBorder),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.add, color: textPrimary),
+            onPressed: () =>
+                showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
+          ),
+          Expanded(
+            child: TextField(
+              controller: _textController,
+              style: AppFonts.body(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: textPrimary,
+              ),
+              decoration: InputDecoration(
+                hintText: 'ask matey anything...',
+                hintStyle: AppFonts.body(
+                  fontWeight: FontWeight.w600,
+                  color: textPrimary.withValues(alpha: 0.4),
                 ),
-              ],
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              onSubmitted: (_) => _sendMessage(),
             ),
           ),
-        ),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-            child: Container(
-              height: 56,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: _isDarkMode ? const Color(0xDD171F33) : Colors.white.withValues(alpha: 0.95),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: glassBorder),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.add, color: textPrimary.withValues(alpha: 0.6)),
-                    onPressed: () {},
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _textController,
-                      style: GoogleFonts.inter(fontSize: 14, color: textPrimary),
-                      decoration: InputDecoration(
-                        hintText: 'ask matey anything...',
-                        hintStyle: GoogleFonts.inter(color: textPrimary.withValues(alpha: 0.4)),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      ),
-                      onSubmitted: (_) => _sendMessage(),
-                    ),
-                  ),
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [primaryColor, primaryColor.withValues(alpha: 0.8)],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryColor.withValues(alpha: 0.4),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send, color: Colors.white, size: 18),
-                      onPressed: _sendMessage,
-                    ),
-                  ),
-                ],
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: GenZTokens.yellow,
+              border: Border.all(
+                color: GenZTokens.ink,
+                width: GenZTokens.borderWidthThin,
               ),
             ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: const Icon(Icons.send, color: GenZTokens.ink, size: 18),
+              onPressed: _sendMessage,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   // Floating Glass bottom navigation bar
-  Widget _buildBottomNav(Color glassBg, Color glassBorder, Color secondaryColor, Color primaryColor) {
+  Widget _buildBottomNav(
+    Color glassBg,
+    Color glassBorder,
+    Color secondaryColor,
+    Color primaryColor,
+  ) {
+    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
     return Container(
       height: 64,
       decoration: BoxDecoration(
-        color: _isDarkMode ? const Color(0xCC171F33) : Colors.white.withValues(alpha: 0.9),
+        color: _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: glassBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -981,48 +967,26 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
           _buildNavButton(Icons.map_outlined, false, secondaryColor),
           _buildNavButton(Icons.search_outlined, false, secondaryColor),
           _buildNavButton(Icons.add_circle_outline, false, secondaryColor),
-          
-          // Active Assistant Tab with sparkling glow
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [secondaryColor.withValues(alpha: 0.2), primaryColor.withValues(alpha: 0.2)],
-                  ),
-                  border: Border.all(color: secondaryColor.withValues(alpha: 0.4)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: secondaryColor.withValues(alpha: 0.2),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.auto_awesome,
-                  color: secondaryColor,
-                  size: 24,
-                ),
+
+          // Tab Assistant active — viên vàng viền ink
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: GenZTokens.yellow,
+              border: Border.all(
+                color: GenZTokens.ink,
+                width: GenZTokens.borderWidthThin,
               ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Colors.purpleAccent,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
+            ),
+            child: const Icon(
+              Icons.auto_awesome,
+              color: GenZTokens.ink,
+              size: 24,
+            ),
           ),
-          
+
           _buildNavButton(Icons.person_outline, false, secondaryColor),
         ],
       ),
@@ -1030,14 +994,15 @@ class _MateyAiEmotionalChaosScreenState extends State<MateyAiEmotionalChaosScree
   }
 
   Widget _buildNavButton(IconData icon, bool isActive, Color activeColor) {
+    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
     return Icon(
       icon,
-      color: isActive ? activeColor : (_isDarkMode ? Colors.white60 : Colors.black54),
+      color: isActive ? activeColor : ink.withValues(alpha: 0.55),
       size: 24,
     );
   }
 
   Color surfaceColorBorderGuard() {
-    return _isDarkMode ? const Color(0xFF171F33) : Colors.white;
+    return _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   }
 }

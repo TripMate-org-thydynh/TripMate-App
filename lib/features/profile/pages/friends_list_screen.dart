@@ -4,9 +4,18 @@ class FriendsListScreen extends StatelessWidget {
   const FriendsListScreen({super.key});
 
   final List<Map<String, String>> _friends = const [
-    {'name': 'Alex Nguyễn', 'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'},
-    {'name': 'Trần Bình', 'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Binh'},
-    {'name': 'Lê Minh', 'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Minh'},
+    {
+      'name': 'Alex Nguyễn',
+      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
+    },
+    {
+      'name': 'Trần Bình',
+      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Binh',
+    },
+    {
+      'name': 'Lê Minh',
+      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Minh',
+    },
   ];
 
   @override
@@ -15,15 +24,23 @@ class FriendsListScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Danh Sách Bạn Bè 👥', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Danh Sách Bạn Bè 👥',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -41,8 +58,10 @@ class FriendsListScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: isDark ? const Color(0xFF262019) : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(friend['avatar']!),
@@ -56,12 +75,17 @@ class FriendsListScreen extends StatelessWidget {
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Đã gửi tin nhắn đến ${friend['name']}!'),
+                              content: Text(
+                                'Đã gửi tin nhắn đến ${friend['name']}!',
+                              ),
                               backgroundColor: Colors.purple,
                             ),
                           );
                         },
-                        child: const Text('Nhắn tin', style: TextStyle(color: Colors.purpleAccent)),
+                        child: const Text(
+                          'Nhắn tin',
+                          style: TextStyle(color: Colors.purpleAccent),
+                        ),
                       ),
                     ),
                   ),

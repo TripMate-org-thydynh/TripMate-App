@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../../../../core/widgets/gen_z_widgets.dart';
 
 class EmergencySosWidget extends StatefulWidget {
   const EmergencySosWidget({super.key});
@@ -10,7 +11,8 @@ class EmergencySosWidget extends StatefulWidget {
   State<EmergencySosWidget> createState() => _EmergencySosWidgetState();
 }
 
-class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTickerProviderStateMixin {
+class _EmergencySosWidgetState extends State<EmergencySosWidget>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
   double _pressProgress = 0.0;
   Timer? _progressTimer;
@@ -76,14 +78,13 @@ class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTick
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF990000),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.red.withValues(alpha: 0.5),
-                      blurRadius: 30,
-                    )
-                  ],
+                  color: GenZTokens.red,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  border: Border.all(
+                    color: GenZTokens.ink,
+                    width: GenZTokens.borderWidth,
+                  ),
+                  boxShadow: GenZTokens.hardShadow(),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -95,16 +96,17 @@ class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTick
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      "SOS BROADCASTED!",
-                      style: GoogleFonts.plusJakartaSans(
+                      'dashboard.sos_broadcasted'.tr(),
+                      style: AppFonts.heading(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      "Broadcasting your GPS location:\n11.94006 N, 108.43731 E\nto all 6 squad members.",
+                    Text(
+                      'dashboard.sos_broadcast_body'.tr(),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white70,
@@ -128,9 +130,9 @@ class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTick
                           _pressProgress = 0.0;
                         });
                       },
-                      child: const Text(
-                        "Cancel Alert",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: Text(
+                        'dashboard.sos_cancel'.tr(),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -148,15 +150,14 @@ class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTick
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        color: isDark ? const Color(0xFF22131C) : const Color(0xFFFDF2F4),
-        border: Border.all(
-          color: const Color(0xFFEF4444).withValues(alpha: 0.25),
-          width: 1.5,
-        ),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -183,7 +184,7 @@ class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTick
                       height: 65,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                        color: const Color(0xFFD8422B).withValues(alpha: 0.15),
                       ),
                     ),
                   ),
@@ -195,24 +196,30 @@ class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTick
                       value: _pressProgress,
                       strokeWidth: 4,
                       backgroundColor: Colors.transparent,
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
                     ),
                   ),
-                  // Center solid SOS circle button
+                  // Center solid SOS circle button — viền ink brutalist
                   Container(
                     width: 48,
                     height: 48,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFEF4444),
+                      color: GenZTokens.red,
+                      border: Border.all(
+                        color: GenZTokens.ink,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         "SOS",
-                        style: TextStyle(
+                        style: AppFonts.mono(
                           color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -228,19 +235,24 @@ class _EmergencySosWidgetState extends State<EmergencySosWidget> with SingleTick
                 children: [
                   Text(
                     "dashboard.emergency_sos".tr(),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: isDark ? const Color(0xFFFCA5A5) : const Color(0xFF991B1B),
+                    style: AppFonts.heading(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      letterSpacing: -0.3,
+                      color: ink,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _isAlerting ? "dashboard.sos_alerting".tr() : "dashboard.hold_to_trigger".tr(),
-                    style: TextStyle(
+                    _isAlerting
+                        ? "dashboard.sos_alerting".tr()
+                        : "dashboard.hold_to_trigger".tr(),
+                    style: AppFonts.body(
                       fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: isDark ? const Color(0xFFFCA5A5).withValues(alpha: 0.7) : const Color(0xFF991B1B).withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? GenZTokens.inkSoftDark
+                          : GenZTokens.inkSoft,
                     ),
                   ),
                 ],

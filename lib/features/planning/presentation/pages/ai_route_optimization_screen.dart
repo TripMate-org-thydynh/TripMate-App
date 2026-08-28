@@ -1,7 +1,6 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class AIRouteOptimizationScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -13,10 +12,12 @@ class AIRouteOptimizationScreen extends StatefulWidget {
   });
 
   @override
-  State<AIRouteOptimizationScreen> createState() => _AIRouteOptimizationScreenState();
+  State<AIRouteOptimizationScreen> createState() =>
+      _AIRouteOptimizationScreenState();
 }
 
-class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> with SingleTickerProviderStateMixin {
+class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _sparkController;
   late Animation<double> _sparkAnimation;
 
@@ -28,7 +29,10 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-    _sparkAnimation = CurvedAnimation(parent: _sparkController, curve: Curves.easeInOut);
+    _sparkAnimation = CurvedAnimation(
+      parent: _sparkController,
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -42,14 +46,26 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
     final isDark = widget.isDarkMode;
 
     // HSL Premium colors
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C); // Electric Purple / Coral
-    final secondaryColor = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A); // Mint Green / Soft Amber
-    final bgColor = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B); // Electric Purple / Coral
+    final secondaryColor = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D); // Mint Green / Soft Amber
+    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
 
-    final cardBg = isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.03);
-    final borderColor = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textSecondary = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final cardBg = isDark
+        ? Colors.white.withValues(alpha: 0.06)
+        : Colors.black.withValues(alpha: 0.03);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -64,12 +80,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
               height: 320,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    primaryColor.withValues(alpha: isDark ? 0.22 : 0.12),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
@@ -81,19 +92,14 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
               height: 380,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    secondaryColor.withValues(alpha: isDark ? 0.2 : 0.1),
-                    Colors.transparent,
-                  ],
-                ),
+                color: Colors.transparent,
               ),
             ),
           ),
 
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
               child: Container(color: Colors.transparent),
             ),
           ),
@@ -109,22 +115,41 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 12.0,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // 3. Wander AI Sparkling optimization card
-                          _buildSparklingOptimizationCard(isDark, textPrimary, primaryColor, secondaryColor, cardBg, borderColor, _sparkAnimation),
+                          _buildSparklingOptimizationCard(
+                            isDark,
+                            textPrimary,
+                            primaryColor,
+                            secondaryColor,
+                            cardBg,
+                            borderColor,
+                            _sparkAnimation,
+                          ),
                           const SizedBox(height: 20),
 
                           // 4. Interactive Route Optimization Visual Map
-                          _buildInteractiveRouteVisual(isDark, textPrimary, textSecondary, primaryColor, secondaryColor, cardBg, borderColor),
+                          _buildInteractiveRouteVisual(
+                            isDark,
+                            textPrimary,
+                            textSecondary,
+                            primaryColor,
+                            secondaryColor,
+                            cardBg,
+                            borderColor,
+                          ),
                           const SizedBox(height: 20),
 
                           // 5. Optimization updates section (Traffic & Sunset)
                           Text(
                             'Live Optimization Logs',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                               color: textPrimary,
@@ -133,11 +158,24 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                           const SizedBox(height: 12),
 
                           // Traffic Update card
-                          _buildTrafficUpdateCard(isDark, textPrimary, textSecondary, cardBg, borderColor),
+                          _buildTrafficUpdateCard(
+                            isDark,
+                            textPrimary,
+                            textSecondary,
+                            cardBg,
+                            borderColor,
+                          ),
                           const SizedBox(height: 12),
 
                           // Sunset Update card
-                          _buildSunsetUpdateCard(isDark, textPrimary, textSecondary, secondaryColor, cardBg, borderColor),
+                          _buildSunsetUpdateCard(
+                            isDark,
+                            textPrimary,
+                            textSecondary,
+                            secondaryColor,
+                            cardBg,
+                            borderColor,
+                          ),
                           const SizedBox(height: 30),
 
                           // 6. Action buttons
@@ -149,7 +187,9 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Route optimization dismissed 🚶‍♂️'),
+                                    content: Text(
+                                      'Route optimization dismissed 🚶‍♂️',
+                                    ),
                                     behavior: SnackBarBehavior.floating,
                                   ),
                                 );
@@ -157,7 +197,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                               },
                               child: Text(
                                 'Dismiss Plan',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                   color: textSecondary,
@@ -189,13 +229,18 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
           ClipRRect(
             borderRadius: BorderRadius.circular(99),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.04),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.black.withValues(alpha: 0.04),
                   border: Border.all(
-                    color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black,
+                    width: 2,
                   ),
                 ),
                 child: IconButton(
@@ -217,12 +262,12 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
           ShaderMask(
             shaderCallback: (bounds) {
               return const LinearGradient(
-                colors: [Color(0xFF8B5CF6), Color(0xFFEC4899), Color(0xFF34D399)],
+                colors: [Color(0xFFF5822B), Color(0xFFF5822B)],
               ).createShader(bounds);
             },
             child: Text(
               'WANDER AI',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 2.0,
@@ -236,13 +281,18 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
             children: [
               IconButton(
                 icon: Icon(
-                  widget.isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  widget.isDarkMode
+                      ? Icons.light_mode_outlined
+                      : Icons.dark_mode_outlined,
                   color: textPrimary.withValues(alpha: 0.7),
                 ),
                 onPressed: widget.onThemeToggle,
               ),
               IconButton(
-                icon: Icon(Icons.notifications_none_outlined, color: textPrimary),
+                icon: Icon(
+                  Icons.notifications_none_outlined,
+                  color: textPrimary,
+                ),
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -277,7 +327,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
         boxShadow: [
           BoxShadow(
             color: primaryColor.withValues(alpha: 0.1),
-            blurRadius: 20,
+            blurRadius: 0,
             offset: const Offset(0, 8),
           ),
         ],
@@ -285,7 +335,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.all(22),
             child: Column(
@@ -298,12 +348,16 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                       children: [
                         ScaleTransition(
                           scale: animation,
-                          child: const Icon(Icons.auto_awesome, color: Colors.amber, size: 20),
+                          child: const Icon(
+                            Icons.auto_awesome,
+                            color: Colors.amber,
+                            size: 20,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'optimizing the chaos✨',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
                             color: Colors.amber,
@@ -333,7 +387,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                 // Main headline "Saved your squad 42 mins today"
                 RichText(
                   text: TextSpan(
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 26,
                       height: 1.25,
                       fontWeight: FontWeight.w900,
@@ -343,8 +397,10 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                       const TextSpan(text: 'Saved your squad '),
                       TextSpan(
                         text: '42 mins',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: isDark ? const Color(0xFF34D399) : const Color(0xFFE0533C),
+                        style: AppFonts.heading(
+                          color: isDark
+                              ? const Color(0xFF1FA85C)
+                              : const Color(0xFFF5822B),
                           decoration: TextDecoration.underline,
                           decorationStyle: TextDecorationStyle.dotted,
                         ),
@@ -356,7 +412,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                 const SizedBox(height: 8),
                 Text(
                   'Plus, we found a scenic shortcut.',
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 13,
                     color: textPrimary.withValues(alpha: 0.7),
                     fontWeight: FontWeight.w500,
@@ -395,7 +451,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
             children: [
               Text(
                 'AI Optimized Routing',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                   color: textPrimary,
@@ -409,7 +465,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                 ),
                 child: Text(
                   'Scenic Path',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 9,
                     fontWeight: FontWeight.w800,
                     color: primaryColor,
@@ -423,11 +479,26 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
           // Route Visual Timeline Line
           Row(
             children: [
-              _buildRouteStop(Icons.local_cafe, 'Start', 'Hidden Cafe', primaryColor),
+              _buildRouteStop(
+                Icons.local_cafe,
+                'Start',
+                'Hidden Cafe',
+                primaryColor,
+              ),
               _buildRouteConnector(true, secondaryColor),
-              _buildRouteStop(Icons.landscape, 'Sunset', 'Viewpoint', secondaryColor),
+              _buildRouteStop(
+                Icons.landscape,
+                'Sunset',
+                'Viewpoint',
+                secondaryColor,
+              ),
               _buildRouteConnector(false, Colors.blueAccent),
-              _buildRouteStop(Icons.restaurant, 'Dinner', 'Local Grill', Colors.blueAccent),
+              _buildRouteStop(
+                Icons.restaurant,
+                'Dinner',
+                'Local Grill',
+                Colors.blueAccent,
+              ),
             ],
           ),
         ],
@@ -435,7 +506,12 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
     );
   }
 
-  Widget _buildRouteStop(IconData icon, String label, String stopName, Color stopColor) {
+  Widget _buildRouteStop(
+    IconData icon,
+    String label,
+    String stopName,
+    Color stopColor,
+  ) {
     return Expanded(
       child: Column(
         children: [
@@ -444,14 +520,14 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
             decoration: BoxDecoration(
               color: stopColor.withValues(alpha: 0.12),
               shape: BoxShape.circle,
-              border: Border.all(color: stopColor.withValues(alpha: 0.3), width: 1.5),
+              border: Border.all(color: stopColor, width: 2),
             ),
             child: Icon(icon, color: stopColor, size: 20),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 12,
               fontWeight: FontWeight.w800,
               color: stopColor,
@@ -461,9 +537,9 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
           Text(
             stopName,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 9,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -476,15 +552,19 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
       width: 40,
       height: 2.5,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color, color.withValues(alpha: 0.2)],
-        ),
+        color: color,
         borderRadius: BorderRadius.circular(10),
       ),
     );
   }
 
-  Widget _buildTrafficUpdateCard(bool isDark, Color textPrimary, Color textSecondary, Color cardBg, Color borderColor) {
+  Widget _buildTrafficUpdateCard(
+    bool isDark,
+    Color textPrimary,
+    Color textSecondary,
+    Color cardBg,
+    Color borderColor,
+  ) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -495,7 +575,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Row(
@@ -507,7 +587,11 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                     color: Colors.redAccent.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.traffic, color: Colors.redAccent, size: 20),
+                  child: const Icon(
+                    Icons.traffic,
+                    color: Colors.redAccent,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -516,7 +600,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                     children: [
                       Text(
                         'Traffic detected on QL20',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: textPrimary,
@@ -525,7 +609,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                       const SizedBox(height: 4),
                       Text(
                         'Rerouting to avoid +25 min delay. Highway has extreme squad lag.',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 12,
                           color: textSecondary,
                           height: 1.3,
@@ -560,7 +644,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Row(
@@ -569,10 +653,14 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                    color: const Color(0xFFF5822B).withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.wb_twilight, color: Color(0xFFF59E0B), size: 20),
+                  child: const Icon(
+                    Icons.wb_twilight,
+                    color: Color(0xFFF5822B),
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -581,7 +669,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                     children: [
                       Text(
                         'Better sunset vibes',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: textPrimary,
@@ -590,7 +678,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                       const SizedBox(height: 4),
                       Text(
                         'Arrive at viewpoint by 5:15 PM.',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 12,
                           color: textSecondary,
                           height: 1.3,
@@ -600,14 +688,17 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: secondaryColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'GOLDEN HOUR',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 8,
                       fontWeight: FontWeight.w900,
                       color: secondaryColor,
@@ -626,16 +717,12 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF8B5CF6), const Color(0xFFDDA6FF)]
-              : [const Color(0xFFE0533C), const Color(0xFFFCA5A5)],
-        ),
+        color: isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B),
         borderRadius: BorderRadius.circular(999),
         boxShadow: [
           BoxShadow(
             color: primaryColor.withValues(alpha: 0.35),
-            blurRadius: 20,
+            blurRadius: 0,
             offset: const Offset(0, 6),
           ),
         ],
@@ -649,7 +736,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
               const SnackBar(
                 content: Text('Applied optimized path successfully! 🛵✨⛰️'),
                 behavior: SnackBarBehavior.floating,
-                backgroundColor: Color(0xFF10B981),
+                backgroundColor: Color(0xFF1FA85C),
               ),
             );
             Navigator.pop(context);
@@ -663,7 +750,7 @@ class _AIRouteOptimizationScreenState extends State<AIRouteOptimizationScreen> w
                 const SizedBox(width: 10),
                 Text(
                   'Apply New Route',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,

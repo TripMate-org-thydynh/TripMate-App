@@ -1,14 +1,14 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../../core/app_messenger.dart';
 class ChatSearchScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const ChatSearchScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -22,41 +22,21 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
   final Set<int> _selectedFilters = {0}; // 0 = Chaos Mode selected by default
 
   // ── Colour tokens ─────────────────────────────────────────────────────────
-  static const _darkBg = Color(0xFF0B1326);
-  static const _darkSurface = Color(0xFF171F33);
-  static const _primaryDark = Color(0xFFD0BCFF);
-  static const _secondaryDark = Color(0xFF45DFA4);
+  static const _darkBg = Color(0xFF1A1712);
+  static const _darkSurface = Color(0xFF262019);
+  static const _primaryDark = Color(0xFFC9B8FF);
+  static const _secondaryDark = Color(0xFF1FA85C);
 
-  static const _lightBg = Color(0xFFFCFAF6);
+  static const _lightBg = Color(0xFFFDF6D3);
   static const _primaryLight = Color(0xFF6D3BD7);
   static const _secondaryLight = Color(0xFF059669);
 
   static const List<Map<String, String>> _trendingItems = [
-    {
-      'rank': '1',
-      'name': 'Night Market Chaos',
-      'location': 'Shilin',
-    },
-    {
-      'rank': '2',
-      'name': 'Hill Station Cafe',
-      'location': 'Da Lat',
-    },
-    {
-      'rank': '3',
-      'name': 'Hidden Gem Beach',
-      'location': 'Phu Quoc',
-    },
-    {
-      'rank': '4',
-      'name': 'Rooftop Chaos',
-      'location': 'HCM',
-    },
-    {
-      'rank': '5',
-      'name': 'Lantern Night Walk',
-      'location': 'Hoi An',
-    },
+    {'rank': '1', 'name': 'Night Market Chaos', 'location': 'Shilin'},
+    {'rank': '2', 'name': 'Hill Station Cafe', 'location': 'Da Lat'},
+    {'rank': '3', 'name': 'Hidden Gem Beach', 'location': 'Phu Quoc'},
+    {'rank': '4', 'name': 'Rooftop Chaos', 'location': 'HCM'},
+    {'rank': '5', 'name': 'Lantern Night Walk', 'location': 'Hoi An'},
   ];
 
   static const List<Map<String, String>> _filters = [
@@ -92,13 +72,16 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: primary, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: primary,
+            size: 20,
+          ),
           onPressed: () => Navigator.maybePop(context),
         ),
         title: Text(
           'Search 🔍',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 20,
             fontWeight: FontWeight.w800,
             color: textPrimary,
@@ -106,9 +89,13 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_outlined,
-                color: textMuted, size: 22),
-            onPressed: () {},
+            icon: Icon(
+              Icons.notifications_outlined,
+              color: textMuted,
+              size: 22,
+            ),
+            onPressed: () =>
+                showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
           ),
           if (widget.onThemeToggle != null)
             IconButton(
@@ -130,28 +117,29 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: surface.withValues(alpha: isDark ? 0.5 : 0.75),
                     borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: primary.withValues(alpha: 0.3),
-                      width: 1.2,
-                    ),
+                    border: Border.all(color: primary, width: 2),
                   ),
                   child: TextField(
                     controller: _searchController,
-                    style: GoogleFonts.inter(
-                        fontSize: 15, color: textPrimary),
+                    style: AppFonts.body(fontSize: 15, color: textPrimary),
                     decoration: InputDecoration(
                       hintText: 'search the chaos...',
-                      hintStyle: GoogleFonts.inter(
-                          fontSize: 15, color: textMuted),
+                      hintStyle: AppFonts.body(
+                        fontSize: 15,
+                        color: textMuted,
+                      ),
                       prefixIcon: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 8),
-                        child: Icon(Icons.search_rounded,
-                            color: primary, size: 22),
+                        child: Icon(
+                          Icons.search_rounded,
+                          color: primary,
+                          size: 22,
+                        ),
                       ),
                       prefixIconConstraints: const BoxConstraints(
                         minWidth: 48,
@@ -159,8 +147,11 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
                       ),
                       suffixIcon: _query.isNotEmpty
                           ? IconButton(
-                              icon: Icon(Icons.close_rounded,
-                                  size: 18, color: textMuted),
+                              icon: Icon(
+                                Icons.close_rounded,
+                                size: 18,
+                                color: textMuted,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _searchController.clear();
@@ -171,7 +162,9 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
                           : null,
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 4),
+                        vertical: 16,
+                        horizontal: 4,
+                      ),
                     ),
                     onChanged: (val) {
                       setState(() {
@@ -207,12 +200,13 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.only(right: 10),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 9),
+                      horizontal: 16,
+                      vertical: 9,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? secondary.withValues(alpha: 0.2)
-                          : surface.withValues(
-                              alpha: isDark ? 0.4 : 0.65),
+                          : surface.withValues(alpha: isDark ? 0.4 : 0.65),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
                         color: isSelected
@@ -223,7 +217,7 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
                     ),
                     child: Text(
                       _filters[i]['label']!,
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 13,
                         fontWeight: isSelected
                             ? FontWeight.w700
@@ -242,10 +236,7 @@ class _ChatSearchScreenState extends State<ChatSearchScreen> {
           // ── Body: trending or empty state ─────────────────────────────
           Expanded(
             child: hasQuery
-                ? _EmptyState(
-                    textPrimary: textPrimary,
-                    textMuted: textMuted,
-                  )
+                ? _EmptyState(textPrimary: textPrimary, textMuted: textMuted)
                 : _TrendingSection(
                     isDark: isDark,
                     surface: surface,
@@ -288,7 +279,7 @@ class _TrendingSection extends StatelessWidget {
         // Header
         Text(
           '🔥 Trending Now',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w800,
             color: textPrimary,
@@ -342,16 +333,13 @@ class _TrendingTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: surface.withValues(alpha: isDark ? 0.5 : 0.75),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: primary.withValues(alpha: 0.12),
-        ),
+        border: Border.all(color: primary, width: 2),
       ),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         leading: Text(
           rank,
-          style: GoogleFonts.inter(
+          style: AppFonts.body(
             fontSize: 18,
             fontWeight: FontWeight.w900,
             color: primary,
@@ -359,7 +347,7 @@ class _TrendingTile extends StatelessWidget {
         ),
         title: Text(
           name,
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: textPrimary,
@@ -371,16 +359,16 @@ class _TrendingTile extends StatelessWidget {
             const SizedBox(width: 3),
             Text(
               location,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: textMuted,
-              ),
+              style: AppFonts.body(fontSize: 12, color: textMuted),
             ),
           ],
         ),
-        trailing: Icon(Icons.trending_up_rounded,
-            color: primary.withValues(alpha: 0.6), size: 20),
-        onTap: () {},
+        trailing: Icon(
+          Icons.trending_up_rounded,
+          color: primary.withValues(alpha: 0.6),
+          size: 20,
+        ),
+        onTap: () => showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
       ),
     );
   }
@@ -388,10 +376,7 @@ class _TrendingTile extends StatelessWidget {
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({
-    required this.textPrimary,
-    required this.textMuted,
-  });
+  const _EmptyState({required this.textPrimary, required this.textMuted});
 
   final Color textPrimary;
   final Color textMuted;
@@ -402,14 +387,11 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            '👻',
-            style: TextStyle(fontSize: 72),
-          ),
+          const Text('👻', style: TextStyle(fontSize: 72)),
           const SizedBox(height: 20),
           Text(
             'No chaos found.',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 22,
               fontWeight: FontWeight.w800,
               color: textPrimary,
@@ -418,10 +400,7 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Try something less specific, bestie.',
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: textMuted,
-            ),
+            style: AppFonts.body(fontSize: 14, color: textMuted),
           ),
         ],
       ),

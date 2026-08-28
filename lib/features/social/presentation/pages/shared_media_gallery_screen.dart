@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:tripmate/core/theme/app_fonts.dart';
 class SharedMediaGalleryScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -12,7 +11,8 @@ class SharedMediaGalleryScreen extends StatefulWidget {
   });
 
   @override
-  State<SharedMediaGalleryScreen> createState() => _SharedMediaGalleryScreenState();
+  State<SharedMediaGalleryScreen> createState() =>
+      _SharedMediaGalleryScreenState();
 }
 
 class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
@@ -51,7 +51,7 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
       'url': 'https://google.com/maps/gion',
       'sender': '@nam_trung',
       'icon': '🗺️',
-    }
+    },
   ];
 
   final List<Map<String, dynamic>> _voiceSnaps = [
@@ -72,49 +72,52 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
       'duration': '0:28',
       'sender': '@alex_escapes',
       'isPlaying': false,
-    }
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bgGradStart = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final bgGradEnd = isDark ? const Color(0xFF151926) : const Color(0xFFF3EFE9);
-    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final bgGradStart = isDark
+        ? const Color(0xFF1A1712)
+        : const Color(0xFFFDF6D3);
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final textPrimary = isDark ? Colors.white : Colors.black87;
     final textSecondary = isDark ? Colors.white60 : Colors.black54;
 
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
+    final primaryColor = isDark
+        ? const Color(0xFFF5822B)
+        : const Color(0xFFF5822B);
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [bgGradStart, bgGradEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgGradStart),
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Settings Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+                          icon: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: textPrimary,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Media Gallery',
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.body(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: textPrimary,
@@ -124,7 +127,9 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                     ),
                     IconButton(
                       icon: Icon(
-                        isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                        isDark
+                            ? Icons.light_mode_outlined
+                            : Icons.dark_mode_outlined,
                         color: textPrimary,
                       ),
                       onPressed: widget.onThemeToggle,
@@ -135,13 +140,19 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
 
               // Segmented Tab Selector
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: cardBg.withValues(alpha: 0.5),
+                  color: cardBg,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.02),
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black,
+                    width: 2,
                   ),
                 ),
                 child: Row(
@@ -162,10 +173,28 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: _activeTab == 0
-                        ? _buildPhotosTab(isDark, cardBg, textPrimary, textSecondary, primaryColor)
+                        ? _buildPhotosTab(
+                            isDark,
+                            cardBg,
+                            textPrimary,
+                            textSecondary,
+                            primaryColor,
+                          )
                         : _activeTab == 1
-                            ? _buildLinksTab(isDark, cardBg, textPrimary, textSecondary, primaryColor)
-                            : _buildVoiceTab(isDark, cardBg, textPrimary, textSecondary, primaryColor),
+                        ? _buildLinksTab(
+                            isDark,
+                            cardBg,
+                            textPrimary,
+                            textSecondary,
+                            primaryColor,
+                          )
+                        : _buildVoiceTab(
+                            isDark,
+                            cardBg,
+                            textPrimary,
+                            textSecondary,
+                            primaryColor,
+                          ),
                   ),
                 ),
               ),
@@ -191,14 +220,14 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? (isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C))
+                ? (isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Center(
             child: Text(
               label,
-              style: GoogleFonts.outfit(
+              style: AppFonts.body(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
                 color: isSelected
@@ -264,10 +293,13 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: cardBg.withValues(alpha: 0.7),
+            color: cardBg,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
           ),
           child: Row(
@@ -290,7 +322,7 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                   children: [
                     Text(
                       link['title']!,
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.body(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: textPrimary,
@@ -299,7 +331,7 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                     const SizedBox(height: 4),
                     Text(
                       link['url']!,
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 11,
                         color: Colors.blueAccent,
                         decoration: TextDecoration.underline,
@@ -308,7 +340,7 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                     const SizedBox(height: 6),
                     Text(
                       'Shared by ${link['sender']}',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: AppFonts.heading(
                         fontSize: 10,
                         color: textSecondary,
                       ),
@@ -341,10 +373,13 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: cardBg.withValues(alpha: 0.7),
+            color: cardBg,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black,
+              width: 2,
             ),
           ),
           child: Row(
@@ -368,7 +403,7 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                   children: [
                     Text(
                       snap['title'] as String,
-                      style: GoogleFonts.outfit(
+                      style: AppFonts.body(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: textPrimary,
@@ -378,14 +413,32 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                     // Waveform simulation
                     Row(
                       children: List.generate(15, (waveIdx) {
-                        final waveHeights = [8, 12, 24, 18, 6, 14, 28, 20, 10, 16, 24, 8, 12, 14, 6];
+                        final waveHeights = [
+                          8,
+                          12,
+                          24,
+                          18,
+                          6,
+                          14,
+                          28,
+                          20,
+                          10,
+                          16,
+                          24,
+                          8,
+                          12,
+                          14,
+                          6,
+                        ];
                         final h = waveHeights[waveIdx];
                         return Container(
                           width: 3,
                           height: (isPlaying ? (h * 1.2) : h).toDouble(),
                           margin: const EdgeInsets.symmetric(horizontal: 1.5),
                           decoration: BoxDecoration(
-                            color: isPlaying ? themeColor : textSecondary.withValues(alpha: 0.3),
+                            color: isPlaying
+                                ? themeColor
+                                : textSecondary.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(2),
                           ),
                         );
@@ -397,14 +450,14 @@ class _SharedMediaGalleryScreenState extends State<SharedMediaGalleryScreen> {
                       children: [
                         Text(
                           'Sender: ${snap['sender']}',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 10,
                             color: textSecondary,
                           ),
                         ),
                         Text(
                           snap['duration'] as String,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 10,
                             color: textSecondary,
                           ),

@@ -1,20 +1,21 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import '../../../core/app_messenger.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class AICaptionGeneratorScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const AICaptionGeneratorScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
   @override
-  State<AICaptionGeneratorScreen> createState() => _AICaptionGeneratorScreenState();
+  State<AICaptionGeneratorScreen> createState() =>
+      _AICaptionGeneratorScreenState();
 }
 
 class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
@@ -28,7 +29,12 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
     text: 'financially ruined. emotionally healed. 💸✨',
   );
 
-  final List<String> _vibes = ['Funny', 'Chaotic Gen Z', 'Cinematic', 'Aesthetic'];
+  final List<String> _vibes = [
+    'Funny',
+    'Chaotic Gen Z',
+    'Cinematic',
+    'Aesthetic',
+  ];
 
   final List<Map<String, dynamic>> _captionsList = [
     {
@@ -46,7 +52,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
           'text': 'the vibes survived somehow.',
           'tags': ['#blessed', '#chaos'],
         },
-      ]
+      ],
     },
     {
       'vibe': 'Funny',
@@ -63,7 +69,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
           'text': 'I followed my heart and it led me to a ramen shop.',
           'tags': ['#ramen', '#foodie'],
         },
-      ]
+      ],
     },
     {
       'vibe': 'Cinematic',
@@ -80,7 +86,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
           'text': 'We exist in the spaces between the flashes.',
           'tags': ['#cinematic', '#aesthetic'],
         },
-      ]
+      ],
     },
     {
       'vibe': 'Aesthetic',
@@ -97,8 +103,8 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
           'text': 'soft glowing memories.',
           'tags': ['#vibecheck', '#dreamy'],
         },
-      ]
-    }
+      ],
+    },
   ];
 
   @override
@@ -143,7 +149,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
             const SizedBox(width: 8),
             Text(
               'Copied to clipboard!',
-              style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+              style: AppFonts.body(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -158,25 +164,24 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
     final isDark = widget.isDarkMode;
 
     // Theme Tokens
-    final bgStart = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final bgEnd = isDark ? const Color(0xFF060E20) : const Color(0xFFF1EDE6);
-    final surface = isDark ? const Color(0xFF171F33) : Colors.white;
-    final primary = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondary = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textMuted = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final bgStart = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+    final secondary = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textMuted = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     final currentOptions = _currentOptions;
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [bgStart, bgEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgStart),
         child: Stack(
           children: [
             // ── Dynamic Aurora Glow Orb ─────────────────────────────────────
@@ -196,13 +201,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                       child: Container(
                         height: 320,
                         decoration: BoxDecoration(
-                          gradient: RadialGradient(
-                            colors: [
-                              primary.withValues(alpha: 0.3),
-                              secondary.withValues(alpha: 0.15),
-                              Colors.transparent,
-                            ],
-                          ),
+                          color: Colors.transparent,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -230,7 +229,12 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
 
                           // ── Social Photo Preview Container ─────────────────
                           Center(
-                            child: _buildPhotoMockup(surface, secondary, textPrimary, isDark),
+                            child: _buildPhotoMockup(
+                              surface,
+                              secondary,
+                              textPrimary,
+                              isDark,
+                            ),
                           ),
 
                           const SizedBox(height: 24),
@@ -242,7 +246,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                                 Text(
                                   'turning chaos into poetry ✨',
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: AppFonts.heading(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w800,
                                     color: textPrimary,
@@ -252,7 +256,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                                 Text(
                                   'generating emotional damage in 3... 2...',
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 14,
                                     color: textMuted,
                                     fontWeight: FontWeight.w500,
@@ -267,7 +271,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                           // ── Vibe Selectors (Horizontal list) ───────────────
                           Text(
                             'VIBE CHECK',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1.5,
@@ -275,17 +279,26 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                             ),
                           ),
                           const SizedBox(height: 10),
-                          _buildVibeSelectors(primary, textPrimary, textMuted, surface),
+                          _buildVibeSelectors(
+                            primary,
+                            textPrimary,
+                            textMuted,
+                            surface,
+                          ),
 
                           const SizedBox(height: 24),
 
                           // ── Bento-ish Caption Selection Bento Grid ────────
                           Column(
-                            children: List.generate(currentOptions.length, (index) {
+                            children: List.generate(currentOptions.length, (
+                              index,
+                            ) {
                               final item = currentOptions[index];
                               final isSelected = _selectedOptionIndex == index;
                               final optionText = item['text'] as String;
-                              final optionTags = List<String>.from(item['tags'] ?? []);
+                              final optionTags = List<String>.from(
+                                item['tags'] ?? [],
+                              );
 
                               return GestureDetector(
                                 onTap: () {
@@ -301,30 +314,39 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? primary.withValues(alpha: 0.15)
-                                        : surface.withValues(alpha: isDark ? 0.45 : 0.75),
+                                        : surface.withValues(
+                                            alpha: isDark ? 0.45 : 0.75,
+                                          ),
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: isSelected ? primary : (isDark ? Colors.white10 : Colors.black12),
+                                      color: isSelected
+                                          ? primary
+                                          : (isDark
+                                                ? Colors.white10
+                                                : Colors.black12),
                                       width: isSelected ? 1.5 : 1,
                                     ),
                                     boxShadow: [
                                       if (isSelected)
                                         BoxShadow(
                                           color: primary.withValues(alpha: 0.1),
-                                          blurRadius: 16,
+                                          blurRadius: 0,
                                         ),
                                     ],
                                   ),
                                   child: Stack(
                                     children: [
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Padding(
-                                            padding: const EdgeInsets.only(right: 32),
+                                            padding: const EdgeInsets.only(
+                                              right: 32,
+                                            ),
                                             child: Text(
                                               optionText,
-                                              style: GoogleFonts.plusJakartaSans(
+                                              style: AppFonts.heading(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 color: textPrimary,
@@ -335,15 +357,24 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                                           Row(
                                             children: optionTags.map((tag) {
                                               return Container(
-                                                margin: const EdgeInsets.only(right: 8),
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                margin: const EdgeInsets.only(
+                                                  right: 8,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  color: primary.withValues(alpha: 0.1),
-                                                  borderRadius: BorderRadius.circular(6),
+                                                  color: primary.withValues(
+                                                    alpha: 0.1,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
                                                 ),
                                                 child: Text(
                                                   tag,
-                                                  style: GoogleFonts.inter(
+                                                  style: AppFonts.body(
                                                     fontSize: 11,
                                                     color: primary,
                                                     fontWeight: FontWeight.bold,
@@ -361,9 +392,12 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                                           icon: Icon(
                                             Icons.content_copy_rounded,
                                             size: 18,
-                                            color: isSelected ? primary : textMuted,
+                                            color: isSelected
+                                                ? primary
+                                                : textMuted,
                                           ),
-                                          onPressed: () => _copyToClipboard(optionText),
+                                          onPressed: () =>
+                                              _copyToClipboard(optionText),
                                           constraints: const BoxConstraints(),
                                           padding: EdgeInsets.zero,
                                           tooltip: 'Copy',
@@ -379,7 +413,14 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                           const SizedBox(height: 20),
 
                           // ── Suggested Audio & Interactive Editor Panel ─────
-                          _buildEditorPanel(surface, primary, secondary, textPrimary, textMuted, isDark),
+                          _buildEditorPanel(
+                            surface,
+                            primary,
+                            secondary,
+                            textPrimary,
+                            textMuted,
+                            isDark,
+                          ),
 
                           const SizedBox(height: 100),
                         ],
@@ -405,13 +446,17 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: textPrimary,
+              size: 20,
+            ),
             onPressed: () => Navigator.maybePop(context),
             tooltip: 'Back',
           ),
           Text(
             'trip.mate',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 24,
               fontWeight: FontWeight.w900,
               letterSpacing: -1.0,
@@ -423,7 +468,9 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
               if (widget.onThemeToggle != null)
                 IconButton(
                   icon: Icon(
-                    widget.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                    widget.isDarkMode
+                        ? Icons.light_mode_rounded
+                        : Icons.dark_mode_rounded,
                     color: textPrimary.withValues(alpha: 0.6),
                     size: 20,
                   ),
@@ -431,8 +478,13 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                   tooltip: 'Toggle Theme',
                 ),
               IconButton(
-                icon: Icon(Icons.notifications_outlined, color: textPrimary, size: 24),
-                onPressed: () {},
+                icon: Icon(
+                  Icons.notifications_outlined,
+                  color: textPrimary,
+                  size: 24,
+                ),
+                onPressed: () =>
+                    showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
                 tooltip: 'Notifications',
               ),
             ],
@@ -442,18 +494,26 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
     );
   }
 
-  Widget _buildPhotoMockup(Color surface, Color secondary, Color textPrimary, bool isDark) {
+  Widget _buildPhotoMockup(
+    Color surface,
+    Color secondary,
+    Color textPrimary,
+    bool isDark,
+  ) {
     return Container(
       width: 240,
       height: 300,
       decoration: BoxDecoration(
         color: surface.withValues(alpha: isDark ? 0.3 : 0.8),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1)),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black),
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 40,
+            blurRadius: 0,
             offset: const Offset(0, 15),
           ),
         ],
@@ -479,17 +539,24 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   color: Colors.black54,
                   child: Row(
                     children: [
-                      Icon(Icons.auto_awesome_rounded, color: secondary, size: 12),
+                      Icon(
+                        Icons.auto_awesome_rounded,
+                        color: secondary,
+                        size: 12,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Analyzing Vibes...',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -507,7 +574,12 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
     );
   }
 
-  Widget _buildVibeSelectors(Color primary, Color textPrimary, Color textMuted, Color surface) {
+  Widget _buildVibeSelectors(
+    Color primary,
+    Color textPrimary,
+    Color textMuted,
+    Color surface,
+  ) {
     final isDark = widget.isDarkMode;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -534,20 +606,22 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                     : surface.withValues(alpha: isDark ? 0.45 : 0.75),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? primary : (isDark ? Colors.white10 : Colors.black12),
+                  color: isSelected
+                      ? primary
+                      : (isDark ? Colors.white10 : Colors.black12),
                   width: isSelected ? 1.5 : 1,
                 ),
                 boxShadow: [
                   if (isSelected)
                     BoxShadow(
                       color: primary.withValues(alpha: 0.2),
-                      blurRadius: 10,
+                      blurRadius: 0,
                     ),
                 ],
               ),
               child: Text(
                 vibe,
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: isSelected ? primary : textMuted,
@@ -561,20 +635,29 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
   }
 
   Widget _buildEditorPanel(
-      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           decoration: BoxDecoration(
             color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08)),
+            border: Border.all(
+              color: (isDark ? Colors.white : Colors.black),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.25),
-                blurRadius: 30,
+                blurRadius: 0,
               ),
             ],
           ),
@@ -588,11 +671,15 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.music_note_rounded, color: secondary, size: 18),
+                      Icon(
+                        Icons.music_note_rounded,
+                        color: secondary,
+                        size: 18,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'Suggested Audio',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
                           color: textMuted,
@@ -603,7 +690,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                   ),
                   Text(
                     '"Pink + White" - Frank Ocean',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: textPrimary,
@@ -623,7 +710,7 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                   TextField(
                     controller: _editorController,
                     maxLines: 3,
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 15,
                       color: textPrimary,
                       fontWeight: FontWeight.w500,
@@ -631,7 +718,9 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Edit your caption...',
-                      hintStyle: GoogleFonts.inter(color: textMuted.withValues(alpha: 0.5)),
+                      hintStyle: AppFonts.body(
+                        color: textMuted.withValues(alpha: 0.5),
+                      ),
                     ),
                   ),
                   GestureDetector(
@@ -639,7 +728,9 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                       // Trigger mock generation
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Vibes re-analyzed! Fresh poetry cooked up. 🍳'),
+                          content: Text(
+                            'Vibes re-analyzed! Fresh poetry cooked up. 🍳',
+                          ),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -648,16 +739,20 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [primary, primary.withRed(150)]),
+                        color: primary,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
                             color: primary.withValues(alpha: 0.3),
-                            blurRadius: 10,
+                            blurRadius: 0,
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.refresh_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
@@ -669,7 +764,12 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
     );
   }
 
-  Widget _buildFloatingNavbar(Color surface, Color primary, Color secondary, Color textMuted) {
+  Widget _buildFloatingNavbar(
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textMuted,
+  ) {
     final isDark = widget.isDarkMode;
     return Positioned(
       bottom: 24,
@@ -682,17 +782,20 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
           decoration: BoxDecoration(
             color: surface.withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(40),
-            border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08)),
+            border: Border.all(
+              color: (isDark ? Colors.white : Colors.black),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.4),
-                blurRadius: 40,
+                blurRadius: 0,
                 offset: const Offset(0, 10),
               ),
               if (isDark)
                 BoxShadow(
                   color: secondary.withValues(alpha: 0.1),
-                  blurRadius: 20,
+                  blurRadius: 0,
                   spreadRadius: 1,
                 ),
             ],
@@ -701,11 +804,36 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavbarItem(Icons.explore_outlined, false, textMuted, secondary),
-              _buildNavbarItem(Icons.group_outlined, false, textMuted, secondary),
-              _buildNavbarItem(Icons.add_circle_rounded, true, textMuted, secondary),
-              _buildNavbarItem(Icons.chat_bubble_outline_rounded, false, textMuted, secondary),
-              _buildNavbarItem(Icons.person_outline_rounded, false, textMuted, secondary),
+              _buildNavbarItem(
+                Icons.explore_outlined,
+                false,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.group_outlined,
+                false,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.add_circle_rounded,
+                true,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.chat_bubble_outline_rounded,
+                false,
+                textMuted,
+                secondary,
+              ),
+              _buildNavbarItem(
+                Icons.person_outline_rounded,
+                false,
+                textMuted,
+                secondary,
+              ),
             ],
           ),
         ),
@@ -713,7 +841,12 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
     );
   }
 
-  Widget _buildNavbarItem(IconData icon, bool isActive, Color textMuted, Color secondary) {
+  Widget _buildNavbarItem(
+    IconData icon,
+    bool isActive,
+    Color textMuted,
+    Color secondary,
+  ) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: isActive
@@ -723,17 +856,13 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
               boxShadow: [
                 BoxShadow(
                   color: secondary.withValues(alpha: 0.25),
-                  blurRadius: 15,
+                  blurRadius: 0,
                   spreadRadius: 2,
                 ),
               ],
             )
           : null,
-      child: Icon(
-        icon,
-        color: isActive ? secondary : textMuted,
-        size: 24,
-      ),
+      child: Icon(icon, color: isActive ? secondary : textMuted, size: 24),
     );
   }
 }

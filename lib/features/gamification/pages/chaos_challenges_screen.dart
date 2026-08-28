@@ -1,15 +1,15 @@
 import 'dart:async';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import '../../../core/app_messenger.dart';
 class ChaosChallengesScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const ChaosChallengesScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -46,7 +46,11 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
           if (_remainingTime.inSeconds > 0) {
             _remainingTime = _remainingTime - const Duration(seconds: 1);
           } else {
-            _remainingTime = const Duration(hours: 24, minutes: 0, seconds: 0); // loop
+            _remainingTime = const Duration(
+              hours: 24,
+              minutes: 0,
+              seconds: 0,
+            ); // loop
           }
         });
       }
@@ -72,23 +76,22 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
     final isDark = widget.isDarkMode;
 
     // Design System colors
-    final bgStart = isDark ? const Color(0xFF0B1326) : const Color(0xFFFCFAF6);
-    final bgEnd = isDark ? const Color(0xFF060E20) : const Color(0xFFF1EDE6);
-    final surface = isDark ? const Color(0xFF171F33) : Colors.white;
-    final primary = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondary = isDark ? const Color(0xFF34D399) : const Color(0xFFEBA83A);
-    final textPrimary = isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textMuted = isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
+    final bgStart = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+    final secondary = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFFFFD84D);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textMuted = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [bgStart, bgEnd],
-          ),
-        ),
+        decoration: BoxDecoration(color: bgStart),
         child: Stack(
           children: [
             // Ambient glow backdrops
@@ -104,7 +107,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                     shape: BoxShape.circle,
                   ),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 85, sigmaY: 85),
+                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                     child: Container(color: Colors.transparent),
                   ),
                 ),
@@ -120,7 +123,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                     shape: BoxShape.circle,
                   ),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 85, sigmaY: 85),
+                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                     child: Container(color: Colors.transparent),
                   ),
                 ),
@@ -151,19 +154,42 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                             const SizedBox(height: 24),
 
                             // Highlighted Daily Chaos Card
-                            _buildDailyChaosCard(surface, primary, secondary, textPrimary, textMuted, isDark),
+                            _buildDailyChaosCard(
+                              surface,
+                              primary,
+                              secondary,
+                              textPrimary,
+                              textMuted,
+                              isDark,
+                            ),
 
                             const SizedBox(height: 28),
 
                             // Viral Challenges Feed list
-                            _buildViralChallenges(surface, primary, secondary, textPrimary, textMuted, isDark),
+                            _buildViralChallenges(
+                              surface,
+                              primary,
+                              secondary,
+                              textPrimary,
+                              textMuted,
+                              isDark,
+                            ),
 
                             const SizedBox(height: 28),
 
                             // Chaos Rewards Bento Grid
-                            _buildRewardsSection(surface, primary, secondary, textPrimary, textMuted, isDark),
+                            _buildRewardsSection(
+                              surface,
+                              primary,
+                              secondary,
+                              textPrimary,
+                              textMuted,
+                              isDark,
+                            ),
 
-                            const SizedBox(height: 160), // Spacing for bottom navbar
+                            const SizedBox(
+                              height: 160,
+                            ), // Spacing for bottom navbar
                           ],
                         ),
                       ),
@@ -189,13 +215,17 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: textPrimary, size: 20),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: textPrimary,
+              size: 20,
+            ),
             onPressed: () => Navigator.maybePop(context),
             tooltip: 'Back',
           ),
           Text(
             'trip.mate',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 24,
               fontWeight: FontWeight.w900,
               letterSpacing: -1.0,
@@ -225,7 +255,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
         children: [
           Text(
             'embrace the chaos',
-            style: GoogleFonts.plusJakartaSans(
+            style: AppFonts.heading(
               fontSize: 28,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
@@ -235,7 +265,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
           const SizedBox(height: 6),
           Text(
             'bad decisions make good memories.',
-            style: GoogleFonts.inter(
+            style: AppFonts.body(
               fontSize: 14,
               color: textMuted,
               fontWeight: FontWeight.w500,
@@ -247,21 +277,24 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
   }
 
   Widget _buildDailyChaosCard(
-      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           decoration: BoxDecoration(
             color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: primary.withValues(alpha: 0.25), width: 1.5),
+            border: Border.all(color: primary, width: 2),
             boxShadow: [
-              BoxShadow(
-                color: primary.withValues(alpha: 0.05),
-                blurRadius: 20,
-              ),
+              BoxShadow(color: primary.withValues(alpha: 0.05), blurRadius: 0),
             ],
           ),
           padding: const EdgeInsets.all(24),
@@ -277,7 +310,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                       const SizedBox(width: 8),
                       Text(
                         'DAILY CHAOS',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 1.0,
@@ -288,11 +321,15 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                   ),
                   Row(
                     children: [
-                      Icon(Icons.local_fire_department_rounded, color: secondary, size: 16),
+                      Icon(
+                        Icons.local_fire_department_rounded,
+                        color: secondary,
+                        size: 16,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         'Active',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                           color: secondary,
@@ -305,7 +342,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
               const SizedBox(height: 20),
               Text(
                 'Take a random bus',
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   color: textPrimary,
@@ -318,7 +355,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                 children: [
                   Text(
                     'Remaining',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: textMuted,
@@ -326,7 +363,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                   ),
                   Text(
                     _formatDuration(_remainingTime),
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
                       color: primary,
@@ -340,7 +377,9 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Challenge Accepted! Time to hop on a random bus! 🚌✨'),
+                      content: Text(
+                        'Challenge Accepted! Time to hop on a random bus! 🚌✨',
+                      ),
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -348,14 +387,12 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                 child: Container(
                   height: 52,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [primary, primary.withRed(160)],
-                    ),
+                    color: primary,
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
                         color: primary.withValues(alpha: 0.3),
-                        blurRadius: 15,
+                        blurRadius: 0,
                         offset: const Offset(0, 6),
                       ),
                     ],
@@ -363,7 +400,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                   alignment: Alignment.center,
                   child: Text(
                     'Accept Challenge',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -380,17 +417,27 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
   }
 
   Widget _buildViralChallenges(
-      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           children: [
-            Icon(Icons.local_fire_department_rounded, color: Colors.orange, size: 20),
+            Icon(
+              Icons.local_fire_department_rounded,
+              color: Colors.orange,
+              size: 20,
+            ),
             const SizedBox(width: 8),
             Text(
               'Viral Challenges',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: textPrimary,
@@ -414,7 +461,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
           sub: 'Voted by Minh Nhật',
           buttonLabel: 'Join',
           buttonColor: secondary,
-          onTap: () {},
+          onTap: () => showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
         ),
 
         const SizedBox(height: 12),
@@ -432,7 +479,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
           sub: '1 member ready',
           buttonLabel: 'Join',
           buttonColor: primary,
-          onTap: () {},
+          onTap: () => showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
         ),
       ],
     );
@@ -457,7 +504,10 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
       decoration: BoxDecoration(
         color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05)),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black),
+          width: 2,
+        ),
       ),
       child: Row(
         children: [
@@ -465,7 +515,9 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.05,
+              ),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
@@ -478,7 +530,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: textPrimary,
@@ -487,7 +539,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                 const SizedBox(height: 4),
                 Text(
                   sub,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 12,
                     color: textMuted,
                     fontWeight: FontWeight.w500,
@@ -508,7 +560,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
               ),
               child: Text(
                 buttonLabel,
-                style: GoogleFonts.inter(
+                style: AppFonts.body(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: buttonColor,
@@ -522,7 +574,13 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
   }
 
   Widget _buildRewardsSection(
-      Color surface, Color primary, Color secondary, Color textPrimary, Color textMuted, bool isDark) {
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    bool isDark,
+  ) {
     final List<Map<String, String>> rewards = [
       {'emoji': '👑', 'label': 'Chaos King'},
       {'emoji': '🎵', 'label': 'Vibe Savior'},
@@ -534,7 +592,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
       children: [
         Text(
           'Chaos Rewards',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 16,
             fontWeight: FontWeight.w800,
             color: textPrimary,
@@ -551,7 +609,10 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                 decoration: BoxDecoration(
                   color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05)),
+                  border: Border.all(
+                    color: (isDark ? Colors.white : Colors.black),
+                    width: 2,
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -562,7 +623,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: textPrimary,
@@ -578,7 +639,12 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
     );
   }
 
-  Widget _buildFloatingNavbar(Color surface, Color primary, Color secondary, Color textMuted) {
+  Widget _buildFloatingNavbar(
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textMuted,
+  ) {
     final isDark = widget.isDarkMode;
     return Positioned(
       bottom: 24,
@@ -588,7 +654,7 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
         child: ClipRRect(
           borderRadius: BorderRadius.circular(40),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
             child: Container(
               width: double.infinity,
               constraints: const BoxConstraints(maxWidth: 400),
@@ -596,13 +662,13 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
                 color: surface.withValues(alpha: isDark ? 0.65 : 0.8),
                 borderRadius: BorderRadius.circular(40),
                 border: Border.all(
-                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
-                  width: 1,
+                  color: (isDark ? Colors.white : Colors.black),
+                  width: 2,
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.1),
-                    blurRadius: 30,
+                    blurRadius: 0,
                     offset: const Offset(0, 8),
                   ),
                 ],
@@ -611,11 +677,36 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildNavbarItem(Icons.home_rounded, false, textMuted, secondary),
-                  _buildNavbarItem(Icons.payments_outlined, false, textMuted, secondary),
-                  _buildNavbarItem(Icons.explore_rounded, true, textMuted, secondary),
-                  _buildNavbarItem(Icons.auto_awesome_rounded, false, textMuted, secondary),
-                  _buildNavbarItem(Icons.person_outline_rounded, false, textMuted, secondary),
+                  _buildNavbarItem(
+                    Icons.home_rounded,
+                    false,
+                    textMuted,
+                    secondary,
+                  ),
+                  _buildNavbarItem(
+                    Icons.payments_outlined,
+                    false,
+                    textMuted,
+                    secondary,
+                  ),
+                  _buildNavbarItem(
+                    Icons.explore_rounded,
+                    true,
+                    textMuted,
+                    secondary,
+                  ),
+                  _buildNavbarItem(
+                    Icons.auto_awesome_rounded,
+                    false,
+                    textMuted,
+                    secondary,
+                  ),
+                  _buildNavbarItem(
+                    Icons.person_outline_rounded,
+                    false,
+                    textMuted,
+                    secondary,
+                  ),
                 ],
               ),
             ),
@@ -625,7 +716,12 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
     );
   }
 
-  Widget _buildNavbarItem(IconData icon, bool isActive, Color textMuted, Color secondary) {
+  Widget _buildNavbarItem(
+    IconData icon,
+    bool isActive,
+    Color textMuted,
+    Color secondary,
+  ) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: isActive
@@ -635,17 +731,13 @@ class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
               boxShadow: [
                 BoxShadow(
                   color: secondary.withValues(alpha: 0.25),
-                  blurRadius: 15,
+                  blurRadius: 0,
                   spreadRadius: 2,
                 ),
               ],
             )
           : null,
-      child: Icon(
-        icon,
-        color: isActive ? secondary : textMuted,
-        size: 24,
-      ),
+      child: Icon(icon, color: isActive ? secondary : textMuted, size: 24),
     );
   }
 }

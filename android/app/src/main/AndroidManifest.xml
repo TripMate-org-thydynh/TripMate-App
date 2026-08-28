@@ -1,6 +1,23 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Chỉ khai báo quyền app THỰC SỰ dùng. Khai thừa sẽ lệch với bảng
+         Data Safety trên Google Play và làm người dùng ngại cài. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- CAMERA + READ_MEDIA_IMAGES: image_picker (chụp ảnh vị trí, quét vé). -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- VIBRATE: HapticFeedback ở các thao tác chính. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Đã gỡ (không có code nào dùng):
+         ACCESS_FINE_LOCATION / ACCESS_COARSE_LOCATION — app lấy toạ độ từ EXIF
+           ảnh và từ lịch trình, không đọc GPS thiết bị.
+         READ_MEDIA_VIDEO — chỉ chọn ảnh (pickImage), không chọn video.
+         RECORD_AUDIO — không có tính năng ghi âm.
+         RECEIVE_BOOT_COMPLETED — không có notification/alarm chạy nền.
+         Thêm lại kèm code sử dụng khi làm tính năng tương ứng. -->
+
     <application
-        android:label="tripmate"
+        android:label="TripMate"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -20,9 +37,31 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+            <!-- Bật deep-linking do Flutter/go_router xử lý (không cần plugin). -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- Deep link: link mời chia sẻ https://tripmate.app/join/<code>.
+                 android:autoVerify yêu cầu file assetlinks.json trên domain
+                 (xem EXTERNAL_SETUP.md). Chưa verify thì Android vẫn hiện
+                 hộp chọn app thay vì mở thẳng trình duyệt. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="tripmate.app"
+                      android:pathPrefix="/join"/>
+            </intent-filter>
+
+            <!-- Custom scheme: hoạt động ngay, không cần verify domain. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="tripmate" android:host="join"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -40,6 +79,19 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- url_launcher: cho phép canLaunchUrl thấy app thanh toán + trình duyệt -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="momo"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="zalopay"/>
         </intent>
     </queries>
 </manifest>

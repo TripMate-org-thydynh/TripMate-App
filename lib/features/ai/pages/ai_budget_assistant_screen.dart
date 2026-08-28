@@ -1,15 +1,14 @@
 import 'dart:math' as math;
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class AiBudgetAssistantScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
   const AiBudgetAssistantScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
   });
 
@@ -56,19 +55,24 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bg = isDark ? const Color(0xFF0B1326) : const Color(0xFFF1EDE6);
-    final surface = isDark ? const Color(0xFF171F33) : Colors.white;
-    final surfaceHigh =
-        isDark ? const Color(0xFF222A3D) : const Color(0xFFEDE7F6);
-    final primary = isDark ? const Color(0xFFD0BCFF) : const Color(0xFF6D3BD7);
-    final secondary =
-        isDark ? const Color(0xFF45DFA4) : const Color(0xFF00BD85);
-    final textPrimary =
-        isDark ? const Color(0xFFDAE2FD) : const Color(0xFF1E2022);
-    final textMuted =
-        isDark ? const Color(0xFFCBC3D7) : const Color(0xFF686D76);
-    final errorColor =
-        isDark ? const Color(0xFFFFB4AB) : const Color(0xFFE53935);
+    final bg = isDark ? const Color(0xFF1A1712) : const Color(0xFFF1EDE6);
+    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final surfaceHigh = isDark
+        ? const Color(0xFF222A3D)
+        : const Color(0xFFEDE7F6);
+    final primary = isDark ? const Color(0xFFC9B8FF) : const Color(0xFF6D3BD7);
+    final secondary = isDark
+        ? const Color(0xFF1FA85C)
+        : const Color(0xFF00BD85);
+    final textPrimary = isDark
+        ? const Color(0xFFDAE2FD)
+        : const Color(0xFF141210);
+    final textMuted = isDark
+        ? const Color(0xFFCBC3D7)
+        : const Color(0xFF4A453E);
+    final errorColor = isDark
+        ? const Color(0xFFFFB4AB)
+        : const Color(0xFFE53935);
 
     return Scaffold(
       backgroundColor: bg,
@@ -77,7 +81,11 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
           // Aurora background
           Positioned.fill(
             child: CustomPaint(
-              painter: _AuroraPainter(isDark: isDark, primary: primary, secondary: secondary),
+              painter: _AuroraPainter(
+                isDark: isDark,
+                primary: primary,
+                secondary: secondary,
+              ),
             ),
           ),
 
@@ -94,15 +102,29 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                       children: [
                         const SizedBox(height: 32),
                         // Hero: Matey orb + total damage
-                        _buildHeroSection(primary, secondary, textPrimary,
-                            textMuted, errorColor, isDark),
+                        _buildHeroSection(
+                          primary,
+                          secondary,
+                          textPrimary,
+                          textMuted,
+                          errorColor,
+                          isDark,
+                        ),
                         const SizedBox(height: 24),
                         // Marquee ticker
                         _buildMarquee(secondary, textMuted, surface, isDark),
                         const SizedBox(height: 24),
                         // Insights grid
-                        _buildInsightsGrid(primary, secondary, textPrimary,
-                            textMuted, errorColor, surface, surfaceHigh, isDark),
+                        _buildInsightsGrid(
+                          primary,
+                          secondary,
+                          textPrimary,
+                          textMuted,
+                          errorColor,
+                          surface,
+                          surfaceHigh,
+                          isDark,
+                        ),
                         const SizedBox(height: 40),
                       ],
                     ),
@@ -119,8 +141,12 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
     );
   }
 
-  Widget _buildTopBar(Color textPrimary, Color primary, Color secondary,
-      bool isDark) {
+  Widget _buildTopBar(
+    Color textPrimary,
+    Color primary,
+    Color secondary,
+    bool isDark,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
@@ -131,18 +157,17 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
             height: 36,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDark ? const Color(0xFF171F33) : Colors.white,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              color: isDark ? const Color(0xFF262019) : Colors.white,
+              border: Border.all(color: Colors.white, width: 2),
             ),
             child: Icon(Icons.group_rounded, color: primary, size: 18),
           ),
           ShaderMask(
-            shaderCallback: (bounds) => LinearGradient(
-              colors: [primary, secondary, const Color(0xFFFFB783)],
-            ).createShader(bounds),
+            shaderCallback: (bounds) =>
+                LinearGradient(colors: [primary, primary]).createShader(bounds),
             child: Text(
               'trip.mate',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -1.0,
@@ -168,8 +193,8 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                 height: 36,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF171F33) : Colors.white,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  color: isDark ? const Color(0xFF262019) : Colors.white,
+                  border: Border.all(color: Colors.white, width: 2),
                 ),
                 child: Icon(Icons.bolt_rounded, color: primary, size: 20),
               ),
@@ -180,8 +205,14 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
     );
   }
 
-  Widget _buildHeroSection(Color primary, Color secondary, Color textPrimary,
-      Color textMuted, Color errorColor, bool isDark) {
+  Widget _buildHeroSection(
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    Color errorColor,
+    bool isDark,
+  ) {
     return Column(
       children: [
         // Pulsing AI Orb
@@ -195,19 +226,12 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                 height: 96,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFFA078FF),
-                      const Color(0xFF6D3BD7),
-                    ],
-                  ),
+                  color: const Color(0xFFA078FF),
                   border: Border.all(color: const Color(0xFFE9DDFF), width: 2),
                   boxShadow: [
                     BoxShadow(
                       color: primary.withValues(alpha: 0.4),
-                      blurRadius: 30,
+                      blurRadius: 0,
                       spreadRadius: 4,
                     ),
                   ],
@@ -224,16 +248,18 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                 child: Transform.rotate(
                   angle: 12 * math.pi / 180,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF93000A),
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                          color: errorColor.withValues(alpha: 0.3)),
+                      border: Border.all(color: errorColor, width: 2),
                     ),
                     child: Text(
                       'judging u',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFFFFDAD6),
@@ -250,7 +276,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
 
         Text(
           'Total Financial Damage',
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: textMuted,
@@ -264,7 +290,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
           children: [
             Text(
               '\$',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 36,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFFE9DDFF),
@@ -272,16 +298,13 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
             ),
             Text(
               '1,420.69',
-              style: GoogleFonts.plusJakartaSans(
+              style: AppFonts.heading(
                 fontSize: 52,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -2,
                 color: Colors.white,
                 shadows: [
-                  Shadow(
-                    color: primary.withValues(alpha: 0.6),
-                    blurRadius: 20,
-                  ),
+                  Shadow(color: primary.withValues(alpha: 0.6), blurRadius: 0),
                 ],
               ),
             ),
@@ -292,23 +315,25 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
   }
 
   Widget _buildMarquee(
-      Color secondary, Color textMuted, Color surface, bool isDark) {
+    Color secondary,
+    Color textMuted,
+    Color surface,
+    bool isDark,
+  ) {
     const tickerText =
         'maybe skip the 4th coffee today ☕  •  squad dinner was literally 40% of the budget 😭  •  someone stop sarah from buying more souvenirs 🛍️  •  ';
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           height: 52,
           decoration: BoxDecoration(
             color: isDark
-                ? const Color(0xFF45DFA4).withValues(alpha: 0.05)
+                ? const Color(0xFF1FA85C).withValues(alpha: 0.05)
                 : secondary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: secondary.withValues(alpha: 0.2),
-            ),
+            border: Border.all(color: secondary, width: 2),
           ),
           child: Row(
             children: [
@@ -318,7 +343,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      isDark ? const Color(0xFF0B1326) : Colors.white,
+                      isDark ? const Color(0xFF1A1712) : Colors.white,
                       Colors.transparent,
                     ],
                   ),
@@ -329,7 +354,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                     const SizedBox(width: 6),
                     Text(
                       'MATEY SAYS',
-                      style: GoogleFonts.inter(
+                      style: AppFonts.body(
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.5,
@@ -355,7 +380,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                           child: Text(
                             tickerText + tickerText,
                             maxLines: 1,
-                            style: GoogleFonts.inter(
+                            style: AppFonts.body(
                               fontSize: 13,
                               color: textMuted,
                               fontWeight: FontWeight.w500,
@@ -375,8 +400,15 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
   }
 
   Widget _buildInsightsGrid(
-      Color primary, Color secondary, Color textPrimary, Color textMuted,
-      Color errorColor, Color surface, Color surfaceHigh, bool isDark) {
+    Color primary,
+    Color secondary,
+    Color textPrimary,
+    Color textMuted,
+    Color errorColor,
+    Color surface,
+    Color surfaceHigh,
+    bool isDark,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -389,13 +421,16 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
               children: [
                 Row(
                   children: [
-                    Icon(Icons.local_fire_department_rounded,
-                        color: errorColor, size: 20),
+                    Icon(
+                      Icons.local_fire_department_rounded,
+                      color: errorColor,
+                      size: 20,
+                    ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         'CRITICAL INSIGHT',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.2,
@@ -408,7 +443,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                 const SizedBox(height: 16),
                 RichText(
                   text: TextSpan(
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: textPrimary,
@@ -418,15 +453,16 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                       const TextSpan(text: 'you spent '),
                       TextSpan(
                         text: '62%',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: AppFonts.heading(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: errorColor,
                         ),
                       ),
                       const TextSpan(
-                          text:
-                              ' of your budget on cafes 😭 financial damage accelerating.'),
+                        text:
+                            ' of your budget on cafes 😭 financial damage accelerating.',
+                      ),
                     ],
                   ),
                 ),
@@ -447,15 +483,18 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                     children: [
                       Text(
                         'View Cafe Receipts',
-                        style: GoogleFonts.inter(
+                        style: AppFonts.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: textMuted,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_rounded,
-                          size: 14, color: textMuted),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 14,
+                        color: textMuted,
+                      ),
                     ],
                   ),
                 ),
@@ -477,7 +516,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                   alignment: Alignment.topLeft,
                   child: Text(
                     'VIBE CHECK',
-                    style: GoogleFonts.inter(
+                    style: AppFonts.body(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.2,
@@ -507,7 +546,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                             children: [
                               Text(
                                 '75%',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 26,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -515,7 +554,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                               ),
                               Text(
                                 'Chaos Incurred',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF68FCBF),
@@ -536,13 +575,15 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                       children: [
                         Text(
                           'Remaining',
-                          style: GoogleFonts.inter(
-                              fontSize: 10, color: textMuted),
+                          style: AppFonts.body(
+                            fontSize: 10,
+                            color: textMuted,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           '\$579.31',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -554,19 +595,23 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                       children: [
                         Text(
                           'Pace',
-                          style: GoogleFonts.inter(
-                              fontSize: 10, color: textMuted),
+                          style: AppFonts.body(
+                            fontSize: 10,
+                            color: textMuted,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            Icon(Icons.trending_up_rounded,
-                                size: 14,
-                                color: const Color(0xFFFFB4AB)),
+                            Icon(
+                              Icons.trending_up_rounded,
+                              size: 14,
+                              color: const Color(0xFFFFB4AB),
+                            ),
                             const SizedBox(width: 2),
                             Text(
                               'Fast',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.body(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFFFFB4AB),
@@ -594,7 +639,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -604,20 +649,28 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
             borderRadius: BorderRadius.circular(20),
             border: Border(
               top: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.15), width: 1),
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1,
+              ),
               left: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.15), width: 1),
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1,
+              ),
               right: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.04), width: 1),
+                color: Colors.white.withValues(alpha: 0.04),
+                width: 1,
+              ),
               bottom: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.04), width: 1),
+                color: Colors.white.withValues(alpha: 0.04),
+                width: 1,
+              ),
             ),
             boxShadow: glowColor != null
                 ? [
                     BoxShadow(
                       color: glowColor.withValues(alpha: 0.15),
-                      blurRadius: 20,
-                    )
+                      blurRadius: 0,
+                    ),
                   ]
                 : [],
           ),
@@ -627,8 +680,13 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
     );
   }
 
-  Widget _buildBottomNav(Color surface, Color primary, Color secondary,
-      Color textMuted, bool isDark) {
+  Widget _buildBottomNav(
+    Color surface,
+    Color primary,
+    Color secondary,
+    Color textMuted,
+    bool isDark,
+  ) {
     return Positioned(
       bottom: 24,
       left: 20,
@@ -636,18 +694,17 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(999),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
               color: surface.withValues(alpha: isDark ? 0.8 : 0.9),
               borderRadius: BorderRadius.circular(999),
-              border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: Colors.white, width: 2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.4),
-                  blurRadius: 40,
+                  blurRadius: 0,
                   offset: const Offset(0, 10),
                 ),
               ],
@@ -657,11 +714,14 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
               children: [
                 _navIcon(Icons.explore_outlined, false, textMuted, secondary),
                 _navIcon(Icons.group_outlined, false, textMuted, secondary),
-                _navIcon(
-                    Icons.add_circle_rounded, false, textMuted, secondary),
+                _navIcon(Icons.add_circle_rounded, false, textMuted, secondary),
                 _navIcon(Icons.map_rounded, true, textMuted, secondary),
                 _navIcon(
-                    Icons.account_circle_outlined, false, textMuted, secondary),
+                  Icons.account_circle_outlined,
+                  false,
+                  textMuted,
+                  secondary,
+                ),
               ],
             ),
           ),
@@ -671,7 +731,11 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
   }
 
   Widget _navIcon(
-      IconData icon, bool active, Color textMuted, Color secondary) {
+    IconData icon,
+    bool active,
+    Color textMuted,
+    Color secondary,
+  ) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: active
@@ -680,11 +744,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
               shape: BoxShape.circle,
             )
           : null,
-      child: Icon(
-        icon,
-        color: active ? secondary : textMuted,
-        size: 24,
-      ),
+      child: Icon(icon, color: active ? secondary : textMuted, size: 24),
     );
   }
 }
@@ -694,27 +754,36 @@ class _AuroraPainter extends CustomPainter {
   final Color primary;
   final Color secondary;
 
-  _AuroraPainter(
-      {required this.isDark, required this.primary, required this.secondary});
+  _AuroraPainter({
+    required this.isDark,
+    required this.primary,
+    required this.secondary,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final p1 = Paint()
-      ..shader = RadialGradient(
-        colors: [primary.withValues(alpha: 0.15), Colors.transparent],
-      ).createShader(Rect.fromCircle(
-        center: Offset(size.width * 0.15, size.height * 0.3),
-        radius: size.width * 0.6,
-      ));
+      ..shader =
+          RadialGradient(
+            colors: [primary.withValues(alpha: 0.15), Colors.transparent],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(size.width * 0.15, size.height * 0.3),
+              radius: size.width * 0.6,
+            ),
+          );
     canvas.drawRect(Offset.zero & size, p1);
 
     final p2 = Paint()
-      ..shader = RadialGradient(
-        colors: [secondary.withValues(alpha: 0.1), Colors.transparent],
-      ).createShader(Rect.fromCircle(
-        center: Offset(size.width * 0.85, size.height * 0.7),
-        radius: size.width * 0.6,
-      ));
+      ..shader =
+          RadialGradient(
+            colors: [secondary.withValues(alpha: 0.1), Colors.transparent],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(size.width * 0.85, size.height * 0.7),
+              radius: size.width * 0.6,
+            ),
+          );
     canvas.drawRect(Offset.zero & size, p2);
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../core/theme/gen_z_tokens.dart';
 import 'pages/achievement_unlock_screen.dart';
 import 'pages/chaos_challenges_screen.dart';
 import 'pages/daily_squad_missions_screen.dart';
@@ -20,16 +22,18 @@ class GamificationScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
           'gamification.hub_title'.tr(),
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
+          style: AppFonts.heading(
+            color: ink,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
           ),
         ),
       ),
@@ -44,29 +48,33 @@ class GamificationScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                gradient: const LinearGradient(
-                  colors: [Colors.purpleAccent, Colors.pinkAccent, Colors.orangeAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                color: GenZTokens.magenta,
+                border: Border.all(color: ink, width: GenZTokens.borderWidth),
+                boxShadow: GenZTokens.hardShadow(ink),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'SQUAD CHAOS PLAYGROUND 🎮',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                  Text(
+                    'SQUAD CHAOS PLAYGROUND',
+                    style: AppFonts.heading(
+                      color: GenZTokens.paper,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                      height: 1.05,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'gamification.hub_desc'.tr(),
-                    style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                    style: AppFonts.body(
+                      color: GenZTokens.paper,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
                   ),
                 ],
               ),
@@ -76,10 +84,11 @@ class GamificationScreen extends StatelessWidget {
 
             Text(
               'gamification.hub_title'.tr(),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+              style: AppFonts.heading(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+                color: ink,
               ),
             ),
             const SizedBox(height: 12),
@@ -93,35 +102,35 @@ class GamificationScreen extends StatelessWidget {
               children: [
                 _buildGameCard(
                   context,
-                  'Who Pays Wheel 🎡',
+                  'Who Pays Wheel',
                   'gamification.chaotic_wheel'.tr(),
                   const WhoPaysWheelScreen(),
                   isDark,
-                  Colors.redAccent,
+                  GenZTokens.red,
                 ),
                 _buildGameCard(
                   context,
-                  'Random Dare 🎲',
+                  'Random Dare',
                   'gamification.random_challenge'.tr(),
                   const RandomDareGeneratorScreen(),
                   isDark,
-                  Colors.orangeAccent,
+                  GenZTokens.orange,
                 ),
                 _buildGameCard(
                   context,
-                  'Trip Bingo 🎯',
+                  'Trip Bingo',
                   'gamification.bingo_board'.tr(),
                   const TripBingoScreen(),
                   isDark,
-                  Colors.teal,
+                  GenZTokens.green,
                 ),
                 _buildGameCard(
                   context,
-                  'Chaos Challenges ⚡',
+                  'Chaos Challenges',
                   'gamification.crazy_challenges'.tr(),
                   const ChaosChallengesScreen(),
                   isDark,
-                  Colors.purpleAccent,
+                  GenZTokens.purple,
                 ),
               ],
             ),
@@ -130,10 +139,11 @@ class GamificationScreen extends StatelessWidget {
 
             Text(
               'gamification.xp_ranks'.tr(),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+              style: AppFonts.heading(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+                color: ink,
               ),
             ),
             const SizedBox(height: 12),
@@ -157,7 +167,7 @@ class GamificationScreen extends StatelessWidget {
             _buildListAction(
               context,
               Icons.emoji_events_outlined,
-              'Achievement Unlocked 🏆',
+              'Achievement Unlocked',
               'gamification.achievements_accumulated'.tr(),
               const AchievementUnlockScreen(),
               isDark,
@@ -165,7 +175,7 @@ class GamificationScreen extends StatelessWidget {
             _buildListAction(
               context,
               Icons.card_giftcard_outlined,
-              'End Trip Awards 🎭',
+              'End Trip Awards',
               'gamification.end_awards'.tr(),
               const EndTripAwardsScreen(),
               isDark,
@@ -210,31 +220,65 @@ class GamificationScreen extends StatelessWidget {
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => target));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => target),
+        );
       },
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: accentColor.withValues(alpha: 0.2), width: 1.5),
+          color: accentColor,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            width: GenZTokens.borderWidth,
+          ),
+          boxShadow: GenZTokens.hardShadow(
+            isDark ? GenZTokens.inkDark : GenZTokens.ink,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(Icons.sports_esports, color: accentColor, size: 32),
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: GenZTokens.paper,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: GenZTokens.ink,
+                  width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              child: const Icon(
+                Icons.sports_esports,
+                color: GenZTokens.ink,
+                size: 24,
+              ),
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: AppFonts.heading(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                    color: GenZTokens.paper,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   sub,
-                  style: const TextStyle(color: Colors.grey, fontSize: 11),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.body(
+                    color: GenZTokens.paper,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -254,24 +298,60 @@ class GamificationScreen extends StatelessWidget {
   ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
-      child: Card(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            width: GenZTokens.borderWidthThin,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
         child: ListTile(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => target));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => target),
+            );
           },
           leading: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.purple.withValues(alpha: 0.12),
+              color: GenZTokens.lilac,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: GenZTokens.ink,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
-            child: Icon(icon, color: Colors.purpleAccent),
+            child: Icon(icon, color: GenZTokens.ink),
           ),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(desc, style: const TextStyle(fontSize: 11)),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+          title: Text(
+            title,
+            style: AppFonts.heading(
+              fontWeight: FontWeight.w700,
+              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            ),
+          ),
+          subtitle: Text(
+            desc,
+            style: AppFonts.body(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+            ),
+          ),
+          trailing: Icon(
+            Icons.arrow_forward,
+            size: 16,
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+          ),
         ),
       ),
     );

@@ -1,7 +1,6 @@
 import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 class ThemePreviewScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
@@ -9,7 +8,7 @@ class ThemePreviewScreen extends StatefulWidget {
 
   const ThemePreviewScreen({
     super.key,
-    this.isDarkMode = true,
+    this.isDarkMode = false,
     this.onThemeToggle,
     this.initialTheme,
   });
@@ -32,7 +31,8 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
     {
       'emoji': '🌃',
       'name': 'Tokyo Neon',
-      'desc': 'Electric cyberpunk nights. Neon-soaked streets and infinite vibes.',
+      'desc':
+          'Electric cyberpunk nights. Neon-soaked streets and infinite vibes.',
       'gradient': [Color(0xFF7B2FF7), Color(0xFFFF007F), Color(0xFF00F0FF)],
       'accent': Color(0xFFFF007F),
       'preview': 'Tokyo Bound ✈️',
@@ -41,15 +41,15 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
       'emoji': '🌧',
       'name': 'Đà Lạt Mist',
       'desc': 'Emerald fog rolling over pine forests. Cozy highland energy.',
-      'gradient': [Color(0xFF134E4A), Color(0xFF34D399), Color(0xFF6EE7B7)],
-      'accent': Color(0xFF34D399),
+      'gradient': [Color(0xFF134E4A), Color(0xFF1FA85C), Color(0xFF6EE7B7)],
+      'accent': Color(0xFF1FA85C),
       'preview': 'Mountain Escape 🍃',
     },
     {
       'emoji': '🏖',
       'name': 'Beach Chaos',
       'desc': 'Salt air and golden hour. Pure Gen-Z summer chaos energy.',
-      'gradient': [Color(0xFFFB923C), Color(0xFF06B6D4), Color(0xFFFF6B6B)],
+      'gradient': [Color(0xFFFB923C), Color(0xFF3D8BFF), Color(0xFFFF6B6B)],
       'accent': Color(0xFFFB923C),
       'preview': 'Sun & Chaos 🌊',
     },
@@ -57,16 +57,16 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
       'emoji': '📼',
       'name': 'Retro VHS',
       'desc': 'Lo-fi nostalgia. Grainy filters and late-night analog dreams.',
-      'gradient': [Color(0xFF92400E), Color(0xFFF59E0B), Color(0xFFEF4444)],
-      'accent': Color(0xFFF59E0B),
+      'gradient': [Color(0xFF92400E), Color(0xFFF5822B), Color(0xFFD8422B)],
+      'accent': Color(0xFFF5822B),
       'preview': 'Rewind Mode 📼',
     },
     {
       'emoji': '⚡',
       'name': 'Cyber Punk',
       'desc': 'Hard-edged neon and midnight chrome. The future is chaotic.',
-      'gradient': [Color(0xFF0F172A), Color(0xFF45DFA4), Color(0xFF7B2FF7)],
-      'accent': Color(0xFF45DFA4),
+      'gradient': [Color(0xFF141210), Color(0xFF1FA85C), Color(0xFF7B2FF7)],
+      'accent': Color(0xFF1FA85C),
       'preview': 'System Override ⚡',
     },
   ];
@@ -78,8 +78,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
     // Find initial theme index
     int startIdx = 0;
     if (widget.initialTheme != null) {
-      final idx = _themes
-          .indexWhere((t) => t['name'] == widget.initialTheme);
+      final idx = _themes.indexWhere((t) => t['name'] == widget.initialTheme);
       if (idx >= 0) startIdx = idx;
     }
     _selectedIdx = startIdx;
@@ -159,13 +158,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                       height: 320,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            grad[0].withValues(
-                                alpha: 0.3 * _glowAnim.value),
-                            Colors.transparent,
-                          ],
-                        ),
+                        color: Colors.transparent,
                       ),
                     ),
                   ),
@@ -177,13 +170,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                       height: 260,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            grad[1].withValues(
-                                alpha: 0.25 * _glowAnim.value),
-                            Colors.transparent,
-                          ],
-                        ),
+                        color: Colors.transparent,
                       ),
                     ),
                   ),
@@ -198,7 +185,9 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                   // Header
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 14),
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
                     child: Row(
                       children: [
                         _buildGlassButton(
@@ -212,20 +201,23 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 7),
+                                horizontal: 14,
+                                vertical: 7,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.2),
+                                  color: Colors.white,
+                                  width: 2,
                                 ),
                               ),
                               child: Text(
                                 'Theme Preview',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -255,7 +247,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                       children: [
                         Text(
                           'personality upgrade available.',
-                          style: GoogleFonts.inter(
+                          style: AppFonts.body(
                             fontSize: 13,
                             color: Colors.white.withValues(alpha: 0.7),
                           ),
@@ -263,7 +255,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         const SizedBox(height: 4),
                         Text(
                           "choose your squad's aesthetic.",
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -293,8 +285,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         },
                         itemBuilder: (context, idx) {
                           final theme = _themes[idx];
-                          final themeGrad =
-                              theme['gradient'] as List<Color>;
+                          final themeGrad = theme['gradient'] as List<Color>;
                           final themeAccent = theme['accent'] as Color;
                           final isActive = idx == _selectedIdx;
 
@@ -303,8 +294,9 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                             duration: const Duration(milliseconds: 400),
                             curve: Curves.easeOut,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
                               child: _buildThemeCard(
                                 theme: theme,
                                 themeGrad: themeGrad,
@@ -344,33 +336,45 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
 
                   // Bottom nav mock
                   Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 8, left: 20, right: 20),
+                    padding: const EdgeInsets.only(
+                      bottom: 8,
+                      left: 20,
+                      right: 20,
+                    ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                         child: Container(
                           height: 56,
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.15),
-                            ),
+                            border: Border.all(color: Colors.white, width: 2),
                           ),
                           child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: const [
-                              Icon(Icons.flight,
-                                  color: Colors.white54, size: 22),
-                              Icon(Icons.explore,
-                                  color: Colors.white54, size: 22),
-                              Icon(Icons.map_outlined,
-                                  color: Colors.white54, size: 22),
-                              Icon(Icons.person_outlined,
-                                  color: Colors.white54, size: 22),
+                              Icon(
+                                Icons.flight,
+                                color: Colors.white54,
+                                size: 22,
+                              ),
+                              Icon(
+                                Icons.explore,
+                                color: Colors.white54,
+                                size: 22,
+                              ),
+                              Icon(
+                                Icons.map_outlined,
+                                color: Colors.white54,
+                                size: 22,
+                              ),
+                              Icon(
+                                Icons.person_outlined,
+                                color: Colors.white54,
+                                size: 22,
+                              ),
                             ],
                           ),
                         ),
@@ -388,17 +392,13 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         height: 58,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(100),
-                          gradient: LinearGradient(
-                            colors: [
-                              grad[0],
-                              grad.length > 1 ? grad[1] : grad[0],
-                            ],
-                          ),
+                          color: grad[0],
                           boxShadow: [
                             BoxShadow(
                               color: accent.withValues(
-                                  alpha: 0.45 * _glowAnim.value),
-                              blurRadius: 24,
+                                alpha: 0.45 * _glowAnim.value,
+                              ),
+                              blurRadius: 0,
                               offset: const Offset(0, 6),
                             ),
                           ],
@@ -411,7 +411,8 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                      '✨ ${_current['name']} applied!'),
+                                    '✨ ${_current['name']} applied!',
+                                  ),
                                   behavior: SnackBarBehavior.floating,
                                   backgroundColor: accent,
                                 ),
@@ -421,7 +422,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                             child: Center(
                               child: Text(
                                 'Apply Aesthetic',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: AppFonts.heading(
                                   fontSize: 17,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
@@ -453,18 +454,11 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
     return ClipRRect(
       borderRadius: BorderRadius.circular(32),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 400),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                themeGrad[0].withValues(alpha: isActive ? 0.5 : 0.2),
-                themeGrad.last.withValues(alpha: isActive ? 0.3 : 0.1),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: themeGrad[0].withValues(alpha: isActive ? 0.5 : 0.2),
             borderRadius: BorderRadius.circular(32),
             border: Border.all(
               color: isActive
@@ -476,7 +470,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                 ? [
                     BoxShadow(
                       color: themeAccent.withValues(alpha: 0.3),
-                      blurRadius: 40,
+                      blurRadius: 0,
                       spreadRadius: 5,
                     ),
                   ]
@@ -501,7 +495,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         children: [
                           Text(
                             theme['name'] as String,
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontSize: 20,
                               fontWeight: FontWeight.w900,
                               color: Colors.white,
@@ -511,18 +505,19 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                             Container(
                               margin: const EdgeInsets.only(top: 4),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 3),
+                                horizontal: 10,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
                                 color: themeAccent.withValues(alpha: 0.25),
                                 border: Border.all(
-                                  color:
-                                      themeAccent.withValues(alpha: 0.5),
+                                  color: themeAccent.withValues(alpha: 0.5),
                                 ),
                               ),
                               child: Text(
                                 'Selected ✓',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
                                   color: themeAccent,
@@ -539,7 +534,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
 
                 Text(
                   theme['desc'] as String,
-                  style: GoogleFonts.inter(
+                  style: AppFonts.body(
                     fontSize: 13,
                     color: Colors.white.withValues(alpha: 0.75),
                     height: 1.5,
@@ -552,15 +547,13 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                 ClipRRect(
                   borderRadius: BorderRadius.circular(18),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
                     child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.25),
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.12),
-                        ),
+                        border: Border.all(color: Colors.white, width: 2),
                       ),
                       child: Column(
                         children: [
@@ -572,27 +565,23 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                                 height: 34,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      themeGrad[0],
-                                      themeGrad.last,
-                                    ],
-                                  ),
+                                  color: themeGrad[0],
                                 ),
                                 child: const Center(
-                                  child: Text('✈️',
-                                      style: TextStyle(fontSize: 14)),
+                                  child: Text(
+                                    '✈️',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       theme['preview'] as String,
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: AppFonts.heading(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
                                         color: Colors.white,
@@ -600,10 +589,11 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                                     ),
                                     Text(
                                       'Squad is online',
-                                      style: GoogleFonts.inter(
+                                      style: AppFonts.body(
                                         fontSize: 11,
-                                        color: Colors.white
-                                            .withValues(alpha: 0.5),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.5,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -611,16 +601,16 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                               ),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(8),
-                                  color: themeAccent
-                                      .withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: themeAccent.withValues(alpha: 0.2),
                                 ),
                                 child: Text(
                                   '+XP',
-                                  style: GoogleFonts.inter(
+                                  style: AppFonts.body(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
                                     color: themeAccent,
@@ -636,28 +626,26 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                             child: LinearProgressIndicator(
                               value: 0.72,
                               minHeight: 5,
-                              backgroundColor:
-                                  Colors.white.withValues(alpha: 0.08),
-                              valueColor: AlwaysStoppedAnimation(
-                                  themeAccent),
+                              backgroundColor: Colors.white.withValues(
+                                alpha: 0.08,
+                              ),
+                              valueColor: AlwaysStoppedAnimation(themeAccent),
                             ),
                           ),
                           const SizedBox(height: 6),
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 'Squad Energy 72%',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 10,
-                                  color: Colors.white
-                                      .withValues(alpha: 0.55),
+                                  color: Colors.white.withValues(alpha: 0.55),
                                 ),
                               ),
                               Text(
                                 '🔥 On fire',
-                                style: GoogleFonts.inter(
+                                style: AppFonts.body(
                                   fontSize: 10,
                                   color: themeAccent,
                                   fontWeight: FontWeight.w600,
@@ -689,16 +677,14 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
             width: 42,
             height: 42,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white.withValues(alpha: 0.12),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.2),
-              ),
+              border: Border.all(color: Colors.white, width: 2),
             ),
             child: Icon(icon, size: 20, color: color),
           ),
