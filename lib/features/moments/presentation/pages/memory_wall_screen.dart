@@ -7,13 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'memory_archive_screen.dart';
 import 'ai_memory_sorting_screen.dart';
-import 'favorite_memories_screen.dart';
-import 'shared_album_screen.dart';
 import 'share_chaos_export_screen.dart';
 import 'collaborative_scrapbook_editor_screen.dart';
-import 'memory_timeline_screen.dart';
 import 'ai_caption_generator_screen.dart';
 import 'trip_recap_reel_screen.dart';
 import '../../../discovery/presentation/pages/photo_map_screen.dart';
@@ -661,10 +657,6 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     final textPrimary = isDark
         ? const Color(0xFFFDF6D3)
         : const Color(0xFF141210);
-    final primaryColor = isDark
-        ? const Color(0xFFF5822B)
-        : const Color(0xFFF5822B);
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -795,25 +787,6 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                     children: [
                       _buildFeatureTile(
                         context,
-                        icon: Icons.photo_library_outlined,
-                        title: 'Shared Album',
-                        desc: 'Curated group rolls',
-                        color: const Color(0xFF00F5FF),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => SharedAlbumScreen(
-                                isDarkMode: isDark,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
                         icon: Icons.edit_note_outlined,
                         title: 'Scrapbook Canvas',
                         desc: 'Layered polaroids',
@@ -863,63 +836,6 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (c) => ShareChaosExportScreen(
-                                isDarkMode: isDark,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
-                        icon: Icons.timeline_outlined,
-                        title: 'Timeline Story',
-                        desc: 'Chronological Dots',
-                        color: primaryColor,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => MemoryTimelineScreen(
-                                isDarkMode: isDark,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
-                        icon: Icons.favorite_border,
-                        title: 'Favorite Feeds',
-                        desc: 'Highly aesthetic pins',
-                        color: Colors.redAccent,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => FavoriteMemoriesScreen(
-                                isDarkMode: isDark,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
-                        icon: Icons.archive_outlined,
-                        title: 'Memory Archive',
-                        desc: 'Sort media history',
-                        color: Colors.blueAccent,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => MemoryArchiveScreen(
                                 isDarkMode: isDark,
                                 onThemeToggle: widget.onThemeToggle,
                               ),

@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/api_service.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
-import '../../../social/presentation/pages/squad_chat_screen.dart';
+import '../../../social/presentation/pages/trip_chat_live_screen.dart';
 
 class FriendPresencePanel extends StatefulWidget {
   final bool isDarkMode;
@@ -24,6 +24,7 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
   List<Map<String, dynamic>> _members = [];
   bool _isLoading = true;
   String _tripName = '';
+  String? _tripId;
 
   static IconData _vibeIcon(String vibe) {
     switch (vibe) {
@@ -65,6 +66,7 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
         final raw = data['members'] as List<dynamic>;
         setState(() {
           _tripName = data['tripName'] as String? ?? '';
+          _tripId = data['tripId'] as String?;
           _members = raw.map((m) {
             final map = m as Map<String, dynamic>;
             final name = (map['name'] as String? ?? '?');
@@ -189,13 +191,18 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                     return Padding(
                       padding: const EdgeInsets.only(right: 18),
                       child: GestureDetector(
+                        // Mở chat THẬT của chuyến. Trước đây chỗ này mở
+                        // `SquadChatScreen` — một màn demo với tin nhắn và người
+                        // gửi bịa, không nối với chat_repository nào.
                         onTap: () {
+                          final tripId = _tripId;
+                          if (tripId == null) return;
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SquadChatScreen(
+                              builder: (context) => TripChatLiveScreen(
+                                tripId: tripId,
                                 isDarkMode: widget.isDarkMode,
-                                onThemeToggle: widget.onThemeToggle,
                               ),
                             ),
                           );
