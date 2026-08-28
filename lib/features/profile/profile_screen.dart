@@ -1,6 +1,9 @@
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+
+import '../moments/data/moments_repository.dart';
+import '../moments/presentation/pages/memory_wall_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/app_messenger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1636,40 +1639,58 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           ),
                           const SizedBox(height: 16),
 
-                          // Row showing two beautiful tilted polaroids
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Expanded(
-                                child: Transform.rotate(
-                                  angle: -0.04, // -2 degrees
-                                  child: _buildPolaroidCard(
-                                    imageUrl: 'assets/images/polaroid_bkk.webp',
-                                    caption: 'BKK Night out 🇹🇭',
-                                    onTap: () => showGlobalSnack(
-                                      'Tính năng đang được hoàn thiện 🚧',
-                                    ),
-                                    surfaceColor: surfaceColor,
-                                    textPrimary: textPrimaryColor,
+                          // Kỷ niệm THẬT của user.
+                          //
+                          // Trước đây đây là 2 tấm polaroid cứng ("BKK Night
+                          // out 🇹🇭", "Seoul Searching 🇰🇷") kèm ảnh asset —
+                          // ai mở profile cũng thấy mình từng đi Bangkok và
+                          // Seoul — và chạm vào chỉ hiện "đang hoàn thiện".
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final moments = ref
+                                  .watch(recentMomentsProvider)
+                                  .maybeWhen(
+                                    data: (m) => m.take(2).toList(),
+                                    orElse: () => const <RecentMoment>[],
+                                  );
+                              if (moments.isEmpty) {
+                                return Text(
+                                  'profile.memories_empty'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 13,
+                                    color: textSecondaryColor,
                                   ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Transform.rotate(
-                                  angle: 0.05, // 3 degrees
-                                  child: _buildPolaroidCard(
-                                    imageUrl: 'assets/images/polaroid_seoul.webp',
-                                    caption: 'Seoul Searching 🇰🇷',
-                                    onTap: () => showGlobalSnack(
-                                      'Tính năng đang được hoàn thiện 🚧',
+                                );
+                              }
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  for (var i = 0; i < moments.length; i++) ...[
+                                    if (i > 0) const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Transform.rotate(
+                                        angle: i.isEven ? -0.04 : 0.05,
+                                        child: _buildPolaroidCard(
+                                          imageUrl: moments[i].mediaUrl,
+                                          caption: moments[i].title,
+                                          onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => MemoryWallScreen(
+                                                isDarkMode: isDark,
+                                                onThemeToggle: () {},
+                                              ),
+                                            ),
+                                          ),
+                                          surfaceColor: surfaceColor,
+                                          textPrimary: textPrimaryColor,
+                                        ),
+                                      ),
                                     ),
-                                    surfaceColor: surfaceColor,
-                                    textPrimary: textPrimaryColor,
-                                  ),
-                                ),
-                              ),
-                            ],
+                                  ],
+                                ],
+                              );
+                            },
                           ),
 
                           const SizedBox(height: 36),
