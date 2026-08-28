@@ -44,7 +44,11 @@ class DailyForecast {
 class WeatherService {
   final Dio _dio = Dio();
 
-  Future<WeatherData> fetchWeather(double lat, double lng) async {
+  /// `null` khi không lấy được thời tiết.
+  ///
+  /// Trước đây nhánh lỗi trả về 22°C + "mây rải rác" cứng, nên mất mạng
+  /// hay API hỏng thì người dùng vẫn thấy một con số như thật.
+  Future<WeatherData?> fetchWeather(double lat, double lng) async {
     try {
       final response = await _dio.get(
         'https://api.open-meteo.com/v1/forecast',
@@ -107,25 +111,8 @@ class WeatherService {
       );
     } catch (e) {
       debugPrint('Failed to fetch weather from Open-Meteo: $e');
-      // Fallback data
-      return WeatherData(
-        temp: 22.0,
-        description: 'weather.cond_scattered_clouds'.tr(),
-        icon: Icons.cloud_queue_outlined,
-        color: GenZTokens.lilac,
-        details: 'weather.unavailable'.tr(),
-        daily: List.generate(
-          16,
-          (index) => DailyForecast(
-            date: DateTime.now().add(Duration(days: index)),
-            minTemp: 18.0,
-            maxTemp: 24.0,
-            description: 'weather.cond_scattered_clouds'.tr(),
-            icon: Icons.cloud_queue_outlined,
-            color: GenZTokens.lilac,
-          ),
-        ),
-      );
+      // Không bịa số liệu: UI sẽ hiện trạng thái "chưa lấy được".
+      return null;
     }
   }
 
@@ -164,7 +151,7 @@ final weatherServiceProvider = Provider<WeatherService>((ref) {
 });
 
 // Weather State Notifier
-class WeatherStateNotifier extends StateNotifier<AsyncValue<WeatherData>> {
+class WeatherStateNotifier extends StateNotifier<AsyncValue<WeatherData?>> {
   final WeatherService _service;
   WeatherStateNotifier(this._service) : super(const AsyncValue.loading());
 
@@ -179,10 +166,12 @@ class WeatherStateNotifier extends StateNotifier<AsyncValue<WeatherData>> {
   }
 }
 
-final weatherProvider = StateNotifierProvider<WeatherStateNotifier, AsyncValue<WeatherData>>((ref) {
+final weatherProvider =
+    StateNotifierProvider<WeatherStateNotifier, AsyncValue<WeatherData?>>((ref) {
   return WeatherStateNotifier(ref.watch(weatherServiceProvider));
 });
 
-final weatherFutureProvider = FutureProvider.family<WeatherData, LatLng>((ref, latLng) async {
+final weatherFutureProvider =
+    FutureProvider.family<WeatherData?, LatLng>((ref, latLng) async {
   return ref.watch(weatherServiceProvider).fetchWeather(latLng.latitude, latLng.longitude);
 });

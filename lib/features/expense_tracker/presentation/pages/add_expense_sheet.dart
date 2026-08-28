@@ -222,6 +222,10 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                 child: TextField(
                   controller: _amount,
                   keyboardType: TextInputType.number,
+                  // `keyboardType` chỉ GỢI Ý bàn phím số — người dùng vẫn gõ
+                  // được chữ (bàn phím vật lý, dán, bộ gõ khác). Không lọc thì
+                  // số tiền như "2500003LauGaLaE" lọt vào và parse ra null.
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   style: AppFonts.heading(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,

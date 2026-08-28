@@ -816,6 +816,10 @@ class TripReservationsScreen extends ConsumerWidget {
         controller: c,
         autofocus: autofocus,
         keyboardType: number ? TextInputType.number : TextInputType.text,
+        // Lọc chữ khi ô ấy là ô số — keyboardType chỉ gợi ý bàn phím.
+        inputFormatters: number
+            ? [FilteringTextInputFormatter.digitsOnly]
+            : null,
         style: AppFonts.body(color: _textPri),
         decoration: InputDecoration(
           hintText: hint,

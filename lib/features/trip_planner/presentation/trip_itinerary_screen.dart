@@ -63,6 +63,8 @@ class TripItineraryScreen extends ConsumerWidget {
                       child: TextField(
                         controller: dayCtrl,
                         keyboardType: TextInputType.number,
+                        // keyboardType chỉ gợi ý bàn phím — vẫn dán/gõ được chữ nếu không lọc.
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         style: AppFonts.body(color: _textPri),
                         decoration: InputDecoration(
                           labelText: 'itinerary.day_label'.tr(),

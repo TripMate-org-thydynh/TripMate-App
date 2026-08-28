@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -495,6 +496,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       child: TextField(
         controller: c,
         keyboardType: number ? TextInputType.number : TextInputType.text,
+        // Lọc chữ khi ô ấy là ô số — keyboardType chỉ gợi ý bàn phím.
+        inputFormatters: number
+            ? [FilteringTextInputFormatter.digitsOnly]
+            : null,
         style: AppFonts.body(color: textPrimary, fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,

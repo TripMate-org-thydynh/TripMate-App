@@ -1,62 +1,53 @@
 import 'package:flutter/material.dart';
+import '../../data/home_feed_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../../../core/api_service.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
 
-class DailyRecapWidget extends StatefulWidget {
+/// Recap hoạt động trong ngày của squad.
+///
+/// Trước đây widget tự gọi API một lần trong `initState`. Màn Home nằm trong
+/// `IndexedStack` nên widget không bao giờ dựng lại — thêm chi tiêu hay điểm
+/// lịch trình xong quay về vẫn thấy "Chưa có hoạt động nào". Nay dùng chung
+/// `squadActivitiesProvider` với marquee và Live Updates, được invalidate sau
+/// mọi thao tác.
+class DailyRecapWidget extends ConsumerWidget {
   const DailyRecapWidget({super.key});
 
   @override
-  State<DailyRecapWidget> createState() => _DailyRecapWidgetState();
-}
-
-class _DailyRecapWidgetState extends State<DailyRecapWidget> {
-  List<Map<String, dynamic>> _activities = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchActivities();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(squadActivitiesProvider);
+    final activities = async.maybeWhen(
+      data: (items) => items
+          .take(6)
+          .map((a) => {
+                'title': _activityTitle(a.type),
+                'time': a.tripName,
+                'chaosVibe': _activityVibe(a.type),
+                'details': a.label,
+                'colorHex': _colorFor(a.type),
+              })
+          .toList(),
+      orElse: () => const <Map<String, dynamic>>[],
+    );
+    final isLoading = async.isLoading;
+    return _buildBody(context, activities, isLoading);
   }
 
-  Future<void> _fetchActivities() async {
-    final data = await ApiService.get('/dashboard/recent-activities');
-    if (mounted) {
-      if (data != null && data['activities'] != null) {
-        final raw = data['activities'] as List<dynamic>;
-        final colors = [
-          0xFFF5822B,
-          0xFF3D8BFF,
-          0xFF1FA85C,
-          0xFFFFD84D,
-          0xFF8B4DE8,
-          0xFFD8422B,
-        ];
-        setState(() {
-          _activities = raw.asMap().entries.map((entry) {
-            final i = entry.key;
-            final a = entry.value as Map<String, dynamic>;
-            return {
-              'title': _activityTitle(a['type'] as String? ?? ''),
-              'time': _formatTime(a['createdAt'] as String? ?? ''),
-              'chaosVibe': _activityVibe(a['type'] as String? ?? ''),
-              'details': a['description'] as String? ?? '',
-              'colorHex': colors[i % colors.length],
-            };
-          }).toList();
-          _isLoading = false;
-        });
-      } else {
-        // Chưa có hoạt động nào → danh sách rỗng (widget đã có empty state).
-        // Trước đây nhánh này đổ vào 3 hoạt động bịa ("Pranked Phú Khang",
-        // "Minh Nhật devoured 5 plates of skewers"...) cho mọi tài khoản.
-        setState(() {
-          _activities = const [];
-          _isLoading = false;
-        });
-      }
+  /// Màu viền theo loại hoạt động — giữ bảng màu brutalist của app.
+  int _colorFor(String type) {
+    switch (type) {
+      case 'EXPENSE_ADDED':
+        return 0xFF1FA85C;
+      case 'MOMENT_SHARED':
+        return 0xFF8B4DE8;
+      case 'ITINERARY_ADDED':
+        return 0xFF3D8BFF;
+      case 'POLL_CREATED':
+        return 0xFFD6248C;
+      default:
+        return 0xFFF5822B;
     }
   }
 
@@ -96,21 +87,12 @@ class _DailyRecapWidgetState extends State<DailyRecapWidget> {
     }
   }
 
-  String _formatTime(String isoStr) {
-    try {
-      final dt = DateTime.parse(isoStr).toLocal();
-      final now = DateTime.now();
-      final diff = now.difference(dt);
-      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-      if (diff.inHours < 24) return '${diff.inHours}h ago';
-      return '${diff.inDays}d ago';
-    } catch (_) {
-      return 'recently';
-    }
-  }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildBody(
+    BuildContext context,
+    List<Map<String, dynamic>> activities,
+    bool isLoading,
+  ) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
@@ -133,7 +115,7 @@ class _DailyRecapWidgetState extends State<DailyRecapWidget> {
         const SizedBox(height: 12),
         SizedBox(
           height: 140,
-          child: _isLoading
+          child: isLoading
               ? Center(
                   child: SizedBox(
                     width: 24,
@@ -146,7 +128,7 @@ class _DailyRecapWidgetState extends State<DailyRecapWidget> {
                     ),
                   ),
                 )
-              : _activities.isEmpty
+              : activities.isEmpty
                   ? Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -203,9 +185,9 @@ class _DailyRecapWidgetState extends State<DailyRecapWidget> {
                   : ListView.builder(
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
-                      itemCount: _activities.length,
+                      itemCount: activities.length,
                       itemBuilder: (context, index) {
-                        final item = _activities[index];
+                        final item = activities[index];
                         final themeColor = Color(item['colorHex'] as int);
 
                         return Container(

@@ -428,6 +428,8 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                 child: TextField(
                   controller: _budget,
                   keyboardType: TextInputType.number,
+                  // keyboardType chỉ gợi ý bàn phím — vẫn dán/gõ được chữ nếu không lọc.
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   style: AppFonts.body(color: _textPri, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'vd: 3000000',

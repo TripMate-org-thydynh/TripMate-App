@@ -313,17 +313,33 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                PillTag(
-                  text: _isLoadingWeather ? '-- °C' : '${_weatherData?.temp.toStringAsFixed(0)}°C',
-                  icon: Icons.thermostat_outlined,
-                  color: GenZTokens.lilac,
-                ),
-                const SizedBox(height: 6),
-                PillTag(
-                  text: _isLoadingWeather ? 'dashboard.loading'.tr() : '${_weatherData?.description}',
-                  icon: _weatherData?.icon ?? Icons.wb_cloudy_outlined,
-                  color: _weatherData?.color ?? GenZTokens.yellow,
-                ),
+                // Chỉ hiện số liệu khi THẬT SỰ có dữ liệu. Trước đây gọi API
+                // thất bại vẫn hiện "22°C · mây rải rác" từ fallback cứng.
+                if (_isLoadingWeather) ...[
+                  const PillTag(
+                    text: '-- °C',
+                    icon: Icons.thermostat_outlined,
+                    color: GenZTokens.lilac,
+                  ),
+                  const SizedBox(height: 6),
+                  PillTag(
+                    text: 'dashboard.loading'.tr(),
+                    icon: Icons.wb_cloudy_outlined,
+                    color: GenZTokens.yellow,
+                  ),
+                ] else if (_weatherData != null) ...[
+                  PillTag(
+                    text: '${_weatherData!.temp.toStringAsFixed(0)}°C',
+                    icon: Icons.thermostat_outlined,
+                    color: GenZTokens.lilac,
+                  ),
+                  const SizedBox(height: 6),
+                  PillTag(
+                    text: _weatherData!.description,
+                    icon: _weatherData!.icon,
+                    color: _weatherData!.color,
+                  ),
+                ],
               ],
             ),
           ),

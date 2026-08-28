@@ -4,6 +4,7 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -1127,6 +1128,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 child: TextField(
                   controller: _otpController,
                   keyboardType: TextInputType.number,
+                  // keyboardType chỉ gợi ý bàn phím — vẫn dán/gõ được chữ nếu không lọc.
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   maxLength: 4,
                   autofocus: true,
                   showCursor: false,
