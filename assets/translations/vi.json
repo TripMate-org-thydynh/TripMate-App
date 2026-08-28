@@ -31,6 +31,10 @@
     "mood_title": "Tâm trạng squad 🎭",
     "personality_empty": "AI chưa có gì để phân tích. Thêm thành viên và vài khoản chi rồi quay lại nha!",
     "personality_title": "Phân tích tính cách squad 🎭",
+    "prompt_copied": "Đã chép câu lệnh, dán vào Matey AI nha!",
+    "prompts_empty": "Chưa có câu lệnh gợi ý nào.",
+    "prompts_title": "Câu lệnh gợi ý 💡",
+    "queue_title": "Hàng chờ AI ⚙️",
     "timeline_empty": "AI chưa đề xuất được gì. Thêm mô tả và ngày cho chuyến rồi thử lại nha!",
     "timeline_title": "Hành trình gợi ý 🕒"
   },

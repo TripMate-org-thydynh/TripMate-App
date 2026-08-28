@@ -99,3 +99,76 @@ final aiTimelineProvider =
           .map((e) => SuggestedActivity.fromJson(e.cast<String, dynamic>()))
           .toList();
     });
+
+/// Một yêu cầu AI của chính user trong hàng chờ.
+class AiQueueItem {
+  final String id;
+  final String task;
+  final String type;
+  final String status;
+  final int progress;
+  final DateTime? createdAt;
+
+  const AiQueueItem({
+    required this.id,
+    required this.task,
+    required this.type,
+    required this.status,
+    required this.progress,
+    this.createdAt,
+  });
+
+  bool get isDone => status == 'COMPLETED';
+  bool get isFailed => status == 'FAILED';
+
+  factory AiQueueItem.fromJson(Map<String, dynamic> json) => AiQueueItem(
+    id: json['id'] as String? ?? '',
+    task: json['task'] as String? ?? '',
+    type: json['type'] as String? ?? '',
+    status: json['status'] as String? ?? '',
+    progress: (json['progress'] as num?)?.toInt() ?? 0,
+    createdAt: DateTime.tryParse(json['createdAt'] as String? ?? ''),
+  );
+}
+
+final aiQueueProvider = FutureProvider<List<AiQueueItem>>((ref) async {
+  final data = await ref
+      .watch(apiClientProvider)
+      .getData('/ai/generation-queue');
+  if (data is! List) return const [];
+  return data
+      .whereType<Map>()
+      .map((e) => AiQueueItem.fromJson(e.cast<String, dynamic>()))
+      .toList();
+});
+
+/// Câu lệnh AI gợi ý sẵn (danh mục do team soạn, không phải do user lưu).
+class SuggestedPrompt {
+  final String id;
+  final String title;
+  final String prompt;
+
+  const SuggestedPrompt({
+    required this.id,
+    required this.title,
+    required this.prompt,
+  });
+
+  factory SuggestedPrompt.fromJson(Map<String, dynamic> json) =>
+      SuggestedPrompt(
+        id: json['id'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+        prompt: json['prompt'] as String? ?? '',
+      );
+}
+
+final suggestedPromptsProvider = FutureProvider<List<SuggestedPrompt>>((
+  ref,
+) async {
+  final data = await ref.watch(apiClientProvider).getData('/ai/saved-prompts');
+  if (data is! List) return const [];
+  return data
+      .whereType<Map>()
+      .map((e) => SuggestedPrompt.fromJson(e.cast<String, dynamic>()))
+      .toList();
+});
