@@ -8,7 +8,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'ai_memory_sorting_screen.dart';
-import 'share_chaos_export_screen.dart';
 import 'ai_caption_generator_screen.dart';
 import 'trip_recap_reel_screen.dart';
 import '../../../discovery/presentation/pages/photo_map_screen.dart';
@@ -794,25 +793,6 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (c) => AICaptionGeneratorScreen(
-                                isDarkMode: isDark,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
-                        icon: Icons.share_outlined,
-                        title: 'Export Chaos',
-                        desc: 'TikTok / Reels clips',
-                        color: Colors.lightGreenAccent,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => ShareChaosExportScreen(
                                 isDarkMode: isDark,
                                 onThemeToggle: widget.onThemeToggle,
                               ),

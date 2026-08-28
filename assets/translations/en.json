@@ -471,6 +471,8 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "photo_map_empty_body": "Post a moment with a location so the squad can see the route on the map.",
+    "photo_map_empty_title": "No geotagged photos yet",
     "wall_empty": "Your memory wall is empty. Post your first moment from a trip!"
   },
   "nav": {

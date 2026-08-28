@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/app_messenger.dart';
+import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/expenses_repository.dart';
 
@@ -94,7 +98,12 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
       }
     } catch (e) {
       if (mounted) {
-        showGlobalSnack('Không thể quét hóa đơn. Vui lòng thử lại!', isError: true);
+        // Hiện đúng lý do BE trả về (AI hết quota, ảnh mờ...) thay vì một câu
+        // chung chung khiến người dùng cứ bấm lại mãi.
+        showGlobalSnack(
+          e is ApiException ? e.message : 'Không thể quét hóa đơn. Thử lại nhé!',
+          isError: true,
+        );
         setState(() {
           _isSelecting = true;
           _isScanning = false;
@@ -180,7 +189,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           ),
           const SizedBox(height: 32),
           Text(
-            'HÓA ĐƠN GẦN ĐÂY',
+            'CHỌN ẢNH HÓA ĐƠN',
             style: AppFonts.heading(
               fontWeight: FontWeight.w900,
               fontSize: 13,
@@ -189,45 +198,64 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             ),
           ),
           const SizedBox(height: 12),
-          Expanded(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              children: [
-                _receiptTile(
-                  title: 'Lẩu gà lá é Tao Ngộ 🍜',
-                  subtitle: 'Đà Lạt • 12/07/2026',
-                  mockUrl: 'https://images.unsplash.com/photo-1552566626-52f8b828add9',
-                  cardBg: cardBg,
-                  textPrimary: textPrimary,
-                  textSecondary: textSecondary,
-                ),
-                const SizedBox(height: 16),
-                _receiptTile(
-                  title: 'Cafe Xe Cổ Đà Lạt ☕',
-                  subtitle: 'Đèo Mimosa • 12/07/2026',
-                  mockUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb',
-                  cardBg: cardBg,
-                  textPrimary: textPrimary,
-                  textSecondary: textSecondary,
-                ),
-              ],
-            ),
+          // Trước đây chỗ này là 2 hoá đơn demo cứng (ảnh món ăn trên Unsplash),
+          // nên "quét hoá đơn" không bao giờ đọc được hoá đơn của người dùng.
+          _sourceTile(
+            icon: Icons.photo_camera_outlined,
+            title: 'Chụp hoá đơn',
+            subtitle: 'Mở máy ảnh và chụp trực tiếp',
+            source: ImageSource.camera,
+            cardBg: cardBg,
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
           ),
+          const SizedBox(height: 16),
+          _sourceTile(
+            icon: Icons.photo_library_outlined,
+            title: 'Chọn từ thư viện',
+            subtitle: 'Lấy ảnh hoá đơn đã lưu trong máy',
+            source: ImageSource.gallery,
+            cardBg: cardBg,
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+          ),
+          const Spacer(),
         ],
       ),
     );
   }
 
-  Widget _receiptTile({
+  /// Đọc ảnh người dùng chọn rồi gửi base64 lên `/expenses/ocr`.
+  ///
+  /// BE nhận cả URL lẫn chuỗi base64 (`data:image/...`), nên không cần upload
+  /// file trung gian.
+  Future<void> _pickAndScan(ImageSource source) async {
+    final XFile? file = await ImagePicker().pickImage(
+      source: source,
+      // Nén bớt: ảnh gốc 12MP làm payload phình to mà OCR không cần.
+      maxWidth: 1600,
+      imageQuality: 85,
+    );
+    if (file == null || !mounted) return;
+    final bytes = await file.readAsBytes();
+    if (!mounted) return;
+    _startScanning(
+      'Hoá đơn vừa chụp',
+      'data:image/jpeg;base64,${base64Encode(bytes)}',
+    );
+  }
+
+  Widget _sourceTile({
+    required IconData icon,
     required String title,
     required String subtitle,
-    required String mockUrl,
+    required ImageSource source,
     required Color cardBg,
     required Color textPrimary,
     required Color textSecondary,
   }) {
     return GestureDetector(
-      onTap: () => _startScanning(title, mockUrl),
+      onTap: () => _pickAndScan(source),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -238,16 +266,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         ),
         child: Row(
           children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFD84D),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: textPrimary, width: 1.5),
-              ),
-              child: const Icon(Icons.receipt_long, color: GenZTokens.ink),
-            ),
+            Icon(icon, size: 28, color: textPrimary),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -256,23 +275,20 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                   Text(
                     title,
                     style: AppFonts.heading(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
                       fontSize: 15,
                       color: textPrimary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: AppFonts.body(
-                      fontSize: 12,
-                      color: textSecondary,
-                    ),
+                    style: AppFonts.body(fontSize: 12.5, color: textSecondary),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: textPrimary),
+            Icon(Icons.chevron_right, color: textSecondary),
           ],
         ),
       ),

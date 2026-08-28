@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/state_views.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../../../core/network/error_message.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../moments/application/moments_providers.dart';
 import '../../../moments/domain/moment.dart';
@@ -56,45 +56,29 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
       ),
       body: momentsAsync.when(
         loading: () => Center(child: CircularProgressIndicator(color: _ink)),
-        error: (err, stack) => Center(
-          child: Text(
-            'Lỗi tải bản đồ ảnh: ${friendlyError(err)}',
-            style: AppFonts.body(color: _ink),
-          ),
+        error: (err, _) => AppErrorState(
+          isDark: widget.isDarkMode,
+          error: err,
+          onRetry: () => ref.invalidate(momentsProvider(widget.tripId)),
         ),
         data: (moments) {
-          // Filter moments with GPS coordinates
-          final gpsMoments = moments.where((m) => m.latitude != null && m.longitude != null).toList();
+          // Chỉ ghim khoảnh khắc CÓ toạ độ thật.
+          //
+          // Trước đây nhánh rỗng đổ vào 2 khoảnh khắc bịa (Thảo Ly ở Đà Lạt,
+          // Minh Nhật ở The Hill Station Cafe) kèm ảnh Unsplash — nên chuyến
+          // chưa đăng ảnh nào vẫn thấy bản đồ có người, tưởng là dữ liệu mình.
+          final displayMoments = moments
+              .where((m) => m.latitude != null && m.longitude != null)
+              .toList();
 
-          // Fallback static mock moments with GPS if database is currently empty
-          final displayMoments = gpsMoments.isNotEmpty
-              ? gpsMoments
-              : [
-                  Moment(
-                    id: 'mock-1',
-                    mediaUrl: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600',
-                    type: 'PHOTO',
-                    caption: 'Chụp hình sương sương Đà Lạt view đỉnh chóp ⛰️',
-                    authorName: 'Thảo Ly',
-                    authorAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB244M5yGCCxo4CnE1QbSwnOgbUvLW0EYlAQHgrIJaM_f_Nu4zoOioIRa_1hxA549ndJTO19XGaIGmsMVvXB0qfI2kQ28fTEAlImfIqK-8BkfrCrvA2yNCnpVqf2-SXr9-knPAtaoF5QKwxyZNaeD4lf569BT6Q0m_UTmBtw1Guj-hcrK4fYFSKLtDslymGQQxRESbhDogyXt8YneAyg--MnXiqhJBPMkTnWhIvNgcEeaN34P8fdWHmc1QttIe7PZi7wg0fbzf29Wq-',
-                    createdAt: DateTime.now().subtract(const Duration(hours: 3)),
-                    latitude: 11.9406,
-                    longitude: 108.4452,
-                    placeName: 'Đà Lạt',
-                  ),
-                  Moment(
-                    id: 'mock-2',
-                    mediaUrl: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=600',
-                    type: 'PHOTO',
-                    caption: 'Cafe chill tối siêu đẹp luôn mọi người ui ☕',
-                    authorName: 'Minh Nhật',
-                    authorAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB60ii0WkYusRAogyP7WxQ6KtCLjpi-fZazA3b7Hw_63SE76TTaTSYBlGn5gz8shuvpPAQIiS1UiyYmdWSciccncnq4y_m76yf0y7FTRLIYWSFqV6rjgfiwk7yPJT1DP-0RIcQ92w1a_TJZ281zFnle8zoP2y4vSggh1V1sYoi_mp4oIvRRWKhZeqIQ3rx4KJ2qUyQyZPN_fPGpu7_5Uv7xWk9Msa1Q5oU5bN8eEMtm6hEIIOo4lp4ye_DjDeIhgchKeWqQODMJtOT3',
-                    createdAt: DateTime.now().subtract(const Duration(hours: 1)),
-                    latitude: 11.9450,
-                    longitude: 108.4380,
-                    placeName: 'The Hill Station Cafe',
-                  ),
-                ];
+          if (displayMoments.isEmpty) {
+            return AppEmptyState(
+              isDark: widget.isDarkMode,
+              icon: Icons.map_outlined,
+              title: 'moments.photo_map_empty_title'.tr(),
+              body: 'moments.photo_map_empty_body'.tr(),
+            );
+          }
 
           final LatLng center = displayMoments.isNotEmpty
               ? LatLng(displayMoments.first.latitude!, displayMoments.first.longitude!)

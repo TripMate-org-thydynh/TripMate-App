@@ -471,6 +471,8 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "photo_map_empty_body": "Đăng khoảnh khắc kèm vị trí để cả nhóm thấy hành trình trên bản đồ.",
+    "photo_map_empty_title": "Chưa có ảnh nào gắn vị trí",
     "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!"
   },
   "nav": {
