@@ -250,6 +250,18 @@
     "who_pays_wheel": "Who Pays Wheel 🎮"
   },
   "games": {
+    "award_mvp": "Trip MVP 🏆",
+    "award_mvp_desc": "{count} XP contributed",
+    "award_photographer": "Squad photographer 📸",
+    "award_photographer_desc": "{count} moments posted",
+    "award_planner": "Trip architect 🗺️",
+    "award_planner_desc": "Added {count} stops",
+    "award_scribe": "Squad scribe 📝",
+    "award_scribe_desc": "Wrote {count} notes",
+    "award_sponsor": "The sponsor 💸",
+    "award_sponsor_desc": "Fronted {count} expenses",
+    "awards_empty_body": "Post moments, log expenses or plan stops so the squad has something to celebrate!",
+    "awards_empty_title": "No awards yet",
     "challenge_done": "Completed",
     "challenge_season_autumn_desc": "Post 10 moments this autumn",
     "challenge_season_autumn_title": "Autumn leaves 🍂",
@@ -279,6 +291,10 @@
     "reward_xp": "+{xp} XP",
     "seasonal_title": "Seasonal events 🎏",
     "weekly_title": "Weekly challenges ⚡",
+    "wheel_bubble_left": "please not me 😭",
+    "wheel_bubble_right": "my wallet is empty 💸",
+    "wheel_need_squad_body": "Invite friends to the trip, then spin to see who pays!",
+    "wheel_need_squad_title": "Need more players",
     "xp_breakdown": "Where the XP came from",
     "xp_source_expense": "Expenses",
     "xp_source_game": "Mini games",
@@ -440,6 +456,9 @@
     "no_updates": "No activity yet. Start planning or post a moment!",
     "shake_to_boost": "Shake to Boost Vibe!",
     "squad_energy": "Squad Energy"
+  },
+  "moments": {
+    "wall_empty": "Your memory wall is empty. Post your first moment from a trip!"
   },
   "notes": {
     "delete_confirm": "Delete this note?",

@@ -17,7 +17,7 @@ import 'pages/profile_statistics_screen.dart';
 import 'pages/public_profile_screen.dart';
 import 'pages/shared_trips_history_screen.dart';
 import 'pages/social_links_manager_screen.dart';
-import 'pages/squad_reputation_screen.dart';
+import '../gamification/pages/squad_leaderboard_screen.dart';
 import 'pages/sticker_store_screen.dart';
 import 'pages/theme_marketplace_screen.dart';
 import 'pages/travel_atlas_screen.dart';
@@ -215,7 +215,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const SquadReputationScreen(),
+                  // Trỏ sang bảng xếp hạng THẬT. Màn "Squad Reputation" cũ là
+                  // một báo cáo tính cách bịa hoàn toàn (MVP mang tên người
+                  // không có trong nhóm, "Over-Caffeination Risk 85%"...) và
+                  // không có nguồn dữ liệu nào ở backend.
+                  builder: (context) => const SquadLeaderboardScreen(),
                 ),
               );
             },

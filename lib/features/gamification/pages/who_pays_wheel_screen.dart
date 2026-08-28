@@ -1,6 +1,14 @@
 import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import '../widgets/game_state_views.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+// Chỉ lấy `.tr()`: easy_localization re-export intl, gây va chạm
+// `TextDirection` với dart:ui dùng trong CustomPainter bên dưới.
+import 'package:easy_localization/easy_localization.dart' show tr;
+import '../../dashboard/data/home_feed_repository.dart';
+import '../data/games_repository.dart';
+import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/app_messenger.dart';
@@ -17,25 +25,6 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _spinController;
   late Animation<double> _spinAnimation;
-
-  final List<Map<String, String>> _participants = [
-    {
-      'name': 'Minh Nhật',
-      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nhat',
-    },
-    {
-      'name': 'Thảo Ly',
-      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ly',
-    },
-    {
-      'name': 'Nam Trung',
-      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Trung',
-    },
-    {
-      'name': 'Duy Khang',
-      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Khang',
-    },
-  ];
 
   List<Map<String, String>> _currentParticipants = [];
   int _winnerIndex = -1;
@@ -79,7 +68,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     ).animate(_spinController);
 
     _spinAnimation.addListener(() {
-      if (_currentParticipants.isEmpty) return;
+      if (_currentParticipants.length < 2) return;
       final sectorAngle = (2 * pi) / _currentParticipants.length;
       final currentRotation = _spinAnimation.value;
       if ((currentRotation - _lastTickRotation).abs() >= sectorAngle) {
@@ -111,7 +100,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
   }
 
   void _spin() {
-    if (_isSpinning || _currentParticipants.isEmpty) return;
+    if (_isSpinning || _currentParticipants.length < 2) return;
     setState(() {
       _isSpinning = true;
       _winnerIndex = -1;
@@ -132,8 +121,29 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     _spinController.forward();
   }
 
+  /// Ghi lại ván quay thành một game session.
+  ///
+  /// Nhờ vậy trò chơi đóng góp vào XP của squad và xuất hiện trong feed
+  /// hoạt động — trước đây quay xong là trôi mất, không để lại dấu vết nào.
+  Future<void> _recordSpin(String winnerName) async {
+    final tripId = ref.read(activeTripIdProvider);
+    if (tripId == null) return;
+    try {
+      await ref.read(gamesRepositoryProvider).createSession(
+        tripId,
+        gameType: 'SPIN_WHEEL',
+        state: {'winner': winnerName, 'players': _currentParticipants.length},
+      );
+      ref.invalidate(squadXpProvider(tripId));
+      ref.invalidate(squadActivitiesProvider);
+    } catch (_) {
+      // Không chặn trải nghiệm chơi nếu ghi nhận thất bại.
+    }
+  }
+
   void _showChaosPayerDialog() {
     final winner = _currentParticipants[_winnerIndex];
+    unawaited(_recordSpin(winner['name'] ?? ''));
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
@@ -243,21 +253,44 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
   @override
   Widget build(BuildContext context) {
     final tripsAsync = ref.watch(tripsProvider);
+    // Chỉ quay trên thành viên THẬT của chuyến. Trước đây khi chưa có chuyến,
+    // bánh xe rơi về 4 người bịa (Minh Nhật / Thảo Ly / Nam Trung / Duy Khang)
+    // — quay ra một người không tồn tại thì trò chơi vô nghĩa.
     _currentParticipants = tripsAsync.maybeWhen(
       data: (trips) {
-        if (trips.isNotEmpty && trips.first.members.isNotEmpty) {
-          return trips.first.members.map((m) => {
-            'name': m.name,
-            'avatar': m.avatarUrl ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=${Uri.encodeComponent(m.name)}',
-          }).toList();
-        }
-        return _participants;
+        if (trips.isEmpty || trips.first.members.isEmpty) return const [];
+        return trips.first.members
+            .map((m) => {'name': m.name, 'avatar': m.avatarUrl ?? ''})
+            .toList();
       },
-      orElse: () => _participants,
+      orElse: () => const [],
     );
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+    // Chưa có chuyến/thành viên thì không có gì để quay — hiện hướng dẫn thay
+    // vì một bánh xe rỗng hoặc (trước đây) bánh xe toàn người bịa.
+    // Quay với 1 người là vô nghĩa (và bánh xe 1 múi hiển thị chữ lộn ngược),
+    // nên yêu cầu tối thiểu 2 thành viên.
+    if (_currentParticipants.length < 2) {
+      return Scaffold(
+        backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+          ),
+        ),
+        body: GameEmptyState(
+          isDark: isDark,
+          icon: Icons.casino_outlined,
+          title: tr('games.wheel_need_squad_title'),
+          body: tr('games.wheel_need_squad_body'),
+        ),
+      );
+    }
 
     // Standard Palette colors
     final Color bgColor = isDark
@@ -368,17 +401,17 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                       children: [
                         // Left bubble: please not me
                         FloatingBubble(
-                          text: "please not me 😭",
+                          text: tr('games.wheel_bubble_left'),
                           top: -12,
-                          left: -16,
+                          left: 4,
                           textColor: const Color(0xFFFB923C),
                           isDark: isDark,
                         ),
                         // Right bubble: my wallet is empty
                         FloatingBubble(
-                          text: "my wallet is empty 💸",
+                          text: tr('games.wheel_bubble_right'),
                           top: 160,
-                          right: -32,
+                          right: 4,
                           textColor: const Color(0xFF1FA85C),
                           isDark: isDark,
                         ),

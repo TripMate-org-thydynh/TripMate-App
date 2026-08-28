@@ -1,8 +1,12 @@
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import '../widgets/game_state_views.dart';
+import '../data/games_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart' show tr;
 import '../../../core/app_messenger.dart';
-class EndTripAwardsScreen extends StatefulWidget {
+class EndTripAwardsScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
@@ -13,53 +17,75 @@ class EndTripAwardsScreen extends StatefulWidget {
   });
 
   @override
-  State<EndTripAwardsScreen> createState() => _EndTripAwardsScreenState();
+  ConsumerState<EndTripAwardsScreen> createState() => _EndTripAwardsScreenState();
 }
 
-class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
+class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     with TickerProviderStateMixin {
   late AnimationController _shimmerController;
   late AnimationController _floatController;
   late Animation<double> _shimmerAnim;
   late Animation<double> _floatAnim;
 
-  final List<Map<String, dynamic>> _awards = const [
-    {
-      'emoji': '🔥',
-      'label': 'Most Chaotic',
-      'winner': 'Minh Nhật',
-      'desc': '"Attempted to pay for Bánh Mì with a crypto wallet 3 times."',
-      'color': Color(0xFFFF6B6B),
-    },
-    {
-      'emoji': '📸',
-      'label': 'Main Character',
-      'winner': 'Thảo Ly',
-      'desc': '428 selfies taken',
-      'color': Color(0xFFC9B8FF),
-    },
-    {
-      'emoji': '💸',
-      'label': 'Biggest Spender',
-      'winner': 'Nam Trung',
-      'desc': 'Spent 42% of budget on coffee',
-      'color': Color(0xFF1FA85C),
-    },
-    {
-      'emoji': '🚕',
-      'label': 'Lost Again',
-      'winner': 'Hoàng',
-      'desc': 'Found in a different district twice',
-      'color': Color(0xFFFFC107),
-    },
-    {
-      'emoji': '😭',
-      'label': 'Emotional Support',
-      'winner': 'Lan',
-      'desc': 'Carried the first aid kit and vibes',
-      'color': Color(0xFF64B5F6),
-    },
-  ];
+  /// Giải thưởng tính từ ĐÓNG GÓP THẬT của từng thành viên.
+  ///
+  /// Trước đây màn này liệt kê 5 giải cứng trao cho Minh Nhật / Thảo Ly /
+  /// Nam Trung / Hoàng / Lan — những người không có trong chuyến.
+  List<Map<String, dynamic>> _buildAwards(List<LeaderboardRow> rows) {
+    if (rows.isEmpty) return const [];
+
+    LeaderboardRow? topBy(int Function(LeaderboardRow) metric) {
+      LeaderboardRow? best;
+      for (final r in rows) {
+        if (metric(r) <= 0) continue;
+        if (best == null || metric(r) > metric(best)) best = r;
+      }
+      return best;
+    }
+
+    final defs = <Map<String, dynamic>>[];
+
+    void add(
+      String emoji,
+      String labelKey,
+      String descKey,
+      Color color,
+      LeaderboardRow? winner,
+      int count,
+    ) {
+      if (winner == null) return;
+      defs.add({
+        'emoji': emoji,
+        'label': tr(labelKey),
+        'winner': winner.name,
+        'desc': tr(descKey, namedArgs: {'count': '$count'}),
+        'color': color,
+      });
+    }
+
+    final photographer = topBy((r) => r.moments);
+    add('📸', 'games.award_photographer', 'games.award_photographer_desc',
+        const Color(0xFFC9B8FF), photographer, photographer?.moments ?? 0);
+
+    final sponsor = topBy((r) => r.expenses);
+    add('💸', 'games.award_sponsor', 'games.award_sponsor_desc',
+        const Color(0xFF1FA85C), sponsor, sponsor?.expenses ?? 0);
+
+    final planner = topBy((r) => r.plans);
+    add('🗺️', 'games.award_planner', 'games.award_planner_desc',
+        const Color(0xFFFFC107), planner, planner?.plans ?? 0);
+
+    final scribe = topBy((r) => r.notes);
+    add('📝', 'games.award_scribe', 'games.award_scribe_desc',
+        const Color(0xFF64B5F6), scribe, scribe?.notes ?? 0);
+
+    // Giải chung cuộc cho người đóng góp nhiều XP nhất.
+    final mvp = rows.first.xp > 0 ? rows.first : null;
+    add('🏆', 'games.award_mvp', 'games.award_mvp_desc',
+        const Color(0xFFFF6B6B), mvp, mvp?.xp ?? 0);
+
+    return defs;
+  }
 
   @override
   void initState() {
@@ -90,6 +116,30 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
+    final tripId = ref.watch(activeTripIdProvider);
+    final rows = tripId == null
+        ? const <LeaderboardRow>[]
+        : ref.watch(leaderboardProvider(tripId)).maybeWhen(
+            data: (r) => r,
+            orElse: () => const <LeaderboardRow>[],
+          );
+    final awards = _buildAwards(rows);
+    if (awards.isEmpty) {
+      return Scaffold(
+        backgroundColor: isDark ? const Color(0xFF0A0A1A) : const Color(0xFFF0F0FF),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
+        ),
+        body: GameEmptyState(
+          isDark: isDark,
+          icon: Icons.emoji_events_outlined,
+          title: tr('games.awards_empty_title'),
+          body: tr('games.awards_empty_body'),
+        ),
+      );
+    }
     final bg = isDark ? const Color(0xFF0A0A1A) : const Color(0xFFF0F0FF);
     final surface = isDark
         ? Colors.white.withValues(alpha: 0.05)
@@ -251,8 +301,8 @@ class _EndTripAwardsScreenState extends State<EndTripAwardsScreen>
                         const SizedBox(height: 28),
 
                         // Award cards
-                        ...List.generate(_awards.length, (index) {
-                          final award = _awards[index];
+                        ...List.generate(awards.length, (index) {
+                          final award = awards[index];
                           return _buildAwardCard(
                             award: award,
                             surface: surface,

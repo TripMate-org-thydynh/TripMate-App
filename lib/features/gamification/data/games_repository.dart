@@ -169,6 +169,19 @@ class GamesRepository {
     return const [];
   }
 
+  /// Ghi lại một ván chơi. Game session được tính vào XP của squad và hiện
+  /// trong feed hoạt động, nên mọi mini game nên gọi hàm này khi kết thúc.
+  Future<void> createSession(
+    String tripId, {
+    required String gameType,
+    required Map<String, dynamic> state,
+  }) async {
+    await _client.postData(_base(tripId), {
+      'gameType': gameType,
+      'initialState': state,
+    });
+  }
+
   Future<List<GameChallenge>> fetchWeekly(String tripId) =>
       _fetchChallenges('${_base(tripId)}/weekly');
 

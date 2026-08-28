@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../data/moments_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -172,102 +174,58 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                     ),
                   ),
 
-                  // Tall Scrapbook scrollable canvas
+                  // Canvas scrapbook — hiển thị KỶ NIỆM THẬT của user.
+                  //
+                  // Trước đây đây là 3 tấm polaroid cứng (ảnh Unsplash, caption và
+                  // tên người bịa) kèm thẻ "Route Progress: 120 / 350 km" — giống
+                  // hệt nhau cho mọi tài khoản, kể cả người chưa đăng gì.
                   Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: SizedBox(
-                        height: 1040,
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            // Polaroid 1 (Quan Ba Pass)
-                            Positioned(
-                              top: 20,
-                              left: 16,
-                              child: _buildPolaroid(
-                                context: context,
-                                imageUrl:
-                                    'https://images.unsplash.com/photo-1623091426177-38e21c322d7d?w=600',
-                                time: '09:42 AM',
-                                caption: 'Climbing Heaven\'s Gate ⛰️',
-                                rotation: -0.04,
-                                badge: _buildStickerBadge(
-                                  "location_on Quan Ba",
-                                  mintColor,
-                                ),
+                    child: Consumer(
+                      builder: (context, ref, _) {
+                        final async = ref.watch(recentMomentsProvider);
+                        return async.when(
+                          loading: () => const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          error: (e, _) => _wallMessage(
+                            context,
+                            tr('errors.load_failed'),
+                            onRetry: () =>
+                                ref.invalidate(recentMomentsProvider),
+                          ),
+                          data: (moments) {
+                            if (moments.isEmpty) {
+                              return _wallMessage(
+                                context,
+                                tr('moments.wall_empty'),
+                              );
+                            }
+                            return SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                              child: Wrap(
+                                spacing: 16,
+                                runSpacing: 20,
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  for (var i = 0; i < moments.length; i++)
+                                    _buildPolaroid(
+                                      context: context,
+                                      imageUrl: moments[i].mediaUrl,
+                                      time: moments[i].authorName,
+                                      caption: moments[i].title,
+                                      rotation: i.isEven ? -0.04 : 0.035,
+                                      badge: _buildStickerBadge(
+                                        moments[i].location,
+                                        i.isEven ? mintColor : Colors.orange,
+                                      ),
+                                    ),
+                                ],
                               ),
-                            ),
-
-                            // Polaroid 2 (Video Loop Path)
-                            Positioned(
-                              top: 60,
-                              right: 16,
-                              child: _buildPolaroid(
-                                context: context,
-                                imageUrl:
-                                    'https://images.unsplash.com/photo-1596422846543-75c6fc18a52b?w=600',
-                                time: '14:20 PM',
-                                caption: 'Chasing the Loop loops 🏍️💨',
-                                rotation: 0.05,
-                                isVideo: true,
-                                videoDuration: '00:15',
-                              ),
-                            ),
-
-                            // AI Memory Vibe
-                            Positioned(
-                              top: 400,
-                              left: 24,
-                              right: 24,
-                              child: _buildAIMemoryVibeCard(
-                                context: context,
-                                text:
-                                    'That morning climb out of Ha Giang: high adrenaline, numb hands, and absolute silence...',
-                              ),
-                            ),
-
-                            // Sticky Quote Paper note
-                            Positioned(
-                              top: 560,
-                              left: 16,
-                              child: _buildStickyNote(
-                                context: context,
-                                quote:
-                                    '"I think I lost feeling in my legs but... worth it."',
-                                author: 'Alex',
-                                rotation: -0.06,
-                              ),
-                            ),
-
-                            // Polaroid 3 (Campfire party)
-                            Positioned(
-                              top: 590,
-                              right: 16,
-                              child: _buildPolaroid(
-                                context: context,
-                                imageUrl:
-                                    'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=600',
-                                time: '22:43 PM',
-                                caption: 'Under local starry skies ✨🏕️',
-                                rotation: 0.03,
-                              ),
-                            ),
-
-                            // Telemetry progress card
-                            Positioned(
-                              top: 880,
-                              left: 20,
-                              right: 20,
-                              child: _buildTelemetryCard(
-                                context: context,
-                                progressText: "Route Progress: 120 / 350 km",
-                                progressPercent: 120 / 350,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -365,6 +323,41 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
   }
 
   // Floating reaction spawner
+  /// Thông báo giữa canvas (chưa có kỷ niệm / tải lỗi).
+  Widget _wallMessage(
+    BuildContext context,
+    String message, {
+    VoidCallback? onRetry,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDark ? Colors.white70 : Colors.black54;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.photo_camera_outlined, size: 40, color: color),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: AppFonts.body(fontSize: 14, color: color, height: 1.4),
+            ),
+            if (onRetry != null) ...[
+              const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh, size: 18),
+                label: Text(tr('general.retry')),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildReactionButton(String emoji, BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -656,306 +649,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
   }
 
   // Frosted AI memory card
-  Widget _buildAIMemoryVibeCard({
-    required BuildContext context,
-    required String text,
-  }) {
-    final isDark = widget.isDarkMode;
-    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: primary.withValues(alpha: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: primary.withValues(alpha: isDark ? 0.25 : 0.1),
-            blurRadius: 0,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(1.5),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(19),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: (isDark
-                  ? const Color(0xFF262019)
-                  : const Color(0xFFFFFDF5)),
-              borderRadius: BorderRadius.circular(19),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.auto_awesome, color: primary, size: 16),
-                    const SizedBox(width: 6),
-                    Text(
-                      "AI Memory Vibe",
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: primary,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  text,
-                  style: AppFonts.heading(
-                    color: isDark
-                        ? const Color(0xFFFDF6D3)
-                        : const Color(0xFF141210),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   // Realistic Quote Sticky note
-  Widget _buildStickyNote({
-    required BuildContext context,
-    required String quote,
-    required String author,
-    double rotation = 0.0,
-  }) {
-    final isDark = widget.isDarkMode;
-    const yellowPaperColor = Color(0xFFF4E4BC);
-
-    return Transform.rotate(
-      angle: rotation,
-      child: Container(
-        width: 160,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: yellowPaperColor,
-          borderRadius: BorderRadius.circular(4),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.12),
-              blurRadius: 0,
-              offset: const Offset(4, 6),
-            ),
-          ],
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // Floating clear tape effect
-            Positioned(
-              top: -20,
-              left: 40,
-              child: Transform.rotate(
-                angle: -0.05,
-                child: Container(
-                  width: 50,
-                  height: 14,
-                  color: Colors.white.withValues(alpha: 0.45),
-                ),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  quote,
-                  style: GoogleFonts.caveat(
-                    color: const Color(0xFF3A2818),
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Text(
-                    "- $author",
-                    style: GoogleFonts.caveat(
-                      color: const Color(0xFF3A2818).withValues(alpha: 0.7),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   // Telemetry Progress Card builder
-  Widget _buildTelemetryCard({
-    required BuildContext context,
-    required String progressText,
-    required double progressPercent,
-  }) {
-    final isDark = widget.isDarkMode;
-    final textPrimary = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
-    final textSecondary = isDark
-        ? const Color(0xFFB8AE9C)
-        : const Color(0xFF4A453E);
-    final surfaceColor = isDark
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: textPrimary, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
-            blurRadius: 0,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.route_outlined,
-                color: Color(0xFFFB923C),
-                size: 16,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                "Route Progress",
-                style: AppFonts.body(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          // Loop Path Segment Illustration
-          Container(
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Stack(
-                children: [
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(14, (index) {
-                        final double waveHeight = sin(index * 0.8) * 12;
-                        return Transform.translate(
-                          offset: Offset(0, waveHeight),
-                          child: Container(
-                            width: 3.5,
-                            height: 3.5,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.35),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                  // Active motorcycle location marker
-                  Positioned(
-                    left: 70,
-                    top: 25 + sin(3.5 * 0.8) * 12,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF1FA85C),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xFF1FA85C),
-                            blurRadius: 0,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          // Bar metrics
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                progressText,
-                style: AppFonts.heading(
-                  color: textSecondary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                "${(progressPercent * 100).toInt()}% Done",
-                style: AppFonts.body(
-                  color: const Color(0xFF1FA85C),
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          // Progress Gradient Track
-          Container(
-            height: 6,
-            decoration: BoxDecoration(
-              color: textPrimary.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(3),
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: FractionallySizedBox(
-                widthFactor: progressPercent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF5822B),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // Frosted bottom sheet Hub menu
   void _showHubMenu(BuildContext context) {

@@ -250,6 +250,18 @@
     "who_pays_wheel": "Vòng Quay Chọn Người Trả 🎮"
   },
   "games": {
+    "award_mvp": "MVP của chuyến 🏆",
+    "award_mvp_desc": "Tổng {count} XP đóng góp",
+    "award_photographer": "Tay máy của squad 📸",
+    "award_photographer_desc": "Đăng {count} khoảnh khắc",
+    "award_planner": "Kiến trúc sư hành trình 🗺️",
+    "award_planner_desc": "Thêm {count} điểm vào lịch trình",
+    "award_scribe": "Thư ký của nhóm 📝",
+    "award_scribe_desc": "Viết {count} ghi chú",
+    "award_sponsor": "Mạnh thường quân 💸",
+    "award_sponsor_desc": "Trả trước {count} khoản chi",
+    "awards_empty_body": "Đăng khoảnh khắc, ghi chi tiêu hay lên lịch trình để cả nhóm có cái mà trao giải!",
+    "awards_empty_title": "Chưa có giải nào",
     "challenge_done": "Hoàn thành",
     "challenge_season_autumn_desc": "Đăng 10 khoảnh khắc mùa thu",
     "challenge_season_autumn_title": "Mùa lá đổ 🍂",
@@ -279,6 +291,10 @@
     "reward_xp": "+{xp} XP",
     "seasonal_title": "Sự kiện theo mùa 🎏",
     "weekly_title": "Nhiệm vụ tuần ⚡",
+    "wheel_bubble_left": "đừng là mình 😭",
+    "wheel_bubble_right": "ví mình trống trơn 💸",
+    "wheel_need_squad_body": "Mời bạn bè vào chuyến rồi quay bánh xe xem ai trả tiền nhé!",
+    "wheel_need_squad_title": "Cần thêm người chơi",
     "xp_breakdown": "XP đến từ đâu",
     "xp_source_expense": "Chi tiêu",
     "xp_source_game": "Mini game",
@@ -440,6 +456,9 @@
     "no_updates": "Chưa có hoạt động nào. Bắt đầu lên lịch trình hoặc đăng khoảnh khắc đi!",
     "shake_to_boost": "Lắc máy để tăng Vibe!",
     "squad_energy": "Squad Energy"
+  },
+  "moments": {
+    "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!"
   },
   "notes": {
     "delete_confirm": "Xóa ghi chú?",
