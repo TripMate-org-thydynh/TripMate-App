@@ -1,70 +1,150 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/widgets/state_views.dart';
+import '../../data/trip_recap_repository.dart';
+
 /// Trip Wrapped — chuỗi story-card tự chạy tổng kết cả chuyến (kiểu Spotify
 /// Wrapped). Tap phải/trái để chuyển, giữ để tạm dừng, card cuối có nút Share.
-class TripRecapReelScreen extends StatefulWidget {
+///
+/// Số liệu lấy từ `/trips/:id/recap`. Trước đây mọi con số đều in cứng — "7 địa
+/// điểm", "142 khoảnh khắc", "186 km", MVP "Thảo Ly", tổng chi 6.020.000đ —
+/// nên chuyến nào mở ra cũng ra một bản Wrapped y hệt.
+class TripRecapReelScreen extends ConsumerWidget {
   final bool isDarkMode;
-  final String tripName;
+  final String tripId;
 
   const TripRecapReelScreen({
     super.key,
     required this.isDarkMode,
-    this.tripName = 'Đà Lạt Chill',
+    required this.tripId,
   });
 
   @override
-  State<TripRecapReelScreen> createState() => _TripRecapReelScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref
+        .watch(tripRecapProvider(tripId))
+        .when(
+          loading: () => const Scaffold(
+            backgroundColor: Colors.black,
+            body: Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+          error: (e, _) => Scaffold(
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+            body: AppErrorState(
+              isDark: isDarkMode,
+              error: e,
+              onRetry: () => ref.invalidate(tripRecapProvider(tripId)),
+            ),
+          ),
+          data: (recap) {
+            if (!recap.hasData) {
+              return Scaffold(
+                backgroundColor: isDarkMode ? Colors.black : Colors.white,
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                ),
+                body: AppEmptyState(
+                  isDark: isDarkMode,
+                  icon: Icons.auto_awesome,
+                  title: 'recap.empty_title'.tr(),
+                  body: 'recap.empty_body'.tr(),
+                ),
+              );
+            }
+            return _RecapReel(recap: recap);
+          },
+        );
+  }
 }
 
-class _TripRecapReelScreenState extends State<TripRecapReelScreen>
+class _RecapReel extends StatefulWidget {
+  final TripRecap recap;
+  const _RecapReel({required this.recap});
+
+  @override
+  State<_RecapReel> createState() => _TripRecapReelScreenState();
+}
+
+class _TripRecapReelScreenState extends State<_RecapReel>
     with SingleTickerProviderStateMixin {
   late final AnimationController _progress;
   int _index = 0;
 
   static const Duration _cardDuration = Duration(milliseconds: 4200);
 
-  late final List<_RecapCard> _cards = [
-    _RecapCard.intro(),
-    _RecapCard.stat(
-      icon: PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-      bigValue: '7',
-      unit: 'địa điểm',
-      caption: 'Cả squad đã check-in 7 chỗ — từ chợ đêm tới đồi thông.',
-      a: const Color(0xFFF5822B),
-      b: const Color(0xFFFFD84D),
-    ),
-    _RecapCard.stat(
-      icon: PhosphorIcons.camera(PhosphorIconsStyle.fill),
-      bigValue: '142',
-      unit: 'khoảnh khắc',
-      caption: '142 ảnh & clip được lưu vào Memory Wall. Lố không tả nổi.',
-      a: const Color(0xFF8B4DE8),
-      b: const Color(0xFFF5822B),
-    ),
-    _RecapCard.stat(
-      icon: PhosphorIcons.path(PhosphorIconsStyle.fill),
-      bigValue: '186',
-      unit: 'km đã đi',
-      caption: 'Đủ xa để mỏi chân, đủ gần để còn muốn đi tiếp.',
-      a: const Color(0xFF1FA85C),
-      b: const Color(0xFFFFD84D),
-    ),
-    _RecapCard.mvp(
-      name: 'Thảo Ly',
-      title: 'MVP của chuyến',
-      caption: 'Người chụp nhiều nhất, cười to nhất, và luôn trả tiền trước.',
-    ),
-    _RecapCard.money(
-      total: '6.020.000đ',
-      perHead: '~1.5tr / người',
-      caption: 'Đã chia sòng phẳng, không ai nợ ai. Friendship vẫn xanh.',
-    ),
-    _RecapCard.outro(),
-  ];
+  /// Chỉ dựng card cho hạng mục THỰC SỰ có dữ liệu — chuyến chưa có khoản chi
+  /// thì không hiện thẻ tiền rỗng.
+  late final List<_RecapCard> _cards = _buildCards();
+
+  List<_RecapCard> _buildCards() {
+    final r = widget.recap;
+    return [
+      _RecapCard.intro(),
+      if (r.placeCount > 0)
+        _RecapCard.stat(
+          icon: PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
+          bigValue: '${r.placeCount}',
+          unit: 'recap.unit_places'.tr(),
+          caption: 'recap.cap_places'.tr(args: ['${r.placeCount}']),
+          a: const Color(0xFFF5822B),
+          b: const Color(0xFFFFD84D),
+        ),
+      if (r.momentCount > 0)
+        _RecapCard.stat(
+          icon: PhosphorIcons.camera(PhosphorIconsStyle.fill),
+          bigValue: '${r.momentCount}',
+          unit: 'recap.unit_moments'.tr(),
+          caption: 'recap.cap_moments'.tr(args: ['${r.momentCount}']),
+          a: const Color(0xFF8B4DE8),
+          b: const Color(0xFFF5822B),
+        ),
+      if (r.days > 0)
+        _RecapCard.stat(
+          icon: PhosphorIcons.path(PhosphorIconsStyle.fill),
+          bigValue: '${r.days}',
+          unit: 'recap.unit_days'.tr(),
+          caption: 'recap.cap_days'.tr(args: ['${r.memberCount}']),
+          a: const Color(0xFF1FA85C),
+          b: const Color(0xFFFFD84D),
+        ),
+      if (r.mvpName != null)
+        _RecapCard.mvp(
+          name: r.mvpName!,
+          title: 'recap.mvp_title'.tr(),
+          caption: 'recap.mvp_caption'.tr(),
+        ),
+      if (r.totalSpent > 0)
+        _RecapCard.money(
+          total: _money(r.totalSpent, r.currency),
+          perHead: 'recap.per_head'.tr(
+            args: [_money(r.perHead, r.currency)],
+          ),
+          caption: 'recap.cap_money'.tr(args: ['${r.expenseCount}']),
+        ),
+      _RecapCard.outro(),
+    ];
+  }
+
+  /// 6020000 -> "6.020.000đ" (VND) hoặc "6020000 USD".
+  static String _money(double v, String currency) {
+    final n = v.round().toString();
+    final b = StringBuffer();
+    for (var i = 0; i < n.length; i++) {
+      if (i > 0 && (n.length - i) % 3 == 0) b.write('.');
+      b.write(n[i]);
+    }
+    return currency == 'VND' ? '${b.toString()}đ' : '$b $currency';
+  }
 
   @override
   void initState() {
@@ -119,10 +199,17 @@ class _TripRecapReelScreenState extends State<TripRecapReelScreen>
 
   Future<void> _share() async {
     HapticFeedback.mediumImpact();
+    final r = widget.recap;
     await Share.share(
-      'Chuyến ${widget.tripName} của tụi mình: 7 địa điểm, 142 khoảnh khắc, '
-      '186km và 0 drama tiền nong. Lên đồ đi chơi với TripMate nào! ✈️',
-      subject: 'TripMate — ${widget.tripName} Wrapped',
+      'recap.share_text'.tr(
+        args: [
+          r.tripName,
+          '${r.placeCount}',
+          '${r.momentCount}',
+          '${r.days}',
+        ],
+      ),
+      subject: 'TripMate — ${r.tripName} Wrapped',
     );
   }
 
@@ -231,7 +318,7 @@ class _TripRecapReelScreenState extends State<TripRecapReelScreen>
         ),
         const SizedBox(height: 12),
         Text(
-          'Chuyến\n${widget.tripName}\ncủa tụi mình',
+          'recap.intro'.tr(args: [widget.recap.tripName]),
           style: AppFonts.heading(
             fontSize: 40,
             height: 1.05,

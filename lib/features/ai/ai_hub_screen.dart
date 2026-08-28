@@ -1,3 +1,5 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -6,7 +8,8 @@ import '../../core/widgets/gen_z_widgets.dart';
 // Pages
 import 'pages/matey_ai_emotional_chaos_screen.dart';
 import 'pages/ai_budget_assistant_screen.dart';
-import 'pages/ai_trip_summary_screen.dart';
+import '../gamification/data/games_repository.dart';
+import '../moments/presentation/pages/trip_recap_reel_screen.dart';
 import 'pages/ai_chat_history_screen.dart';
 import 'pages/ai_suggestion_feed_screen.dart';
 import 'pages/ai_personality_analysis_screen.dart';
@@ -328,20 +331,39 @@ class AiHubScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                // Trước đây tile này mở AiTripSummaryScreen — một màn 925 dòng
+                // in cứng "842 khoảnh khắc", nhân vật "Alex"/"Thảo Ly" và ảnh
+                // Unsplash, không gọi API nào. Trip Wrapped làm đúng việc đó
+                // trên số liệu thật nên trỏ thẳng sang đấy.
                 _buildHubCard(
                   context: context,
-                  title: 'AI Trip Summary Recap',
-                  subtitle: 'Ghép video kỷ niệm hành trình tự động cực cháy',
-                  icon: Icons.video_library_outlined,
+                  title: 'Trip Wrapped',
+                  subtitle: 'Tổng kết chuyến theo số liệu thật của squad',
+                  icon: Icons.auto_awesome,
                   color: secondaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AiTripSummaryScreen(),
-                    ),
-                  ),
+                  onTap: () {
+                    final tripId = ProviderScope.containerOf(
+                      context,
+                      listen: false,
+                    ).read(activeTripIdProvider);
+                    if (tripId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('games.need_trip_body'.tr())),
+                      );
+                      return;
+                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => TripRecapReelScreen(
+                          isDarkMode: isDark,
+                          tripId: tripId,
+                        ),
+                      ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 24),

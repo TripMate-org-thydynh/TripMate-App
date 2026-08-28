@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import '../widgets/game_state_views.dart';
+import '../../../core/widgets/state_views.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 // Chỉ lấy `.tr()`: easy_localization re-export intl, gây va chạm
 // `TextDirection` với dart:ui dùng trong CustomPainter bên dưới.
@@ -283,7 +283,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
             color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
           ),
         ),
-        body: GameEmptyState(
+        body: AppEmptyState(
           isDark: isDark,
           icon: Icons.casino_outlined,
           title: tr('games.wheel_need_squad_title'),

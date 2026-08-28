@@ -1,100 +1,156 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FriendsListScreen extends StatelessWidget {
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../data/buddies_repository.dart';
+
+/// Những người đã đi chung chuyến với mình.
+///
+/// Trước đây màn này liệt kê 3 người không tồn tại kèm nút "Nhắn tin" chỉ hiện
+/// snackbar giả. Nay lấy đồng đội THẬT từ `/users/me/buddies`; muốn nhắn tin
+/// thì vào Squad Chat của chuyến, nên bỏ hẳn nút giả đó.
+class FriendsListScreen extends ConsumerWidget {
   const FriendsListScreen({super.key});
 
-  final List<Map<String, String>> _friends = const [
-    {
-      'name': 'Alex Nguyễn',
-      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
-    },
-    {
-      'name': 'Trần Bình',
-      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Binh',
-    },
-    {
-      'name': 'Lê Minh',
-      'avatar': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Minh',
-    },
-  ];
-
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF141210)
-          : const Color(0xFFFDF6D3),
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black87,
+        iconTheme: IconThemeData(color: ink),
+        title: Text(
+          'profile.buddies_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
           ),
-          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Danh Sách Bạn Bè 👥',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: ink),
+            onPressed: () => ref.invalidate(travelBuddiesProvider),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // List friends
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _friends.length,
-              itemBuilder: (context, index) {
-                final friend = _friends[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Card(
-                    color: isDark ? const Color(0xFF262019) : Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(friend['avatar']!),
-                      ),
-                      title: Text(
-                        friend['name']!,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: const Text('Cực kỳ uy tín 🛡️'),
-                      trailing: TextButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Đã gửi tin nhắn đến ${friend['name']}!',
-                              ),
-                              backgroundColor: Colors.purple,
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'Nhắn tin',
-                          style: TextStyle(color: Colors.purpleAccent),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
+      body: ref
+          .watch(travelBuddiesProvider)
+          .when(
+            loading: () =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            error: (e, _) => AppErrorState(
+              isDark: isDark,
+              error: e,
+              onRetry: () => ref.invalidate(travelBuddiesProvider),
             ),
-          ],
-        ),
+            data: (buddies) {
+              if (buddies.isEmpty) {
+                return AppEmptyState(
+                  isDark: isDark,
+                  icon: Icons.group_outlined,
+                  title: 'profile.buddies_empty_title'.tr(),
+                  body: 'profile.buddies_empty_body'.tr(),
+                );
+              }
+              return RefreshIndicator(
+                onRefresh: () async => ref.invalidate(travelBuddiesProvider),
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(GenZTokens.space5),
+                  itemCount: buddies.length,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: GenZTokens.space3),
+                  itemBuilder: (_, i) => _tile(isDark, buddies[i]),
+                ),
+              );
+            },
+          ),
+    );
+  }
+
+  Widget _tile(bool isDark, TravelBuddy b) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final avatar = b.avatarUrl;
+
+    return Container(
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: GenZTokens.lilac,
+              shape: BoxShape.circle,
+              border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+            ),
+            child: avatar != null && avatar.startsWith('http')
+                ? CachedNetworkImage(
+                    imageUrl: avatar,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, _, _) => _initial(b.name),
+                    placeholder: (_, _) => _initial(b.name),
+                  )
+                : _initial(b.name),
+          ),
+          const SizedBox(width: GenZTokens.space4),
+          // Flexible để tên dài không tràn khi máy hẹp / chữ phóng to.
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  b.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: ink,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  b.lastTripName.isEmpty
+                      ? 'profile.buddies_shared'.plural(b.sharedTrips)
+                      : '${'profile.buddies_shared'.plural(b.sharedTrips)} · ${b.lastTripName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  Widget _initial(String name) => Center(
+    child: Text(
+      name.isEmpty ? '?' : name.characters.first.toUpperCase(),
+      style: AppFonts.heading(
+        fontSize: 18,
+        fontWeight: FontWeight.w900,
+        color: GenZTokens.ink,
+      ),
+    ),
+  );
 }

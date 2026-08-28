@@ -1,20 +1,21 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_fonts.dart';
-import '../../../core/theme/gen_z_tokens.dart';
+import '../network/api_exception.dart';
+import '../theme/app_fonts.dart';
+import '../theme/gen_z_tokens.dart';
 
-/// Trạng thái rỗng dùng chung cho các màn game.
+/// Trạng thái rỗng dùng chung cho mọi màn hình.
 ///
-/// Các màn game trước đây luôn hiển thị số liệu và người chơi bịa; nay khi
-/// chưa có chuyến/dữ liệu thì hiện khối này để người dùng biết cần làm gì.
-class GameEmptyState extends StatelessWidget {
+/// Nhiều màn trước đây luôn hiển thị số liệu và người bịa; nay khi chưa có
+/// dữ liệu thật thì hiện khối này để người dùng biết cần làm gì tiếp.
+class AppEmptyState extends StatelessWidget {
   final bool isDark;
   final IconData icon;
   final String title;
   final String body;
 
-  const GameEmptyState({
+  const AppEmptyState({
     super.key,
     required this.isDark,
     required this.icon,
@@ -69,15 +70,23 @@ class GameEmptyState extends StatelessWidget {
 ///
 /// Trước đây các màn game nuốt lỗi và hiện dữ liệu cứng, nên người dùng không
 /// bao giờ biết là tải hỏng.
-class GameErrorState extends StatelessWidget {
+class AppErrorState extends StatelessWidget {
   final bool isDark;
   final VoidCallback onRetry;
 
-  const GameErrorState({
+  /// Lỗi bắt được — truyền vào để hiện đúng câu BE trả về (hết quota AI, chuyến
+  /// không tồn tại...) thay vì một câu chung chung.
+  final Object? error;
+
+  const AppErrorState({
     super.key,
     required this.isDark,
     required this.onRetry,
+    this.error,
   });
+
+  /// Câu thông báo: ưu tiên message của [ApiException]; mất mạng thì đổi icon.
+  ApiException? get _api => error is ApiException ? error as ApiException : null;
 
   @override
   Widget build(BuildContext context) {
@@ -91,13 +100,15 @@ class GameErrorState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.wifi_off_rounded,
+              _api == null || _api!.isNetwork
+                  ? Icons.wifi_off_rounded
+                  : Icons.error_outline_rounded,
               size: 40,
               color: inkSoft.withValues(alpha: 0.8),
             ),
             const SizedBox(height: GenZTokens.space4),
             Text(
-              'errors.load_failed'.tr(),
+              _api?.message ?? 'errors.load_failed'.tr(),
               textAlign: TextAlign.center,
               style: AppFonts.heading(
                 fontSize: 16,

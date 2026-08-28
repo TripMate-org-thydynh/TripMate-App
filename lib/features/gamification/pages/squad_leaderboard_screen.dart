@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/games_repository.dart';
-import '../widgets/game_state_views.dart';
+import '../../../core/widgets/state_views.dart';
 
 /// Bảng xếp hạng đóng góp của squad trong chuyến.
 ///
@@ -46,7 +46,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
         ],
       ),
       body: tripId == null
-          ? GameEmptyState(
+          ? AppEmptyState(
               isDark: isDark,
               icon: Icons.emoji_events_outlined,
               title: 'games.need_trip_title'.tr(),
@@ -58,13 +58,14 @@ class SquadLeaderboardScreen extends ConsumerWidget {
                   loading: () => const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  error: (e, _) => GameErrorState(
+                  error: (e, _) => AppErrorState(
                     isDark: isDark,
+                    error: e,
                     onRetry: () => ref.invalidate(leaderboardProvider(tripId)),
                   ),
                   data: (rows) {
                     if (rows.isEmpty || rows.every((r) => r.xp == 0)) {
-                      return GameEmptyState(
+                      return AppEmptyState(
                         isDark: isDark,
                         icon: Icons.emoji_events_outlined,
                         title: 'games.leaderboard_title'.tr(),

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/games_repository.dart';
-import 'game_state_views.dart';
+import '../../../core/widgets/state_views.dart';
 
 /// Màn danh sách nhiệm vụ dùng chung cho "Nhiệm vụ tuần" và "Sự kiện theo mùa".
 ///
@@ -47,7 +47,7 @@ class ChallengeListScreen extends ConsumerWidget {
         ),
       ),
       body: tripId == null
-          ? GameEmptyState(
+          ? AppEmptyState(
               isDark: isDark,
               icon: emptyIcon,
               title: 'games.need_trip_title'.tr(),
@@ -59,8 +59,9 @@ class ChallengeListScreen extends ConsumerWidget {
                   loading: () => const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  error: (e, _) => GameErrorState(
+                  error: (e, _) => AppErrorState(
                     isDark: isDark,
+                    error: e,
                     onRetry: () => ref.invalidate(provider(tripId)),
                   ),
                   data: (items) => RefreshIndicator(

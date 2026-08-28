@@ -26,6 +26,10 @@
     "system_alert": "Hệ thống",
     "view_match": "Xem Match"
   },
+  "ai": {
+    "personality_empty": "AI chưa có gì để phân tích. Thêm thành viên và vài khoản chi rồi quay lại nha!",
+    "personality_title": "Phân tích tính cách squad 🎭"
+  },
   "ai_hub": {
     "boost": "Bứt Tốc ⚡",
     "cancel": "Hủy bỏ",
@@ -505,8 +509,16 @@
     "create_poll": "Tạo poll"
   },
   "premium": {
+    "benefits": "Quyền lợi",
+    "manage_in_play": "Gia hạn, đổi nguồn tiền và huỷ gói được quản lý trong mục Gói thuê bao của Google Play.",
+    "next_billing": "Gia hạn kế tiếp: {}",
     "no_invoices": "Chưa có giao dịch nào. Hoá đơn sẽ hiện ở đây sau khi bạn mua gói.",
-    "no_referrals": "Chưa mời được ai. Chia sẻ mã của bạn để bắt đầu nhé!"
+    "no_plan_body": "Chưa có gói nào đang chạy. Gói Premium sẽ mở bán qua Google Play.",
+    "no_plan_title": "Bạn đang dùng bản miễn phí",
+    "no_referrals": "Chưa mời được ai. Chia sẻ mã của bạn để bắt đầu nhé!",
+    "plan_elite": "Elite Squad — Premium 💎",
+    "price_monthly": "{}đ / tháng",
+    "settings_title": "Thiết lập gói ⚙️"
   },
   "profile": {
     "achievements": "Danh Hiệu & Cúp",
@@ -516,6 +528,14 @@
     "atlas_places": "Địa Điểm",
     "atlas_streak": "STREAK PHƯỢT THỦ",
     "bio": "Tiểu sử / Bio",
+    "buddies_empty_body": "Rủ bạn vào chuyến bằng mã mời, xong chuyến họ sẽ hiện ở đây.",
+    "buddies_empty_title": "Chưa đi chung với ai",
+    "buddies_shared": {
+      "zero": "Chưa có chuyến chung",
+      "one": "{} chuyến chung",
+      "other": "{} chuyến chung"
+    },
+    "buddies_title": "Đã đi chung 👥",
     "countries": "Quốc gia",
     "distance": "Quãng đường",
     "lang_label": "Chọn Ngôn Ngữ",
@@ -529,9 +549,28 @@
     "theme_dark_short": "Tối",
     "theme_light_short": "Sáng",
     "title": "hồ sơ",
+    "trip_history_empty_body": "Chuyến sẽ vào đây sau khi qua ngày kết thúc.",
+    "trip_history_empty_title": "Chưa có chuyến nào kết thúc",
+    "trip_history_title": "Chuyến đã đi 🕒",
     "trips": "Chuyến đi",
     "view_gallery": "XEM THƯ VIỆN",
     "xp_points": "Điểm XP"
+  },
+  "recap": {
+    "cap_days": "Bằng đó ngày, {} người, không ai bỏ cuộc.",
+    "cap_moments": "{} ảnh & clip được lưu vào Memory Wall. Lố không tả nổi.",
+    "cap_money": "{} khoản chi đã ghi. Chia sòng phẳng, friendship vẫn xanh.",
+    "cap_places": "Cả squad đã ghim {} chỗ vào lịch trình.",
+    "empty_body": "Thêm điểm lịch trình, đăng khoảnh khắc hoặc ghi khoản chi rồi quay lại nha!",
+    "empty_title": "Chuyến chưa có gì để tổng kết",
+    "intro": "Chuyến\n{}\ncủa tụi mình",
+    "mvp_caption": "Đóng góp nhiều nhất: đăng ảnh, lên plan và trả tiền trước.",
+    "mvp_title": "MVP của chuyến",
+    "per_head": "~{} / người",
+    "share_text": "Chuyến {} của tụi mình: {} địa điểm, {} khoảnh khắc, {} ngày. Lên đồ đi chơi với TripMate nào! ✈️",
+    "unit_days": "ngày",
+    "unit_moments": "khoảnh khắc",
+    "unit_places": "địa điểm"
   },
   "reservations": {
     "add": "Thêm đặt chỗ",

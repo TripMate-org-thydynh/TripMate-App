@@ -26,6 +26,10 @@
     "system_alert": "System Alert",
     "view_match": "View Match"
   },
+  "ai": {
+    "personality_empty": "Nothing to analyse yet. Add members and a few expenses, then come back!",
+    "personality_title": "Squad personality analysis 🎭"
+  },
   "ai_hub": {
     "boost": "Boost ⚡",
     "cancel": "Cancel",
@@ -505,8 +509,16 @@
     "create_poll": "New poll"
   },
   "premium": {
+    "benefits": "Benefits",
+    "manage_in_play": "Renewal, payment method and cancellation are managed in Google Play Subscriptions.",
+    "next_billing": "Next renewal: {}",
     "no_invoices": "No transactions yet. Invoices will show up here after a purchase.",
-    "no_referrals": "No referrals yet. Share your code to get started!"
+    "no_plan_body": "No active subscription. Premium will go on sale through Google Play.",
+    "no_plan_title": "You're on the free plan",
+    "no_referrals": "No referrals yet. Share your code to get started!",
+    "plan_elite": "Elite Squad — Premium 💎",
+    "price_monthly": "{}đ / month",
+    "settings_title": "Plan settings ⚙️"
   },
   "profile": {
     "achievements": "Achievements",
@@ -516,6 +528,14 @@
     "atlas_places": "Places",
     "atlas_streak": "TRAVEL STREAK",
     "bio": "Bio",
+    "buddies_empty_body": "Invite friends with your trip code — they show up here after the trip.",
+    "buddies_empty_title": "No travel buddies yet",
+    "buddies_shared": {
+      "zero": "No shared trips",
+      "one": "{} shared trip",
+      "other": "{} shared trips"
+    },
+    "buddies_title": "Travel buddies 👥",
     "countries": "Countries",
     "distance": "Distance",
     "lang_label": "Select Language",
@@ -529,9 +549,28 @@
     "theme_dark_short": "Dark",
     "theme_light_short": "Light",
     "title": "profile",
+    "trip_history_empty_body": "Trips move here once their end date has passed.",
+    "trip_history_empty_title": "No finished trips yet",
+    "trip_history_title": "Past trips 🕒",
     "trips": "Trips",
     "view_gallery": "VIEW GALLERY",
     "xp_points": "XP points"
+  },
+  "recap": {
+    "cap_days": "That many days, {} people, nobody bailed.",
+    "cap_moments": "{} photos & clips saved to the Memory Wall.",
+    "cap_money": "{} expenses logged. Split fairly, friendship intact.",
+    "cap_places": "The squad pinned {} stops on the itinerary.",
+    "empty_body": "Add itinerary stops, post moments or log an expense, then come back!",
+    "empty_title": "Nothing to wrap up yet",
+    "intro": "Our\n{}\ntrip",
+    "mvp_caption": "Contributed the most: posted, planned and paid first.",
+    "mvp_title": "Trip MVP",
+    "per_head": "~{} / person",
+    "share_text": "Our {} trip: {} places, {} moments, {} days. Come travel with TripMate! ✈️",
+    "unit_days": "days",
+    "unit_moments": "moments",
+    "unit_places": "places"
   },
   "reservations": {
     "add": "Add reservation",

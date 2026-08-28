@@ -9,10 +9,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'ai_memory_sorting_screen.dart';
 import 'share_chaos_export_screen.dart';
-import 'collaborative_scrapbook_editor_screen.dart';
 import 'ai_caption_generator_screen.dart';
 import 'trip_recap_reel_screen.dart';
 import '../../../discovery/presentation/pages/photo_map_screen.dart';
+import '../../../gamification/data/games_repository.dart';
 
 class MemoryWallScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -703,15 +703,12 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                   const SizedBox(height: 16),
                   // ── Trip Wrapped hero banner ────────────────────────────────
                   GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (c) =>
-                              TripRecapReelScreen(isDarkMode: isDark),
-                        ),
-                      );
-                    },
+                    onTap: () => _openWithTrip(
+                      context,
+                      (tripId) =>
+                          TripRecapReelScreen(isDarkMode: isDark, tripId: tripId),
+                      pop: false,
+                    ),
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(18),
@@ -787,26 +784,6 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                     children: [
                       _buildFeatureTile(
                         context,
-                        icon: Icons.edit_note_outlined,
-                        title: 'Scrapbook Canvas',
-                        desc: 'Layered polaroids',
-                        color: const Color(0xFFFF2E93),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) =>
-                                  CollaborativeScrapbookEditorScreen(
-                                    isDarkMode: isDark,
-                                    onThemeToggle: widget.onThemeToggle,
-                                  ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
                         icon: Icons.auto_awesome_outlined,
                         title: 'AI Caption Studio',
                         desc: 'Witty quote roasts',
@@ -868,18 +845,16 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         title: 'Photo Map',
                         desc: 'Moments on map',
                         color: Colors.orangeAccent,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => PhotoMapScreen(
-                                tripId: 'hagiang-loop-123',
-                                isDarkMode: isDark,
-                              ),
-                            ),
-                          );
-                        },
+                        // Trước đây mở Photo Map bằng id bịa
+                        // 'hagiang-loop-123' — chuyến không tồn tại nên màn
+                        // bản đồ luôn trắng/lỗi.
+                        onTap: () => _openWithTrip(
+                          context,
+                          (tripId) => PhotoMapScreen(
+                            tripId: tripId,
+                            isDarkMode: isDark,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -890,6 +865,26 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
         );
       },
     );
+  }
+
+  /// Mở màn cần một chuyến cụ thể.
+  ///
+  /// Chưa có chuyến nào thì báo cho người dùng biết thay vì mở màn trắng.
+  void _openWithTrip(
+    BuildContext context,
+    Widget Function(String tripId) builder, {
+    bool pop = true,
+  }) {
+    final container = ProviderScope.containerOf(context, listen: false);
+    final tripId = container.read(activeTripIdProvider);
+    if (pop) Navigator.pop(context);
+    if (tripId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('games.need_trip_body'.tr())),
+      );
+      return;
+    }
+    Navigator.push(context, MaterialPageRoute(builder: (_) => builder(tripId)));
   }
 
   // Feature menu grid builder

@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import '../widgets/game_state_views.dart';
+import '../../../core/widgets/state_views.dart';
 import '../data/games_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart' show tr;
@@ -132,7 +132,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
           elevation: 0,
           iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
         ),
-        body: GameEmptyState(
+        body: AppEmptyState(
           isDark: isDark,
           icon: Icons.emoji_events_outlined,
           title: tr('games.awards_empty_title'),
