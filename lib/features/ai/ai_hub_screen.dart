@@ -11,7 +11,6 @@ import 'pages/ai_budget_assistant_screen.dart';
 import '../gamification/data/games_repository.dart';
 import '../moments/presentation/pages/trip_recap_reel_screen.dart';
 import 'pages/ai_chat_history_screen.dart';
-import 'pages/ai_suggestion_feed_screen.dart';
 import 'pages/ai_personality_analysis_screen.dart';
 import 'pages/ai_mood_detection_screen.dart';
 import 'pages/ai_recommendation_timeline_screen.dart';
@@ -315,22 +314,6 @@ class AiHubScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                _buildHubCard(
-                  context: context,
-                  title: 'AI Suggestion Feed',
-                  subtitle:
-                      'Cập nhật giao thông, thời tiết thông minh kèm giải pháp',
-                  icon: Icons.rss_feed,
-                  color: GenZTokens.green,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AiSuggestionFeedScreen(),
-                    ),
-                  ),
-                ),
                 // Trước đây tile này mở AiTripSummaryScreen — một màn 925 dòng
                 // in cứng "842 khoảnh khắc", nhân vật "Alex"/"Thảo Ly" và ảnh
                 // Unsplash, không gọi API nào. Trip Wrapped làm đúng việc đó
@@ -413,7 +396,7 @@ class AiHubScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AiChatHistoryScreen(),
+                      builder: (context) => AiChatHistoryScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),

@@ -1,9 +1,15 @@
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/network/api_exception.dart';
+import '../../gamification/data/games_repository.dart';
+import '../data/ai_repository.dart';
 import '../../../core/app_messenger.dart';
 import 'package:flutter/services.dart';
-class AICaptionGeneratorScreen extends StatefulWidget {
+class AICaptionGeneratorScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
@@ -14,11 +20,11 @@ class AICaptionGeneratorScreen extends StatefulWidget {
   });
 
   @override
-  State<AICaptionGeneratorScreen> createState() =>
+  ConsumerState<AICaptionGeneratorScreen> createState() =>
       _AICaptionGeneratorScreenState();
 }
 
-class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
+class _AICaptionGeneratorScreenState extends ConsumerState<AICaptionGeneratorScreen>
     with TickerProviderStateMixin {
   late AnimationController _auroraController;
   late AnimationController _pulseController;
@@ -131,12 +137,59 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
     super.dispose();
   }
 
+  /// Caption do AI sinh cho vibe đang chọn. Rỗng thì dùng mẫu có sẵn.
+  final Map<String, List<Map<String, dynamic>>> _aiOptions = {};
+  bool _isGenerating = false;
+
   List<Map<String, dynamic>> get _currentOptions {
+    final ai = _aiOptions[_selectedVibe];
+    if (ai != null && ai.isNotEmpty) return ai;
     final match = _captionsList.firstWhere(
       (element) => element['vibe'] == _selectedVibe,
       orElse: () => _captionsList.first,
     );
     return List<Map<String, dynamic>>.from(match['options']);
+  }
+
+  /// Gọi AI sinh caption thật cho vibe đang chọn.
+  ///
+  /// Trước đây màn "AI Caption Studio" chỉ đọc một danh mục viết sẵn trong
+  /// app — không có lời gọi AI nào, dù tên màn nói ngược lại.
+  Future<void> _generate() async {
+    if (_isGenerating) return;
+    setState(() => _isGenerating = true);
+    try {
+      final tripId = ref.read(activeTripIdProvider);
+      final text = await ref
+          .read(mateyChatProvider)
+          .ask(
+            prompt:
+                'Viết 3 caption ngắn cho ảnh du lịch theo vibe "$_selectedVibe", '
+                'kèm 2 hashtag mỗi caption. Mỗi caption một dòng.',
+            tripId: tripId,
+          );
+      final lines = text
+          .split(RegExp(r'\n+'))
+          .map((l) => l.trim())
+          .where((l) => l.isNotEmpty)
+          .take(5)
+          .toList();
+      if (!mounted) return;
+      setState(() {
+        _aiOptions[_selectedVibe] = lines
+            .map((l) => {'text': l, 'tags': const <String>[]})
+            .toList();
+        _selectedOptionIndex = 0;
+        _isGenerating = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isGenerating = false);
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
   }
 
   void _copyToClipboard(String text) {
@@ -478,14 +531,19 @@ class _AICaptionGeneratorScreenState extends State<AICaptionGeneratorScreen>
                   tooltip: 'Toggle Theme',
                 ),
               IconButton(
-                icon: Icon(
-                  Icons.notifications_outlined,
-                  color: textPrimary,
-                  size: 24,
-                ),
-                onPressed: () =>
-                    showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
-                tooltip: 'Notifications',
+                icon: _isGenerating
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(
+                        Icons.auto_awesome,
+                        color: textPrimary,
+                        size: 24,
+                      ),
+                onPressed: _isGenerating ? null : _generate,
+                tooltip: 'ai.generate_captions'.tr(),
               ),
             ],
           ),

@@ -27,6 +27,9 @@
     "view_match": "Xem Match"
   },
   "ai": {
+    "generate_captions": "Tạo caption bằng AI",
+    "history_empty": "Bạn chưa hỏi Matey câu nào. Mở Matey AI và thử một câu xem sao!",
+    "history_title": "Lịch sử hỏi AI 🕘",
     "matey_intro": "Hỏi Matey bất cứ điều gì về chuyến đi — lên lịch trình, chia tiền, hay gợi ý chỗ chơi. Gõ câu hỏi ở dưới nha!",
     "mood_tension": "Độ hỗn loạn",
     "mood_title": "Tâm trạng squad 🎭",

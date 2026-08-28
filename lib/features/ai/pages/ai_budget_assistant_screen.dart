@@ -2,7 +2,18 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-class AiBudgetAssistantScreen extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../gamification/data/games_repository.dart';
+import '../../moments/data/trip_recap_repository.dart';
+import '../../trips/application/trips_providers.dart';
+/// Trợ lý ngân sách.
+///
+/// Trước đây màn này in cứng "Total Financial Damage $1,420.69" và "Remaining
+/// $579.31" — bằng đô la, trong khi app chạy tiền Việt — cho mọi chuyến và mọi
+/// tài khoản, kể cả người chưa ghi khoản chi nào. Nay số liệu lấy từ
+/// `/trips/:id/recap` (tổng đã chi thật) và ngân sách đặt cho chuyến.
+class AiBudgetAssistantScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
@@ -13,11 +24,12 @@ class AiBudgetAssistantScreen extends StatefulWidget {
   });
 
   @override
-  State<AiBudgetAssistantScreen> createState() =>
+  ConsumerState<AiBudgetAssistantScreen> createState() =>
       _AiBudgetAssistantScreenState();
 }
 
-class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
+class _AiBudgetAssistantScreenState
+    extends ConsumerState<AiBudgetAssistantScreen>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _marqueeController;
@@ -139,6 +151,54 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
         ],
       ),
     );
+  }
+
+  /// Tổng đã chi của chuyến đang mở — 0 khi chưa có chuyến/khoản chi nào.
+  double get _totalSpent {
+    final id = ref.watch(activeTripIdProvider);
+    if (id == null) return 0;
+    return ref
+        .watch(tripRecapProvider(id))
+        .maybeWhen(data: (r) => r.totalSpent, orElse: () => 0);
+  }
+
+  /// Còn lại = ngân sách đặt cho chuyến trừ đã chi. Chưa đặt ngân sách thì 0.
+  double get _remaining {
+    final id = ref.watch(activeTripIdProvider);
+    if (id == null) return 0;
+    final budget = ref
+        .watch(tripsProvider)
+        .maybeWhen(
+          data: (trips) {
+            for (final t in trips) {
+              if (t.id == id) return t.budget ?? 0;
+            }
+            return 0.0;
+          },
+          orElse: () => 0.0,
+        );
+    final left = budget - _totalSpent;
+    return left > 0 ? left : 0;
+  }
+
+  String get _currency {
+    final id = ref.watch(activeTripIdProvider);
+    if (id == null) return 'VND';
+    return ref
+        .watch(tripRecapProvider(id))
+        .maybeWhen(data: (r) => r.currency, orElse: () => 'VND');
+  }
+
+  /// 6020000 -> "6.020.000" (VND) hoặc "6,020.00" cho ngoại tệ.
+  String _money(double v) {
+    if (_currency != 'VND') return v.toStringAsFixed(2);
+    final n = v.round().toString();
+    final b = StringBuffer();
+    for (var i = 0; i < n.length; i++) {
+      if (i > 0 && (n.length - i) % 3 == 0) b.write('.');
+      b.write(n[i]);
+    }
+    return '${b.toString()}đ';
   }
 
   Widget _buildTopBar(
@@ -289,7 +349,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '\$',
+              _currency == 'VND' ? '' : '\$',
               style: AppFonts.heading(
                 fontSize: 36,
                 fontWeight: FontWeight.w800,
@@ -297,7 +357,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
               ),
             ),
             Text(
-              '1,420.69',
+              _money(_totalSpent),
               style: AppFonts.heading(
                 fontSize: 52,
                 fontWeight: FontWeight.w800,
@@ -582,7 +642,7 @@ class _AiBudgetAssistantScreenState extends State<AiBudgetAssistantScreen>
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '\$579.31',
+                          _money(_remaining),
                           style: AppFonts.body(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,

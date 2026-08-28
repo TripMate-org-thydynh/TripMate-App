@@ -217,3 +217,14 @@ class MateyChatService {
 final mateyChatProvider = Provider<MateyChatService>(
   (ref) => MateyChatService(ref.watch(apiClientProvider)),
 );
+
+/// Lịch sử yêu cầu AI của tôi — dùng chung model với hàng chờ.
+final aiHistoryProvider = FutureProvider<List<AiQueueItem>>((ref) async {
+  final data = await ref.watch(apiClientProvider).getData('/ai/my-requests');
+  if (data is! List) return const [];
+  return data.whereType<Map>().map((e) {
+    final m = e.cast<String, dynamic>();
+    // `/my-requests` trả bản ghi thô (khoá `prompt`), khác hàng chờ (`task`).
+    return AiQueueItem.fromJson({...m, 'task': m['prompt']});
+  }).toList();
+});

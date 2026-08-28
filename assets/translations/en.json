@@ -27,6 +27,9 @@
     "view_match": "View Match"
   },
   "ai": {
+    "generate_captions": "Generate captions with AI",
+    "history_empty": "You haven't asked Matey anything yet. Open Matey AI and give it a try!",
+    "history_title": "AI history 🕘",
     "matey_intro": "Ask Matey anything about your trip — planning, splitting costs, or where to go next. Type below!",
     "mood_tension": "Chaos level",
     "mood_title": "Squad mood 🎭",
