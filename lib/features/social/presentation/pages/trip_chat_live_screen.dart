@@ -114,7 +114,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
     if (token != null) {
       _socket = ChatSocket(token)
         ..onConnectionChanged((c) {
-          if (mounted) setState(() => _connected = c);
+          if (_disposed || !mounted) return;
+          setState(() => _connected = c);
         })
         ..connect()
         ..join(widget.tripId)
@@ -122,7 +123,15 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
     }
   }
 
+  /// Đặt trước khi tháo socket.
+  ///
+  /// `dispose()` của socket phát luôn sự kiện disconnect, mà lúc đó `mounted`
+  /// vẫn còn true trong khi element đã bị finalize → setState ném
+  /// "_lifecycleState != defunct". Cờ này chặn mọi setState đến muộn.
+  bool _disposed = false;
+
   void _onLiveMessage(dynamic data) {
+    if (_disposed || !mounted) return;
     if (data is! Map) return;
     final msg = ChatMessage.fromJson(data.cast<String, dynamic>());
     if (_messages.any((m) => m.id == msg.id)) return;
@@ -139,7 +148,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
     } else {
       // Fallback REST nếu socket chưa kết nối
       ref.read(chatRepositoryProvider).send(widget.tripId, text).then((m) {
-        if (mounted) setState(() => _messages.add(m));
+        if (_disposed || !mounted) return;
+        setState(() => _messages.add(m));
         _scrollToEnd();
       });
     }
@@ -160,6 +170,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
 
   @override
   void dispose() {
+    // Bật cờ TRƯỚC khi tháo socket: socket.dispose() phát disconnect ngay.
+    _disposed = true;
     _socket
       ?..leave(widget.tripId)
       ..dispose();
