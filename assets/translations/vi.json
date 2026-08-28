@@ -27,8 +27,12 @@
     "view_match": "Xem Match"
   },
   "ai": {
+    "mood_tension": "Độ hỗn loạn",
+    "mood_title": "Tâm trạng squad 🎭",
     "personality_empty": "AI chưa có gì để phân tích. Thêm thành viên và vài khoản chi rồi quay lại nha!",
-    "personality_title": "Phân tích tính cách squad 🎭"
+    "personality_title": "Phân tích tính cách squad 🎭",
+    "timeline_empty": "AI chưa đề xuất được gì. Thêm mô tả và ngày cho chuyến rồi thử lại nha!",
+    "timeline_title": "Hành trình gợi ý 🕒"
   },
   "ai_hub": {
     "boost": "Bứt Tốc ⚡",

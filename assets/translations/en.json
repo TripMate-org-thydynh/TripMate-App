@@ -27,8 +27,12 @@
     "view_match": "View Match"
   },
   "ai": {
+    "mood_tension": "Chaos level",
+    "mood_title": "Squad mood 🎭",
     "personality_empty": "Nothing to analyse yet. Add members and a few expenses, then come back!",
-    "personality_title": "Squad personality analysis 🎭"
+    "personality_title": "Squad personality analysis 🎭",
+    "timeline_empty": "No suggestions yet. Add a description and dates to your trip, then retry.",
+    "timeline_title": "Suggested plan 🕒"
   },
   "ai_hub": {
     "boost": "Boost ⚡",

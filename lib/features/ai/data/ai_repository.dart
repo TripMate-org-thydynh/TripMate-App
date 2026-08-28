@@ -38,3 +38,64 @@ final squadPersonalityProvider =
           .map((e) => SquadRoast.fromJson(e.cast<String, dynamic>()))
           .toList();
     });
+
+/// Tâm trạng squad do AI đánh giá từ chi tiêu và quy mô nhóm.
+class SquadMood {
+  final String overallMood;
+  final int tensionLevel;
+  final String moodAnalysis;
+
+  const SquadMood({
+    required this.overallMood,
+    required this.tensionLevel,
+    required this.moodAnalysis,
+  });
+
+  factory SquadMood.fromJson(Map<String, dynamic> json) => SquadMood(
+    overallMood: json['overallMood'] as String? ?? '',
+    tensionLevel: (json['tensionLevel'] as num?)?.toInt() ?? 0,
+    moodAnalysis: json['moodAnalysis'] as String? ?? '',
+  );
+}
+
+final squadMoodProvider = FutureProvider.family<SquadMood, String>((
+  ref,
+  tripId,
+) async {
+  final data = await ref
+      .watch(apiClientProvider)
+      .getData('/ai/trips/$tripId/mood');
+  return SquadMood.fromJson((data as Map).cast<String, dynamic>());
+});
+
+/// Một gợi ý trong lịch trình do AI đề xuất.
+class SuggestedActivity {
+  final String time;
+  final String location;
+  final String reason;
+
+  const SuggestedActivity({
+    required this.time,
+    required this.location,
+    required this.reason,
+  });
+
+  factory SuggestedActivity.fromJson(Map<String, dynamic> json) =>
+      SuggestedActivity(
+        time: json['time'] as String? ?? '',
+        location: json['location'] as String? ?? '',
+        reason: json['reason'] as String? ?? '',
+      );
+}
+
+final aiTimelineProvider =
+    FutureProvider.family<List<SuggestedActivity>, String>((ref, tripId) async {
+      final data = await ref
+          .watch(apiClientProvider)
+          .getData('/ai/trips/$tripId/timeline');
+      if (data is! List) return const [];
+      return data
+          .whereType<Map>()
+          .map((e) => SuggestedActivity.fromJson(e.cast<String, dynamic>()))
+          .toList();
+    });
