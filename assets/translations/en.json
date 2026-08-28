@@ -150,7 +150,14 @@
     "up_next_empty_title": "Nothing coming up",
     "up_next_minutes": "{minutes} min",
     "upcoming_activity": "Upcoming Activity",
+    "vibe_chat": "Squad conversation",
+    "vibe_default": "Squad activity",
+    "vibe_expense": "Squad spending update",
+    "vibe_game": "Let the chaos begin",
+    "vibe_itinerary": "Plan updated",
     "vibe_match": "Vibe Match",
+    "vibe_moment": "New memory captured",
+    "vibe_poll": "A vote is open",
     "vibe_updated": "Updated your vibe to {mood}!",
     "weather": "Weather",
     "weather_checking": "Checking weather...",
@@ -496,6 +503,10 @@
   "polls": {
     "create": "Create",
     "create_poll": "New poll"
+  },
+  "premium": {
+    "no_invoices": "No transactions yet. Invoices will show up here after a purchase.",
+    "no_referrals": "No referrals yet. Share your code to get started!"
   },
   "profile": {
     "achievements": "Achievements",

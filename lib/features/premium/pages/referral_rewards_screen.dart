@@ -1,6 +1,7 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../core/api_service.dart';
 
 class ReferralRewardsScreen extends StatefulWidget {
@@ -14,10 +15,9 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
   final _codeController = TextEditingController();
   bool _isSubmitting = false;
 
-  final List<Map<String, String>> _referrals = [
-    {'name': 'Hoàng Yến 🌸', 'status': 'Đã nâng cấp Premium', 'xp': '+500 XP'},
-    {'name': 'Phú Khang 🍕', 'status': 'Đã đăng ký tài khoản', 'xp': '+200 XP'},
-  ];
+  // Rỗng: chưa có API danh sách người được giới thiệu. Trước đây liệt kê
+  // "Hoàng Yến 🌸" và "Phú Khang 🍕" như thể user đã mời được 2 người.
+  final List<Map<String, String>> _referrals = [];
 
   Future<void> _submitReferralCode() async {
     final text = _codeController.text.trim().toUpperCase();
@@ -281,6 +281,22 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
             ),
             const SizedBox(height: 12),
 
+            if (_referrals.isEmpty)
+              // Chưa mời được ai thì để trống, không bịa 2 người như trước.
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  'premium.no_referrals'.tr(),
+                  textAlign: TextAlign.center,
+                  style: AppFonts.body(
+                    fontSize: 13,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black54,
+                  ),
+                ),
+              )
+            else
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

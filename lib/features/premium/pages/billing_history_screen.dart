@@ -1,6 +1,7 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../core/api_service.dart';
 
 class BillingHistoryScreen extends StatefulWidget {
@@ -11,32 +12,10 @@ class BillingHistoryScreen extends StatefulWidget {
 }
 
 class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
-  List<Map<String, dynamic>> _invoices = [
-    {
-      'id': 'INV-9982',
-      'date': '2026-05-20',
-      'title': 'Elite Squad Subscription (1 Tháng) 👑',
-      'amount': '99.000đ',
-      'method': 'Visa *4242',
-      'status': 'Thành công',
-    },
-    {
-      'id': 'INV-8812',
-      'date': '2026-04-20',
-      'title': 'Xuất Video Recap Kyoto 4K 🎞️',
-      'amount': '25.000đ',
-      'method': 'Momo Wallet',
-      'status': 'Thành công',
-    },
-    {
-      'id': 'INV-7734',
-      'date': '2026-03-15',
-      'title': 'Chủ Đề Dalat Vintage Premium 🌲',
-      'amount': '49.000đ',
-      'method': 'Vietcombank *9999',
-      'status': 'Thành công',
-    },
-  ];
+  // Rỗng cho tới khi /premium/billing-history trả giao dịch thật (endpoint
+  // nay đọc bảng payment_transactions). Trước đây 3 hoá đơn cứng
+  // "Visa *4242 · 99.000đ · Thành công" hiện cho cả tài khoản chưa mua gì.
+  List<Map<String, dynamic>> _invoices = [];
 
   bool _isLoading = false;
 
@@ -120,6 +99,32 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Colors.purpleAccent),
+            )
+          : _invoices.isEmpty
+          // Chưa mua gì thì nói thẳng, thay vì hiện hoá đơn bịa như trước.
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.receipt_long_outlined,
+                      size: 40,
+                      color: Colors.white.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'premium.no_invoices'.tr(),
+                      textAlign: TextAlign.center,
+                      style: AppFonts.body(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )
           : ListView.builder(
               physics: const BouncingScrollPhysics(),

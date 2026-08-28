@@ -73,17 +73,19 @@ class DailyRecapWidget extends ConsumerWidget {
   String _activityVibe(String type) {
     switch (type) {
       case 'EXPENSE_ADDED':
-        return 'Squad spending update';
+        return 'dashboard.vibe_expense'.tr();
       case 'MOMENT_SHARED':
-        return 'New memory captured';
+        return 'dashboard.vibe_moment'.tr();
       case 'GAME_STARTED':
-        return 'Let the chaos begin';
+        return 'dashboard.vibe_game'.tr();
       case 'CHAT_SENT':
-        return 'Squad conversation';
+        return 'dashboard.vibe_chat'.tr();
       case 'ITINERARY_ADDED':
-        return 'Plan updated';
+        return 'dashboard.vibe_itinerary'.tr();
+      case 'POLL_CREATED':
+        return 'dashboard.vibe_poll'.tr();
       default:
-        return 'Squad activity';
+        return 'dashboard.vibe_default'.tr();
     }
   }
 

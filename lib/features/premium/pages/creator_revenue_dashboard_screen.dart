@@ -16,32 +16,18 @@ class _CreatorRevenueDashboardScreenState
   bool _isPayoutRequesting = false;
   bool _isLoading = false;
 
-  int _themesSold = 42;
-  int _stickersSold = 128;
-  int _totalSales = 1450000;
-  int _creatorShare = 1015000;
-  int _payoutPending = 450000;
+  // Khởi tạo 0, không phải số bịa. Trước đây các biến này mặc định
+  // 42 theme / 128 sticker / 1.45tr doanh thu, và vì API dùng `?? _biến` nên
+  // creator chưa bán gì vẫn thấy một bảng doanh thu như thật.
+  int _themesSold = 0;
+  int _stickersSold = 0;
+  int _totalSales = 0;
+  int _creatorShare = 0;
+  int _payoutPending = 0;
 
-  List<Map<String, dynamic>> _recentSales = [
-    {
-      'item': 'Chủ đề Kyoto Retro 🎋',
-      'buyer': 'Hoàng Yến',
-      'price': 49000,
-      'date': '2026-05-25',
-    },
-    {
-      'item': 'Nhãn dán Phú Quốc Shark 🦈',
-      'buyer': 'Phú Khang',
-      'price': 15000,
-      'date': '2026-05-24',
-    },
-    {
-      'item': 'Chủ đề Dalat Vintage 🌲',
-      'buyer': 'Minh Nhật',
-      'price': 49000,
-      'date': '2026-05-23',
-    },
-  ];
+  // Rỗng cho tới khi API trả giao dịch thật. Trước đây đây là 3 đơn bịa
+  // (người mua "Hoàng Yến", "Phú Khang", "Minh Nhật") hiện cho mọi tài khoản.
+  List<Map<String, dynamic>> _recentSales = [];
 
   @override
   void initState() {

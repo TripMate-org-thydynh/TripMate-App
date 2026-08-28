@@ -150,7 +150,14 @@
     "up_next_empty_title": "Chưa có gì sắp tới",
     "up_next_minutes": "{minutes} phút",
     "upcoming_activity": "Hoạt động sắp tới",
+    "vibe_chat": "Squad đang tám",
+    "vibe_default": "Squad có động tĩnh",
+    "vibe_expense": "Ví nhóm vừa động đậy",
+    "vibe_game": "Chaos bắt đầu",
+    "vibe_itinerary": "Kế hoạch vừa đổi",
     "vibe_match": "Vibe Match",
+    "vibe_moment": "Có kỷ niệm mới",
+    "vibe_poll": "Có cuộc bình chọn",
     "vibe_updated": "Đã đổi vibe của bạn thành {mood}!",
     "weather": "Thời tiết",
     "weather_checking": "Đang check thời tiết...",
@@ -496,6 +503,10 @@
   "polls": {
     "create": "Tạo",
     "create_poll": "Tạo poll"
+  },
+  "premium": {
+    "no_invoices": "Chưa có giao dịch nào. Hoá đơn sẽ hiện ở đây sau khi bạn mua gói.",
+    "no_referrals": "Chưa mời được ai. Chia sẻ mã của bạn để bắt đầu nhé!"
   },
   "profile": {
     "achievements": "Danh Hiệu & Cúp",
