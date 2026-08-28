@@ -130,6 +130,7 @@ class GameChallenge {
     const known = {
       'week-moments', 'week-expenses', 'week-plan', 'week-notes',
       'season-winter', 'season-spring', 'season-summer', 'season-autumn',
+      'day-moments', 'day-expenses', 'day-plan', 'day-games',
     };
     final key = known.contains(id) ? id.replaceAll('-', '_') : 'unknown';
     return 'games.challenge_${key}_$suffix'.tr();
@@ -188,8 +189,50 @@ class GamesRepository {
     return SquadDare.fromJson((data as Map).cast<String, dynamic>());
   }
 
+  /// Ván bingo đang mở của chuyến (nếu có) — để giữ ô đã tick giữa các lần vào.
+  ///
+  /// Trước đây bảng bingo mở ra là đã sẵn 3 ô "completed" cho mọi người, và
+  /// mọi ô tick đều mất khi thoát màn.
+  Future<({String id, List<int> marked})?> fetchBingo(String tripId) async {
+    final data = await _client.getData(_base(tripId));
+    if (data is! List) return null;
+    for (final e in data.whereType<Map>()) {
+      if (e['gameType'] != 'CARD_MATCH') continue;
+      if (e['endedAt'] != null) continue;
+      final state = e['stateJson'];
+      final raw = (state is Map) ? state['marked'] : null;
+      final marked = (raw is List)
+          ? raw.whereType<num>().map((n) => n.toInt()).toList()
+          : <int>[];
+      return (id: e['id'] as String, marked: marked);
+    }
+    return null;
+  }
+
+  /// Tạo ván bingo mới, trả về id để cập nhật về sau.
+  Future<String> startBingo(String tripId) async {
+    final data = await _client.postData(_base(tripId), {
+      'gameType': 'CARD_MATCH',
+      'initialState': {'game': 'BINGO', 'marked': <int>[]},
+    });
+    return (data as Map)['id'] as String;
+  }
+
+  Future<void> saveBingo(
+    String tripId,
+    String sessionId,
+    List<int> marked,
+  ) async {
+    await _client.patchData('${_base(tripId)}/$sessionId/state', {
+      'stateJson': {'game': 'BINGO', 'marked': marked},
+    });
+  }
+
   Future<List<GameChallenge>> fetchWeekly(String tripId) =>
       _fetchChallenges('${_base(tripId)}/weekly');
+
+  Future<List<GameChallenge>> fetchDaily(String tripId) =>
+      _fetchChallenges('${_base(tripId)}/daily');
 
   Future<List<GameChallenge>> fetchSeasonal(String tripId) =>
       _fetchChallenges('${_base(tripId)}/seasonal');
@@ -223,6 +266,11 @@ final weeklyChallengesProvider =
     FutureProvider.family<List<GameChallenge>, String>((ref, tripId) {
       return ref.watch(gamesRepositoryProvider).fetchWeekly(tripId);
     });
+
+final dailyMissionsProvider =
+    FutureProvider.family<List<GameChallenge>, String>(
+      (ref, tripId) => ref.watch(gamesRepositoryProvider).fetchDaily(tripId),
+    );
 
 final seasonalEventsProvider =
     FutureProvider.family<List<GameChallenge>, String>((ref, tripId) {

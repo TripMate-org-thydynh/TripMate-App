@@ -1,10 +1,13 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../data/games_repository.dart';
 import 'package:flutter/services.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
-class TripBingoScreen extends StatefulWidget {
+class TripBingoScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
@@ -15,11 +18,14 @@ class TripBingoScreen extends StatefulWidget {
   });
 
   @override
-  State<TripBingoScreen> createState() => _TripBingoScreenState();
+  ConsumerState<TripBingoScreen> createState() => _TripBingoScreenState();
 }
 
-class _TripBingoScreenState extends State<TripBingoScreen>
+class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     with SingleTickerProviderStateMixin {
+  /// Id ván bingo trên server — dùng để lưu lại các ô đã tick.
+  String? _sessionId;
+
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
@@ -34,21 +40,22 @@ class _TripBingoScreenState extends State<TripBingoScreen>
     {
       'emoji': '☕',
       'title': 'Cafe at 2AM',
-      'state': 'completed', // completed, active, normal
+      'state': 'normal', // completed, active, normal
     },
-    {'emoji': '📸', 'title': 'Accidental Film Photo', 'state': 'active'},
+    {'emoji': '📸', 'title': 'Accidental Film Photo', 'state': 'normal'},
     {'emoji': '☔', 'title': 'Survive Random Rain', 'state': 'normal'},
     {'emoji': '🗺️', 'title': 'Lost with Squad', 'state': 'normal'},
-    {'emoji': '💸', 'title': 'Overspend Budget', 'state': 'completed'},
-    {'emoji': '🍕', 'title': 'Eat 4th Meal', 'state': 'active'},
+    {'emoji': '💸', 'title': 'Overspend Budget', 'state': 'normal'},
+    {'emoji': '🍕', 'title': 'Eat 4th Meal', 'state': 'normal'},
     {'emoji': '🎤', 'title': 'Public Karaoke', 'state': 'normal'},
-    {'emoji': '🏃', 'title': 'Miss a Train', 'state': 'completed'},
+    {'emoji': '🏃', 'title': 'Miss a Train', 'state': 'normal'},
     {'emoji': '🌅', 'title': 'Stay up til Sunrise', 'state': 'normal'},
   ];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadBoard());
     _fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
@@ -74,7 +81,51 @@ class _TripBingoScreenState extends State<TripBingoScreen>
     return (completedCount / _bingoTiles.length);
   }
 
-  void _checkBingoWin() {
+  /// Nạp ván bingo đã lưu của chuyến, hoặc mở ván mới.
+  Future<void> _loadBoard() async {
+    final tripId = ref.read(activeTripIdProvider);
+    if (tripId == null) return;
+    try {
+      final repo = ref.read(gamesRepositoryProvider);
+      final existing = await repo.fetchBingo(tripId);
+      if (!mounted) return;
+      if (existing != null) {
+        setState(() {
+          _sessionId = existing.id;
+          for (final i in existing.marked) {
+            if (i >= 0 && i < _bingoTiles.length) {
+              _bingoTiles[i]['state'] = 'completed';
+            }
+          }
+        });
+        _checkBingoWin(celebrate: false);
+      } else {
+        final id = await repo.startBingo(tripId);
+        if (!mounted) return;
+        setState(() => _sessionId = id);
+      }
+    } catch (_) {
+      // Không chặn người chơi: bảng vẫn tick được, chỉ là không lưu được.
+    }
+  }
+
+  /// Lưu các ô đã tick lên server để lần sau vào vẫn còn.
+  Future<void> _saveBoard() async {
+    final tripId = ref.read(activeTripIdProvider);
+    final id = _sessionId;
+    if (tripId == null || id == null) return;
+    final marked = <int>[
+      for (var i = 0; i < _bingoTiles.length; i++)
+        if (_bingoTiles[i]['state'] == 'completed') i,
+    ];
+    try {
+      await ref.read(gamesRepositoryProvider).saveBingo(tripId, id, marked);
+    } catch (_) {
+      // Lưu hỏng thì bỏ qua — sẽ lưu lại ở lần tick sau.
+    }
+  }
+
+  void _checkBingoWin({bool celebrate = true}) {
     bool newBingoAchieved = false;
 
     for (int i = 0; i < _winningLines.length; i++) {
@@ -91,9 +142,26 @@ class _TripBingoScreenState extends State<TripBingoScreen>
       }
     }
 
-    if (newBingoAchieved) {
+    if (newBingoAchieved && celebrate) {
       HapticFeedback.heavyImpact();
       _showBingoCelebrationDialog();
+      // Ăn được một hàng thì XP vào squad thật, không chỉ hiện dialog.
+      final tripId = ref.read(activeTripIdProvider);
+      if (tripId != null) {
+        ref
+            .read(gamesRepositoryProvider)
+            .createSession(
+              tripId,
+              gameType: 'CARD_MATCH',
+              state: {'game': 'BINGO_LINE', 'lines': _completedLineIndices.length},
+            )
+            .then((_) {
+              if (!mounted) return;
+              ref.invalidate(squadXpProvider(tripId));
+              ref.invalidate(leaderboardProvider(tripId));
+            })
+            .catchError((_) {});
+      }
     }
   }
 
@@ -543,6 +611,7 @@ class _TripBingoScreenState extends State<TripBingoScreen>
               }
             });
             _checkBingoWin();
+            _saveBoard();
 
             if (tile['state'] == 'completed') {
               ScaffoldMessenger.of(context).showSnackBar(
