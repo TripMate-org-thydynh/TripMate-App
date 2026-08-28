@@ -1,9 +1,13 @@
 import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import '../../../discovery/presentation/pages/live_map_squad_tracking_screen.dart';
+import '../../../gamification/data/games_repository.dart';
+import '../../../trips/application/trips_providers.dart';
+import '../../data/home_feed_repository.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LiveTripPage extends StatefulWidget {
+class LiveTripPage extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
 
@@ -14,16 +18,19 @@ class LiveTripPage extends StatefulWidget {
   });
 
   @override
-  State<LiveTripPage> createState() => _LiveTripPageState();
+  ConsumerState<LiveTripPage> createState() => _LiveTripPageState();
 }
 
-class _LiveTripPageState extends State<LiveTripPage>
+class _LiveTripPageState extends ConsumerState<LiveTripPage>
     with TickerProviderStateMixin {
   late final AnimationController _shakeController;
   late final AnimationController _particlesController;
   final List<Particle> _particles = [];
   final Random _random = Random();
-  double _energyLevel = 0.85;
+  /// Mức "vibe energy" đọc từ tiến độ XP THẬT của chuyến (xem
+  /// [_vibeEnergy]). Biến này chỉ còn giữ phần thưởng tạm khi người dùng
+  /// lắc máy, cộng dồn lên trên giá trị thật.
+  double _shakeBonus = 0.0;
 
   @override
   void initState() {
@@ -49,7 +56,7 @@ class _LiveTripPageState extends State<LiveTripPage>
   void _triggerVibeBoost() {
     _shakeController.forward(from: 0.0);
     setState(() {
-      _energyLevel = min(1.0, _energyLevel + 0.05);
+      _shakeBonus = min(0.15, _shakeBonus + 0.05);
     });
 
     // Generate falling color particle sparks
@@ -129,7 +136,7 @@ class _LiveTripPageState extends State<LiveTripPage>
                               colors: [textPrimary, textPrimary],
                             ).createShader(bounds),
                             child: Text(
-                              'Đà Lạt Chill 🌲',
+                              _tripName(),
                               style: AppFonts.body(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
@@ -139,7 +146,9 @@ class _LiveTripPageState extends State<LiveTripPage>
                             ),
                           ),
                           Text(
-                            'Active squad members: 6 idiots',
+                            'live_trip.member_count'.tr(
+                              namedArgs: {'count': '${_memberCount()}'},
+                            ),
                             style: AppFonts.body(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -148,116 +157,17 @@ class _LiveTripPageState extends State<LiveTripPage>
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LiveMapSquadTrackingScreen(
-                                isDarkMode: widget.isDarkMode,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD8422B),
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(color: glassBorder, width: 2),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.gps_fixed,
-                                color: Colors.white,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                'LIVE MAP',
-                                style: AppFonts.mono(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Đã gỡ nút "LIVE MAP": màn đích vẽ vị trí cứng của các
+                      // thành viên bịa, mà app không thu thập vị trí thật (đã bỏ
+                      // quyền GPS). Khôi phục khi có chia sẻ vị trí thật.
                     ],
                   ),
                   const SizedBox(height: 20),
 
-                  // Mini Map Schematic panel card
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LiveMapSquadTrackingScreen(
-                            isDarkMode: widget.isDarkMode,
-                            onThemeToggle: widget.onThemeToggle,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 180,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        color: cardBg,
-                        border: Border.all(color: glassBorder, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: glassBorder,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: CustomPaint(
-                                painter: MiniMapGridPainter(
-                                  isDark: isDark,
-                                  primaryColor: primaryColor,
-                                ),
-                              ),
-                            ),
-                            // Small simplified pin bubbles overlay
-                            _buildMiniMapPin(
-                              top: 30,
-                              left: 50,
-                              name: 'Nam Trung',
-                              color: Colors.greenAccent,
-                            ),
-                            _buildMiniMapPin(
-                              top: 100,
-                              left: 140,
-                              name: 'Ly (Me)',
-                              color: primaryColor,
-                              isMe: true,
-                            ),
-                            _buildMiniMapPin(
-                              top: 60,
-                              left: 240,
-                              name: 'Nhật',
-                              color: secondaryColor,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+                  // Đã gỡ khối "mini map" ở đây: nó vẽ 3 pin cứng mang tên
+                  // Nam Trung / Ly / Nhật trên một lưới giả, trong khi app không
+                  // thu thập vị trí thật của thành viên nào (đã bỏ quyền GPS).
+                  // Khôi phục khi có tính năng chia sẻ vị trí thật.
 
                   // Circular Vibe energy meter gauge & Shake booster panel (2 columns)
                   Row(
@@ -284,7 +194,7 @@ class _LiveTripPageState extends State<LiveTripPage>
                               CustomPaint(
                                 size: const Size(110, 110),
                                 painter: EnergyCirclePainter(
-                                  progress: _energyLevel,
+                                  progress: _vibeEnergy(),
                                   color: secondaryColor,
                                   backgroundColor: isDark
                                       ? Colors.white10
@@ -295,7 +205,7 @@ class _LiveTripPageState extends State<LiveTripPage>
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    '${(_energyLevel * 100).toInt()}%',
+                                    '${(_vibeEnergy() * 100).toInt()}%',
                                     style: AppFonts.heading(
                                       fontSize: 24,
                                       fontWeight: FontWeight.w900,
@@ -385,32 +295,62 @@ class _LiveTripPageState extends State<LiveTripPage>
                   ),
                   const SizedBox(height: 12),
 
-                  _buildLiveFeedItem(
-                    '☕',
-                    'Minh Nhật is at The Hill Station',
-                    'Just now',
-                    cardBg,
-                    glassBorder,
-                    textPrimary,
-                    textSecondary,
-                  ),
-                  _buildLiveFeedItem(
-                    '📸',
-                    'Thảo Ly uploaded 3 moments',
-                    '5m ago',
-                    cardBg,
-                    glassBorder,
-                    textPrimary,
-                    textSecondary,
-                  ),
-                  _buildLiveFeedItem(
-                    '🛵',
-                    'Nam Trung is cruising Dalat Night Market',
-                    '15m ago',
-                    cardBg,
-                    glassBorder,
-                    textPrimary,
-                    textSecondary,
+                  // Hiển thị hoạt động THẬT của squad. Trước đây ở đây là 3 dòng
+                  // cứng ("Minh Nhật is at The Hill Station"...) hiện cho mọi tài khoản.
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final async = ref.watch(squadActivitiesProvider);
+                      return async.when(
+                        loading: () => const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Center(
+                            child: SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        ),
+                        error: (_, _) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Text(
+                            'errors.load_failed'.tr(),
+                            style: AppFonts.body(
+                              fontSize: 13,
+                              color: textSecondary,
+                            ),
+                          ),
+                        ),
+                        data: (items) {
+                          if (items.isEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                'live_trip.no_updates'.tr(),
+                                style: AppFonts.body(
+                                  fontSize: 13,
+                                  color: textSecondary,
+                                ),
+                              ),
+                            );
+                          }
+                          return Column(
+                            children: [
+                              for (final a in items.take(6))
+                                _buildLiveFeedItem(
+                                  _activityEmoji(a.type),
+                                  a.label,
+                                  a.tripName,
+                                  cardBg,
+                                  glassBorder,
+                                  textPrimary,
+                                  textSecondary,
+                                ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 48),
@@ -423,33 +363,61 @@ class _LiveTripPageState extends State<LiveTripPage>
     );
   }
 
-  Widget _buildMiniMapPin({
-    required double top,
-    required double left,
-    required String name,
-    required Color color,
-    bool isMe = false,
-  }) {
-    return Positioned(
-      top: top,
-      left: left,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        decoration: BoxDecoration(
-          color: isMe ? const Color(0xFFF5822B) : Colors.black87,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color, width: 1),
-        ),
-        child: Text(
-          name,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 8,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+
+  /// Tên chuyến gần nhất của user. Trước đây header hardcode "Đà Lạt Chill".
+  String _tripName() {
+    return ref.watch(tripsProvider).maybeWhen(
+      data: (trips) =>
+          trips.isEmpty ? 'live_trip.no_trip'.tr() : trips.first.name,
+      orElse: () => '…',
     );
+  }
+
+  /// Số thành viên thật. Trước đây luôn là "6 idiots".
+  int _memberCount() {
+    return ref.watch(tripsProvider).maybeWhen(
+      data: (trips) => trips.isEmpty ? 0 : trips.first.memberCount,
+      orElse: () => 0,
+    );
+  }
+
+  /// "Vibe energy" = tiến độ XP thật của chuyến, cộng thêm phần thưởng khi lắc
+  /// máy. Trước đây con số này cố định 85% cho mọi tài khoản.
+  double _vibeEnergy() {
+    final tripId = ref.watch(activeTripIdProvider);
+    if (tripId == null) return _shakeBonus.clamp(0.0, 1.0);
+    final base = ref
+        .watch(squadXpProvider(tripId))
+        .maybeWhen(data: (xp) => xp.levelProgress, orElse: () => 0.0);
+    return (base + _shakeBonus).clamp(0.0, 1.0);
+  }
+
+  /// Emoji minh hoạ cho từng loại hoạt động trong feed.
+  static String _activityEmoji(String type) {
+    switch (type) {
+      case 'EXPENSE_ADDED':
+        return '💸';
+      case 'MOMENT_SHARED':
+        return '📸';
+      case 'ITINERARY_ADDED':
+        return '🗺️';
+      case 'CHAT_SENT':
+        return '💬';
+      case 'GAME_STARTED':
+        return '🎮';
+      case 'POLL_CREATED':
+        return '🗳️';
+      case 'MEMBER_JOINED':
+        return '👋';
+      case 'JOURNAL_WRITTEN':
+        return '📔';
+      case 'NOTE_ADDED':
+        return '📝';
+      case 'DOCUMENT_UPLOADED':
+        return '📎';
+      default:
+        return '✨';
+    }
   }
 
   Widget _buildLiveFeedItem(

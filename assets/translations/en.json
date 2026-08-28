@@ -435,6 +435,9 @@
     "chaotic_meter": "⚡ Chaotic Good ({percent}%)",
     "live_mode": "Live Trip Mode",
     "live_updates": "Live Updates",
+    "member_count": "{count} in the squad",
+    "no_trip": "No trip yet",
+    "no_updates": "No activity yet. Start planning or post a moment!",
     "shake_to_boost": "Shake to Boost Vibe!",
     "squad_energy": "Squad Energy"
   },

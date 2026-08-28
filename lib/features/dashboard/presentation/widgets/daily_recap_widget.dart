@@ -15,33 +15,6 @@ class _DailyRecapWidgetState extends State<DailyRecapWidget> {
   List<Map<String, dynamic>> _activities = [];
   bool _isLoading = true;
 
-  static const _fallbackActivities = [
-    {
-      "title": "Day 1 Summary",
-      "time": "Yesterday, 2:00 AM",
-      "chaosVibe": "Pranked Phú Khang",
-      "details":
-          "Placed a fake spider on Phú Khang's pillow. He screamed at 100dB!",
-      "colorHex": 0xFFF5822B,
-    },
-    {
-      "title": "Night Market Feast",
-      "time": "Yesterday, 8:30 PM",
-      "chaosVibe": "Grilled Food Attack",
-      "details":
-          "Minh Nhật devoured 5 plates of skewers. Total spending went to 450k VND.",
-      "colorHex": 0xFF3D8BFF,
-    },
-    {
-      "title": "Morning Hike",
-      "time": "Today, 7:00 AM",
-      "chaosVibe": "Langbiang Summit",
-      "details":
-          "Squad hiked 5km to the peak. Breathtaking panoramic view of Đà Lạt valley.",
-      "colorHex": 0xFF1FA85C,
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -76,10 +49,11 @@ class _DailyRecapWidgetState extends State<DailyRecapWidget> {
           _isLoading = false;
         });
       } else {
+        // Chưa có hoạt động nào → danh sách rỗng (widget đã có empty state).
+        // Trước đây nhánh này đổ vào 3 hoạt động bịa ("Pranked Phú Khang",
+        // "Minh Nhật devoured 5 plates of skewers"...) cho mọi tài khoản.
         setState(() {
-          _activities = _fallbackActivities
-              .map((a) => Map<String, dynamic>.from(a))
-              .toList();
+          _activities = const [];
           _isLoading = false;
         });
       }

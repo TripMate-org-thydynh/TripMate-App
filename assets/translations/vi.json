@@ -435,6 +435,9 @@
     "chaotic_meter": "⚡ Chaotic Good ({percent}%)",
     "live_mode": "Live Trip Mode",
     "live_updates": "Cập nhật trực tiếp",
+    "member_count": "{count} thành viên đang trong squad",
+    "no_trip": "Chưa có chuyến nào",
+    "no_updates": "Chưa có hoạt động nào. Bắt đầu lên lịch trình hoặc đăng khoảnh khắc đi!",
     "shake_to_boost": "Lắc máy để tăng Vibe!",
     "squad_energy": "Squad Energy"
   },

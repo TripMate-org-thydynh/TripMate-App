@@ -25,30 +25,6 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
   bool _isLoading = true;
   String _tripName = '';
 
-  // Fallback data nếu API chưa có data thật
-  static const _fallbackMembers = [
-    {
-      "name": "Nam Trung",
-      "status": "ONLINE",
-      "vibe": "coffee",
-      "avatarChar": "N",
-    },
-    {
-      "name": "Thảo Ly",
-      "status": "ONLINE",
-      "vibe": "camera",
-      "avatarChar": "T",
-    },
-    {
-      "name": "Minh Nhật",
-      "status": "IN_TRIP",
-      "vibe": "walk",
-      "avatarChar": "M",
-    },
-    {"name": "Phú Khang", "status": "IDLE", "vibe": "sleep", "avatarChar": "P"},
-    {"name": "Hana", "status": "OFFLINE", "vibe": "home", "avatarChar": "H"},
-  ];
-
   static IconData _vibeIcon(String vibe) {
     switch (vibe) {
       case "coffee":
@@ -103,11 +79,12 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
           _isLoading = false;
         });
       } else {
-        // Dùng fallback data có nghĩa
+        // API không trả thành viên nào → danh sách rỗng.
+        // Trước đây nhánh này đổ vào 5 người bịa (Nam Trung, Thảo Ly, Minh
+        // Nhật, Phú Khang, Hana), khiến tài khoản chưa có bạn nào vẫn thấy
+        // "squad" đông đủ trên màn Home.
         setState(() {
-          _members = _fallbackMembers
-              .map((m) => Map<String, dynamic>.from(m))
-              .toList();
+          _members = const [];
           _isLoading = false;
         });
       }
