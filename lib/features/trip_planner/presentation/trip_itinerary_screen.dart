@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../../dashboard/data/home_feed_repository.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -159,6 +160,7 @@ class TripItineraryScreen extends ConsumerWidget {
           category: selectedCategory,
         );
     ref.invalidate(tripItineraryProvider(tripId));
+    invalidateHomeAggregatesFrom(ref);
   }
 
   @override

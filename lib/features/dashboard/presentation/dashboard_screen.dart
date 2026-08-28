@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../trip_planner/presentation/itinerary_screen.dart';
+import '../../trip_planner/presentation/itinerary_tab.dart';
 import '../../trip_planner/presentation/create_trip_screen.dart';
 import '../../profile/profile_screen.dart';
 import '../../profile/data/profile_provider.dart';
@@ -94,10 +94,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         isDarkMode: isDark,
         onThemeToggle: () => _toggleThemeWithReveal(Offset.zero),
       ),
-      ItineraryScreen(
-        isDarkMode: isDark,
-        onThemeToggle: () => _toggleThemeWithReveal(Offset.zero),
-      ),
+      // Tab lịch trình dùng dữ liệu THẬT (xem itinerary_tab.dart). Trước đây
+      // đây là `ItineraryScreen` — một màn demo 1805 dòng không gọi API nào.
+      ItineraryTab(isDarkMode: isDark),
       CreateTripScreen(
         isDarkMode: isDark,
         onThemeToggle: () => _toggleThemeWithReveal(Offset.zero),
@@ -118,27 +117,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       (
         icon: PhosphorIcons.house(),
         active: PhosphorIcons.house(PhosphorIconsStyle.fill),
-        label: 'general.explore'.tr(),
+        label: 'nav.explore'.tr(),
       ),
       (
         icon: PhosphorIcons.mapTrifold(),
         active: PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
-        label: 'general.itinerary'.tr(),
+        label: 'nav.itinerary'.tr(),
       ),
       (
         icon: PhosphorIcons.plusCircle(),
         active: PhosphorIcons.plusCircle(PhosphorIconsStyle.fill),
-        label: 'trips.create_trip'.tr(),
+        label: 'nav.create'.tr(),
       ),
       (
         icon: PhosphorIcons.usersThree(),
         active: PhosphorIcons.usersThree(PhosphorIconsStyle.fill),
-        label: 'live_trip.live_mode'.tr(),
+        label: 'nav.live'.tr(),
       ),
       (
         icon: PhosphorIcons.user(),
         active: PhosphorIcons.user(PhosphorIconsStyle.fill),
-        label: 'general.settings'.tr(),
+        label: 'nav.profile'.tr(),
       ),
     ];
 
@@ -229,6 +228,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           item.label,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
                           style: AppFonts.heading(
                             fontSize: 10,
                             fontWeight: selected

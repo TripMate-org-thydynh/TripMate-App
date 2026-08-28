@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import '../../../dashboard/data/home_feed_repository.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -100,6 +101,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
       // Làm mới số dư + danh sách chi.
       ref.invalidate(tripBalancesProvider(widget.tripId));
       ref.invalidate(tripExpensesProvider(widget.tripId));
+      // Khối "The Roast" và feed hoạt động ở Home lấy từ tổng hợp chi tiêu.
+      invalidateHomeAggregatesFrom(ref);
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(

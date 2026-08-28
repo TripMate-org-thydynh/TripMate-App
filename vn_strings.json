@@ -1,0 +1,5288 @@
+[
+ {
+  "file": "lib/core/api_service.dart",
+  "line": 125,
+  "text": "Có lỗi xảy ra. Vui lòng thử lại.",
+  "interp": false
+ },
+ {
+  "file": "lib/core/network/api_client.dart",
+  "line": 32,
+  "text": "API_BASE_URL phải dùng https ở môi trường thật.",
+  "interp": false
+ },
+ {
+  "file": "lib/core/network/api_client.dart",
+  "line": 42,
+  "text": "API_BASE_URL chưa được cấu hình. Build release phải truyền ",
+  "interp": false
+ },
+ {
+  "file": "lib/core/network/error_message.dart",
+  "line": 12,
+  "text": "Có lỗi xảy ra. Vui lòng thử lại.",
+  "interp": false
+ },
+ {
+  "file": "lib/core/network/interceptors/auth_interceptor.dart",
+  "line": 31,
+  "text": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 24,
+  "text": "TripMate chia tiền",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 49,
+  "text": "$recipientPhone | ${amount.toStringAsFixed(0)}đ | $note",
+  "interp": true
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 127,
+  "text": "Đã mở app — thông tin chuyển khoản đã được copy sẵn",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 128,
+  "text": "Chưa tìm thấy app — đã copy thông tin để bạn chuyển tay",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 168,
+  "text": "Chuyển cho",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 188,
+  "text": "${amount.toStringAsFixed(0)} đ",
+  "interp": true
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 225,
+  "text": "Sao chép thông tin",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 226,
+  "text": "SĐT • số tiền • ghi chú",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/payment_launcher.dart",
+  "line": 244,
+  "text": "Đã copy thông tin chuyển khoản",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/weather_service.dart",
+  "line": 134,
+  "text": "Trời quang",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/weather_service.dart",
+  "line": 138,
+  "text": "Sương mù",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/weather_service.dart",
+  "line": 140,
+  "text": "Mưa phùn",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/weather_service.dart",
+  "line": 148,
+  "text": "Giông bão",
+  "interp": false
+ },
+ {
+  "file": "lib/core/services/weather_service.dart",
+  "line": 150,
+  "text": "Không xác định",
+  "interp": false
+ },
+ {
+  "file": "lib/core/widgets/offline_banner.dart",
+  "line": 45,
+  "text": "ĐANG XEM OFFLINE 📶🚫",
+  "interp": false
+ },
+ {
+  "file": "lib/core/widgets/offline_banner.dart",
+  "line": 54,
+  "text": "Thiết bị mất mạng. Dữ liệu đang hiển thị từ bộ nhớ tạm.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 163,
+  "text": "Chào mừng cưng đến với Matey AI!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 173,
+  "text": "Hệ thống AI phân tích tính cách, đo lường sự hỗn loạn và hỗ trợ tính toán ngân sách du lịch đang hoạt động hết công suất. Hãy chạm để khám phá!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 189,
+  "text": "Tương Tác Companion",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 195,
+  "text": "Trò chuyện cực kỳ hỗn loạn và đầy tính giải trí với Matey AI",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 211,
+  "text": "Đo lường mức độ hợp cạ và rung động tâm hồn của cả hội bạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 230,
+  "text": "Tạo và tối ưu hóa lịch trình Kyoto / Dalat siêu tốc bằng AI",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 249,
+  "text": "Hỗ Trợ & Phân Tích Squad",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 255,
+  "text": "Trợ lý tối ưu hóa ngân sách và roast chi tiêu cực phũ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 271,
+  "text": "Roast và xếp hạng tính cách lười biếng / ham chơi của từng đứa",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 287,
+  "text": "Đo lường chỉ số căng thẳng và drama trong squad thời gian thực",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 302,
+  "text": "Lộ trình gợi ý hoạt động độc lạ theo múi giờ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 319,
+  "text": "Cập nhật giao thông, thời tiết thông minh kèm giải pháp",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 334,
+  "text": "Ghép video kỷ niệm hành trình tự động cực cháy",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 350,
+  "text": "Không Gian Làm Việc AI",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 356,
+  "text": "Hàng đợi render video recap & bóc tách hóa đơn nền",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 371,
+  "text": "Danh sách các câu lệnh mẫu siêu tốc cực kỳ xịn sò",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/ai_hub_screen.dart",
+  "line": 386,
+  "text": "Lịch sử tra cứu các thông tin cũ từ Matey AI",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_caption_generator_screen.dart",
+  "line": 487,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_chat_history_screen.dart",
+  "line": 266,
+  "text": "Rain backup plan for Đà Lạt",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_chat_history_screen.dart",
+  "line": 622,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 26,
+  "text": "Ghép ảnh Kyoto, chèn nhạc EDM cực căng & sub troll",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 29,
+  "text": "25 giây",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 35,
+  "text": "Phân Tích Hóa Đơn Dalat Chaos 🧾",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 36,
+  "text": "Matey AI OCR bóc tách 14 hóa đơn lẩu nướng gà lá é",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 39,
+  "text": "5 giây",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 45,
+  "text": "Tính Cách Quái Vật Squad Roaster 👹",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 46,
+  "text": "Phân tích chat log để tìm ra kẻ hủy diệt tình bạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 49,
+  "text": "1 phút",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 55,
+  "text": "Bản Đồ Vibe Match Tìm Gái Xinh/Trai Đẹp 🗺️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 56,
+  "text": "Quét tọa độ check-in matching của hội bạn độc thân",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_generation_queue_screen.dart",
+  "line": 59,
+  "text": "3 phút",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_mood_detection_screen.dart",
+  "line": 28,
+  "text": "Đo Chỉ Số Tâm Trạng Squad 🎭",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_mood_detection_screen.dart",
+  "line": 75,
+  "text": "Độ hỗn loạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_mood_detection_screen.dart",
+  "line": 87,
+  "text": "Tâm Trạng: Hơi Hỗn Loạn 🎢",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_mood_detection_screen.dart",
+  "line": 96,
+  "text": "Chỉ số này tự động tổng hợp dựa trên tần suất chia hóa đơn và số lượng tin nhắn chat dìm hàng nhau.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 8,
+  "text": "Alex Nguyễn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 9,
+  "text": "Chúa Tể Hỗn Loạn 👑",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 11,
+  "text": "Thích tiêu tiền nhóm và chia nợ bằng vòng quay roulette! Không quan tâm ví ai khóc!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 14,
+  "text": "Trần Bình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 15,
+  "text": "Thần Tài Săn Deal 💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 17,
+  "text": "Checkin chậm nhất nhưng đòi hóa đơn chi tiết nhất nhóm! Sợ mất 1 đồng xu!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 20,
+  "text": "Minh Nhật",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 21,
+  "text": "Phượt Thủ Selfie 🤳",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 23,
+  "text": "Gom 90% bộ nhớ album chung chỉ để up ảnh của mình! Sợ mọi người quên mặt!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 47,
+  "text": "Phân Tích Tính Cách Squad 🎭",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_personality_analysis_screen.dart",
+  "line": 83,
+  "text": "Phân tích thói quen phượt thủ thực tế dựa trên số liệu chi tiêu và hoạt động.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_recommendation_timeline_screen.dart",
+  "line": 10,
+  "text": "AI Vibe Match đạt 92% với tính cách chill của cả nhóm.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_recommendation_timeline_screen.dart",
+  "line": 14,
+  "text": "Đền Fushimi Inari ⛩️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_recommendation_timeline_screen.dart",
+  "line": 15,
+  "text": "Thời tiết mát mẻ nhất trong ngày, tránh nắng gắt.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_recommendation_timeline_screen.dart",
+  "line": 39,
+  "text": "Hành Trình Gợi Ý Bằng AI 🕒",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_recommendation_timeline_screen.dart",
+  "line": 55,
+  "text": "Dòng thời gian các điểm đến được gợi ý tối ưu tự động dựa trên vị trí và sở thích nhóm.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_saved_prompts_screen.dart",
+  "line": 8,
+  "text": "Tối ưu hóa hóa đơn của tôi 💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_saved_prompts_screen.dart",
+  "line": 10,
+  "text": "Hãy quét và chỉ ra ai đang nợ tiền tôi nhiều nhất và đưa ra gợi ý đòi nợ hài hước.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_saved_prompts_screen.dart",
+  "line": 13,
+  "text": "Lịch trình chill mây sớm 🌲",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_saved_prompts_screen.dart",
+  "line": 15,
+  "text": "Gợi ý lịch trình ngắm mây 5h sáng tại Đà Lạt ít người nhất và địa điểm ăn sáng gần nhất.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_saved_prompts_screen.dart",
+  "line": 39,
+  "text": "Các Câu Lệnh Đã Lưu 📌",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_suggestion_feed_screen.dart",
+  "line": 224,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_suggestion_feed_screen.dart",
+  "line": 265,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_suggestion_feed_screen.dart",
+  "line": 298,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_suggestion_feed_screen.dart",
+  "line": 339,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_suggestion_feed_screen.dart",
+  "line": 389,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_suggestion_feed_screen.dart",
+  "line": 536,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_trip_summary_screen.dart",
+  "line": 555,
+  "text": "Thảo Ly",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_trip_summary_screen.dart",
+  "line": 556,
+  "text": "\"Thảo Ly got lost 7 times 😭\"",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_trip_summary_screen.dart",
+  "line": 619,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/ai_trip_summary_screen.dart",
+  "line": 652,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/matey_ai_emotional_chaos_screen.dart",
+  "line": 29,
+  "text": "You probably shouldn’t schedule 5 cafes in 2 hours 😭 Trừ khi các bồ muốn cả team xỉu up xỉu down vibrating through the streets of Tokyo. Let\\",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/matey_ai_emotional_chaos_screen.dart",
+  "line": 37,
+  "text": "That omakase place is gonna eat 40% of the daily budget. Tìm quán khác hạt dẻ hơn nha?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/matey_ai_emotional_chaos_screen.dart",
+  "line": 43,
+  "text": "rain detected ☔ saving the vibe... Trời sắp mưa rào rùi, tui đổi Tsukiji Market sang chiều nha?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/matey_ai_emotional_chaos_screen.dart",
+  "line": 57,
+  "text": "\"Đỉnh chóp luôn. Góc này lên hình bao cháy, matches your squad\\",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/matey_ai_emotional_chaos_screen.dart",
+  "line": 115,
+  "text": "OMG 😱 Đã ghi nhận ý kiến! Để tui tính toán lại lịch trình tối nay cho cả đội quẩy tẹt ga nha! ⚡🕺",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/matey_ai_emotional_chaos_screen.dart",
+  "line": 595,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/ai/pages/matey_ai_emotional_chaos_screen.dart",
+  "line": 903,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/checkins/presentation/trip_checkins_screen.dart",
+  "line": 103,
+  "text": "Điểm danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/checkins/presentation/trip_checkins_screen.dart",
+  "line": 120,
+  "text": "Lỗi tải điểm danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/checkins/presentation/trip_checkins_screen.dart",
+  "line": 169,
+  "text": "Ngày $day",
+  "interp": true
+ },
+ {
+  "file": "lib/features/checkins/presentation/trip_checkins_screen.dart",
+  "line": 179,
+  "text": ").length} đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/checkins/presentation/trip_checkins_screen.dart",
+  "line": 189,
+  "text": "Chưa ai điểm danh ngày này",
+  "interp": false
+ },
+ {
+  "file": "lib/features/checkins/presentation/trip_checkins_screen.dart",
+  "line": 234,
+  "text": "Trạng thái của tôi:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 83,
+  "text": "Resorts, spas, and slow mornings in Hội An.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 91,
+  "text": "Bùi Viện nights and rooftop bars in Saigon.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 355,
+  "text": "Chọn vibe để mình gợi ý chuyến đi phù hợp nhé!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 669,
+  "text": "quên mật khẩu rồi?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 679,
+  "text": "Không sao! Nhập email của bạn để nhận mã OTP đặt lại mật khẩu.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 685,
+  "text": "Nhập email của bạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 712,
+  "text": "Mã OTP đã được gửi đến email $email!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 727,
+  "text": "Gửi mã OTP thất bại. Vui lòng thử lại.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 765,
+  "text": "Quay lại đăng nhập",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 800,
+  "text": "chào mừng vào squad.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 858,
+  "text": "Email của bạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 858,
+  "text": "Số điện thoại",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 886,
+  "text": "Mã OTP đã được gửi đến email $target!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 887,
+  "text": "Mã OTP đã được gửi đến số điện thoại $target!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 899,
+  "text": "Gửi mã OTP thất bại. Vui lòng thử lại.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 942,
+  "text": "Đăng nhập bằng SĐT",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 942,
+  "text": "Đăng nhập bằng Email",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 957,
+  "text": "Quên mật khẩu?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 975,
+  "text": "hoặc đăng nhập bằng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 998,
+  "text": "Dùng tài khoản & mật khẩu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1013,
+  "text": "Khi tiếp tục bạn đồng ý với ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1017,
+  "text": "điều khoản",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1023,
+  "text": " và ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1025,
+  "text": "chính sách bảo mật",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1055,
+  "text": "xác minh mã. 🛡️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1065,
+  "text": "Nhập mã 4 chữ số vừa gửi tới ${_isEmailInput ? _emailController.text.trim() : _formatVnPhone(_emailController.text.trim())}.",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1158,
+  "text": "Chưa nhận được mã?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1164,
+  "text": "Gửi lại sau ${_otpTimer}s",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1216,
+  "text": "Chào mừng trở lại, ${_tempUser?[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1235,
+  "text": "Xác minh mã OTP thất bại. Mã không đúng hoặc đã hết hạn.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1255,
+  "text": "Xác minh & Tiếp tục",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1283,
+  "text": "nhân vật chính thôi!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1293,
+  "text": "Chọn username và tên hiển thị của bạn nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1299,
+  "text": "Tên hiển thị (vd: Minh)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1305,
+  "text": "Username độc nhất",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1396,
+  "text": "Đăng ký thất bại. Thử username khác nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1446,
+  "text": "đừng lạc mất squad nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1457,
+  "text": "Bật quyền vị trí để squad có thể theo dõi nhau trên bản đồ realtime trong chuyến đi.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1470,
+  "text": "Cho phép vị trí",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1533,
+  "text": "bạn đã vào squad rồi!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1544,
+  "text": "Xong rồi! Hồ sơ của bạn đã được đăng ký. Hãy bắt đầu lên kế hoạch du lịch nhóm thôi!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1682,
+  "text": "Không lấy được Google ID token.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1706,
+  "text": "Chào mừng trở lại, ${account.displayName}!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1723,
+  "text": "Đăng nhập Google thất bại. Vui lòng thử lại.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/auth_flow_screen.dart",
+  "line": 1731,
+  "text": "Lỗi Google Sign-In: ${friendlyError(e)}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 50,
+  "text": "Username tối thiểu 3 ký tự",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 58,
+  "text": "Mật khẩu xác nhận không khớp",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 105,
+  "text": "tạo tài khoản.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 105,
+  "text": "đăng nhập.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 116,
+  "text": "Chỉ cần username và mật khẩu là xong.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 117,
+  "text": "Nhập username và mật khẩu của bạn.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 142,
+  "text": "Xác nhận mật khẩu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 179,
+  "text": "Đăng ký & vào app",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 179,
+  "text": "Đăng nhập",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 198,
+  "text": "Đã có tài khoản? ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 199,
+  "text": "Chưa có tài khoản? ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 203,
+  "text": "Đăng nhập",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/password_auth_screen.dart",
+  "line": 203,
+  "text": "Đăng ký",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/pages/home_dashboard_page.dart",
+  "line": 76,
+  "text": "hà nội",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/pages/home_dashboard_page.dart",
+  "line": 79,
+  "text": "đà nẵng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/pages/home_dashboard_page.dart",
+  "line": 82,
+  "text": "sài gòn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/pages/home_dashboard_page.dart",
+  "line": 82,
+  "text": "hồ chí minh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/widgets/quick_actions_panel.dart",
+  "line": 97,
+  "text": "Chia tiền cho chuyến nào?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/dashboard/presentation/widgets/upcoming_reservations_widget.dart",
+  "line": 37,
+  "text": "còn ${diff.inDays} ngày",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/widgets/upcoming_reservations_widget.dart",
+  "line": 38,
+  "text": "còn ${diff.inHours} giờ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/widgets/upcoming_reservations_widget.dart",
+  "line": 39,
+  "text": "còn ${diff.inMinutes} phút",
+  "interp": true
+ },
+ {
+  "file": "lib/features/dashboard/presentation/widgets/upcoming_reservations_widget.dart",
+  "line": 40,
+  "text": "sắp diễn ra",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/ai_vibe_match_screen.dart",
+  "line": 33,
+  "text": "Minh Nhật is mapping coordinates... 🗺️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/ai_vibe_match_screen.dart",
+  "line": 34,
+  "text": "Thảo Ly is checking aesthetic ratings... 📸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/ai_vibe_match_screen.dart",
+  "line": 154,
+  "text": "Old Town, Hội An",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/ai_vibe_match_screen.dart",
+  "line": 526,
+  "text": "Minh Nhật",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/ai_vibe_match_screen.dart",
+  "line": 536,
+  "text": "Thảo Ly",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/ai_vibe_match_screen.dart",
+  "line": 619,
+  "text": "Old Town, Hội An",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/ai_vibe_match_screen.dart",
+  "line": 664,
+  "text": "\"This is giving: main character Đà Lạt episode. Your squad would absolutely romanticize this cafe.\" ✨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 80,
+  "text": "Không xác định được vị trí từ ảnh này.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 87,
+  "text": "Không đọc được ảnh. Thử ảnh khác nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 108,
+  "text": "Ảnh này ở đâu? 📍",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 165,
+  "text": "Đang soi ảnh...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 219,
+  "text": "Chọn 1 tấm ảnh, mình đoán nó chụp ở đâu và ghim lên bản đồ 🗺️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 228,
+  "text": "Thư viện",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 266,
+  "text": "Đang phân tích...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 294,
+  "text": "GPS trong ảnh · chính xác",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_location_screen.dart",
+  "line": 294,
+  "text": "AI đoán từ hình ảnh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 61,
+  "text": "Lỗi tải bản đồ ảnh: ${friendlyError(err)}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 77,
+  "text": "Chụp hình sương sương Đà Lạt view đỉnh chóp ⛰️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 78,
+  "text": "Thảo Ly",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 83,
+  "text": "Đà Lạt",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 89,
+  "text": "Cafe chill tối siêu đẹp luôn mọi người ui ☕",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 90,
+  "text": "Minh Nhật",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 265,
+  "text": "Đang lấy địa chỉ...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/photo_map_screen.dart",
+  "line": 268,
+  "text": "Tọa độ: ${_selectedMoment!.latitude!.toStringAsFixed(4)}, ${_selectedMoment!.longitude!.toStringAsFixed(4)}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 31,
+  "text": "Pù Luông",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 47,
+  "text": "Măng Đen",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 55,
+  "text": "Phú Quốc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 63,
+  "text": "Sài Gòn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 176,
+  "text": "Xong rồi!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 236,
+  "text": "THÍCH",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 245,
+  "text": "BỎ QUA",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 508,
+  "text": "Khó tính ghê!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 508,
+  "text": "Squad đã chọn xong!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 519,
+  "text": "Bạn chưa thích chỗ nào. Thử lại với gu khác nha.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 520,
+  "text": "Đây là ${_liked.length} nơi bạn muốn đi — thêm vào lịch trình thôi!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/discovery/presentation/pages/vibe_swipe_deck_screen.dart",
+  "line": 590,
+  "text": "Vuốt lại",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/widgets/add_to_itinerary_sheet.dart",
+  "line": 499,
+  "text": "Café & Deli",
+  "interp": false
+ },
+ {
+  "file": "lib/features/discovery/presentation/widgets/add_to_itinerary_sheet.dart",
+  "line": 565,
+  "text": "Hội An, Vietnam",
+  "interp": false
+ },
+ {
+  "file": "lib/features/documents/presentation/trip_documents_screen.dart",
+  "line": 98,
+  "text": "Upload file lên Supabase Storage trước, sau đó dán URL vào đây.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/documents/presentation/trip_documents_screen.dart",
+  "line": 106,
+  "text": "Tên tài liệu (vé máy bay, passport...)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/documents/presentation/trip_documents_screen.dart",
+  "line": 250,
+  "text": "Kho tài liệu trống",
+  "interp": false
+ },
+ {
+  "file": "lib/features/documents/presentation/trip_documents_screen.dart",
+  "line": 258,
+  "text": "Upload vé, booking, hộ chiếu...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/domain/expense.dart",
+  "line": 11,
+  "text": "Ẩn danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/add_expense_sheet.dart",
+  "line": 84,
+  "text": "Nhập số tiền hợp lệ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/add_expense_sheet.dart",
+  "line": 110,
+  "text": "Đã thêm khoản chi, chia đều cho cả nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/add_expense_sheet.dart",
+  "line": 159,
+  "text": "Thêm khoản chi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/add_expense_sheet.dart",
+  "line": 280,
+  "text": "Hạng mục",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 74,
+  "text": "Hóa đơn chi tiêu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 80,
+  "text": "Món ăn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 88,
+  "text": "Tổng hóa đơn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 97,
+  "text": "Không thể quét hóa đơn. Vui lòng thử lại!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 127,
+  "text": "Quét Hóa Đơn AI 📸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 170,
+  "text": "Chọn hóa đơn từ máy ảnh hoặc bộ sưu tập để AI tự động phân tích chi phí nhóm!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 183,
+  "text": "HÓA ĐƠN GẦN ĐÂY",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 197,
+  "text": "Lẩu gà lá é Tao Ngộ 🍜",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 198,
+  "text": "Đà Lạt • 12/07/2026",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 206,
+  "text": "Cafe Xe Cổ Đà Lạt ☕",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 207,
+  "text": "Đèo Mimosa • 12/07/2026",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 349,
+  "text": "AI ĐANG PHÂN TÍCH HÓA ĐƠN...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 358,
+  "text": "Hệ thống trích xuất tên món và giá tiền từ ảnh chụp.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 399,
+  "text": "Đã quét thành công! Chọn các món bạn tiêu dùng để tính toán số tiền.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 412,
+  "text": "Thông tin hóa đơn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 450,
+  "text": "] as double).toStringAsFixed(0)} đ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 471,
+  "text": "Tổng phần của bạn:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 479,
+  "text": "${_calculateTotalSelected().toStringAsFixed(0)} đ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 497,
+  "text": "Quét hóa đơn: ${_merchantName ?? \"Không tên\"}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/ai_receipt_scanner_screen.dart",
+  "line": 514,
+  "text": "Áp dụng số tiền chi tiêu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 67,
+  "text": "Chia tiền",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 82,
+  "text": "Bình chọn nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 146,
+  "text": "Không tải được số dư",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 197,
+  "text": "Chưa có khoản chi nào",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 206,
+  "text": "Thêm khoản chi để bắt đầu chia tiền",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 222,
+  "text": "Quyết toán tối giản",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 231,
+  "text": "${result.settlements.length} giao dịch là xong nợ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 241,
+  "text": "Số dư từng người",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 300,
+  "text": "${s.amount.toStringAsFixed(0)} đ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 328,
+  "text": "Trả ngay",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 386,
+  "text": "được nhận",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 386,
+  "text": "phải trả",
+  "interp": false
+ },
+ {
+  "file": "lib/features/expense_tracker/presentation/pages/trip_balances_screen.dart",
+  "line": 390,
+  "text": "${b.balance.abs().toStringAsFixed(0)} đ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/gamification/pages/achievement_unlock_screen.dart",
+  "line": 482,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/achievement_unlock_screen.dart",
+  "line": 518,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/chaos_challenges_screen.dart",
+  "line": 461,
+  "text": "Voted by Minh Nhật",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/chaos_challenges_screen.dart",
+  "line": 464,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/chaos_challenges_screen.dart",
+  "line": 482,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/daily_squad_missions_screen.dart",
+  "line": 580,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/end_trip_awards_screen.dart",
+  "line": 280,
+  "text": "The Phú Quốc Awards",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/end_trip_awards_screen.dart",
+  "line": 341,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 22,
+  "text": "Uống hết ly nước này trong 5 giây! 🍺",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 23,
+  "text": "Hát một bài hát thiếu nhi bằng giọng em bé! 🎤",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 24,
+  "text": "Kể một trò đùa dở nhất mà bạn biết! 🤡",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 25,
+  "text": "Bắt chước âm thanh của 3 con vật khác nhau! 🐶🐱🐔",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 26,
+  "text": "Kể một sự thật đáng xấu hổ về bản thân! 🙈",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 29,
+  "text": "Chụp ảnh dìm hàng {friend} và đăng lên Realtime Feed! 📸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 30,
+  "text": "Nắm tay {friend} trong vòng 1 phút! 🤝",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 31,
+  "text": "Để cả nhóm vẽ bậy lên mặt bằng son! 💄",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 32,
+  "text": "Nói \"Anh yêu em\" hoặc \"Em yêu anh\" với {friend} cực sến súa! 💖",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 33,
+  "text": "Cho {friend} mượn điện thoại lướt lịch sử tìm kiếm 2 phút! 📱🔍",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 36,
+  "text": "Gọi điện cho crush (hoặc người yêu cũ) hát bài \"Happy Birthday\"! 📞🎂",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 37,
+  "text": "Để {friend} đăng status hài hước lên Facebook của bạn! 📝💬",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 38,
+  "text": "Đồng ý làm mọi yêu cầu của {friend} trong 5 phút! 🫡",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 39,
+  "text": "Uống cốc nước trộn 3 loại gia vị do nhóm tự chọn! 🤢",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 40,
+  "text": "Mặc ngược áo hoặc đội mũ bảo hiểm ngược đi quanh phòng 1 vòng! 👕🪖",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 45,
+  "text": "Nhấn nút đỏ bên dưới để bốc thử thách!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 173,
+  "text": "Bốc thử thách ngẫu nhiên dành cho bạn hoặc đồng đội",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 200,
+  "text": "Nhấn nút bên dưới để bốc thử thách!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 254,
+  "text": "Chế độ nhẹ nhàng vui vẻ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 256,
+  "text": "Chế độ bắt đầu hỗn loạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 257,
+  "text": "Chế độ cực kỳ nguy hiểm!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 360,
+  "text": "ĐANG BỐC...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/random_dare_generator_screen.dart",
+  "line": 360,
+  "text": "BỐC DARE NGAY!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/trip_bingo_screen.dart",
+  "line": 142,
+  "text": "BẢNG BINGO HOÀN THÀNH!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/trip_bingo_screen.dart",
+  "line": 151,
+  "text": "Squad của bạn đã hoàn thành một đường thẳng trên bảng thử thách! Bạn nhận được:\\n⚡ +500 XP Chuyến đi\\n🎁 Unlocked Sticker mới!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/trip_bingo_screen.dart",
+  "line": 177,
+  "text": "Quá xịn luôn! 🚀",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/who_pays_wheel_screen.dart",
+  "line": 215,
+  "text": "Thần tài hỗn loạn đã gõ đầu cưng! Ngoài việc phải bao trọn hóa đơn này, cưng còn phải thực hiện một thử thách Dare ngẫu nhiên tiếp theo! 💀💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/who_pays_wheel_screen.dart",
+  "line": 238,
+  "text": "Chấp nhận số phận 💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/who_pays_wheel_screen.dart",
+  "line": 353,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/gamification/pages/who_pays_wheel_screen.dart",
+  "line": 386,
+  "text": "Chế độ tăng cực mạnh chỉ số hỗn loạn của cả Squad!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/data/invites_repository.dart",
+  "line": 51,
+  "text": "Hết hạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/data/invites_repository.dart",
+  "line": 53,
+  "text": "Còn hiệu lực",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 72,
+  "text": "Tạo link mời 🔗",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 78,
+  "text": "Tạo link mời có thời hạn hoặc giới hạn số lượt.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 84,
+  "text": "Thời hạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 92,
+  "text": "Không giới hạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 98,
+  "text": "7 ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 105,
+  "text": "Số lượt dùng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 113,
+  "text": "Không giới hạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 115,
+  "text": "1 lần",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 117,
+  "text": "5 lần",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 119,
+  "text": "10 lần",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 166,
+  "text": "Tạo & Chia sẻ Link",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 215,
+  "text": "Tham gia chuyến \"${widget.tripName}\" trên TripMate!\\n",
+  "interp": true
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 216,
+  "text": "Dùng mã: $code\\n\\n",
+  "interp": true
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 217,
+  "text": "Hoặc link: https://tripmate.app/join/$code",
+  "interp": true
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 218,
+  "text": "TripMate — Mời tham gia ${widget.tripName}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 233,
+  "text": "Link mời squad",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 254,
+  "text": "Tạo link mời",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 264,
+  "text": "Lỗi tải link mời",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 278,
+  "text": "Chưa có link mời",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 286,
+  "text": "Tạo link có hạn để mời bạn bè vào chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 359,
+  "text": "Hết hạn: ${DateFormat(",
+  "interp": true
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 368,
+  "text": "${invite.useCount}/${invite.maxUses} lượt",
+  "interp": true
+ },
+ {
+  "file": "lib/features/invites/presentation/trip_invites_screen.dart",
+  "line": 374,
+  "text": "Không giới hạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 105,
+  "text": "Viết nhật ký ✍️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 168,
+  "text": "Tiêu đề hôm nay (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 191,
+  "text": "Hôm nay bạn trải qua điều gì? Kể cho squad nghe...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 208,
+  "text": "Mood hôm nay",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 292,
+  "text": "Lưu nhật ký",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 341,
+  "text": "Viết nhật ký",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 353,
+  "text": "Lỗi tải nhật ký",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 370,
+  "text": "Nhật ký trống",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 378,
+  "text": "Ghi lại những khoảnh khắc đáng nhớ nhé!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/journal/presentation/trip_journal_screen.dart",
+  "line": 465,
+  "text": "Xóa nhật ký?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/domain/moment.dart",
+  "line": 43,
+  "text": "Ẩn danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/domain/moment.dart",
+  "line": 44,
+  "text": "Ẩn danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/collaborative_scrapbook_editor_screen.dart",
+  "line": 27,
+  "text": "Chợ Đêm Vibe 🍢",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/collaborative_scrapbook_editor_screen.dart",
+  "line": 28,
+  "text": "- Phú Khang -",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/collaborative_scrapbook_editor_screen.dart",
+  "line": 38,
+  "text": "Chạy booooo! 🛵💨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/collaborative_scrapbook_editor_screen.dart",
+  "line": 39,
+  "text": "- Thảo Ly -",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/collaborative_scrapbook_editor_screen.dart",
+  "line": 40,
+  "text": "📍 Đồi Đa Phú",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/ghost_cam_screen.dart",
+  "line": 517,
+  "text": "Minh Nhật is active nearby at Kyoto Station!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/memory_wall_screen.dart",
+  "line": 129,
+  "text": "Hà Giang Loop 🏍️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/memory_wall_screen.dart",
+  "line": 761,
+  "text": "Xem & chia sẻ tổng kết chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/share_chaos_export_screen.dart",
+  "line": 180,
+  "text": "6 idiots. 1 unforgettable Đà Lạt trip.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/share_chaos_export_screen.dart",
+  "line": 285,
+  "text": "ĐÀ LẠT VIBES",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_moments_feed_screen.dart",
+  "line": 46,
+  "text": "Khoảnh khắc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_moments_feed_screen.dart",
+  "line": 102,
+  "text": "Không tải được khoảnh khắc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_moments_feed_screen.dart",
+  "line": 142,
+  "text": "Chưa có khoảnh khắc nào",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_moments_feed_screen.dart",
+  "line": 151,
+  "text": "Chụp gì đó để lưu kỷ niệm chuyến đi!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 16,
+  "text": "Đà Lạt Chill",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 35,
+  "text": "địa điểm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 36,
+  "text": "Cả squad đã check-in 7 chỗ — từ chợ đêm tới đồi thông.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 43,
+  "text": "khoảnh khắc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 44,
+  "text": "142 ảnh & clip được lưu vào Memory Wall. Lố không tả nổi.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 51,
+  "text": "km đã đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 52,
+  "text": "Đủ xa để mỏi chân, đủ gần để còn muốn đi tiếp.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 57,
+  "text": "Thảo Ly",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 58,
+  "text": "MVP của chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 59,
+  "text": "Người chụp nhiều nhất, cười to nhất, và luôn trả tiền trước.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 62,
+  "text": "6.020.000đ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 63,
+  "text": "~1.5tr / người",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 64,
+  "text": "Đã chia sòng phẳng, không ai nợ ai. Friendship vẫn xanh.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 123,
+  "text": "Chuyến ${widget.tripName} của tụi mình: 7 địa điểm, 142 khoảnh khắc, ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 124,
+  "text": "186km và 0 drama tiền nong. Lên đồ đi chơi với TripMate nào! ✈️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 234,
+  "text": "Chuyến\\n${widget.tripName}\\ncủa tụi mình",
+  "interp": true
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 245,
+  "text": "Cùng xem lại một chuyến đi đáng nhớ →",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 377,
+  "text": "Tổng chi cả nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 428,
+  "text": "Đó là một chuyến đi\\nkhông thể quên 🤍",
+  "interp": false
+ },
+ {
+  "file": "lib/features/moments/presentation/pages/trip_recap_reel_screen.dart",
+  "line": 456,
+  "text": "Chia sẻ Trip Wrapped",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 95,
+  "text": "Chỉnh sửa ghi chú",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 111,
+  "text": "Tiêu đề (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 136,
+  "text": "Nội dung ghi chú...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 155,
+  "text": "Màu note",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 241,
+  "text": "Cập nhật",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 269,
+  "text": "Ghi chú nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 290,
+  "text": "Thêm note",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 323,
+  "text": "Chưa có ghi chú nào",
+  "interp": false
+ },
+ {
+  "file": "lib/features/notes/presentation/trip_notes_screen.dart",
+  "line": 331,
+  "text": "Nhấn + để thêm ghi chú cho squad",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 37,
+  "text": "Chuyến đi lý tưởng là?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 38,
+  "text": "Chill & thư giãn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 40,
+  "text": "Chaos & quẩy hết mình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 44,
+  "text": "Buổi tối bạn chọn?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 46,
+  "text": "Cafe acoustic yên tĩnh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 50,
+  "text": "Bar rooftop sôi động",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 54,
+  "text": "Ăn uống thì?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 56,
+  "text": "Street food bản địa",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 60,
+  "text": "Nhà hàng aesthetic",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 64,
+  "text": "Ngân sách của bạn?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 66,
+  "text": "Tiết kiệm hết mức",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 70,
+  "text": "Chịu chơi chút cũng được",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 74,
+  "text": "Bạn lưu kỷ niệm kiểu?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 76,
+  "text": "Chụp choẹt sống ảo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 80,
+  "text": "Sống trọn khoảnh khắc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 131,
+  "text": "BỎ QUA",
+  "interp": false
+ },
+ {
+  "file": "lib/features/onboarding/presentation/vibe_quiz_screen.dart",
+  "line": 145,
+  "text": "Câu ${_step + 1}/${_questions.length}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 85,
+  "text": "Xoá \"${item.name}\"?",
+  "interp": true
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 135,
+  "text": "Thêm đồ cần mang",
+  "interp": false
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 148,
+  "text": "Tên món đồ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 214,
+  "text": "Số lượng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 305,
+  "text": "Đồ cần mang",
+  "interp": false
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 378,
+  "text": "Squad sẵn sàng lên đường! 🎒",
+  "interp": false
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 379,
+  "text": "Đã xếp ${list.packed}/${list.total} món",
+  "interp": true
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 571,
+  "text": "Chưa có gì trong balo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 581,
+  "text": "Chọn 1 template để bắt đầu nhanh, rồi cả squad cùng chia nhau mang.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/packing/presentation/trip_packing_screen.dart",
+  "line": 653,
+  "text": "Không tải được danh sách",
+  "interp": false
+ },
+ {
+  "file": "lib/features/planning/presentation/pages/ai_planning_matey_screen.dart",
+  "line": 436,
+  "text": "Đà Lạt Chill",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/premium_hub_screen.dart",
+  "line": 24,
+  "text": "Đà Lạt Mist",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 18,
+  "text": "Elite Squad Subscription (1 Tháng) 👑",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 19,
+  "text": "99.000đ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 21,
+  "text": "Thành công",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 26,
+  "text": "Xuất Video Recap Kyoto 4K 🎞️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 27,
+  "text": "25.000đ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 29,
+  "text": "Thành công",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 34,
+  "text": "Chủ Đề Dalat Vintage Premium 🌲",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 35,
+  "text": "49.000đ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 37,
+  "text": "Thành công",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 62,
+  "text": "Vừa qua",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 63,
+  "text": "Giao dịch nâng cấp",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 64,
+  "text": "] as int?) ?? 0}đ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 65,
+  "text": "Nguồn đã lưu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 66,
+  "text": "Thành công",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 107,
+  "text": "Lịch Sử Hóa Đơn 🧾",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 174,
+  "text": "Mã GD: ${inv[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 174,
+  "text": "]}  •  Ngày: ${inv[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 182,
+  "text": "Nguồn thanh toán: ${inv[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 199,
+  "text": "📥 Đang tải hóa đơn ${inv[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/billing_history_screen.dart",
+  "line": 199,
+  "text": "]} dạng PDF...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 27,
+  "text": "Chủ đề Kyoto Retro 🎋",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 28,
+  "text": "Hoàng Yến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 33,
+  "text": "Nhãn dán Phú Quốc Shark 🦈",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 34,
+  "text": "Phú Khang",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 39,
+  "text": "Chủ đề Dalat Vintage 🌲",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 40,
+  "text": "Minh Nhật",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 73,
+  "text": "Sản phẩm sáng tạo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 74,
+  "text": "Bạn bè",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 76,
+  "text": "Vừa qua",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 106,
+  "text": "💸 Yêu cầu rút tiền thành công! Payout đã được gửi duyệt! Chờ ngân hàng xử lý nhé!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 143,
+  "text": "Thu Nhập Sáng Tạo 🎨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 184,
+  "text": "SỐ DƯ KHẢ DỤNG RÚT 💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 196,
+  "text": "${_payoutPending.toString()}đ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 225,
+  "text": "Yêu Cầu Rút ⚡",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 239,
+  "text": "${_totalSales.toString()}đ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 242,
+  "text": "Phần Chia Sáng Tạo (70%)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 243,
+  "text": "${_creatorShare.toString()}đ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 255,
+  "text": "Xu Hướng Bán Hàng 📈",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 286,
+  "text": "Giao Dịch Gần Đây 🛒",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 318,
+  "text": "Mua bởi: ${sale[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/creator_revenue_dashboard_screen.dart",
+  "line": 325,
+  "text": "]}đ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_campaign_screen.dart",
+  "line": 41,
+  "text": "Chia sẻ liên kết giới thiệu 🔗",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_campaign_screen.dart",
+  "line": 50,
+  "text": "Gửi link này cho bạn thân của cưng. Khi họ tải ứng dụng và tham gia squad, cưng sẽ nhận ngay 1 dấu mốc Elite!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_campaign_screen.dart",
+  "line": 93,
+  "text": "📋 Đã sao chép liên kết vào khay nhớ tạm!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_campaign_screen.dart",
+  "line": 129,
+  "text": "1. Chia sẻ link giới thiệu độc quyền của cưng cho 3 đứa bạn.\\n\\n2. Họ tải app và kết nối tài khoản.\\n\\n3. Mở khóa TRỌN ĐỜI gói TripMate Elite cực VIP, miễn phí hoàn toàn!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_campaign_screen.dart",
+  "line": 136,
+  "text": "Đã Hiểu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_campaign_screen.dart",
+  "line": 247,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 18,
+  "text": "Hoàng Yến 🌸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 18,
+  "text": "Đã nâng cấp Premium",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 19,
+  "text": "Phú Khang 🍕",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 19,
+  "text": "Đã đăng ký tài khoản",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 45,
+  "text": "Mã giới thiệu hợp lệ! ⚡🏆",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 58,
+  "text": "Thành công! 🎉",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 66,
+  "text": "Tuyệt vời!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 77,
+  "text": "❌ Không thể tự giới thiệu bản thân hoặc mã không hợp lệ!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 120,
+  "text": "Giới Thiệu Bạn Bè 🎁",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 150,
+  "text": "MÃ GIỚI THIỆU CỦA CƯNG 🎒",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 170,
+  "text": "Chia sẻ mã này! Mỗi khi một đứa bạn nhập mã và đăng ký thành công, cả hai sẽ nhận ngay 500 XP bứt tốc cấp độ!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 184,
+  "text": "📋 Đã sao chép mã \"MATEYCHILL\" vào khay nhớ tạm!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 198,
+  "text": "Sao Chép Mã ⚡",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 212,
+  "text": "Nhập mã từ bạn bè 🎫",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 240,
+  "text": "Mã của bạn bè (Ví dụ: SELF)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 261,
+  "text": "Gửi Mã",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/referral_rewards_screen.dart",
+  "line": 275,
+  "text": "Danh sách đã giới thiệu (${_referrals.length})",
+  "interp": true
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 20,
+  "text": "Không giới hạn AI Recap Exports 🎬",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 21,
+  "text": "Bộ nhãn dán Social Chaos độc quyền 🕹️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 22,
+  "text": "Tải lên tệp phương tiện độ phân giải gốc 📂",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 23,
+  "text": "Quyền truy cập sớm các mini-game nâng cao 🎭",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 54,
+  "text": "Google Play Billing chưa sẵn sàng trên máy này. ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 55,
+  "text": "Thử cập nhật ứng dụng CH Play rồi quay lại nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 65,
+  "text": "Gói Premium chưa mở bán. Bọn mình đang hoàn tất thủ tục ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 66,
+  "text": "thanh toán, quay lại sau ít hôm nha! 🙏",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 73,
+  "text": "Không mở được cửa sổ thanh toán. Thử lại nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 85,
+  "text": "Thanh toán không thành công. Thử lại sau nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 105,
+  "text": "Kích hoạt Premium thành công! Chúc cưng chuyến đi ngập tràn vibe luxury! 💸✨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 130,
+  "text": "Gia Nhập Elite Squad Thành Công! 💸👑",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 168,
+  "text": "Bắt Đầu Trải Nghiệm Luxury ✨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 211,
+  "text": "Nâng Cấp Elite Squad 👑",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 267,
+  "text": "99.000đ / tháng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 276,
+  "text": "Tận hưởng phong cách du lịch đẳng cấp cùng hội bạn với sức mạnh AI bứt tốc.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 291,
+  "text": "Đặc Quyền Của Cưng 📊",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 351,
+  "text": "Phương Thức Thanh Toán 💳",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_checkout_screen.dart",
+  "line": 408,
+  "text": "Kích Hoạt Ngay 👑",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 36,
+  "text": "Thiết Lập Gói Cước ⚙️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 88,
+  "text": "Chu kỳ: 99.000đ / tháng\\nNgày gia hạn kế tiếp: 20/06/2026",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 104,
+  "text": "Tùy chọn thanh toán",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 124,
+  "text": "Tự động gia hạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 131,
+  "text": "Gia hạn tự động bằng nguồn tiền đã đăng ký để tránh gián đoạn dịch vụ AI.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 144,
+  "text": "🔔 Đã kích hoạt gia hạn tự động!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 145,
+  "text": "🔕 Đã tắt tự động gia hạn!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 155,
+  "text": "Thay đổi phương thức nguồn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 170,
+  "text": "💳 Mở ví MoMo / Bank account để liên kết nguồn mới!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 197,
+  "text": "Hủy Gói Elite Squad? 😢",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 203,
+  "text": "Cưng sẽ mất toàn bộ quyền xuất clip recap hành trình 4K và bộ nhãn dán dìm hàng độc quyền đấy nha!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 210,
+  "text": "Giữ Lại 💖",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 222,
+  "text": "💔 Đã hủy gói Elite Squad. Các đặc quyền vẫn giữ tới 20/06/2026.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 229,
+  "text": "Hủy Gói",
+  "interp": false
+ },
+ {
+  "file": "lib/features/premium/pages/subscription_settings_screen.dart",
+  "line": 240,
+  "text": "Hủy đăng ký Elite Squad",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 760,
+  "text": "Sẵn sàng lên đường ✈️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1150,
+  "text": "Tân binh ✨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1162,
+  "text": "Đáng tin 🤝",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1163,
+  "text": "Thành viên mới 🎒",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1535,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1544,
+  "text": "Danh hiệu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1650,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1665,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 1829,
+  "text": "Tiếng Việt",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/profile_screen.dart",
+  "line": 2328,
+  "text": "Kiểu chữ (Font Style)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/backup_restore_screen.dart",
+  "line": 124,
+  "text": "Chi tiết Khôi phục 📂",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/backup_restore_screen.dart",
+  "line": 128,
+  "text": "Dữ liệu chứa:\\n- 3 Chuyến đi\\n- 18 Checklist đã hoàn thành\\n- 12 Địa điểm đã khám phá\\n\\nCưng có muốn ghi đè dữ liệu hiện tại bằng bản sao lưu này không?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/backup_restore_screen.dart",
+  "line": 273,
+  "text": "Các bản sao lưu đã tạo:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 16,
+  "text": "Siêu Cấp Phượt Thủ 🏆",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 17,
+  "text": "Đi trên 5 chuyến đi cùng TripMate",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 23,
+  "text": "Thần Tài Gõ Đầu 💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 24,
+  "text": "Bị chọn thanh toán wheel splitter game",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 30,
+  "text": "Thần Gió Nhật Bản 🚄",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 31,
+  "text": "Có checkin tàu Shinkansen",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 99,
+  "text": "Danh Hiệu & Cúp Du Lịch",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_collection_screen.dart",
+  "line": 108,
+  "text": "Khám phá các cột mốc danh hiệu cưng đã mở khóa trong suốt các chặng đường đi.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_detail_screen.dart",
+  "line": 143,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_detail_screen.dart",
+  "line": 669,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/badge_detail_screen.dart",
+  "line": 703,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/edit_profile_screen.dart",
+  "line": 59,
+  "text": "⚠️ Tên và Username không được để trống!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/edit_profile_screen.dart",
+  "line": 87,
+  "text": "🎉 Cập nhật thông tin profile thành công!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/edit_profile_screen.dart",
+  "line": 98,
+  "text": "❌ Lỗi cập nhật profile hoặc trùng lặp Username!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/edit_profile_screen.dart",
+  "line": 134,
+  "text": "Chỉnh Sửa Profile ✏️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/edit_profile_screen.dart",
+  "line": 189,
+  "text": "🎨 Đổi avatar ngẫu nhiên mới thành công!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/edit_profile_screen.dart",
+  "line": 242,
+  "text": "Họ và tên",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/edit_profile_screen.dart",
+  "line": 364,
+  "text": "Lưu thông tin cá nhân",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/friends_list_screen.dart",
+  "line": 8,
+  "text": "Alex Nguyễn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/friends_list_screen.dart",
+  "line": 12,
+  "text": "Trần Bình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/friends_list_screen.dart",
+  "line": 16,
+  "text": "Lê Minh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/friends_list_screen.dart",
+  "line": 41,
+  "text": "Danh Sách Bạn Bè 👥",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/friends_list_screen.dart",
+  "line": 73,
+  "text": "Cực kỳ uy tín 🛡️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/friends_list_screen.dart",
+  "line": 79,
+  "text": "Đã gửi tin nhắn đến ${friend[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/friends_list_screen.dart",
+  "line": 86,
+  "text": "Nhắn tin",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/profile_statistics_screen.dart",
+  "line": 26,
+  "text": "Thống Kê Thẻ Phượt Thủ 📊",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/profile_statistics_screen.dart",
+  "line": 45,
+  "text": "Hành trình hoàn thành:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/profile_statistics_screen.dart",
+  "line": 46,
+  "text": "12 chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/profile_statistics_screen.dart",
+  "line": 50,
+  "text": "Quãng đường di chuyển:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/profile_statistics_screen.dart",
+  "line": 52,
+  "text": "Tổng điểm thưởng XP:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/profile_statistics_screen.dart",
+  "line": 54,
+  "text": "Độ uy tín Squad:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/public_profile_screen.dart",
+  "line": 34,
+  "text": "Xem Profile Bạn Bè 👀",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/public_profile_screen.dart",
+  "line": 62,
+  "text": "Là cạ cứng du lịch thích chinh phục các cung đường dài, cực kỳ uy tín và thân thiện! 🏕️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/public_profile_screen.dart",
+  "line": 95,
+  "text": "Chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/public_profile_screen.dart",
+  "line": 135,
+  "text": "Độ uy tín",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/shared_trips_history_screen.dart",
+  "line": 8,
+  "text": "Phú Quốc Escape 🌊",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/shared_trips_history_screen.dart",
+  "line": 10,
+  "text": "Minh Nhật, Alex Nguyễn, Trần Bình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/shared_trips_history_screen.dart",
+  "line": 13,
+  "text": "Đà Lạt Săn Mây 🌲",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/shared_trips_history_screen.dart",
+  "line": 15,
+  "text": "Minh Nhật, Lê Minh, Hoàng Yến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/shared_trips_history_screen.dart",
+  "line": 39,
+  "text": "Lịch Sử Chuyến Đi Chung 🕒",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/shared_trips_history_screen.dart",
+  "line": 55,
+  "text": "Xem lại các chuyến đi cưng đã đồng hành cùng bạn bè chí cốt.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/shared_trips_history_screen.dart",
+  "line": 90,
+  "text": "Đồng đội: ${item[",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/social_links_manager_screen.dart",
+  "line": 67,
+  "text": "🎉 Lưu liên kết mạng xã hội thành công!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/social_links_manager_screen.dart",
+  "line": 76,
+  "text": "❌ Không thể kết nối tới server. Vui lòng kiểm tra lại!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/social_links_manager_screen.dart",
+  "line": 113,
+  "text": "Liên Kết Mạng Xã Hội 🔗",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/social_links_manager_screen.dart",
+  "line": 236,
+  "text": "Lưu Liên Kết",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_inventory_screen.dart",
+  "line": 524,
+  "text": "Nhãn dán sở hữu (${_ownedStickers.length})",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_inventory_screen.dart",
+  "line": 546,
+  "text": "Bạn chưa mua nhãn dán nào. Hãy ghé Cửa hàng Sticker nhé!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_inventory_screen.dart",
+  "line": 612,
+  "text": "Số lượng: $count",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_inventory_screen.dart",
+  "line": 660,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_inventory_screen.dart",
+  "line": 752,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 14,
+  "text": "Cười ra nước mắt 😂",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 15,
+  "text": "Cà khịa hết nấc 😜",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 16,
+  "text": "Mệt mỏi vì tiền 💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 17,
+  "text": "Đang bay lắc 🚀",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 75,
+  "text": "🎉 Mua thành công sticker: $label!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 83,
+  "text": "❌ Giao dịch thất bại. Vui lòng thử lại sau!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 111,
+  "text": "Cửa Hàng Sticker 🎭",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 152,
+  "text": "Mua sticker độc lạ để thả thính hoặc cà khịa cực mạnh trong chat nhóm.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/sticker_store_screen.dart",
+  "line": 238,
+  "text": "Đã Sở Hữu",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 31,
+  "text": "Kiếp Nạn 82 ⛈️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 32,
+  "text": "Chuyến đi bất ổn bão táp.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 38,
+  "text": "Squad Bất Ổn 🗺️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 39,
+  "text": "Lạc lối cùng đồng bọn.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 46,
+  "text": "Xếp đồ dư thừa quá mức.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 53,
+  "text": "Chảo cháy trollface siêu bựa.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 60,
+  "text": "Chúa tể lo âu bộ não phồng to.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 66,
+  "text": "Khóc Thét 😿",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 67,
+  "text": "Meme mèo khóc ôm bánh mì cực bựa.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 73,
+  "text": "Balo Cột Sống 🎒",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 74,
+  "text": "Doge ngáo đeo balo khổng lồ gánh tạ.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 80,
+  "text": "Ví Hết Cứu 💸",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 81,
+  "text": "Ví rách bay bướm khóc ròng rã.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 87,
+  "text": "Tôm Flexing 💪",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 88,
+  "text": "Tôm lực điền đeo kính mát cool ngầu.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 94,
+  "text": "Báo Thủ Du Lịch 🐆",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 95,
+  "text": "Báo nhà báo bạn, báo luôn cả tour.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 101,
+  "text": "Hết Cứu / Cooked 🍚",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 102,
+  "text": "Nồi cơm điện đầu hàng bốc khói khét.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 108,
+  "text": "Mãi Keo dính chặt 🧪",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 109,
+  "text": "Dính keo cứng ngắc cùng bạn thân.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 115,
+  "text": "Ăn Hại Vô Cực 🍗",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 116,
+  "text": "Lười ôm đùi gà cười ngạo nghễ.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 122,
+  "text": "Đúng Nhận Sai Cãi 🔮",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 123,
+  "text": "Bổ quả cau ra meme trollface bựa.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 129,
+  "text": "Chằm Zn 😩",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 130,
+  "text": "Viên kẽm khóc lóc trầm cảm xó tường.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 136,
+  "text": "Hảo Hán Cat 🐱",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 137,
+  "text": "Mèo hiệp sĩ đeo kính ngầu lòi.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 143,
+  "text": "Hết Nước Chấm 🌶️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 144,
+  "text": "Bát nước chấm rỗng tuếch thèm thuồng.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 150,
+  "text": "Ú Òa / Mono 🤡",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 151,
+  "text": "Chú hề ú òa nhảy khỏi hộp quà.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 157,
+  "text": "Cạn Lời 😐",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 158,
+  "text": "Mặt bất lực đảo mắt khinh bỉ.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 176,
+  "text": "Đà Lạt Mist",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 401,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 933,
+  "text": "🎉 Đã mua và mở khóa sticker $stickerName thành công!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 949,
+  "text": "SỞ HỮU NGAY 🌟",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 1000,
+  "text": "Tính năng đang được hoàn thiện 🚧",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 1259,
+  "text": "Xem Trước",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 1290,
+  "text": "🎉 Đã áp dụng theme $themeName!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 1305,
+  "text": "❌ Không thể giao dịch. Vui lòng thử lại!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_marketplace_screen.dart",
+  "line": 1330,
+  "text": "Đổi Ngay 🚀",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/theme_preview_screen.dart",
+  "line": 42,
+  "text": "Đà Lạt Mist",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 46,
+  "text": "Thêm điều muốn làm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 99,
+  "text": "Xoá \"${item.title}\"?",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 176,
+  "text": "Bản Đồ 🗺️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 177,
+  "text": "Thành Tích 🏆",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 262,
+  "text": "Chưa có địa điểm nào — thêm lịch trình hoặc đăng moment có vị trí để ghim lên bản đồ!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 263,
+  "text": "Bạn đã ghim ${markers.length} địa điểm trong hành trình của mình!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 317,
+  "text": "${atlas.streakMonths} tháng liên tục!",
+  "interp": true
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 318,
+  "text": "Bắt đầu chuỗi ngay!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 326,
+  "text": "Duy trì ngọn lửa xê dịch này nhé!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 359,
+  "text": "Chuyến Đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 437,
+  "text": "Chưa có huy hiệu nào. Đi chuyến đầu tiên để mở khoá nhé!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 592,
+  "text": "Bucket list còn trống",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 602,
+  "text": "Thêm những điều bạn muốn làm trên đường đi — rồi tick khi hoàn thành!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/travel_atlas_screen.dart",
+  "line": 624,
+  "text": "Không tải được bucket list",
+  "interp": false
+ },
+ {
+  "file": "lib/features/profile/pages/tripmate_mcp_screen.dart",
+  "line": 218,
+  "text": "Model Context Protocol (MCP) cho phép cưng kết nối TripMate trực tiếp tới các AI assistant chạy local hoặc cloud thông qua standard JSON-RPC. AI có thể thay mặt cưng đề xuất thay đổi lịch trình hoặc đồng bộ checklist balo.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 97,
+  "text": "Dán vé cho AI tách",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 103,
+  "text": "Chụp / chọn ảnh vé",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 256,
+  "text": "Khôi phục (đã xác nhận)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 256,
+  "text": "Đánh dấu đã huỷ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 319,
+  "text": "Xoá \"${r.title}\"?",
+  "interp": true
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 363,
+  "text": "Dán vé để AI tách",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 378,
+  "text": "Dán nội dung email/xác nhận vé máy bay, khách sạn... AI sẽ tự nhận diện loại, giờ, mã.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 388,
+  "text": "VD: Vé VN213 SGN 08:15 → HAN 10:20 ngày 20/07, mã ABCDEF...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 418,
+  "text": "AI đang tách vé... ✨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 432,
+  "text": "AI chưa nhận ra đặt chổ nào — thử dán rõ hơn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 434,
+  "text": "Đã thêm $created đặt chỗ và tự tạo $exps chi phí 💰",
+  "interp": true
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 436,
+  "text": "Đã thêm $created đặt chỗ từ vé 🎫",
+  "interp": true
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 463,
+  "text": "Chọn ảnh vé cho AI phân tích",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 472,
+  "text": "AI sẽ nhận diện loại, giờ, mã và giá vé từ ảnh.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 482,
+  "text": "Thư viện",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 491,
+  "text": "Chụp ảnh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 514,
+  "text": "AI đang đọc ảnh vé... 📸✨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 535,
+  "text": "AI chưa nhận ra vé trong ảnh này — thử ảnh khác",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 537,
+  "text": "Đã thêm $created đặt chỗ và tự tạo $exps chi phí 💰",
+  "interp": true
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 539,
+  "text": "Đã nhận dạng $created đặt chỗ từ ảnh 🎫",
+  "interp": true
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 551,
+  "text": "Không đọc được ảnh. Thử ảnh khác nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 681,
+  "text": "Địa điểm / nhà ga (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 683,
+  "text": "Mã xác nhận (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 685,
+  "text": "Link vé (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 689,
+  "text": "Giá tiền (tuỳ chọn — tự chia cho nhóm)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 731,
+  "text": "Chọn ngày & giờ (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 805,
+  "text": "Đã lưu vé & tự tạo chi phí chia đều cho nhóm 💰",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 841,
+  "text": "Chưa có đặt chỗ nào",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 851,
+  "text": "Lưu vé máy bay, khách sạn, nhà hàng... để cả squad nắm lịch và mã xác nhận.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/reservations/presentation/trip_reservations_screen.dart",
+  "line": 885,
+  "text": "Không tải được đặt chỗ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 46,
+  "text": "Xoá tài khoản?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 53,
+  "text": "Toàn bộ dữ liệu của bạn sẽ bị xoá và không thể khôi phục. ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 54,
+  "text": "Bạn sẽ bị đăng xuất ngay sau đó.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 65,
+  "text": "Xoá vĩnh viễn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 94,
+  "text": "Quyền riêng tư & Tài khoản",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 107,
+  "text": "Dữ liệu của bạn được bảo vệ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 109,
+  "text": "TripMate chỉ thu thập dữ liệu cần thiết để chạy ứng dụng (hồ sơ, ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 110,
+  "text": "chuyến đi, chi tiêu, ảnh kỷ niệm). Dữ liệu vị trí & camera chỉ dùng ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 111,
+  "text": "khi bạn cho phép. Chúng tôi không bán dữ liệu cho bên thứ ba.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 113,
+  "text": "Chính sách quyền riêng tư",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 114,
+  "text": "Điều khoản sử dụng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 115,
+  "text": "Yêu cầu bản sao dữ liệu của tôi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 120,
+  "text": "Vùng nguy hiểm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 141,
+  "text": "Xoá tài khoản",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 150,
+  "text": "Xoá vĩnh viễn tài khoản và toàn bộ dữ liệu liên quan.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 186,
+  "text": "Đang xoá...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 186,
+  "text": "Xoá tài khoản của tôi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/settings/presentation/account_privacy_screen.dart",
+  "line": 252,
+  "text": "$label — sẽ mở trang web chính thức",
+  "interp": true
+ },
+ {
+  "file": "lib/features/social/domain/chat_message.dart",
+  "line": 34,
+  "text": "Ẩn danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/domain/chat_message.dart",
+  "line": 35,
+  "text": "Ẩn danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/notifications_screen.dart",
+  "line": 57,
+  "text": "Thông báo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/notifications_screen.dart",
+  "line": 67,
+  "text": "Cấu hình thông báo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/notifications_screen.dart",
+  "line": 215,
+  "text": "Không tải được thông báo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/notifications_screen.dart",
+  "line": 257,
+  "text": "Chưa có thông báo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/notifications_screen.dart",
+  "line": 266,
+  "text": "Mọi cập nhật của squad sẽ hiện ở đây",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_chat_live_screen.dart",
+  "line": 199,
+  "text": "đang kết nối...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_chat_live_screen.dart",
+  "line": 230,
+  "text": "Không tải được tin nhắn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_chat_live_screen.dart",
+  "line": 260,
+  "text": "Chưa có tin nhắn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_chat_live_screen.dart",
+  "line": 268,
+  "text": "Bắt đầu trò chuyện với squad nào!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_chat_live_screen.dart",
+  "line": 353,
+  "text": "Nhắn gì đó...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 49,
+  "text": "Tạo bình chọn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 63,
+  "text": "Câu hỏi (vd: Ăn gì tối nay?)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 74,
+  "text": "Mỗi lựa chọn 1 dòng\\nLẩu\\nNướng\\nPizza",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 105,
+  "text": "Cần câu hỏi và ít nhất 2 lựa chọn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 138,
+  "text": "Bình chọn nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 189,
+  "text": "Không tải được bình chọn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 229,
+  "text": "Chưa có bình chọn nào",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 238,
+  "text": "Tạo poll để cả nhóm quyết định nhanh!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/social/presentation/pages/trip_polls_screen.dart",
+  "line": 356,
+  "text": "$total lượt vote",
+  "interp": true
+ },
+ {
+  "file": "lib/features/social/presentation/widgets/notification_bell.dart",
+  "line": 24,
+  "text": "Thông báo, $unread chưa đọc",
+  "interp": true
+ },
+ {
+  "file": "lib/features/social/presentation/widgets/notification_bell.dart",
+  "line": 24,
+  "text": "Thông báo",
+  "interp": false
+ },
+ {
+  "file": "lib/features/splash/presentation/splash_screen.dart",
+  "line": 151,
+  "text": "chia tiền ez",
+  "interp": false
+ },
+ {
+  "file": "lib/features/splash/presentation/splash_screen.dart",
+  "line": 152,
+  "text": "lưu moment",
+  "interp": false
+ },
+ {
+  "file": "lib/features/system_states/pages/no_internet_screen.dart",
+  "line": 33,
+  "text": "⚡ Đã nối mạng thành công! Squad items đã cập nhật.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/system_states/pages/no_internet_screen.dart",
+  "line": 66,
+  "text": "Nhảy qua các bụi xương rồng để ghi điểm trong khi đợi mạng hồi sinh!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/system_states/pages/no_internet_screen.dart",
+  "line": 98,
+  "text": "Đóng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 63,
+  "text": "Xoá \"${it.title}\"?",
+  "interp": true
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 109,
+  "text": "Thêm việc cần làm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 120,
+  "text": "VD: Đặt vé tàu, đổi tiền, sạc dự phòng...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 131,
+  "text": "Ưu tiên",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 192,
+  "text": "Hạn chót (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 251,
+  "text": "Việc cần làm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 301,
+  "text": "Squad xong hết việc rồi! 🎉",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 302,
+  "text": "Đã xong ${list.done}/${list.total} việc",
+  "interp": true
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 471,
+  "text": "Chưa có việc nào",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 476,
+  "text": "Thêm việc cần chuẩn bị, chia nhau làm để không sót gì.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/todos/presentation/trip_todos_screen.dart",
+  "line": 508,
+  "text": "Không tải được danh sách",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/domain/trip.dart",
+  "line": 92,
+  "text": "Ẩn danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 106,
+  "text": "Nhập tên chuyến và chọn ngày nhé",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 137,
+  "text": "Tham gia chuyến \"${trip.name}\" của tụi mình trên TripMate nha! ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 138,
+  "text": "Mã mời: ${trip.inviteCode} ✈️",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 139,
+  "text": "TripMate — Mời tham gia ${trip.name}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 143,
+  "text": "Nhập mã mời nhé",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 206,
+  "text": "Tạo chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 250,
+  "text": "Tạo chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 268,
+  "text": "Chọn ngày đi & về",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 271,
+  "text": "${_fmt(_range!.start)} → ${_fmt(_range!.end)}  ·  $days ngày $nights đêm",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 282,
+  "text": "Xin mã từ người tạo chuyến nha",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 293,
+  "text": "Tên chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 297,
+  "text": "Điểm đến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 298,
+  "text": "vd: Đà Lạt, Lâm Đồng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 301,
+  "text": "Thời gian",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 327,
+  "text": "Ảnh bìa (mood)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 381,
+  "text": "Vibe chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 421,
+  "text": "Ngân sách dự kiến / người",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 474,
+  "text": "Kế hoạch, lưu ý cho cả nhóm...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 503,
+  "text": "Công khai · ai có link cũng xem được",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/create_trip_sheet.dart",
+  "line": 504,
+  "text": "Riêng tư · chỉ thành viên squad",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 105,
+  "text": "Tên chuyến không được trống",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 132,
+  "text": "Không lưu được, thử lại sau",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 181,
+  "text": "Chỉnh sửa chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 243,
+  "text": "Tên chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 244,
+  "text": "Tên chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 246,
+  "text": "Điểm đến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 247,
+  "text": "vd: Đà Lạt, Lâm Đồng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 249,
+  "text": "Thời gian",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 260,
+  "text": "${_fmt(_range.start)} → ${_fmt(_range.end)}  ·  ${_range.end.difference(_range.start).inDays + 1} ngày",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 272,
+  "text": "Vibe chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 307,
+  "text": "Ngân sách dự kiến / người",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 359,
+  "text": "Kế hoạch, lưu ý cho cả nhóm...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 384,
+  "text": "Công khai · ai có link cũng xem được",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/edit_trip_sheet.dart",
+  "line": 385,
+  "text": "Riêng tư · chỉ thành viên squad",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 74,
+  "text": "Nhập mã mời hoặc dán link được chia sẻ nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 101,
+  "text": "Đã tham gia \"${trip.name}\"! 🎉",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 110,
+  "text": "Có lỗi xảy ra. Thử lại giúp mình nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 118,
+  "text": "Mất mạng rồi. Kiểm tra kết nối rồi thử lại nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 120,
+  "text": "Mã này không tồn tại. Kiểm tra lại xem có gõ nhầm không nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 124,
+  "text": "Bạn đã là thành viên của chuyến này rồi!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 126,
+  "text": "Link mời đã hết hạn.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 127,
+  "text": "Link mời đã hết lượt sử dụng.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 128,
+  "text": "Server đang trục trặc. Thử lại sau ít phút nhé.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 153,
+  "text": "Tham gia chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 183,
+  "text": "Có mã mời từ hội bạn?",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 193,
+  "text": "Dán mã hoặc link chia sẻ vào ô bên dưới để vào chuyến.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 221,
+  "text": "VD: ABC123 hoặc dán link",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/join_trip_screen.dart",
+  "line": 233,
+  "text": "Dán từ clipboard",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/my_trips_screen.dart",
+  "line": 61,
+  "text": "Chuyến mới",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/my_trips_screen.dart",
+  "line": 70,
+  "text": "Chuyến của tôi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/my_trips_screen.dart",
+  "line": 140,
+  "text": "Không tải được chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/my_trips_screen.dart",
+  "line": 200,
+  "text": "Chưa có chuyến nào",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/my_trips_screen.dart",
+  "line": 209,
+  "text": "Tạo chuyến đầu tiên và rủ squad nào!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/my_trips_screen.dart",
+  "line": 389,
+  "text": "${t.durationDays} ngày · ${t.memberCount} thành viên",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/pick_trip_sheet.dart",
+  "line": 21,
+  "text": "Chọn chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/pick_trip_sheet.dart",
+  "line": 27,
+  "text": "Chọn chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/pick_trip_sheet.dart",
+  "line": 96,
+  "text": "Không tải được danh sách chuyến.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/pick_trip_sheet.dart",
+  "line": 99,
+  "text": "Bạn chưa có chuyến nào.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/pick_trip_sheet.dart",
+  "line": 159,
+  "text": "${t.durationDays} ngày · ${t.memberCount} thành viên",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/pick_trip_sheet.dart",
+  "line": 192,
+  "text": "Tạo chuyến mới",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 68,
+  "text": "Chỉnh sửa chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 76,
+  "text": "Đã cập nhật chuyến đi 🎉",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 128,
+  "text": "ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 130,
+  "text": "thành viên",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 217,
+  "text": "Quản lý chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 236,
+  "text": "Chia tiền",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 237,
+  "text": "Số dư & quyết toán",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 248,
+  "text": "Bình chọn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 249,
+  "text": "Quyết định nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 260,
+  "text": "Nơi muốn đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 270,
+  "text": "Lịch trình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 271,
+  "text": "Kế hoạch từng ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 281,
+  "text": "Bản đồ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 282,
+  "text": "Điểm dừng trên map",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 292,
+  "text": "Khoảnh khắc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 293,
+  "text": "Ảnh & kỷ niệm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 304,
+  "text": "Trò chuyện realtime",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 314,
+  "text": "Đồ cần mang",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 315,
+  "text": "Packing list nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 325,
+  "text": "Việc cần làm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 326,
+  "text": "To-do nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 337,
+  "text": "Máy bay, khách sạn...",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 347,
+  "text": "Ghi chú chung",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 348,
+  "text": "Sticky notes nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 358,
+  "text": "Điểm danh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 359,
+  "text": "Điểm danh theo ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 371,
+  "text": "Kho vé & Booking",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 382,
+  "text": "Ảnh & Kỷ niệm nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 393,
+  "text": "Nghỉ phép thông minh",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 402,
+  "text": "Mã mời có hạn",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 403,
+  "text": "Quản lý link mời",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 415,
+  "text": "Mã: ${trip.inviteCode}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 488,
+  "text": "Tham gia chuyến \"${trip.name}\" của tụi mình trên TripMate nha! ",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 489,
+  "text": "Mã mời: ${trip.inviteCode} ✈️",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_hub_screen.dart",
+  "line": 490,
+  "text": "TripMate — Mời tham gia ${trip.name}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 86,
+  "text": "Số ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 86,
+  "text": "${trip.durationDays} ngày",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 87,
+  "text": "Thành viên",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 87,
+  "text": "${trip.memberCount} người",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 90,
+  "text": "Ngân sách",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 107,
+  "text": "📅 Lịch trình chi tiết",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 126,
+  "text": "Ngày $day",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 172,
+  "text": "🧳 Đồ cần mang",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 178,
+  "text": "${packing.packed}/${packing.total} đã chuẩn bị",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 260,
+  "text": "🔖 Mã: ${r.confirmationNumber}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trips/presentation/trip_pdf_export.dart",
+  "line": 345,
+  "text": "Không xuất được PDF. ${friendlyError(e)}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 27,
+  "text": "Bãi Sao Phú Quốc 🏖️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 28,
+  "text": "Bãi Sao, An Thới, Phú Quốc, Kiên Giang",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 35,
+  "text": "Lẩu Dê Cây Dừa 🍲",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 36,
+  "text": "20 Đường Nguyễn Đình Chiểu, Dương Đông, Phú Quốc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 57,
+  "text": "InterContinental Phú Quốc Long Beach Resort 🏨",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 58,
+  "text": "Bãi Trường, Dương Tơ, Phú Quốc, Kiên Giang",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 65,
+  "text": "Chuồn Chuồn Bistro & Skybar ☕",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/application/place_import_service.dart",
+  "line": 66,
+  "text": "Đồi Sao Mai, Đường Trần Hưng Đạo, Dương Đông, Phú Quốc",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 162,
+  "text": "Nhập tên chuyến nhé ✏️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 171,
+  "text": "Chọn ngày đi và ngày về nhé 📅",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 202,
+  "text": "Đã tạo chuyến “$name” 🚀",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 852,
+  "text": "Điểm đến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 862,
+  "text": "vd: Đà Lạt, Lâm Đồng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 871,
+  "text": "Vibe chuyến đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 925,
+  "text": "Ngân sách dự kiến / người",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/create_trip_screen.dart",
+  "line": 1317,
+  "text": "Tham gia bằng mã mời",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 50,
+  "text": "Thêm điểm dừng",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 90,
+  "text": "Tên địa điểm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 98,
+  "text": "Địa chỉ (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 185,
+  "text": "Lịch trình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 236,
+  "text": "Ngày $day",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 262,
+  "text": "Đường đi",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 303,
+  "text": "Cần ít nhất 2 điểm dừng để tạo lộ trình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 316,
+  "text": "Không mở được Google Maps",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 323,
+  "text": "Đã tối ưu thứ tự điểm dừng theo vị trí 🧭",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 423,
+  "text": "${it.durationMinutes} phút",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 479,
+  "text": "Không tải được lịch trình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 519,
+  "text": "Chưa có lịch trình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_itinerary_screen.dart",
+  "line": 528,
+  "text": "Lên kế hoạch cho từng ngày nào!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 57,
+  "text": "Bản đồ chuyến",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 75,
+  "text": "Không tải được lịch trình",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 103,
+  "text": "Chưa có điểm nào có toạ độ.\\nThêm địa điểm từ Khám phá / Ảnh→Map, hoặc đăng moment có vị trí để ghim lên đây.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 233,
+  "text": "Ăn uống",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 320,
+  "text": "Ngày $d",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 372,
+  "text": "Ngày $day · ${it.startTime}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 591,
+  "text": "Gợi ý link test nhanh:",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 604,
+  "text": "Bãi Sao (Google Maps)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 651,
+  "text": "Nhập tự động từ link bản đồ.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_map_screen.dart",
+  "line": 674,
+  "text": "Lỗi lưu địa điểm: ${friendlyError(e)}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_wishlist_screen.dart",
+  "line": 59,
+  "text": "Tên địa điểm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_wishlist_screen.dart",
+  "line": 68,
+  "text": "Địa chỉ (tuỳ chọn)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_wishlist_screen.dart",
+  "line": 119,
+  "text": "Wishlist nhóm",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_wishlist_screen.dart",
+  "line": 178,
+  "text": "Không tải được wishlist",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_wishlist_screen.dart",
+  "line": 218,
+  "text": "Wishlist trống",
+  "interp": false
+ },
+ {
+  "file": "lib/features/trip_planner/presentation/trip_wishlist_screen.dart",
+  "line": 227,
+  "text": "Thả địa điểm cả nhóm muốn đi vào đây!",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 71,
+  "text": "Thêm ngày nghỉ 🗓️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 138,
+  "text": "Ghi chú (đi Đà Lạt, nghỉ ốm...)",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 181,
+  "text": "Thêm ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 243,
+  "text": "Nghỉ phép thông minh 🏖️",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 275,
+  "text": "Lỗi tải ngày nghỉ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 314,
+  "text": "Đã nghỉ",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 314,
+  "text": "ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 316,
+  "text": "Còn lại",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 316,
+  "text": "ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 317,
+  "text": "ngày",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 329,
+  "text": "Ngày đã đăng ký",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 361,
+  "text": "Chưa đăng ký ngày nghỉ nào trong năm $_selectedYear",
+  "interp": true
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 432,
+  "text": "Gợi ý nghỉ bắc cầu (VN 2026) 💡",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 443,
+  "text": "Lỗi tải gợi ý: ${friendlyError(e)}",
+  "interp": true
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 450,
+  "text": "Không có gợi ý nghỉ cầu nào sắp tới.",
+  "interp": false
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 477,
+  "text": "Nghỉ bắc cầu: Xin nghỉ ${s.days} ngày",
+  "interp": true
+ },
+ {
+  "file": "lib/features/vacay/presentation/vacay_screen.dart",
+  "line": 485,
+  "text": "Từ ${s.from} đến ${s.to} để có kỳ nghỉ dài!",
+  "interp": true
+ }
+]

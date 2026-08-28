@@ -7,6 +7,7 @@ import '../../data/home_feed_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
+import '../../../../core/widgets/trip_cover_image.dart';
 import '../../../../core/services/weather_service.dart';
 import '../../../social/data/notifications_repository.dart';
 import '../../../social/presentation/pages/notifications_screen.dart';
@@ -750,15 +751,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (t.coverImage != null && t.coverImage!.isNotEmpty)
-            CachedNetworkImage(
-              imageUrl: t.coverImage!,
-              fit: BoxFit.cover,
-              placeholder: (c, u) => Container(color: GenZTokens.green),
-              errorWidget: (c, u, e) => Container(color: GenZTokens.green),
-            )
-          else
-            Container(color: GenZTokens.green),
+          // Ảnh bìa có thể là asset path (người dùng chọn lúc tạo chuyến) hoặc
+          // URL — TripCoverImage chọn đúng loại. Trước đây luôn dùng
+          // CachedNetworkImage nên ảnh asset không bao giờ hiện.
+          TripCoverImage(source: t.coverImage),
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(

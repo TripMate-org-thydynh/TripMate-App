@@ -412,6 +412,8 @@
     "night_market_desc": "Street food, shopping, and wandering around. Classic Dalat experience.",
     "night_market_loc": "Đà Lạt Night Market",
     "night_market_title": "Night Market Chaos",
+    "no_trip_body": "Create your first trip, then add the stops you want to hit!",
+    "no_trip_title": "No itinerary yet",
     "perfect_for_coffee": "Perfect for coffee",
     "rerouting_desc": "Heavy rain tomorrow in Đà Lạt - Matey is rerouting to indoor gems.",
     "rerouting_warning": "Rerouting Warning",
@@ -459,6 +461,13 @@
   },
   "moments": {
     "wall_empty": "Your memory wall is empty. Post your first moment from a trip!"
+  },
+  "nav": {
+    "create": "New trip",
+    "explore": "Explore",
+    "itinerary": "Itinerary",
+    "live": "Live",
+    "profile": "Profile"
   },
   "notes": {
     "delete_confirm": "Delete this note?",

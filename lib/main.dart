@@ -19,6 +19,11 @@ void main() async {
         supportedLocales: const [Locale('vi'), Locale('en')],
         path: 'assets/translations',
         fallbackLocale: const Locale('vi'),
+        // TripMate là sản phẩm Việt và bản dịch tiếng Anh chưa phủ hết, nên mở
+        // app luôn ở tiếng Việt thay vì bám ngôn ngữ máy. Không có dòng này,
+        // máy đặt tiếng Anh sẽ thấy màn hình lẫn hai thứ tiếng. Người dùng vẫn
+        // đổi được ngôn ngữ trong app và lựa chọn đó được ghi nhớ.
+        startLocale: const Locale('vi'),
         child: const MyApp(),
       ),
     ),

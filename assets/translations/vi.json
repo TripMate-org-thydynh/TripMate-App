@@ -412,6 +412,8 @@
     "night_market_desc": "Ăn vặt đường phố, mua sắm đồ len và đi dạo quanh chợ. Trải nghiệm Đà Lạt kinh điển.",
     "night_market_loc": "Chợ đêm Đà Lạt",
     "night_market_title": "Chợ Đêm Náo Nhiệt",
+    "no_trip_body": "Tạo chuyến đầu tiên rồi thêm các điểm bạn muốn ghé nhé!",
+    "no_trip_title": "Chưa có lịch trình nào",
     "perfect_for_coffee": "Tuyệt vời để cà phê",
     "rerouting_desc": "Mưa lớn ngày mai tại Đà Lạt - Matey đang chuyển hướng sang các tọa độ trong nhà.",
     "rerouting_warning": "Cảnh báo Lịch trình",
@@ -459,6 +461,13 @@
   },
   "moments": {
     "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!"
+  },
+  "nav": {
+    "create": "Tạo chuyến",
+    "explore": "Khám phá",
+    "itinerary": "Lịch trình",
+    "live": "Live",
+    "profile": "Cá nhân"
   },
   "notes": {
     "delete_confirm": "Xóa ghi chú?",

@@ -171,3 +171,22 @@ final upNextProvider = FutureProvider<UpNextItem?>((ref) {
 final expenseSummaryProvider = FutureProvider<ExpenseSummary>((ref) {
   return ref.watch(homeFeedRepositoryProvider).fetchExpenseSummary();
 });
+
+/// Làm mới mọi khối tổng hợp ở màn Home.
+///
+/// Các provider này là `FutureProvider` nên chỉ nạp một lần; sau khi người dùng
+/// thêm điểm lịch trình / ghi chi tiêu / đăng khoảnh khắc ở màn khác, Home vẫn
+/// hiện dữ liệu cũ (vd "Nothing coming up" dù vừa thêm điểm). Gọi hàm này ở mọi
+/// nơi có thay đổi dữ liệu mà Home phản ánh.
+void invalidateHomeAggregates(Ref ref) {
+  ref.invalidate(upNextProvider);
+  ref.invalidate(squadActivitiesProvider);
+  ref.invalidate(expenseSummaryProvider);
+}
+
+/// Bản dùng được từ widget (`WidgetRef`).
+void invalidateHomeAggregatesFrom(WidgetRef ref) {
+  ref.invalidate(upNextProvider);
+  ref.invalidate(squadActivitiesProvider);
+  ref.invalidate(expenseSummaryProvider);
+}
