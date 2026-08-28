@@ -1,9 +1,23 @@
-import 'dart:async';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'dart:ui';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/app_messenger.dart';
-class ChaosChallengesScreen extends StatefulWidget {
+import '../../../core/network/api_exception.dart';
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../data/games_repository.dart';
+
+/// Bảng thử thách chaos của squad.
+///
+/// Trước đây màn này liệt kê 4 thử thách in cứng ("Order mystery food — Voted
+/// by Minh Nhật"...) và mọi nút Join đều chỉ hiện "Tính năng đang được hoàn
+/// thiện 🚧". Nay bốc thử thách THẬT từ `/games/:tripId/dare/random` — BE điền
+/// sẵn tên thành viên có thật trong chuyến — và bấm "Xong" sẽ ghi một ván chơi,
+/// cộng XP vào bảng xếp hạng squad.
+class ChaosChallengesScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
@@ -14,730 +28,273 @@ class ChaosChallengesScreen extends StatefulWidget {
   });
 
   @override
-  State<ChaosChallengesScreen> createState() => _ChaosChallengesScreenState();
+  ConsumerState<ChaosChallengesScreen> createState() =>
+      _ChaosChallengesScreenState();
 }
 
-class _ChaosChallengesScreenState extends State<ChaosChallengesScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
-
-  // Count-down timer state
-  late Timer _countdownTimer;
-  Duration _remainingTime = const Duration(hours: 4, minutes: 20, seconds: 0);
+class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
+  final List<SquadDare> _board = [];
+  final Set<int> _done = {};
+  bool _busy = false;
+  Object? _error;
 
   @override
   void initState() {
     super.initState();
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeOut,
-    );
-    _fadeController.forward();
+    // Mở màn là có sẵn vài thử thách để chơi ngay, không phải bấm mới có.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _draw(count: 3));
+  }
 
-    // Start ticking countdown
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          if (_remainingTime.inSeconds > 0) {
-            _remainingTime = _remainingTime - const Duration(seconds: 1);
-          } else {
-            _remainingTime = const Duration(
-              hours: 24,
-              minutes: 0,
-              seconds: 0,
-            ); // loop
-          }
-        });
-      }
+  String? get _tripId => ref.read(activeTripIdProvider);
+
+  Future<void> _draw({int count = 1}) async {
+    final tripId = _tripId;
+    if (tripId == null || _busy) return;
+    setState(() {
+      _busy = true;
+      _error = null;
     });
+    try {
+      final repo = ref.read(gamesRepositoryProvider);
+      final drawn = <SquadDare>[];
+      for (var i = 0; i < count; i++) {
+        final d = await repo.fetchDare(tripId);
+        // Tránh bốc trùng ngay trong cùng một lượt.
+        if (!drawn.any((x) => x.dareText == d.dareText) &&
+            !_board.any((x) => x.dareText == d.dareText)) {
+          drawn.add(d);
+        }
+      }
+      if (!mounted) return;
+      setState(() {
+        _board.addAll(drawn);
+        _busy = false;
+      });
+      HapticFeedback.selectionClick();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _error = e;
+      });
+    }
   }
 
-  @override
-  void dispose() {
-    _countdownTimer.cancel();
-    _fadeController.dispose();
-    super.dispose();
-  }
-
-  String _formatDuration(Duration d) {
-    String hours = d.inHours.toString().padLeft(2, '0');
-    String minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
-    String seconds = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$hours:$minutes:$seconds';
+  /// Đánh dấu hoàn thành → ghi ván chơi để XP vào bảng xếp hạng.
+  Future<void> _complete(int index) async {
+    final tripId = _tripId;
+    if (tripId == null || _done.contains(index)) return;
+    final dare = _board[index];
+    setState(() => _done.add(index));
+    HapticFeedback.mediumImpact();
+    try {
+      await ref
+          .read(gamesRepositoryProvider)
+          .createSession(
+            tripId,
+            // GameType là enum của Prisma; 'CHAOS_CHALLENGE' không có trong
+            // đó nên BE trả 400. Thử thách chính là truth-or-dare.
+            gameType: 'TRUTH_OR_DARE',
+            state: {
+              'dare': dare.dareText,
+              'xpReward': dare.xpReward,
+              'chaos': dare.chaosLabel,
+            },
+          );
+      if (!mounted) return;
+      ref.invalidate(squadXpProvider(tripId));
+      ref.invalidate(leaderboardProvider(tripId));
+      showGlobalSnack('games.chaos_done'.tr(args: ['${dare.xpReward}']));
+    } catch (e) {
+      if (!mounted) return;
+      // Ghi hỏng thì bỏ đánh dấu để người chơi thử lại, không im lặng nuốt.
+      setState(() => _done.remove(index));
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-
-    // Design System colors
-    final bgStart = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
-    final secondary = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFFFFD84D);
-    final textPrimary = isDark
-        ? const Color(0xFFDAE2FD)
-        : const Color(0xFF141210);
-    final textMuted = isDark
-        ? const Color(0xFFCBC3D7)
-        : const Color(0xFF4A453E);
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: bgStart),
-        child: Stack(
-          children: [
-            // Ambient glow backdrops
-            if (isDark) ...[
-              Positioned(
-                top: -50,
-                right: -50,
-                child: Container(
-                  width: 250,
-                  height: 250,
-                  decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                    child: Container(color: Colors.transparent),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 100,
-                left: -100,
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: secondary.withValues(alpha: 0.08),
-                    shape: BoxShape.circle,
-                  ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                    child: Container(color: Colors.transparent),
-                  ),
-                ),
-              ),
-            ],
-
-            SafeArea(
-              bottom: false,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Column(
-                  children: [
-                    // Top App Bar
-                    _buildTopAppBar(textPrimary),
-
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 12),
-
-                            // Header Text Blocks
-                            _buildHeaderSection(textPrimary, textMuted),
-
-                            const SizedBox(height: 24),
-
-                            // Highlighted Daily Chaos Card
-                            _buildDailyChaosCard(
-                              surface,
-                              primary,
-                              secondary,
-                              textPrimary,
-                              textMuted,
-                              isDark,
-                            ),
-
-                            const SizedBox(height: 28),
-
-                            // Viral Challenges Feed list
-                            _buildViralChallenges(
-                              surface,
-                              primary,
-                              secondary,
-                              textPrimary,
-                              textMuted,
-                              isDark,
-                            ),
-
-                            const SizedBox(height: 28),
-
-                            // Chaos Rewards Bento Grid
-                            _buildRewardsSection(
-                              surface,
-                              primary,
-                              secondary,
-                              textPrimary,
-                              textMuted,
-                              isDark,
-                            ),
-
-                            const SizedBox(
-                              height: 160,
-                            ), // Spacing for bottom navbar
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Floating Custom Navbar
-            _buildFloatingNavbar(surface, primary, secondary, textMuted),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopAppBar(Color textPrimary) {
-    final isDark = widget.isDarkMode;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: textPrimary,
-              size: 20,
-            ),
-            onPressed: () => Navigator.maybePop(context),
-            tooltip: 'Back',
-          ),
-          Text(
-            'trip.mate',
-            style: AppFonts.heading(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -1.0,
-              color: textPrimary,
-            ),
-          ),
-          if (widget.onThemeToggle != null)
-            IconButton(
-              icon: Icon(
-                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                color: textPrimary.withValues(alpha: 0.6),
-                size: 20,
-              ),
-              onPressed: widget.onThemeToggle,
-              tooltip: 'Toggle Theme',
-            )
-          else
-            const SizedBox(width: 48),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeaderSection(Color textPrimary, Color textMuted) {
-    return Center(
-      child: Column(
-        children: [
-          Text(
-            'embrace the chaos',
-            style: AppFonts.heading(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-              color: textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'bad decisions make good memories.',
-            style: AppFonts.body(
-              fontSize: 14,
-              color: textMuted,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDailyChaosCard(
-    Color surface,
-    Color primary,
-    Color secondary,
-    Color textPrimary,
-    Color textMuted,
-    bool isDark,
-  ) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: primary, width: 2),
-            boxShadow: [
-              BoxShadow(color: primary.withValues(alpha: 0.05), blurRadius: 0),
-            ],
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Text('🎲', style: TextStyle(fontSize: 16)),
-                      const SizedBox(width: 8),
-                      Text(
-                        'DAILY CHAOS',
-                        style: AppFonts.heading(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0,
-                          color: primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.local_fire_department_rounded,
-                        color: secondary,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Active',
-                        style: AppFonts.body(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: secondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Take a random bus',
-                style: AppFonts.heading(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Timer countdown display
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Remaining',
-                    style: AppFonts.body(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                  Text(
-                    _formatDuration(_remainingTime),
-                    style: AppFonts.heading(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: primary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Accept Challenge button
-              GestureDetector(
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Challenge Accepted! Time to hop on a random bus! 🚌✨',
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                },
-                child: Container(
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: primary,
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: primary.withValues(alpha: 0.3),
-                        blurRadius: 0,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Accept Challenge',
-                    style: AppFonts.body(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildViralChallenges(
-    Color surface,
-    Color primary,
-    Color secondary,
-    Color textPrimary,
-    Color textMuted,
-    bool isDark,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.local_fire_department_rounded,
-              color: Colors.orange,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Viral Challenges',
-              style: AppFonts.heading(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: textPrimary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        // Horizontal list / vertical items representing trending dares
-        // Item 1: Order mystery food
-        _buildViralChallengeCard(
-          isDark: isDark,
-          surface: surface,
-          primaryColor: primary,
-          secondaryColor: secondary,
-          textPrimary: textPrimary,
-          textMuted: textMuted,
-          avatarText: '🍜',
-          title: 'Order mystery food',
-          sub: 'Voted by Minh Nhật',
-          buttonLabel: 'Join',
-          buttonColor: secondary,
-          onTap: () => showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
-        ),
-
-        const SizedBox(height: 12),
-
-        // Item 2: Recreate a movie scene
-        _buildViralChallengeCard(
-          isDark: isDark,
-          surface: surface,
-          primaryColor: primary,
-          secondaryColor: secondary,
-          textPrimary: textPrimary,
-          textMuted: textMuted,
-          avatarText: '📸',
-          title: 'Recreate a movie scene',
-          sub: '1 member ready',
-          buttonLabel: 'Join',
-          buttonColor: primary,
-          onTap: () => showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildViralChallengeCard({
-    required bool isDark,
-    required Color surface,
-    required Color primaryColor,
-    required Color secondaryColor,
-    required Color textPrimary,
-    required Color textMuted,
-    required String avatarText,
-    required String title,
-    required String sub,
-    required String buttonLabel,
-    required Color buttonColor,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: (isDark ? Colors.white : Colors.black),
-          width: 2,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: (isDark ? Colors.white : Colors.black).withValues(
-                alpha: 0.05,
-              ),
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(avatarText, style: const TextStyle(fontSize: 20)),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: AppFonts.heading(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  sub,
-                  style: AppFonts.body(
-                    fontSize: 12,
-                    color: textMuted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Join Button
-          GestureDetector(
-            onTap: onTap,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: buttonColor),
-                color: buttonColor.withValues(alpha: 0.1),
-              ),
-              child: Text(
-                buttonLabel,
-                style: AppFonts.body(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: buttonColor,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRewardsSection(
-    Color surface,
-    Color primary,
-    Color secondary,
-    Color textPrimary,
-    Color textMuted,
-    bool isDark,
-  ) {
-    final List<Map<String, String>> rewards = [
-      {'emoji': '👑', 'label': 'Chaos King'},
-      {'emoji': '🎵', 'label': 'Vibe Savior'},
-      {'emoji': '🍕', 'label': 'Mystery Gourmet'},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Chaos Rewards',
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: ink),
+        title: Text(
+          'games.chaos_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: textPrimary,
-          ),
-        ),
-        const SizedBox(height: 12),
-        // Horizontal list of Bento rewards
-        Row(
-          children: rewards.map((rew) {
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: (isDark ? Colors.white : Colors.black),
-                    width: 2,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Text(rew['emoji']!, style: const TextStyle(fontSize: 28)),
-                    const SizedBox(height: 10),
-                    Text(
-                      rew['label']!,
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppFonts.body(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFloatingNavbar(
-    Color surface,
-    Color primary,
-    Color secondary,
-    Color textMuted,
-  ) {
-    final isDark = widget.isDarkMode;
-    return Positioned(
-      bottom: 24,
-      left: 20,
-      right: 20,
-      child: Center(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(40),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-            child: Container(
-              width: double.infinity,
-              constraints: const BoxConstraints(maxWidth: 400),
-              decoration: BoxDecoration(
-                color: surface.withValues(alpha: isDark ? 0.65 : 0.8),
-                borderRadius: BorderRadius.circular(40),
-                border: Border.all(
-                  color: (isDark ? Colors.white : Colors.black),
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.1),
-                    blurRadius: 0,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavbarItem(
-                    Icons.home_rounded,
-                    false,
-                    textMuted,
-                    secondary,
-                  ),
-                  _buildNavbarItem(
-                    Icons.payments_outlined,
-                    false,
-                    textMuted,
-                    secondary,
-                  ),
-                  _buildNavbarItem(
-                    Icons.explore_rounded,
-                    true,
-                    textMuted,
-                    secondary,
-                  ),
-                  _buildNavbarItem(
-                    Icons.auto_awesome_rounded,
-                    false,
-                    textMuted,
-                    secondary,
-                  ),
-                  _buildNavbarItem(
-                    Icons.person_outline_rounded,
-                    false,
-                    textMuted,
-                    secondary,
-                  ),
-                ],
-              ),
-            ),
+            color: ink,
           ),
         ),
       ),
+      floatingActionButton: tripId == null
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: _busy ? null : () => _draw(),
+              backgroundColor: GenZTokens.purple,
+              foregroundColor: Colors.white,
+              icon: _busy
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.casino_outlined),
+              label: Text(
+                'games.chaos_draw'.tr(),
+                style: AppFonts.heading(fontWeight: FontWeight.w800),
+              ),
+            ),
+      body: _body(isDark, tripId),
     );
   }
 
-  Widget _buildNavbarItem(
-    IconData icon,
-    bool isActive,
-    Color textMuted,
-    Color secondary,
-  ) {
+  Widget _body(bool isDark, String? tripId) {
+    if (tripId == null) {
+      return AppEmptyState(
+        isDark: isDark,
+        icon: Icons.local_fire_department_outlined,
+        title: 'games.need_trip_title'.tr(),
+        body: 'games.need_trip_body'.tr(),
+      );
+    }
+    if (_error != null && _board.isEmpty) {
+      return AppErrorState(
+        isDark: isDark,
+        error: _error,
+        onRetry: () => _draw(count: 3),
+      );
+    }
+    if (_board.isEmpty) {
+      return _busy
+          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
+          : AppEmptyState(
+              isDark: isDark,
+              icon: Icons.local_fire_department_outlined,
+              title: 'games.chaos_title'.tr(),
+              body: 'games.chaos_empty'.tr(),
+            );
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(
+        GenZTokens.space5,
+        GenZTokens.space5,
+        GenZTokens.space5,
+        96,
+      ),
+      itemCount: _board.length,
+      separatorBuilder: (_, _) => const SizedBox(height: GenZTokens.space4),
+      itemBuilder: (_, i) => _card(isDark, i),
+    );
+  }
+
+  Widget _card(bool isDark, int index) {
+    final dare = _board[index];
+    final done = _done.contains(index);
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    // Càng chaos càng nóng màu — đọc lướt là biết độ khó.
+    final level = dare.chaosLevel;
+    final color = level >= 4
+        ? GenZTokens.red
+        : level == 3
+        ? GenZTokens.orange
+        : level == 2
+        ? GenZTokens.yellow
+        : GenZTokens.green;
+
     return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: isActive
-          ? BoxDecoration(
-              color: secondary.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: secondary.withValues(alpha: 0.25),
-                  blurRadius: 0,
-                  spreadRadius: 2,
+      padding: const EdgeInsets.all(GenZTokens.space5),
+      decoration: BoxDecoration(
+        color: done ? color.withValues(alpha: 0.18) : surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                dare.chaosLabel.isEmpty ? '🔥' * level : dare.chaosLabel,
+                style: AppFonts.heading(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: ink,
                 ),
-              ],
-            )
-          : null,
-      child: Icon(icon, color: isActive ? secondary : textMuted, size: 24),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: GenZTokens.ink,
+                    width: GenZTokens.borderWidthThin,
+                  ),
+                ),
+                child: Text(
+                  '+${dare.xpReward} XP',
+                  style: AppFonts.heading(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: GenZTokens.ink,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: GenZTokens.space3),
+          Text(
+            dare.dareText,
+            style: AppFonts.body(fontSize: 15, color: ink, height: 1.4),
+          ),
+          const SizedBox(height: GenZTokens.space4),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: done ? null : () => _complete(index),
+              icon: Icon(done ? Icons.check_circle : Icons.bolt, size: 18),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: done ? color : GenZTokens.yellow,
+                foregroundColor: GenZTokens.ink,
+                disabledBackgroundColor: color,
+                disabledForegroundColor: GenZTokens.ink,
+                elevation: 0,
+                side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                ),
+              ),
+              label: Text(
+                done ? 'games.chaos_completed'.tr() : 'games.chaos_do'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: GenZTokens.ink,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -182,6 +182,12 @@ class GamesRepository {
     });
   }
 
+  /// Bốc một thử thách chaos — BE điền sẵn tên thành viên thật của chuyến.
+  Future<SquadDare> fetchDare(String tripId) async {
+    final data = await _client.getData('${_base(tripId)}/dare/random');
+    return SquadDare.fromJson((data as Map).cast<String, dynamic>());
+  }
+
   Future<List<GameChallenge>> fetchWeekly(String tripId) =>
       _fetchChallenges('${_base(tripId)}/weekly');
 
@@ -234,3 +240,34 @@ final activeTripIdProvider = Provider<String?>((ref) {
     orElse: () => null,
   );
 });
+
+/// Một thử thách "chaos" do BE bốc, đã điền tên thành viên THẬT của chuyến.
+class SquadDare {
+  final String dareText;
+  final int xpReward;
+
+  /// Nhãn độ căng do BE trả ("Nhẹ 😌" / "Vừa 😄" / "Căng 🔥" / "Cực căng 💥").
+  final String chaosLabel;
+
+  const SquadDare({
+    required this.dareText,
+    required this.xpReward,
+    required this.chaosLabel,
+  });
+
+  /// 1..4 để tô màu và đếm 🔥. XP là thang liên tục nên suy ra từ đó, khỏi phụ
+  /// thuộc chuỗi tiếng Việt vốn có thể đổi.
+  int get chaosLevel {
+    if (xpReward >= 250) return 4;
+    if (xpReward >= 180) return 3;
+    if (xpReward >= 120) return 2;
+    return 1;
+  }
+
+  factory SquadDare.fromJson(Map<String, dynamic> j) => SquadDare(
+    dareText: j['dareText'] as String? ?? '',
+    xpReward: (j['xpReward'] as num?)?.toInt() ?? 0,
+    chaosLabel: j['chaosFactor']?.toString() ?? '',
+  );
+}
+
