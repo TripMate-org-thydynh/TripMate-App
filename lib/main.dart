@@ -6,6 +6,7 @@ import 'core/theme/theme_provider.dart'; // themeProvider + accentProvider
 import 'core/router/app_router.dart';
 import 'core/app_messenger.dart';
 import 'core/api_service.dart';
+import 'core/providers/auth_provider.dart';
 import 'core/network/api_client.dart';
 
 void main() async {
@@ -32,6 +33,13 @@ class MyApp extends ConsumerWidget {
     // Update API client languages dynamically when locale changes
     ApiService.currentLanguage = context.locale.languageCode;
     ApiClient.currentLanguage = context.locale.languageCode;
+
+    // ApiService là service tĩnh nên tự nó không logout được khi token hết hạn.
+    // Nối vào authProvider để 401 ở nhánh này cũng đưa người dùng về /auth,
+    // giống AuthInterceptor của ApiClient.
+    ApiService.onUnauthorized = () {
+      ref.read(authProvider.notifier).logout();
+    };
 
     final themeMode = ref.watch(themeProvider);
     final accent    = ref.watch(accentProvider);

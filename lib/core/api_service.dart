@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../features/system_states/pages/no_internet_screen.dart';
 import 'app_messenger.dart';
 import 'network/api_client.dart';
@@ -38,6 +39,31 @@ class ApiService {
   // Active language code synced with the UI localization state
   static String currentLanguage = 'vi';
 
+  /// Được gọi khi BE trả 401 (token hết hạn / không hợp lệ).
+  ///
+  /// `ApiService` là service tĩnh nên không đọc được Riverpod ref; `MyApp` gắn
+  /// callback này vào `authProvider.logout()`. Không có nó thì các màn còn dùng
+  /// ApiService sẽ kẹt ở trạng thái loading vĩnh viễn khi phiên hết hạn —
+  /// nhánh ApiClient có AuthInterceptor lo, nhánh này thì không.
+  static void Function()? onUnauthorized;
+
+  /// Chặn gọi logout nhiều lần khi một màn bắn song song vài request cùng lúc.
+  static bool _handlingUnauthorized = false;
+
+  static void _handleUnauthorized() {
+    if (_handlingUnauthorized) return;
+    _handlingUnauthorized = true;
+    showGlobalSnack(
+      'errors.session_expired'.tr(),
+      isError: true,
+    );
+    onUnauthorized?.call();
+    // Mở lại sau một nhịp để lần hết hạn sau vẫn xử lý được.
+    Future.delayed(const Duration(seconds: 3), () {
+      _handlingUnauthorized = false;
+    });
+  }
+
   // Persistent static Dio instance to mimic API client interceptors for legacy screens
   static final Dio _dio =
       Dio(
@@ -64,6 +90,9 @@ class ApiService {
                   err.error is SocketException) {
                 _navigateToNoInternet();
               }
+              if (err.response?.statusCode == 401 && authToken != null) {
+                _handleUnauthorized();
+              }
               return handler.next(err);
             },
           ),
@@ -85,6 +114,8 @@ class ApiService {
         e.type == DioExceptionType.connectionError ||
         e.error is SocketException;
     if (isNetwork) return;
+    // 401 đã được _handleUnauthorized() thông báo — tránh hiện 2 snackbar.
+    if (e.response?.statusCode == 401) return;
     String? msg;
     final data = e.response?.data;
     if (data is Map && data['message'] != null) {

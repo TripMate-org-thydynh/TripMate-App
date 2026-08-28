@@ -23,13 +23,14 @@ class PillTag extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = color ?? Theme.of(context).colorScheme.secondary;
-    final isAccentBg = bg == GenZTokens.yellow ||
-                       bg == GenZTokens.pink ||
-                       bg == GenZTokens.lilac ||
-                       bg == GenZTokens.orange ||
-                       bg == GenZTokens.magenta ||
-                       bg == GenZTokens.blue ||
-                       bg == GenZTokens.green;
+    final isAccentBg =
+        bg == GenZTokens.yellow ||
+        bg == GenZTokens.pink ||
+        bg == GenZTokens.lilac ||
+        bg == GenZTokens.orange ||
+        bg == GenZTokens.magenta ||
+        bg == GenZTokens.blue ||
+        bg == GenZTokens.green;
     final textIconColor = isAccentBg ? GenZTokens.ink : ink;
 
     final pill = Container(
@@ -49,14 +50,24 @@ class PillTag extends StatelessWidget {
             Icon(icon, size: 14, color: textIconColor),
             const SizedBox(width: GenZTokens.space1),
           ],
-          Text(
-            text.toUpperCase(),
-            style: AppFonts.mono(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-              color: textIconColor,
-              shadows: bg == GenZTokens.yellow ? GenZTokens.textOutline(Colors.black.withValues(alpha: 0.2)) : null,
+          // Chữ phải co lại được: nhãn dịch sang ngôn ngữ khác có thể dài hơn
+          // nhiều so với bản gốc và làm tràn thẻ cha (RenderFlex overflow).
+          Flexible(
+            child: Text(
+              text.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppFonts.mono(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+                color: textIconColor,
+                shadows: bg == GenZTokens.yellow
+                    ? GenZTokens.textOutline(
+                        Colors.black.withValues(alpha: 0.2),
+                      )
+                    : null,
+              ),
             ),
           ),
         ],

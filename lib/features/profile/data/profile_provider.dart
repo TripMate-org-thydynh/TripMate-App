@@ -50,10 +50,21 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
   Future<void> _fetchData() async {
     try {
-      final profile = await ApiService.get('/users/me');
-      final stats = await ApiService.get('/users/me/stats');
-      final badges = await ApiService.get('/users/me/badges');
+      // 3 request độc lập → gọi song song thay vì nối tiếp.
+      final results = await Future.wait([
+        ApiService.get('/users/me'),
+        ApiService.get('/users/me/stats'),
+        ApiService.get('/users/me/badges'),
+      ]);
 
+      // Provider `watch` authProvider nên bị dispose ngay khi logout (vd 401).
+      // Nếu request đang bay về mà ghi state sau dispose thì StateNotifier ném
+      // "Tried to use ProfileNotifier after dispose was called".
+      if (!mounted) return;
+
+      final profile = results[0];
+      final stats = results[1];
+      final badges = results[2];
       state = ProfileState(
         profile: profile is Map<String, dynamic> ? profile : null,
         stats: stats is Map<String, dynamic> ? stats : null,
@@ -61,6 +72,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         isLoading: false,
       );
     } catch (_) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false);
     }
   }
