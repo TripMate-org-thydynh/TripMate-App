@@ -584,6 +584,23 @@
     "buddies_title": "Travel buddies 👥",
     "countries": "Countries",
     "distance": "Distance",
+    "export_badges": {
+      "zero": "No badges yet",
+      "one": "{} badge",
+      "other": "{} badges"
+    },
+    "export_contains": "The export includes:",
+    "export_copied": "Export copied to clipboard",
+    "export_copy": "Copy to clipboard",
+    "export_note": "Your real data lives on the server, so nothing is lost when you switch phones. This export is your own copy to keep.",
+    "export_profile": "Your profile and stats",
+    "export_share": "Share export",
+    "export_title": "Export data 💾",
+    "export_trips": {
+      "zero": "No trips yet",
+      "one": "{} trip",
+      "other": "{} trips"
+    },
     "lang_label": "Select Language",
     "lang_sub": "Change display language dynamically",
     "memories": "Chaotic Memories",

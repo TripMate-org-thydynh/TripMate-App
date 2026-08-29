@@ -584,6 +584,23 @@
     "buddies_title": "Đã đi chung 👥",
     "countries": "Quốc gia",
     "distance": "Quãng đường",
+    "export_badges": {
+      "zero": "Chưa có danh hiệu",
+      "one": "{} danh hiệu",
+      "other": "{} danh hiệu"
+    },
+    "export_contains": "Bản xuất gồm:",
+    "export_copied": "Đã chép bản xuất vào clipboard",
+    "export_copy": "Chép vào clipboard",
+    "export_note": "Dữ liệu thật nằm trên máy chủ nên tài khoản của bạn không mất khi đổi máy. Bản xuất này để bạn tự giữ một bản sao.",
+    "export_profile": "Hồ sơ và thống kê của bạn",
+    "export_share": "Chia sẻ bản xuất",
+    "export_title": "Xuất dữ liệu 💾",
+    "export_trips": {
+      "zero": "Chưa có chuyến nào",
+      "one": "{} chuyến đi",
+      "other": "{} chuyến đi"
+    },
     "lang_label": "Chọn Ngôn Ngữ",
     "lang_sub": "Thay đổi ngôn ngữ hiển thị lập tức",
     "memories": "Khoảnh Khắc Hỗn Loạn",

@@ -519,6 +519,11 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
               // Cover Photo
               Stack(
                 children: [
+                  // Nền màu, không phải ảnh Unsplash ngẫu nhiên.
+                  //
+                  // Địa điểm nay là thật (do AI trả về hoặc người dùng nhập)
+                  // nhưng app không có ảnh của nó, nên một tấm ảnh lạ dán vào
+                  // đây khiến người dùng tưởng đó là ảnh chỗ mình sắp thêm.
                   Container(
                     height: 150,
                     width: double.infinity,
@@ -527,12 +532,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                         topLeft: Radius.circular(22),
                         topRight: Radius.circular(22),
                       ),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&auto=format&fit=crop&q=80',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
+                      color: Color(0xFF8B4DE8),
                     ),
                   ),
                   // Darken overlay
@@ -1015,12 +1015,11 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                 height: 50,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1541188111-1e0d58224f24?w=200&auto=format&fit=crop&q=80',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
+                  color: const Color(0xFFC9B8FF),
+                ),
+                child: const Icon(
+                  Icons.place_outlined,
+                  color: Color(0xFF262019),
                 ),
               ),
               const SizedBox(width: 12),

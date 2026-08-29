@@ -8,7 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'ai_memory_sorting_screen.dart';
-import 'ai_caption_generator_screen.dart';
+import '../../../ai/pages/ai_caption_generator_screen.dart';
 import 'trip_recap_reel_screen.dart';
 import '../../../discovery/presentation/pages/photo_map_screen.dart';
 import '../../../gamification/data/games_repository.dart';
