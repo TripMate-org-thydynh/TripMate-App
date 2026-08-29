@@ -7,6 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/app_messenger.dart';
+import '../../../../core/network/api_exception.dart';
+
 import 'ai_memory_sorting_screen.dart';
 import '../../../ai/pages/ai_caption_generator_screen.dart';
 import 'post_moment_screen.dart';
@@ -16,7 +19,7 @@ import '../../../discovery/presentation/pages/photo_map_screen.dart';
 import '../../../gamification/data/games_repository.dart';
 import '../../../trips/application/trips_providers.dart';
 
-class MemoryWallScreen extends StatefulWidget {
+class MemoryWallScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
 
@@ -27,10 +30,10 @@ class MemoryWallScreen extends StatefulWidget {
   });
 
   @override
-  State<MemoryWallScreen> createState() => _MemoryWallScreenState();
+  ConsumerState<MemoryWallScreen> createState() => _MemoryWallScreenState();
 }
 
-class _MemoryWallScreenState extends State<MemoryWallScreen> {
+class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
   final List<Widget> _floatingEmojis = [];
 
   void _addFloatingEmoji(String emoji, double startX) {
@@ -56,9 +59,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     final isDark = widget.isDarkMode;
 
     // TripMate color tokens
-    final bgGradStart = isDark
-        ? const Color(0xFF1A1712)
-        : const Color(0xFFFDF6D3);
+    final bgGradStart = Theme.of(context).scaffoldBackgroundColor;
     final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
     final textPrimary = isDark
         ? const Color(0xFFFDF6D3)
@@ -288,10 +289,13 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                                   for (var i = 0; i < moments.length; i++)
                                     _buildPolaroid(
                                       context: context,
-                                      imageUrl: moments[i].mediaUrl,
+                                      imageUrl: moments[i].posterUrl,
+                                      isVideo: moments[i].isVideo,
                                       time: moments[i].authorName,
                                       caption: moments[i].title,
                                       rotation: i.isEven ? -0.04 : 0.035,
+                                      onTap: () =>
+                                          _openReactions(context, moments[i]),
                                       badge: _buildStickerBadge(
                                         moments[i].location,
                                         i.isEven ? mintColor : Colors.orange,
@@ -312,8 +316,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
               ..._floatingEmojis,
 
               // Bottom floating reaction pill & Menu Hub button
+              // bottom: 96 chu khong phai 24 — hang FAB (Squad Cam) nam o 24 va
+              // truoc day de len pill nay, che mat cac nut ben trong.
               Positioned(
-                bottom: 24,
+                bottom: 96,
                 left: 24,
                 right: 24,
                 child: Center(
@@ -340,18 +346,8 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            _buildReactionButton("🔥", context),
-                            _buildReactionButton("😂", context),
-                            _buildReactionButton("💀", context),
-                            _buildReactionButton("💯", context),
-                            const SizedBox(width: 8),
-                            Container(
-                              height: 20,
-                              width: 1,
-                              color: textSecondary.withValues(alpha: 0.3),
-                            ),
-                            const SizedBox(width: 8),
-                            // Hub sheet opener button
+                            // Tha cam xuc nay nam o tung tam polaroid (co
+                            // moment de gui len server), khong con o day.
                             GestureDetector(
                               onTap: () => _showHubMenu(context),
                               child: Container(
@@ -435,17 +431,86 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     );
   }
 
-  Widget _buildReactionButton(String emoji, BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        final double width = MediaQuery.of(context).size.width;
-        final double randomX =
-            (width * 0.1) + (Random().nextDouble() * (width * 0.7));
-        _addFloatingEmoji(emoji, randomX);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(emoji, style: const TextStyle(fontSize: 20)),
+  /// Tha cam xuc THAT len mot khoanh khac: POST /trips/:id/moments/:id/reactions.
+  ///
+  /// Truoc day day chi ban mot emoji bay len roi thoi — khong ai khac thay duoc,
+  /// va backend da co san endpoint nay.
+  Future<void> _react(
+    BuildContext context,
+    RecentMoment moment,
+    String emoji,
+  ) async {
+    final width = MediaQuery.of(context).size.width;
+    _addFloatingEmoji(
+      emoji,
+      (width * 0.1) + (Random().nextDouble() * (width * 0.7)),
+    );
+    try {
+      await ref
+          .read(momentsRepositoryProvider)
+          .react(moment.tripId, moment.id, emoji);
+      if (!mounted) return;
+      showGlobalSnack('moments.reacted'.tr(args: [emoji]));
+    } catch (e) {
+      if (!mounted) return;
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
+  }
+
+  /// Bang chon cam xuc cho dung tam anh vua cham.
+  void _openReactions(BuildContext context, RecentMoment moment) {
+    final isDark = widget.isDarkMode;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                moment.title,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: AppFonts.heading(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: isDark
+                      ? const Color(0xFFFDF6D3)
+                      : const Color(0xFF141210),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  for (final emoji in const ['🔥', '😂', '💀', '💯', '😍'])
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _react(context, moment, emoji);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          emoji,
+                          style: const TextStyle(fontSize: 34),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -497,6 +562,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     Widget? badge,
     bool isVideo = false,
     String? videoDuration,
+    VoidCallback? onTap,
   }) {
     final isDark = widget.isDarkMode;
     final frameColor = isDark
@@ -508,219 +574,225 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
 
     return Transform.rotate(
       angle: rotation,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 172,
-            padding: const EdgeInsets.all(8).copyWith(bottom: 24),
-            decoration: BoxDecoration(
-              color: frameColor,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.15),
-                  blurRadius: 0,
-                  offset: const Offset(0, 6),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 172,
+              padding: const EdgeInsets.all(8).copyWith(bottom: 24),
+              decoration: BoxDecoration(
+                color: frameColor,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
+                  width: 1,
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Inner Image box
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Image.network(
-                        imageUrl,
-                        height: 156,
-                        width: 156,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 156,
-                            width: 156,
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF262019)
-                                  : const Color(0xFFE2E8F0),
-                            ),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.image_not_supported_outlined,
-                                    color: isDark
-                                        ? const Color(0xFF64748B)
-                                        : const Color(0xFFB8AE9C),
-                                    size: 28,
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    "general.load_image_failed".tr(),
-                                    style: AppFonts.heading(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.15),
+                    blurRadius: 0,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Inner Image box
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Image.network(
+                          imageUrl,
+                          height: 156,
+                          width: 156,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 156,
+                              width: 156,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF262019)
+                                    : const Color(0xFFE2E8F0),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_not_supported_outlined,
                                       color: isDark
                                           ? const Color(0xFF64748B)
                                           : const Color(0xFFB8AE9C),
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
+                                      size: 28,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      "general.load_image_failed".tr(),
+                                      style: AppFonts.heading(
+                                        color: isDark
+                                            ? const Color(0xFF64748B)
+                                            : const Color(0xFFB8AE9C),
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: 156,
-                            width: 156,
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(
-                                      0xFF262019,
-                                    ).withValues(alpha: 0.5)
-                                  : const Color(0xFFFDF6D3),
-                            ),
-                            child: Center(
-                              child: SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  value:
-                                      loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                      : null,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    isDark
-                                        ? const Color(0xFFF5822B)
-                                        : const Color(0xFFF5822B),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              height: 156,
+                              width: 156,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(
+                                        0xFF262019,
+                                      ).withValues(alpha: 0.5)
+                                    : const Color(0xFFFDF6D3),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    value:
+                                        loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress
+                                                  .expectedTotalBytes!
+                                        : null,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      isDark
+                                          ? const Color(0xFFF5822B)
+                                          : const Color(0xFFF5822B),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    // Video player overlay
-                    if (isVideo) ...[
-                      Positioned.fill(
-                        child: Container(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.65),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.play_circle_fill_rounded,
-                                color: Colors.white,
-                                size: 24,
+                      // Video player overlay
+                      if (isVideo) ...[
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.65),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.play_circle_fill_rounded,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      // REC badge
+                        // REC badge
+                        Positioned(
+                          top: 6,
+                          right: 6,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFD8422B,
+                              ).withValues(alpha: 0.85),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 5,
+                                  height: 5,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  videoDuration == null ? "REC" : "REC $videoDuration",
+                                  style: GoogleFonts.shareTechMono(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                      // Date timestamp tag inside the photo
                       Positioned(
-                        top: 6,
-                        right: 6,
+                        bottom: 6,
+                        left: 6,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 5,
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFD8422B,
-                            ).withValues(alpha: 0.85),
+                            color: Colors.black.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 5,
-                                height: 5,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                "REC $videoDuration",
-                                style: GoogleFonts.shareTechMono(
-                                  color: Colors.white,
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            time,
+                            style: GoogleFonts.shareTechMono(
+                              color: const Color(0xFFFFB300),
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ],
-                    // Date timestamp tag inside the photo
-                    Positioned(
-                      bottom: 6,
-                      left: 6,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          time,
-                          style: GoogleFonts.shareTechMono(
-                            color: const Color(0xFFFFB300),
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // Caption title
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Text(
-                    caption,
-                    style: GoogleFonts.caveat(
-                      color: textColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  // Caption title
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Text(
+                      caption,
+                      style: GoogleFonts.caveat(
+                        color: textColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Sticker badge positioned on top
-          if (badge != null) Positioned(top: -8, right: -8, child: badge),
-        ],
+            // Sticker badge positioned on top
+            if (badge != null) Positioned(top: -8, right: -8, child: badge),
+          ],
+        ),
       ),
     );
   }

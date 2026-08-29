@@ -89,6 +89,9 @@ class RecentMoment {
   final String tripId;
   final String tripName;
   final String mediaUrl;
+  /// Anh bia — voi VIDEO day la frame dau (.jpg) do backend suy ra.
+  final String posterUrl;
+  final String type;
   final String? caption;
   final String authorName;
   final String location;
@@ -98,6 +101,8 @@ class RecentMoment {
     required this.tripId,
     required this.tripName,
     required this.mediaUrl,
+    required this.posterUrl,
+    this.type = 'PHOTO',
     this.caption,
     required this.authorName,
     required this.location,
@@ -108,12 +113,17 @@ class RecentMoment {
     tripId: j['tripId'] as String? ?? '',
     tripName: j['tripName'] as String? ?? '',
     mediaUrl: j['mediaUrl'] as String? ?? '',
+    posterUrl:
+        j['posterUrl'] as String? ?? j['mediaUrl'] as String? ?? '',
+    type: j['type'] as String? ?? 'PHOTO',
     caption: j['caption'] as String?,
     authorName: j['authorName'] as String? ?? '',
     location: j['location'] as String? ?? '',
   );
 
   /// Tiêu đề hiển thị trên tấm polaroid.
+  bool get isVideo => type == 'VIDEO';
+
   String get title =>
       (caption?.trim().isNotEmpty ?? false) ? caption!.trim() : tripName;
 }

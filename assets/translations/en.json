@@ -538,6 +538,7 @@
     "uploading": "Uploading... {}%",
     "wall": "Memory wall",
     "wall_empty": "Your memory wall is empty. Post your first moment from a trip!",
+    "reacted": "Reacted {} to this moment",
     "wall_sub": "Squad album"
   },
   "nav": {
