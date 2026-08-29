@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/services/media_uploader.dart';
 import '../../../../core/widgets/state_views.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -121,7 +122,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                             ),
                             child: ClipOval(
                               child: CachedNetworkImage(
-                                imageUrl: m.mediaUrl,
+                                // Marker bé xíu — không cần tải ảnh gốc.
+                                imageUrl: optimizedMedia(m.mediaUrl, width: 160),
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Container(
                                   color: GenZTokens.lilac,
@@ -217,7 +219,10 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: CachedNetworkImage(
-                            imageUrl: _selectedMoment!.mediaUrl,
+                            imageUrl: optimizedMedia(
+                              _selectedMoment!.mediaUrl,
+                              width: 800,
+                            ),
                             height: 180,
                             width: double.infinity,
                             fit: BoxFit.cover,

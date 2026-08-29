@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/app_messenger.dart';
+import '../../../../core/services/media_uploader.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
@@ -190,7 +191,7 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
             width: double.infinity,
             child: m.mediaUrl.startsWith('http')
                 ? CachedNetworkImage(
-                    imageUrl: m.mediaUrl,
+                    imageUrl: optimizedMedia(m.mediaUrl, width: 640),
                     fit: BoxFit.cover,
                     placeholder: (_, _) =>
                         const ColoredBox(color: GenZTokens.lilac),

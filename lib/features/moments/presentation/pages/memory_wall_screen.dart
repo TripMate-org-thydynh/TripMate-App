@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'ai_memory_sorting_screen.dart';
 import '../../../ai/pages/ai_caption_generator_screen.dart';
+import 'post_moment_screen.dart';
 import 'trip_recap_reel_screen.dart';
 import '../../../discovery/presentation/pages/photo_map_screen.dart';
 import '../../../gamification/data/games_repository.dart';
@@ -70,6 +71,22 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     final mintColor = const Color(0xFF1FA85C);
 
     return Scaffold(
+      // Nút đăng khoảnh khắc — trước đây app KHÔNG có đường nào đưa ảnh lên,
+      // nên Memory Wall chỉ đọc được dữ liệu do script kiểm thử đẩy vào.
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _openWithTrip(
+          context,
+          (tripId) => PostMomentScreen(tripId: tripId, isDarkMode: isDark),
+          pop: false,
+        ),
+        backgroundColor: const Color(0xFF1FA85C),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_a_photo_outlined),
+        label: Text(
+          'moments.post'.tr(),
+          style: AppFonts.heading(fontWeight: FontWeight.w800),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(color: bgGradStart),
         child: SafeArea(

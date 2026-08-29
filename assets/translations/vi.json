@@ -511,15 +511,23 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "caption_hint": "Viết gì đó về tấm này...",
     "caption_saved": "Đã lưu caption cho ảnh 🪄",
+    "from_gallery": "Thư viện",
     "no_caption": "Ảnh này chưa có caption.",
     "photo_map_empty_body": "Đăng khoảnh khắc kèm vị trí để cả nhóm thấy hành trình trên bản đồ.",
     "photo_map_empty_title": "Chưa có ảnh nào gắn vị trí",
+    "pick_hint": "Chọn ảnh để đăng",
+    "post": "Đăng lên",
+    "post_title": "Đăng khoảnh khắc 📸",
+    "posted": "Đã đăng khoảnh khắc 🎉 +40 XP",
     "save_caption": "Lưu",
     "sorting_empty": "Mọi ảnh trong chuyến đều đã có caption rồi!",
     "sorting_title": "AI đặt caption 🪄",
     "suggest": "Nhờ AI viết",
     "suggest_again": "Viết lại",
+    "take_photo": "Chụp ảnh",
+    "uploading": "Đang tải lên... {}%",
     "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!"
   },
   "nav": {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/services/media_uploader.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1107,7 +1108,11 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               fallbackColor: i.isEven
                                   ? GenZTokens.orange
                                   : GenZTokens.blue,
-                              imageUrl: shown[i].mediaUrl,
+                              // Polaroid nhỏ trong scrapbook.
+                              imageUrl: optimizedMedia(
+                                shown[i].mediaUrl,
+                                width: 320,
+                              ),
                             ),
                           ),
                         ),
