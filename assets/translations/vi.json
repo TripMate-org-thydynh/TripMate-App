@@ -27,6 +27,8 @@
     "view_match": "Xem Match"
   },
   "ai": {
+    "analyzing": "Đang nhờ AI viết...",
+    "caption_empty": "Chọn vibe rồi bấm nút ✨ để AI viết caption cho ảnh của bạn.",
     "generate_captions": "Tạo caption bằng AI",
     "history_empty": "Bạn chưa hỏi Matey câu nào. Mở Matey AI và thử một câu xem sao!",
     "history_title": "Lịch sử hỏi AI 🕘",

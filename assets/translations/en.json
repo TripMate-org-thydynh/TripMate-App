@@ -27,6 +27,8 @@
     "view_match": "View Match"
   },
   "ai": {
+    "analyzing": "Asking AI...",
+    "caption_empty": "Pick a vibe then tap ✨ to let AI write captions for your photo.",
     "generate_captions": "Generate captions with AI",
     "history_empty": "You haven't asked Matey anything yet. Open Matey AI and give it a try!",
     "history_title": "AI history 🕘",

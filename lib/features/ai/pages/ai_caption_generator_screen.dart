@@ -9,6 +9,9 @@ import '../../gamification/data/games_repository.dart';
 import '../data/ai_repository.dart';
 import '../../../core/app_messenger.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+import '../../moments/data/moments_repository.dart';
 
 class AICaptionGeneratorScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -33,86 +36,13 @@ class _AICaptionGeneratorScreenState
 
   String _selectedVibe = 'Chaotic Gen Z';
   int _selectedOptionIndex = 0;
-  final TextEditingController _editorController = TextEditingController(
-    text: 'financially ruined. emotionally healed. 💸✨',
-  );
+  final TextEditingController _editorController = TextEditingController();
 
   final List<String> _vibes = [
     'Funny',
     'Chaotic Gen Z',
     'Cinematic',
     'Aesthetic',
-  ];
-
-  final List<Map<String, dynamic>> _captionsList = [
-    {
-      'vibe': 'Chaotic Gen Z',
-      'options': [
-        {
-          'text': 'financially ruined. emotionally healed.',
-          'tags': ['#broke', '#worthit'],
-        },
-        {
-          'text': '6 idiots. 1 unforgettable trip.',
-          'tags': ['#tokyodrift', '#squad'],
-        },
-        {
-          'text': 'the vibes survived somehow.',
-          'tags': ['#blessed', '#chaos'],
-        },
-      ],
-    },
-    {
-      'vibe': 'Funny',
-      'options': [
-        {
-          'text': 'My bank account is crying, but my soul is singing.',
-          'tags': ['#noregrets', '#traveldiaries'],
-        },
-        {
-          'text': 'Lost in Tokyo, please don\'t find us.',
-          'tags': ['#wherearewe', '#lost'],
-        },
-        {
-          'text': 'I followed my heart and it led me to a ramen shop.',
-          'tags': ['#ramen', '#foodie'],
-        },
-      ],
-    },
-    {
-      'vibe': 'Cinematic',
-      'options': [
-        {
-          'text': 'Under neon lights, our stories found their rhythm.',
-          'tags': ['#nightwalk', '#cityscape'],
-        },
-        {
-          'text': 'A beautiful blur of neon and laughter.',
-          'tags': ['#tokyo', '#nights'],
-        },
-        {
-          'text': 'We exist in the spaces between the flashes.',
-          'tags': ['#cinematic', '#aesthetic'],
-        },
-      ],
-    },
-    {
-      'vibe': 'Aesthetic',
-      'options': [
-        {
-          'text': 'stardust & neon signs.',
-          'tags': ['#moody', '#vibes'],
-        },
-        {
-          'text': 'chasing shadows in the city.',
-          'tags': ['#tokyoaesthetic', '#retro'],
-        },
-        {
-          'text': 'soft glowing memories.',
-          'tags': ['#vibecheck', '#dreamy'],
-        },
-      ],
-    },
   ];
 
   @override
@@ -143,15 +73,13 @@ class _AICaptionGeneratorScreenState
   final Map<String, List<Map<String, dynamic>>> _aiOptions = {};
   bool _isGenerating = false;
 
-  List<Map<String, dynamic>> get _currentOptions {
-    final ai = _aiOptions[_selectedVibe];
-    if (ai != null && ai.isNotEmpty) return ai;
-    final match = _captionsList.firstWhere(
-      (element) => element['vibe'] == _selectedVibe,
-      orElse: () => _captionsList.first,
-    );
-    return List<Map<String, dynamic>>.from(match['options']);
-  }
+  /// Caption cho vibe dang chon — chi co khi AI da sinh.
+  ///
+  /// Truoc day man nay tra ve mot danh muc caption tieng Anh viet san
+  /// ("financially ruined. emotionally healed.") nen nhin nhu AI da chay
+  /// trong khi chua goi gi ca.
+  List<Map<String, dynamic>> get _currentOptions =>
+      _aiOptions[_selectedVibe] ?? const [];
 
   /// Gọi AI sinh caption thật cho vibe đang chọn.
   ///
@@ -284,6 +212,7 @@ class _AICaptionGeneratorScreenState
                               surface,
                               secondary,
                               textPrimary,
+                              primary,
                               isDark,
                             ),
                           ),
@@ -340,6 +269,31 @@ class _AICaptionGeneratorScreenState
                           const SizedBox(height: 24),
 
                           // ── Bento-ish Caption Selection Bento Grid ────────
+                          if (currentOptions.isEmpty)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: surface.withValues(
+                                  alpha: isDark ? 0.45 : 0.75,
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white10
+                                      : Colors.black12,
+                                ),
+                              ),
+                              child: Text(
+                                'ai.caption_empty'.tr(),
+                                textAlign: TextAlign.center,
+                                style: AppFonts.body(
+                                  fontSize: 14,
+                                  color: textMuted,
+                                  height: 1.45,
+                                ),
+                              ),
+                            ),
                           Column(
                             children: List.generate(currentOptions.length, (
                               index,
@@ -463,7 +417,7 @@ class _AICaptionGeneratorScreenState
 
                           const SizedBox(height: 20),
 
-                          // ── Suggested Audio & Interactive Editor Panel ─────
+                          // ── Interactive Editor Panel ──────────────────────
                           _buildEditorPanel(
                             surface,
                             primary,
@@ -547,6 +501,7 @@ class _AICaptionGeneratorScreenState
     Color surface,
     Color secondary,
     Color textPrimary,
+    Color primary,
     bool isDark,
   ) {
     return Container(
@@ -570,54 +525,80 @@ class _AICaptionGeneratorScreenState
       padding: const EdgeInsets.all(8),
       child: Stack(
         children: [
-          // Simulated Travel Photo
+          // Anh xem truoc: lay khoanh khac moi nhat cua chinh user.
+          // Truoc day day la mot URL Unsplash in cung da 404, Flutter ve nguyen
+          // hop loi do kem ca duong dan len giua man.
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
-              child: Image.network(
-                'https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?auto=format&fit=crop&q=80&w=600',
-                fit: BoxFit.cover,
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final url = ref
+                      .watch(recentMomentsProvider)
+                      .maybeWhen(
+                        data: (m) => m.isEmpty ? null : m.first.posterUrl,
+                        orElse: () => null,
+                      );
+                  if (url == null || url.isEmpty) {
+                    return Container(
+                      color: primary.withValues(alpha: 0.15),
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.photo_camera_back_outlined,
+                        size: 40,
+                        color: primary,
+                      ),
+                    );
+                  }
+                  return CachedNetworkImage(
+                    imageUrl: url,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, _, _) =>
+                        Container(color: primary.withValues(alpha: 0.15)),
+                  );
+                },
               ),
             ),
           ),
 
           // Glowing Vibe Indicator Badge
-          Positioned(
-            bottom: 12,
-            left: 12,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  color: Colors.black54,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.auto_awesome_rounded,
-                        color: secondary,
-                        size: 12,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Analyzing Vibes...',
-                        style: AppFonts.body(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
+          if (_isGenerating)
+            Positioned(
+              bottom: 12,
+              left: 12,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    color: Colors.black54,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.auto_awesome_rounded,
+                          color: secondary,
+                          size: 12,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Text(
+                          'ai.analyzing'.tr(),
+                          style: AppFonts.body(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -641,9 +622,10 @@ class _AICaptionGeneratorScreenState
               setState(() {
                 _selectedVibe = vibe;
                 _selectedOptionIndex = 0;
-                final firstOpt = _currentOptions.first;
-                _editorController.text =
-                    '${firstOpt["text"]} ${List<String>.from(firstOpt["tags"] ?? []).join(" ")} ✨';
+                final opts = _currentOptions;
+                _editorController.text = opts.isEmpty
+                    ? ''
+                    : '${opts.first["text"]} ${List<String>.from(opts.first["tags"] ?? []).join(" ")} ✨';
               });
             },
             child: Container(
@@ -715,39 +697,6 @@ class _AICaptionGeneratorScreenState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Audio Suggestion row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.music_note_rounded,
-                        color: secondary,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Suggested Audio',
-                        style: AppFonts.heading(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          color: textMuted,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    '"Pink + White" - Frank Ocean',
-                    style: AppFonts.body(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-
               const SizedBox(height: 14),
               const Divider(color: Colors.white10),
               const SizedBox(height: 14),
