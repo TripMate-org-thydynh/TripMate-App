@@ -47,12 +47,12 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
   final TextEditingController _notesController = TextEditingController();
   bool _isSaving = false;
   bool _showSuccess = false;
-  String _activeTag = '🌿 Chill';
+  /// Nhãn phân loại gửi kèm khi lưu (BE nhận field `category`).
+  final String _activeTag = 'CHILL';
 
   late AnimationController _successController;
   late Animation<double> _scaleAnimation;
 
-  final List<String> _tags = ['🌿 Chill', '🔥 Party', '🍜 Foodie', '📸 Iconic'];
 
   final List<String> _timeOptions = [
     '08:00 AM',
@@ -341,7 +341,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Find your vibe',
+              'ai.vibe_add'.tr(),
               style: AppFonts.heading(
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
@@ -369,129 +369,10 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
           ],
         ),
         const SizedBox(height: 16),
-
-        // Voice Search Placeholder Bar
-        Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.05)
-                : Colors.black.withValues(alpha: 0.03),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black,
-              width: 2,
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Icon(Icons.search, color: subTextColor, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Search spots, cafes, activities...',
-                  style: AppFonts.body(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-              Container(
-                height: 24,
-                width: 1,
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.black.withValues(alpha: 0.12),
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-              ),
-              Icon(Icons.mic, color: primaryColor, size: 20),
-            ],
-          ),
-        ),
+        // Ô tìm kiếm, hàng chip lọc và tiêu đề "Hidden Gems" đã bỏ:
+        // tất cả đều không bấm được, và sheet này mở ra là đã biết sẵn
+        // địa điểm cần thêm rồi.
         const SizedBox(height: 16),
-
-        // Tag Filters List (Horizontal)
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: _tags.map((tag) {
-              final isActive = _activeTag == tag;
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _activeTag = tag;
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isActive
-                          ? primaryColor.withValues(alpha: 0.15)
-                          : (isDark
-                                ? Colors.white.withValues(alpha: 0.04)
-                                : Colors.white),
-                      borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                        color: isActive
-                            ? primaryColor
-                            : (isDark
-                                  ? Colors.white.withValues(alpha: 0.08)
-                                  : Colors.black12),
-                        width: isActive ? 1.5 : 1.0,
-                      ),
-                      boxShadow: isActive
-                          ? [
-                              BoxShadow(
-                                color: primaryColor.withValues(alpha: 0.2),
-                                blurRadius: 0,
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Text(
-                      tag,
-                      style: AppFonts.heading(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: isActive
-                            ? primaryColor
-                            : textColor.withValues(alpha: 0.8),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        // Section Title: Hidden Gems
-        Row(
-          children: [
-            Icon(Icons.auto_awesome, color: primaryColor, size: 18),
-            const SizedBox(width: 6),
-            Text(
-              'Hidden Gems',
-              style: AppFonts.heading(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
 
         // Detailed Cafe Card representing widget.placeName / The Hill Station
         Container(
@@ -553,67 +434,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                       ),
                     ),
                   ),
-                  // Tags Overlay
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: secondaryColor,
-                            size: 10,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Café & Deli',
-                            style: AppFonts.heading(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: secondaryColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.star, color: Colors.white, size: 10),
-                          const SizedBox(width: 4),
-                          Text(
-                            '4.9',
-                            style: AppFonts.heading(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // Hai overlay "Café & Deli" và điểm "4.9" đã bỏ:
+                  // app không có phân loại lẫn đánh giá cho địa điểm này.
                 ],
               ),
 
@@ -624,9 +446,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.placeName.isNotEmpty
-                          ? widget.placeName
-                          : 'The Hill Station',
+                      widget.placeName,
                       style: AppFonts.heading(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
@@ -641,22 +461,13 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                         Text(
                           widget.placeAddress.isNotEmpty
                               ? widget.placeAddress
-                              : 'Hội An, Vietnam',
+                              : '',
                           style: AppFonts.body(
                             fontSize: 12,
                             color: subTextColor,
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'A moody, atmospheric spot known for artisanal deli cuts, local craft beers, and a perfectly chilled vibe.',
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        color: subTextColor,
-                        height: 1.4,
-                      ),
                     ),
                     const SizedBox(height: 16),
                     Divider(
@@ -678,55 +489,61 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                     const SizedBox(height: 8),
 
                     // Days selector
-                    Row(
-                      children: List.generate(_tripDays, (i) => i + 1).map((
-                        day,
-                      ) {
-                        final isSelected = _selectedDay == day;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedDay = day;
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? primaryColor.withValues(alpha: 0.15)
-                                    : (isDark
-                                          ? Colors.white.withValues(alpha: 0.04)
-                                          : Colors.black.withValues(
-                                              alpha: 0.03,
-                                            )),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? primaryColor
-                                      : Colors.transparent,
-                                  width: 1,
+                    //
+                    // Phải cuộn ngang: chuyến dài (7 ngày trở lên) làm hàng nút
+                    // tràn khỏi màn — "RIGHT OVERFLOWED BY 142 PIXELS".
+                    SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(_tripDays, (i) => i + 1).map((
+                            day,
+                          ) {
+                          final isSelected = _selectedDay == day;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedDay = day;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
                                 ),
-                              ),
-                              child: Text(
-                                'Day $day',
-                                style: AppFonts.heading(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
+                                decoration: BoxDecoration(
                                   color: isSelected
-                                      ? primaryColor
-                                      : subTextColor,
+                                      ? primaryColor.withValues(alpha: 0.15)
+                                      : (isDark
+                                            ? Colors.white.withValues(alpha: 0.04)
+                                            : Colors.black.withValues(
+                                                alpha: 0.03,
+                                              )),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? primaryColor
+                                        : Colors.transparent,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  'Day $day',
+                                  style: AppFonts.heading(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected
+                                        ? primaryColor
+                                        : subTextColor,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     ),
                     const SizedBox(height: 12),
 
@@ -836,91 +653,9 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Also down to go crew stack
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Also down to go',
-                              style: AppFonts.heading(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: subTextColor,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 48,
-                                  height: 24,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        child: CircleAvatar(
-                                          radius: 10,
-                                          backgroundColor:
-                                              Colors.amber.shade400,
-                                          child: Text(
-                                            'T',
-                                            style: AppFonts.body(
-                                              fontSize: 8,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 10,
-                                        child: CircleAvatar(
-                                          radius: 10,
-                                          backgroundColor: Colors.blue.shade400,
-                                          child: Text(
-                                            'L',
-                                            style: AppFonts.body(
-                                              fontSize: 8,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 20,
-                                        child: Container(
-                                          width: 20,
-                                          height: 20,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: isDark
-                                                ? const Color(0xFF262019)
-                                                : Colors.white,
-                                            border: Border.all(
-                                              color: primaryColor,
-                                              width: 1,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              '+2',
-                                              style: AppFonts.body(
-                                                fontSize: 8,
-                                                fontWeight: FontWeight.w900,
-                                                color: primaryColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                        // Cụm "Also down to go" đã bỏ: đó là avatar của
+                        // những người bịa, không ai xác nhận đi cùng cả.
+                        const SizedBox.shrink(),
 
                         // Add to Trip Button (Kinetic Gradient)
                         GestureDetector(
@@ -981,123 +716,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             ],
           ),
         ),
-        const SizedBox(height: 24),
-
-        // Section Title: More spots nearby
-        Text(
-          'More spots nearby',
-          style: AppFonts.heading(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // Nearby spot card: Morning Glory Original
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black,
-              width: 2,
-            ),
-          ),
-          child: Row(
-            children: [
-              // Spot image mockup
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: const Color(0xFFC9B8FF),
-                ),
-                child: const Icon(
-                  Icons.place_outlined,
-                  color: Color(0xFF262019),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Morning Glory Original',
-                      style: AppFonts.heading(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Iconic central Vietnamese street food. \$\$',
-                      style: AppFonts.body(
-                        fontSize: 11,
-                        color: subTextColor,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.directions_walk,
-                          color: secondaryColor,
-                          size: 12,
-                        ),
-                        const SizedBox(width: 2),
-                        Text(
-                          '8 min',
-                          style: AppFonts.body(
-                            fontSize: 10,
-                            color: secondaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Quick Add Circle Button
-              GestureDetector(
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Selected Morning Glory! 🍲 Customise day and time to add.",
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                },
-                child: Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isDark ? Colors.white24 : Colors.black12,
-                    ),
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.04)
-                        : Colors.black.withValues(alpha: 0.02),
-                  ),
-                  child: Icon(Icons.add, color: subTextColor, size: 16),
-                ),
-              ),
-            ],
-          ),
-        ),
+        // Khối "More spots nearby" đã bỏ: đó là các quán in cứng
+        // (Morning Glory Original...) không liên quan chuyến nào.
         const SizedBox(height: 20),
       ],
     );
