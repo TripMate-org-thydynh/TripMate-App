@@ -24,7 +24,6 @@ import 'pages/social_links_manager_screen.dart';
 import '../gamification/pages/squad_leaderboard_screen.dart';
 import 'pages/sticker_inventory_screen.dart';
 import 'pages/xp_wallet_screen.dart';
-import 'widgets/xp_balance_chip.dart';
 import 'pages/theme_marketplace_screen.dart';
 import 'pages/travel_atlas_screen.dart';
 import 'pages/backup_restore_screen.dart';
@@ -122,9 +121,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color textSecondaryColor,
     required int level,
     required int xp,
+    required int xpPerLevel,
     required String reputation,
   }) {
-    final int fillFlex = (xp / 100).clamp(1, 100).toInt();
+    final int fillFlex = ((xp % xpPerLevel) / xpPerLevel * 100)
+        .clamp(1, 100)
+        .toInt();
     final int emptyFlex = 100 - fillFlex;
 
     return Container(
@@ -170,7 +172,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 ],
               ),
               Text(
-                '${xp.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]},")} / 10,000 XP',
+                '${xp % xpPerLevel} / $xpPerLevel XP',
                 style: AppFonts.body(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -749,12 +751,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     // dynamic variables
     final name = _userProfile?['name'] ?? 'Traveller';
     final username = _userProfile?['username'] ?? 'traveller';
-    final level = _userProfile?['travelScore'] != null
-        ? (_userProfile!['travelScore'] ~/ 500) + 1
-        : 1;
-    final xp = _userProfile?['travelScore'] != null
-        ? _userProfile!['travelScore'] % 500
-        : 0;
+    // Cấp và XP lấy từ ví THẬT.
+    //
+    // Trước đây tính từ `travelScore` — một cột trong bảng users mà KHÔNG dòng
+    // nào trong backend cộng vào, nên luôn hiện "Lvl 1 · 0 / 10,000 XP" dù
+    // người dùng đã kiếm được bao nhiêu.
+    final wallet = ref.watch(xpWalletProvider).valueOrNull;
+    final level = wallet?.level ?? 1;
+    final xp = wallet?.earned ?? 0;
+    final xpPerLevel = wallet?.xpPerLevel ?? 500;
 
     final rawAvatar = _userProfile?['avatarUrl'] as String?;
     // Không có avatar thật → sinh avatar chữ-cái-đầu theo tên (màu brand),
@@ -1043,27 +1048,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                           ),
                         ),
-                        // Lối vào ví XP — chỗ duy nhất xem được số dư và sổ
-                        // cái. Trước đây không màn nào cho biết số dư, vì chưa
-                        // hề có số dư nào.
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            right: 8.0,
-                            top: 12.0,
-                          ),
-                          child: Center(
-                            child: GestureDetector(
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      XpWalletScreen(isDarkMode: isDark),
-                                ),
-                              ),
-                              child: XpBalanceChip(isDark: isDark),
-                            ),
-                          ),
-                        ),
+
                       ],
                     ),
 
@@ -1153,8 +1138,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         ),
                                         const SizedBox(height: 20),
 
-                                        // Level progression box
-                                        _buildLevelBox(
+                                        // Chạm vào thanh cấp để mở ví XP
+                                        // (số dư + sổ cái từng lần cộng/trừ).
+                                        GestureDetector(
+                                          onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => XpWalletScreen(
+                                                isDarkMode: isDark,
+                                              ),
+                                            ),
+                                          ),
+                                          child: _buildLevelBox(
                                           context: context,
                                           isDark: isDark,
                                           primaryColor: primaryColor,
@@ -1165,7 +1160,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               textSecondaryColor,
                                           level: level,
                                           xp: xp,
+                                          xpPerLevel: xpPerLevel,
                                           reputation: reputationScore,
+                                        ),
                                         ),
                                         const SizedBox(height: 20),
 
