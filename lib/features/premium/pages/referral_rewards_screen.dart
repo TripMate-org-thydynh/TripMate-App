@@ -196,9 +196,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                     ),
                     child: Text(
                       'Sao Chép Mã ⚡',
-                      style: AppFonts.heading(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppFonts.heading(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -297,51 +295,51 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                 ),
               )
             else
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _referrals.length,
-              itemBuilder: (context, index) {
-                final ref = _referrals[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Card(
-                    color: surfaceColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _referrals.length,
+                itemBuilder: (context, index) {
+                  final ref = _referrals[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Card(
+                      color: surfaceColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.person_add_alt_1_outlined,
+                          color: primaryColor,
+                        ),
+                        title: Text(
+                          ref['name']!,
+                          style: AppFonts.heading(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.5,
+                          ),
+                        ),
+                        subtitle: Text(
+                          ref['status']!,
+                          style: AppFonts.heading(
+                            fontSize: 11.5,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        trailing: Text(
+                          ref['xp']!,
+                          style: AppFonts.heading(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.person_add_alt_1_outlined,
-                        color: primaryColor,
-                      ),
-                      title: Text(
-                        ref['name']!,
-                        style: AppFonts.heading(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13.5,
-                        ),
-                      ),
-                      subtitle: Text(
-                        ref['status']!,
-                        style: AppFonts.heading(
-                          fontSize: 11.5,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      trailing: Text(
-                        ref['xp']!,
-                        style: AppFonts.heading(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
           ],
         ),
       ),

@@ -45,7 +45,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   void _toggleThemeWithReveal(Offset position) async {
     try {
-      final boundary = _repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary =
+          _repaintKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary != null) {
         final img = await boundary.toImage(
           pixelRatio: MediaQuery.of(context).devicePixelRatio,
@@ -154,10 +156,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 // tự nhớ hiển thị.
                 const OfflineBanner(),
                 Expanded(
-                  child: IndexedStack(
-                    index: _selectedIndex,
-                    children: pages,
-                  ),
+                  child: IndexedStack(index: _selectedIndex, children: pages),
                 ),
               ],
             ),
@@ -250,10 +249,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     return Stack(
       children: [
-        RepaintBoundary(
-          key: _repaintKey,
-          child: mainContent,
-        ),
+        RepaintBoundary(key: _repaintKey, child: mainContent),
         if (_capturedImage != null)
           AnimatedBuilder(
             animation: _rippleController,
@@ -262,10 +258,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               final center = _rippleCenter == Offset.zero
                   ? Offset(screenSize.width / 2, screenSize.height / 2)
                   : _rippleCenter;
-              final maxRadius = math.sqrt(
-                screenSize.width * screenSize.width +
-                screenSize.height * screenSize.height
-              ) * 1.2;
+              final maxRadius =
+                  math.sqrt(
+                    screenSize.width * screenSize.width +
+                        screenSize.height * screenSize.height,
+                  ) *
+                  1.2;
               final currentRadius = _rippleController.value * maxRadius;
 
               return ClipPath(

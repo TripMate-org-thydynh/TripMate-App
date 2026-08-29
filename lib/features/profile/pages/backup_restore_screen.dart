@@ -70,7 +70,10 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     setState(() => _busy = true);
     try {
       final json = _buildExport();
-      await Share.share(json, subject: 'TripMate — ${'profile.export_title'.tr()}');
+      await Share.share(
+        json,
+        subject: 'TripMate — ${'profile.export_title'.tr()}',
+      );
       if (!mounted) return;
       setState(() => _busy = false);
     } catch (e) {
@@ -234,10 +237,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
       children: [
         const Text('• '),
         Expanded(
-          child: Text(
-            text,
-            style: AppFonts.body(fontSize: 13.5, color: ink),
-          ),
+          child: Text(text, style: AppFonts.body(fontSize: 13.5, color: ink)),
         ),
       ],
     ),

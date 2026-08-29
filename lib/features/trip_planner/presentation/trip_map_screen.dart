@@ -26,8 +26,8 @@ class TripMapScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
   Color get _textSec =>
       isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
@@ -49,7 +49,7 @@ class TripMapScreen extends ConsumerWidget {
     final activeFilter = ref.watch(mapCategoryFilterProvider);
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -83,7 +83,8 @@ class TripMapScreen extends ConsumerWidget {
             for (final it in grouped[day]!) {
               if (it.hasCoords) {
                 points.add((item: it, day: day));
-                if (activeFilter == null || it.category?.toUpperCase() == activeFilter) {
+                if (activeFilter == null ||
+                    it.category?.toUpperCase() == activeFilter) {
                   routePerDay
                       .putIfAbsent(day, () => [])
                       .add(LatLng(it.latitude!, it.longitude!));
@@ -93,10 +94,11 @@ class TripMapScreen extends ConsumerWidget {
           }
 
           // Moment check-in có GPS (ảnh).
-          final moments = (ref.watch(momentsProvider(tripId)).valueOrNull ??
-                  const <Moment>[])
-              .where((m) => m.latitude != null && m.longitude != null)
-              .toList();
+          final moments =
+              (ref.watch(momentsProvider(tripId)).valueOrNull ??
+                      const <Moment>[])
+                  .where((m) => m.latitude != null && m.longitude != null)
+                  .toList();
 
           if (points.isEmpty && moments.isEmpty) {
             return _msg(
@@ -113,7 +115,11 @@ class TripMapScreen extends ConsumerWidget {
           // Lọc danh sách điểm dừng hiển thị theo Category được chọn
           final filteredPoints = activeFilter == null
               ? points
-              : points.where((p) => p.item.category?.toUpperCase() == activeFilter).toList();
+              : points
+                    .where(
+                      (p) => p.item.category?.toUpperCase() == activeFilter,
+                    )
+                    .toList();
 
           return Column(
             children: [
@@ -139,8 +145,9 @@ class TripMapScreen extends ConsumerWidget {
                             Polyline(
                               points: entry.value,
                               strokeWidth: 3.5,
-                              color: _dayColor(entry.key)
-                                  .withValues(alpha: 0.7),
+                              color: _dayColor(
+                                entry.key,
+                              ).withValues(alpha: 0.7),
                             ),
                       ],
                     ),
@@ -177,7 +184,10 @@ class TripMapScreen extends ConsumerWidget {
                       markers: [
                         for (var i = 0; i < filteredPoints.length; i++)
                           Marker(
-                            point: LatLng(filteredPoints[i].item.latitude!, filteredPoints[i].item.longitude!),
+                            point: LatLng(
+                              filteredPoints[i].item.latitude!,
+                              filteredPoints[i].item.longitude!,
+                            ),
                             width: 40,
                             height: 40,
                             child: GestureDetector(
@@ -227,7 +237,11 @@ class TripMapScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilterChips(BuildContext context, WidgetRef ref, String? activeFilter) {
+  Widget _buildFilterChips(
+    BuildContext context,
+    WidgetRef ref,
+    String? activeFilter,
+  ) {
     final categories = [
       (key: null, label: 'trips.filter_all'.tr(), emoji: '📍'),
       (key: 'FOOD', label: 'Ăn uống', emoji: '🍔'),
@@ -257,23 +271,18 @@ class TripMapScreen extends ConsumerWidget {
                 ref.read(mapCategoryFilterProvider.notifier).state = cat.key;
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? const Color(0xFFFFD84D)
-                      : (isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3)),
+                      : (Theme.of(context).scaffoldBackgroundColor),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: inkColor,
-                    width: 2,
-                  ),
+                  border: Border.all(color: inkColor, width: 2),
                   boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: inkColor,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
+                      ? [BoxShadow(color: inkColor, offset: const Offset(0, 2))]
                       : null,
                 ),
                 child: Row(
@@ -300,55 +309,55 @@ class TripMapScreen extends ConsumerWidget {
   }
 
   Widget _legend(List<int> days, bool hasMoments) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (final d in days) ...[
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: _dayColor(d),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  'Ngày $d',
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: _textPri,
-                  ),
-                ),
-                const SizedBox(width: 16),
-              ],
-              if (hasMoments) ...[
-                const Icon(Icons.camera_alt,
-                    size: 13, color: Color(0xFFD6248C)),
-                const SizedBox(width: 5),
-                Text(
-                  'Check-in',
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: _textPri,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final d in days) ...[
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: _dayColor(d),
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              'Ngày $d',
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: _textPri,
+              ),
+            ),
+            const SizedBox(width: 16),
+          ],
+          if (hasMoments) ...[
+            const Icon(Icons.camera_alt, size: 13, color: Color(0xFFD6248C)),
+            const SizedBox(width: 5),
+            Text(
+              'Check-in',
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: _textPri,
+              ),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
 
   void _showStop(BuildContext context, ItineraryItem it, int day) {
     showModalBottomSheet(
       context: context,
-      backgroundColor:
-          isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+      backgroundColor: isDarkMode
+          ? const Color(0xFF262019)
+          : const Color(0xFFFFFDF5),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -362,8 +371,10 @@ class TripMapScreen extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: _dayColor(day),
                       borderRadius: BorderRadius.circular(99),
@@ -402,10 +413,7 @@ class TripMapScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 Text(
                   it.notes!,
-                  style: GoogleFonts.outfit(
-                    fontSize: 13,
-                    color: _textSec,
-                  ),
+                  style: GoogleFonts.outfit(fontSize: 13, color: _textSec),
                 ),
               ],
               const SizedBox(height: 20),
@@ -419,8 +427,9 @@ class TripMapScreen extends ConsumerWidget {
   void _showMoment(BuildContext context, Moment m) {
     showModalBottomSheet(
       context: context,
-      backgroundColor:
-          isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+      backgroundColor: isDarkMode
+          ? const Color(0xFF262019)
+          : const Color(0xFFFFFDF5),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -466,10 +475,7 @@ class TripMapScreen extends ConsumerWidget {
               if (m.caption != null && m.caption!.isNotEmpty) ...[
                 Text(
                   m.caption!,
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    color: _textPri,
-                  ),
+                  style: GoogleFonts.outfit(fontSize: 14, color: _textPri),
                 ),
                 const SizedBox(height: 14),
               ],
@@ -491,19 +497,19 @@ class TripMapScreen extends ConsumerWidget {
   }
 
   Widget _msg(String text) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.spaceGrotesk(
-              fontSize: 14,
-              color: _textSec,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: GoogleFonts.spaceGrotesk(
+          fontSize: 14,
+          color: _textSec,
+          fontWeight: FontWeight.bold,
         ),
-      );
+      ),
+    ),
+  );
 
   LatLng _centroid(List<LatLng> points) {
     double lat = 0.0, lon = 0.0;
@@ -537,7 +543,9 @@ class TripMapScreen extends ConsumerWidget {
   void _showPlaceImportModal(BuildContext context, WidgetRef ref) {
     final textController = TextEditingController();
     final borderCol = isDarkMode ? Colors.white : const Color(0xFF141210);
-    final cardBgCol = isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final cardBgCol = isDarkMode
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
 
     showModalBottomSheet(
       context: context,
@@ -581,7 +589,10 @@ class TripMapScreen extends ConsumerWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: const Color(0xFFFFD84D), width: 2.5),
+                  borderSide: BorderSide(
+                    color: const Color(0xFFFFD84D),
+                    width: 2.5,
+                  ),
                 ),
               ),
               style: GoogleFonts.outfit(color: _textPri),
@@ -603,19 +614,22 @@ class TripMapScreen extends ConsumerWidget {
                 ActionChip(
                   label: const Text('Bãi Sao (Google Maps)'),
                   onPressed: () {
-                    textController.text = 'https://maps.google.com/?q=phu_quoc_bai_sao';
+                    textController.text =
+                        'https://maps.google.com/?q=phu_quoc_bai_sao';
                   },
                 ),
                 ActionChip(
                   label: const Text('Resort (TripAdvisor)'),
                   onPressed: () {
-                    textController.text = 'https://www.tripadvisor.com/hotel_phu_quoc_intercontinental';
+                    textController.text =
+                        'https://www.tripadvisor.com/hotel_phu_quoc_intercontinental';
                   },
                 ),
                 ActionChip(
                   label: const Text('Bistro Cafe (TripAdvisor)'),
                   onPressed: () {
-                    textController.text = 'https://www.tripadvisor.com/restaurant_chuon_chuon_bistro';
+                    textController.text =
+                        'https://www.tripadvisor.com/restaurant_chuon_chuon_bistro';
                   },
                 ),
               ],
@@ -642,7 +656,9 @@ class TripMapScreen extends ConsumerWidget {
                   if (place != null) {
                     try {
                       // Save to backend database via repository
-                      await ref.read(itineraryRepositoryProvider).create(
+                      await ref
+                          .read(itineraryRepositoryProvider)
+                          .create(
                             tripId,
                             day: 1,
                             startTime: '10:00',
@@ -660,8 +676,12 @@ class TripMapScreen extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'system_phases.import_success'.tr(namedArgs: {'name': place.name}),
-                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                              'system_phases.import_success'.tr(
+                                namedArgs: {'name': place.name},
+                              ),
+                              style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             backgroundColor: Colors.green,
                           ),
@@ -671,7 +691,9 @@ class TripMapScreen extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Lỗi lưu địa điểm: ${friendlyError(e)}'),
+                            content: Text(
+                              'Lỗi lưu địa điểm: ${friendlyError(e)}',
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );

@@ -32,9 +32,7 @@ class TripRecapReelScreen extends ConsumerWidget {
         .when(
           loading: () => const Scaffold(
             backgroundColor: Colors.black,
-            body: Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
+            body: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
           error: (e, _) => Scaffold(
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -126,9 +124,7 @@ class _TripRecapReelScreenState extends State<_RecapReel>
       if (r.totalSpent > 0)
         _RecapCard.money(
           total: _money(r.totalSpent, r.currency),
-          perHead: 'recap.per_head'.tr(
-            args: [_money(r.perHead, r.currency)],
-          ),
+          perHead: 'recap.per_head'.tr(args: [_money(r.perHead, r.currency)]),
           caption: 'recap.cap_money'.tr(args: ['${r.expenseCount}']),
         ),
       _RecapCard.outro(),
@@ -202,12 +198,7 @@ class _TripRecapReelScreenState extends State<_RecapReel>
     final r = widget.recap;
     await Share.share(
       'recap.share_text'.tr(
-        args: [
-          r.tripName,
-          '${r.placeCount}',
-          '${r.momentCount}',
-          '${r.days}',
-        ],
+        args: [r.tripName, '${r.placeCount}', '${r.momentCount}', '${r.days}'],
       ),
       subject: 'TripMate — ${r.tripName} Wrapped',
     );

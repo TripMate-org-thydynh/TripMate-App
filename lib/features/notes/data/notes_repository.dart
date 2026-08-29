@@ -23,15 +23,18 @@ class TripNote {
   });
 
   factory TripNote.fromJson(Map<String, dynamic> j) => TripNote(
-        id: j['id'] as String,
-        tripId: j['tripId'] as String? ?? '',
-        content: j['content'] as String? ?? '',
-        title: j['title'] as String?,
-        color: j['color'] as String? ?? '#FFD84D',
-        authorName: (j['author'] as Map<String, dynamic>?)?['name'] as String? ?? '',
-        authorAvatarUrl: (j['author'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
-        updatedAt: DateTime.tryParse(j['updatedAt'] as String? ?? '') ?? DateTime.now(),
-      );
+    id: j['id'] as String,
+    tripId: j['tripId'] as String? ?? '',
+    content: j['content'] as String? ?? '',
+    title: j['title'] as String?,
+    color: j['color'] as String? ?? '#FFD84D',
+    authorName:
+        (j['author'] as Map<String, dynamic>?)?['name'] as String? ?? '',
+    authorAvatarUrl:
+        (j['author'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
+    updatedAt:
+        DateTime.tryParse(j['updatedAt'] as String? ?? '') ?? DateTime.now(),
+  );
 }
 
 class NotesRepository {

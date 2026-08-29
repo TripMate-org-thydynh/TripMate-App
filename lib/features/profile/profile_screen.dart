@@ -349,7 +349,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           // Hard shadow brutalist cho card đã mở khoá.
           boxShadow: isLocked
               ? null
-              : [BoxShadow(color: ink, blurRadius: 0, offset: const Offset(0, 4))],
+              : [
+                  BoxShadow(
+                    color: ink,
+                    blurRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Opacity(
           opacity: isLocked ? 0.55 : 1.0,
@@ -580,7 +586,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(99),
-                                      child: friendAvatars[idx].startsWith('assets/')
+                                      child:
+                                          friendAvatars[idx].startsWith(
+                                            'assets/',
+                                          )
                                           ? Image.asset(
                                               friendAvatars[idx],
                                               fit: BoxFit.cover,
@@ -590,12 +599,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               fit: BoxFit.cover,
                                               placeholder: (context, url) =>
                                                   Container(
-                                                    color: Colors.black.withValues(
-                                                      alpha: 0.1,
-                                                    ),
+                                                    color: Colors.black
+                                                        .withValues(alpha: 0.1),
                                                   ),
-                                              errorWidget: (context, url, error) =>
-                                                  const Icon(Icons.person, size: 16),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(
+                                                        Icons.person,
+                                                        size: 16,
+                                                      ),
                                             ),
                                     ),
                                   ),
@@ -1048,7 +1060,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                           ),
                         ),
-
                       ],
                     ),
 
@@ -1150,19 +1161,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                             ),
                                           ),
                                           child: _buildLevelBox(
-                                          context: context,
-                                          isDark: isDark,
-                                          primaryColor: primaryColor,
-                                          secondaryColor: secondaryColor,
-                                          tertiaryColor: tertiaryColor,
-                                          textPrimaryColor: textPrimaryColor,
-                                          textSecondaryColor:
-                                              textSecondaryColor,
-                                          level: level,
-                                          xp: xp,
-                                          xpPerLevel: xpPerLevel,
-                                          reputation: reputationScore,
-                                        ),
+                                            context: context,
+                                            isDark: isDark,
+                                            primaryColor: primaryColor,
+                                            secondaryColor: secondaryColor,
+                                            tertiaryColor: tertiaryColor,
+                                            textPrimaryColor: textPrimaryColor,
+                                            textSecondaryColor:
+                                                textSecondaryColor,
+                                            level: level,
+                                            xp: xp,
+                                            xpPerLevel: xpPerLevel,
+                                            reputation: reputationScore,
+                                          ),
                                         ),
                                         const SizedBox(height: 20),
 
@@ -1200,52 +1211,62 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         ),
                                         const SizedBox(height: 20),
 
-                                         // Travel Atlas Button
-                                         GestureDetector(
-                                           onTap: () {
-                                             Navigator.push(
-                                               context,
-                                               MaterialPageRoute(
-                                                 builder: (context) =>
-                                                     TravelAtlasScreen(isDarkMode: isDark),
-                                               ),
-                                             );
-                                           },
-                                           child: Container(
-                                             width: double.infinity,
-                                             padding: const EdgeInsets.symmetric(
-                                               vertical: 12,
-                                               horizontal: 16,
-                                             ),
-                                             decoration: BoxDecoration(
-                                               color: GenZTokens.yellow,
-                                               borderRadius: BorderRadius.circular(16),
-                                               border: Border.all(color: GenZTokens.ink, width: 2),
-                                               boxShadow: GenZTokens.hardShadow(GenZTokens.ink),
-                                             ),
-                                             child: Row(
-                                               mainAxisAlignment: MainAxisAlignment.center,
-                                               children: [
-                                                 const Icon(
-                                                   Icons.explore_outlined,
-                                                   color: GenZTokens.ink,
-                                                 ),
-                                                 const SizedBox(width: 8),
-                                                 Text(
-                                                   'profile.open_travel_atlas'.tr(),
-                                                   style: AppFonts.heading(
-                                                     fontWeight: FontWeight.w900,
-                                                     fontSize: 12,
-                                                     color: GenZTokens.ink,
-                                                   ),
-                                                 ),
-                                               ],
-                                             ),
-                                           ),
-                                         ),
-                                         const SizedBox(height: 20),
+                                        // Travel Atlas Button
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TravelAtlasScreen(
+                                                      isDarkMode: isDark,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                              horizontal: 16,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: GenZTokens.yellow,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              border: Border.all(
+                                                color: GenZTokens.ink,
+                                                width: 2,
+                                              ),
+                                              boxShadow: GenZTokens.hardShadow(
+                                                GenZTokens.ink,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.explore_outlined,
+                                                  color: GenZTokens.ink,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  'profile.open_travel_atlas'
+                                                      .tr(),
+                                                  style: AppFonts.heading(
+                                                    fontWeight: FontWeight.w900,
+                                                    fontSize: 12,
+                                                    color: GenZTokens.ink,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
 
-                                         // Core Stats Row
+                                        // Core Stats Row
                                         GestureDetector(
                                           onTap: () {
                                             Navigator.push(
@@ -1422,11 +1443,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                     bio,
                                                     style: AppFonts.body(
                                                       fontSize: 11,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       color: textPrimaryColor,
                                                     ),
                                                     maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                               ],
@@ -1686,7 +1709,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                 );
                               }
                               return Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   for (var i = 0; i < moments.length; i++) ...[
                                     if (i > 0) const SizedBox(width: 16),
@@ -2246,7 +2270,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                               if (widget.onThemeToggleWithPosition != null) {
                                 widget.onThemeToggleWithPosition!(position);
                               } else {
-                                ref.read(themeProvider.notifier).setThemeMode(ThemeMode.light);
+                                ref
+                                    .read(themeProvider.notifier)
+                                    .setThemeMode(ThemeMode.light);
                               }
                             }
                           },
@@ -2263,7 +2289,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                               if (widget.onThemeToggleWithPosition != null) {
                                 widget.onThemeToggleWithPosition!(position);
                               } else {
-                                ref.read(themeProvider.notifier).setThemeMode(ThemeMode.dark);
+                                ref
+                                    .read(themeProvider.notifier)
+                                    .setThemeMode(ThemeMode.dark);
                               }
                             }
                           },
@@ -2282,118 +2310,125 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               // đổi màu, để không ai dùng được thứ chưa trả XP.
               Builder(
                 builder: (context) {
-                  final ownedThemeIds =
-                      ref
-                          .watch(themeStoreProvider)
-                          .maybeWhen(
-                            data: (items) => items
-                                .where((t) => t.owned)
-                                .map((t) => t.id)
-                                .toSet(),
-                            orElse: () => <String>{},
-                          );
+                  final ownedThemeIds = ref
+                      .watch(themeStoreProvider)
+                      .maybeWhen(
+                        data: (items) => items
+                            .where((t) => t.owned)
+                            .map((t) => t.id)
+                            .toSet(),
+                        orElse: () => <String>{},
+                      );
                   bool unlocked(AppAccent a) =>
                       !kPremiumAccents.contains(a) ||
                       ownedThemeIds.contains(kAccentThemeId[a]);
 
                   return Row(
-                children: AppAccent.values.map((accent) {
-                  final selected = accent == currentAccent;
-                  final isUnlocked = unlocked(accent);
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        if (!isUnlocked) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ThemeMarketplaceScreen(
-                                isDarkMode: isDark,
-                              ),
-                            ),
-                          );
-                          return;
-                        }
-                        ref.read(accentProvider.notifier).setAccent(accent);
-                      },
-                      child: Column(
-                        children: [
-                          // Swatch cặp màu preset (accent trên, pair dưới),
-                          // viền ink + hard shadow khi được chọn
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            height: 44,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: ink,
-                                width: selected ? GenZTokens.borderWidth : 1.5,
-                              ),
-                              boxShadow: selected
-                                  ? [
-                                      BoxShadow(
-                                        color: ink,
-                                        offset: const Offset(0, 3),
-                                      ),
-                                    ]
-                                  : null,
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Stack(
-                                children: [
-                                  Column(
-                                    children: [
-                                      Expanded(
-                                        child: Container(color: accent.accent),
-                                      ),
-                                      Expanded(
-                                        child: Container(color: accent.pair),
-                                      ),
-                                    ],
+                    children: AppAccent.values.map((accent) {
+                      final selected = accent == currentAccent;
+                      final isUnlocked = unlocked(accent);
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (!isUnlocked) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ThemeMarketplaceScreen(
+                                    isDarkMode: isDark,
                                   ),
-                                  if (selected)
-                                    Center(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                          color: GenZTokens.paper,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: GenZTokens.ink,
-                                            width: 1.5,
+                                ),
+                              );
+                              return;
+                            }
+                            ref.read(accentProvider.notifier).setAccent(accent);
+                          },
+                          child: Column(
+                            children: [
+                              // Swatch cặp màu preset (accent trên, pair dưới),
+                              // viền ink + hard shadow khi được chọn
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                height: 44,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: ink,
+                                    width: selected
+                                        ? GenZTokens.borderWidth
+                                        : 1.5,
+                                  ),
+                                  boxShadow: selected
+                                      ? [
+                                          BoxShadow(
+                                            color: ink,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Stack(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                              color: accent.accent,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Container(
+                                              color: accent.pair,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (selected)
+                                        Center(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              color: GenZTokens.paper,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: GenZTokens.ink,
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                              Icons.check_rounded,
+                                              color: GenZTokens.ink,
+                                              size: 16,
+                                            ),
                                           ),
                                         ),
-                                        child: const Icon(
-                                          Icons.check_rounded,
-                                          color: GenZTokens.ink,
-                                          size: 16,
-                                        ),
-                                      ),
-                                    ),
-                                ],
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 5),
+                              Text(
+                                accent.label,
+                                style: AppFonts.body(
+                                  fontSize: 10,
+                                  fontWeight: selected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: selected
+                                      ? primaryColor
+                                      : textSecondaryColor,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            accent.label,
-                            style: AppFonts.body(
-                              fontSize: 10,
-                              fontWeight: selected
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: selected
-                                  ? primaryColor
-                                  : textSecondaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
+                        ),
+                      );
+                    }).toList(),
                   );
                 },
               ),
@@ -2416,11 +2451,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 children: AppFontOption.values.map((fontOpt) {
                   final isSelected = fontOpt == currentFont;
 
-                  final textColor = isSelected 
-                      ? currentAccent.onAccent 
+                  final textColor = isSelected
+                      ? currentAccent.onAccent
                       : textPrimaryColor;
-                  final textSecColor = isSelected 
-                      ? currentAccent.onAccent.withValues(alpha: 0.7) 
+                  final textSecColor = isSelected
+                      ? currentAccent.onAccent.withValues(alpha: 0.7)
                       : textSecondaryColor;
 
                   // Preview styles for each font option
@@ -2503,20 +2538,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   }
 
                   return GestureDetector(
-                    onTap: () => ref.read(fontProvider.notifier).setFontOption(fontOpt),
+                    onTap: () =>
+                        ref.read(fontProvider.notifier).setFontOption(fontOpt),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? primaryColor
                             : isDark
-                                ? Colors.white.withValues(alpha: 0.05)
-                                : Colors.white,
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : Colors.white,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                          color: isSelected ? primaryColor : ink.withValues(alpha: 0.2),
+                          color: isSelected
+                              ? primaryColor
+                              : ink.withValues(alpha: 0.2),
                           width: isSelected ? 2.5 : 1.5,
                         ),
                         boxShadow: isSelected
@@ -2535,15 +2576,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  fontOpt.label,
-                                  style: previewHeading,
-                                ),
+                                Text(fontOpt.label, style: previewHeading),
                                 const SizedBox(height: 2),
-                                Text(
-                                  fontOpt.description,
-                                  style: previewBody,
-                                ),
+                                Text(fontOpt.description, style: previewBody),
                               ],
                             ),
                           ),

@@ -17,12 +17,12 @@ class VacationDay {
   });
 
   factory VacationDay.fromJson(Map<String, dynamic> j) => VacationDay(
-        id: j['id'] as String? ?? '',
-        userId: j['userId'] as String? ?? '',
-        date: DateTime.tryParse(j['date'] as String? ?? '') ?? DateTime.now(),
-        type: j['type'] as String? ?? 'LEAVE',
-        note: j['note'] as String?,
-      );
+    id: j['id'] as String? ?? '',
+    userId: j['userId'] as String? ?? '',
+    date: DateTime.tryParse(j['date'] as String? ?? '') ?? DateTime.now(),
+    type: j['type'] as String? ?? 'LEAVE',
+    note: j['note'] as String?,
+  );
 }
 
 class VacationSummary {
@@ -37,10 +37,10 @@ class VacationSummary {
   });
 
   factory VacationSummary.fromJson(Map<String, dynamic> j) => VacationSummary(
-        totalLeave: (j['totalLeave'] as num?)?.toInt() ?? 0,
-        totalHoliday: (j['totalHoliday'] as num?)?.toInt() ?? 0,
-        remaining: (j['remaining'] as num?)?.toInt() ?? 0,
-      );
+    totalLeave: (j['totalLeave'] as num?)?.toInt() ?? 0,
+    totalHoliday: (j['totalHoliday'] as num?)?.toInt() ?? 0,
+    remaining: (j['remaining'] as num?)?.toInt() ?? 0,
+  );
 }
 
 class VacationHoliday {
@@ -55,10 +55,10 @@ class VacationHoliday {
   });
 
   factory VacationHoliday.fromJson(Map<String, dynamic> j) => VacationHoliday(
-        date: j['date'] as String? ?? '',
-        name: j['name'] as String? ?? '',
-        key: j['key'] as String? ?? '',
-      );
+    date: j['date'] as String? ?? '',
+    name: j['name'] as String? ?? '',
+    key: j['key'] as String? ?? '',
+  );
 }
 
 class BridgeSuggestion {
@@ -75,11 +75,11 @@ class BridgeSuggestion {
   });
 
   factory BridgeSuggestion.fromJson(Map<String, dynamic> j) => BridgeSuggestion(
-        from: j['from'] as String? ?? '',
-        to: j['to'] as String? ?? '',
-        days: (j['days'] as num?)?.toInt() ?? 0,
-        holidays: (j['holidays'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      );
+    from: j['from'] as String? ?? '',
+    to: j['to'] as String? ?? '',
+    days: (j['days'] as num?)?.toInt() ?? 0,
+    holidays: (j['holidays'] as List?)?.map((e) => e.toString()).toList() ?? [],
+  );
 }
 
 class VacayMyDaysResult {
@@ -93,15 +93,19 @@ class VacayMyDaysResult {
     required this.holidays,
   });
 
-  factory VacayMyDaysResult.fromJson(Map<String, dynamic> j) => VacayMyDaysResult(
-        days: (j['days'] as List?)
+  factory VacayMyDaysResult.fromJson(Map<String, dynamic> j) =>
+      VacayMyDaysResult(
+        days:
+            (j['days'] as List?)
                 ?.whereType<Map>()
                 .map((e) => VacationDay.fromJson(e.cast<String, dynamic>()))
                 .toList() ??
             [],
         summary: VacationSummary.fromJson(
-            (j['summary'] as Map? ?? {}).cast<String, dynamic>()),
-        holidays: (j['holidays'] as List?)
+          (j['summary'] as Map? ?? {}).cast<String, dynamic>(),
+        ),
+        holidays:
+            (j['holidays'] as List?)
                 ?.whereType<Map>()
                 .map((e) => VacationHoliday.fromJson(e.cast<String, dynamic>()))
                 .toList() ??

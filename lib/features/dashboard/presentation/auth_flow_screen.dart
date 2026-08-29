@@ -660,7 +660,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     Color secondaryColor,
   ) {
     final fInk = widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    final fSub = widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final fSub = widget.isDarkMode
+        ? GenZTokens.inkSoftDark
+        : GenZTokens.inkSoft;
     if (_isForgotPasswordMode) {
       return Column(
         key: const ValueKey('forgot_step'),
@@ -709,9 +711,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            'Mã OTP đã được gửi đến email $email!',
-                          ),
+                          content: Text('Mã OTP đã được gửi đến email $email!'),
                           backgroundColor: secondaryColor,
                         ),
                       );
@@ -823,7 +823,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           child: Row(
             children: [
               Icon(
-                _isEmailInput ? Icons.mail_outline : Icons.phone_android_outlined,
+                _isEmailInput
+                    ? Icons.mail_outline
+                    : Icons.phone_android_outlined,
                 size: 20,
                 color: isDark ? Colors.white38 : Colors.black38,
               ),
@@ -851,10 +853,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 child: TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: AppFonts.heading(
-                    color: textColor,
-                    fontSize: 14,
-                  ),
+                  style: AppFonts.heading(color: textColor, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: _isEmailInput ? 'Email của bạn' : 'Số điện thoại',
                     hintStyle: TextStyle(
@@ -872,7 +871,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 onTap: () async {
                   if (_emailController.text.isNotEmpty) {
                     final input = _emailController.text.trim();
-                    final target = _isEmailInput ? input : _formatVnPhone(input);
+                    final target = _isEmailInput
+                        ? input
+                        : _formatVnPhone(input);
 
                     final sendRes = await ApiService.post('/auth/send-otp', {
                       'phoneNumber': target,
@@ -974,10 +975,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'hoặc đăng nhập bằng',
-                style: AppFonts.body(
-                  color: dividerTextColor,
-                  fontSize: 12,
-                ),
+                style: AppFonts.body(color: dividerTextColor, fontSize: 12),
               ),
             ),
             Expanded(child: Divider(color: dividerColor)),
@@ -1001,8 +999,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  PasswordAuthScreen(isDarkMode: widget.isDarkMode),
+              builder: (_) => PasswordAuthScreen(isDarkMode: widget.isDarkMode),
             ),
           ),
         ),
@@ -1191,77 +1188,77 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             boxShadow: GenZTokens.hardShadow(ink),
           ),
           child: ElevatedButton(
-          onPressed: () async {
-            if (_otpController.text.length == 4) {
-              final input = _emailController.text.trim();
-              final target = _isEmailInput ? input : _formatVnPhone(input);
-              final code = _otpController.text.trim();
+            onPressed: () async {
+              if (_otpController.text.length == 4) {
+                final input = _emailController.text.trim();
+                final target = _isEmailInput ? input : _formatVnPhone(input);
+                final code = _otpController.text.trim();
 
-              final verifyRes = await ApiService.post('/auth/verify-otp', {
-                'phoneNumber': target,
-                'code': code,
-              });
+                final verifyRes = await ApiService.post('/auth/verify-otp', {
+                  'phoneNumber': target,
+                  'code': code,
+                });
 
-              // Backend bọc response trong {success, data:{...}} → unwrap data.
-              final data = (verifyRes is Map && verifyRes['data'] is Map)
-                  ? (verifyRes['data'] as Map).cast<String, dynamic>()
-                  : (verifyRes is Map
-                        ? verifyRes.cast<String, dynamic>()
-                        : null);
-              if (data != null) {
-                if (data['exists'] == true) {
-                  _tempAuthToken = data['token']?.toString();
-                  _tempUser = (data['user'] as Map?)?.cast<String, dynamic>();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Chào mừng trở lại, ${_tempUser?['name'] ?? ''}!',
+                // Backend bọc response trong {success, data:{...}} → unwrap data.
+                final data = (verifyRes is Map && verifyRes['data'] is Map)
+                    ? (verifyRes['data'] as Map).cast<String, dynamic>()
+                    : (verifyRes is Map
+                          ? verifyRes.cast<String, dynamic>()
+                          : null);
+                if (data != null) {
+                  if (data['exists'] == true) {
+                    _tempAuthToken = data['token']?.toString();
+                    _tempUser = (data['user'] as Map?)?.cast<String, dynamic>();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Chào mừng trở lại, ${_tempUser?['name'] ?? ''}!',
+                          ),
+                          backgroundColor: secondaryColor,
                         ),
-                        backgroundColor: secondaryColor,
-                      ),
-                    );
-                    setState(() {
-                      _currentStep = 5;
-                    });
+                      );
+                      setState(() {
+                        _currentStep = 5;
+                      });
+                    }
+                  } else {
+                    _tempSupabaseId = data['supabaseId']?.toString();
+                    _tempEmail = data['email']?.toString();
+                    _nextStep();
                   }
                 } else {
-                  _tempSupabaseId = data['supabaseId']?.toString();
-                  _tempEmail = data['email']?.toString();
-                  _nextStep();
-                }
-              } else {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Xác minh mã OTP thất bại. Mã không đúng hoặc đã hết hạn.',
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Xác minh mã OTP thất bại. Mã không đúng hoặc đã hết hạn.',
+                        ),
+                        backgroundColor: Colors.redAccent,
                       ),
-                      backgroundColor: Colors.redAccent,
-                    ),
-                  );
+                    );
+                  }
                 }
               }
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            foregroundColor: GenZTokens.ink,
-            elevation: 0,
-            shadowColor: Colors.transparent,
-            minimumSize: const Size(double.infinity, 56),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: GenZTokens.ink,
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
-          ),
-          child: Text(
-            'Xác minh & Tiếp tục',
-            style: AppFonts.heading(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: GenZTokens.ink,
+            child: Text(
+              'Xác minh & Tiếp tục',
+              style: AppFonts.heading(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: GenZTokens.ink,
+              ),
             ),
-          ),
           ),
         ),
       ],
@@ -1345,16 +1342,19 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   email = rawInput;
                 } else {
                   final formattedPhone = _formatVnPhone(rawInput);
-                  email = '${formattedPhone.replaceAll('+', '')}@phone.tripmate.com';
+                  email =
+                      '${formattedPhone.replaceAll('+', '')}@phone.tripmate.com';
                 }
 
                 if (_tempSupabaseId != null) {
                   supabaseId = _tempSupabaseId!;
                 } else if (_isEmailInput) {
-                  supabaseId = 'sb-email-${rawInput.replaceAll('@', '-').replaceAll('.', '-')}';
+                  supabaseId =
+                      'sb-email-${rawInput.replaceAll('@', '-').replaceAll('.', '-')}';
                 } else {
                   final formattedPhone = _formatVnPhone(rawInput);
-                  supabaseId = 'sb-${formattedPhone.replaceAll('+', '').replaceAll(' ', '')}';
+                  supabaseId =
+                      'sb-${formattedPhone.replaceAll('+', '').replaceAll(' ', '')}';
                 }
 
                 // Call Register API on the NestJS backend
@@ -1458,11 +1458,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         const SizedBox(height: 12),
         Text(
           'Bật quyền vị trí để squad có thể theo dõi nhau trên bản đồ realtime trong chuyến đi.',
-          style: AppFonts.body(
-            color: sub,
-            fontSize: 14,
-            height: 1.5,
-          ),
+          style: AppFonts.body(color: sub, fontSize: 14, height: 1.5),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 64),
@@ -1494,10 +1490,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           onPressed: _nextStep,
           child: Text(
             'auth.later'.tr(),
-            style: AppFonts.heading(
-              color: sub,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppFonts.heading(color: sub, fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -1545,11 +1538,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         const SizedBox(height: 12),
         Text(
           'Xong rồi! Hồ sơ của bạn đã được đăng ký. Hãy bắt đầu lên kế hoạch du lịch nhóm thôi!',
-          style: AppFonts.body(
-            color: sub,
-            fontSize: 14,
-            height: 1.5,
-          ),
+          style: AppFonts.body(color: sub, fontSize: 14, height: 1.5),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 64),

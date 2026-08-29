@@ -8,6 +8,7 @@ import '../data/games_repository.dart';
 import 'package:flutter/services.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
+
 class TripBingoScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
@@ -33,7 +34,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
   final List<List<int>> _winningLines = const [
     [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
     [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-    [0, 4, 8], [2, 4, 6]             // Diagonals
+    [0, 4, 8], [2, 4, 6], // Diagonals
   ];
   final Set<int> _completedLineIndices = {};
 
@@ -131,7 +132,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
 
     for (int i = 0; i < _winningLines.length; i++) {
       final line = _winningLines[i];
-      final isLineComplete = line.every((idx) => _bingoTiles[idx]['state'] == 'completed');
+      final isLineComplete = line.every(
+        (idx) => _bingoTiles[idx]['state'] == 'completed',
+      );
 
       if (isLineComplete) {
         if (!_completedLineIndices.contains(i)) {
@@ -154,7 +157,10 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             .createSession(
               tripId,
               gameType: 'CARD_MATCH',
-              state: {'game': 'BINGO_LINE', 'lines': _completedLineIndices.length},
+              state: {
+                'game': 'BINGO_LINE',
+                'lines': _completedLineIndices.length,
+              },
             )
             .then((_) {
               if (!mounted) return;
@@ -169,7 +175,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
 
   void _showBingoCelebrationDialog() {
     final isDark = widget.isDarkMode;
-    final surfaceColor = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
     final inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     showDialog(
@@ -189,10 +197,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: inkColor, width: 2.5),
                     boxShadow: [
-                      BoxShadow(
-                        color: inkColor,
-                        offset: const Offset(0, 6),
-                      ),
+                      BoxShadow(color: inkColor, offset: const Offset(0, 6)),
                     ],
                   ),
                   child: Column(
@@ -240,7 +245,10 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(color: inkColor, width: 2),
                             boxShadow: [
-                              BoxShadow(color: inkColor, offset: const Offset(0, 3)),
+                              BoxShadow(
+                                color: inkColor,
+                                offset: const Offset(0, 3),
+                              ),
                             ],
                           ),
                           child: Text(
@@ -269,7 +277,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     final isDark = widget.isDarkMode;
 
     // Design System colors
-    final bgStart = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final bgStart = Theme.of(context).scaffoldBackgroundColor;
     final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
     final secondary = isDark
@@ -324,7 +332,6 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             ],
 
             SafeArea(
-              bottom: false,
               child: FadeTransition(
                 opacity: _fadeAnimation,
                 child: Column(
@@ -379,9 +386,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                               isDark,
                             ),
 
-                            const SizedBox(
-                              height: 100,
-                            ), // Spacing for bottom navbar
+                            const SizedBox(height: 32),
                           ],
                         ),
                       ),
@@ -390,9 +395,6 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 ),
               ),
             ),
-
-            // Floating Custom Navbar
-            _buildFloatingNavbar(surface, primary, secondary, textMuted),
           ],
         ),
       ),
@@ -700,6 +702,11 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     Color textMuted,
     bool isDark,
   ) {
+    // Con so that: so o da tick va so hang bingo da hoan thanh.
+    // Truoc day the nay in cung "+50 Chaos Points awarded" ke ca khi chua tick o nao.
+    final done = _bingoTiles.where((t) => t['state'] == 'completed').length;
+    final lines = _completedLineIndices.length;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
@@ -737,7 +744,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Financial damage bonus unlocked! 💰',
+                      lines > 0
+                          ? 'Bingo! $lines line${lines > 1 ? 's' : ''} completed 🎉'
+                          : 'No bingo line yet 🎯',
                       style: AppFonts.heading(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -746,7 +755,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '+50 Chaos Points awarded to Squad.',
+                      '$done/${_bingoTiles.length} tiles checked.',
                       style: AppFonts.body(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -760,102 +769,6 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFloatingNavbar(
-    Color surface,
-    Color primary,
-    Color secondary,
-    Color textMuted,
-  ) {
-    final isDark = widget.isDarkMode;
-    return Positioned(
-      bottom: 24,
-      left: 20,
-      right: 20,
-      child: Center(
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(maxWidth: 400),
-          decoration: BoxDecoration(
-            color: surface.withValues(alpha: 0.85),
-            borderRadius: BorderRadius.circular(40),
-            border: Border.all(
-              color: (isDark ? Colors.white : Colors.black),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
-                blurRadius: 0,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavbarItem(
-                Icons.explore_outlined,
-                false,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.payments_outlined,
-                false,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.explore_rounded,
-                false,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.auto_awesome_rounded,
-                true,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.person_outline_rounded,
-                false,
-                textMuted,
-                secondary,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavbarItem(
-    IconData icon,
-    bool isActive,
-    Color textMuted,
-    Color secondary,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: isActive
-          ? BoxDecoration(
-              color: secondary.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: secondary.withValues(alpha: 0.25),
-                  blurRadius: 0,
-                  spreadRadius: 2,
-                ),
-              ],
-            )
-          : null,
-      child: Icon(icon, color: isActive ? secondary : textMuted, size: 24),
     );
   }
 }
@@ -949,11 +862,15 @@ class _ConfettiPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     for (final p in particles) {
-      final currentY = p.y * size.height + (p.speedY * elapsed * size.height * 0.25);
-      final currentX = p.x * size.width + (p.speedX * elapsed * size.width * 0.08);
+      final currentY =
+          p.y * size.height + (p.speedY * elapsed * size.height * 0.25);
+      final currentX =
+          p.x * size.width + (p.speedX * elapsed * size.width * 0.08);
       final currentRotation = p.rotation + (p.rotationSpeed * elapsed * 20);
 
-      if (currentY > size.height || currentX < 0 || currentX > size.width) continue;
+      if (currentY > size.height || currentX < 0 || currentX > size.width) {
+        continue;
+      }
 
       final paint = Paint()
         ..color = p.color
@@ -964,7 +881,11 @@ class _ConfettiPainter extends CustomPainter {
       canvas.rotate(currentRotation);
 
       canvas.drawRect(
-        Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 1.5),
+        Rect.fromCenter(
+          center: Offset.zero,
+          width: p.size,
+          height: p.size * 1.5,
+        ),
         paint,
       );
 
@@ -1017,10 +938,7 @@ class _BouncingTileState extends State<BouncingTile>
         widget.onTap();
       },
       onTapCancel: () => _controller.reverse(),
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: widget.child,
-      ),
+      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
     );
   }
 }

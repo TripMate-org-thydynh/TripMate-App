@@ -21,13 +21,15 @@ class DailyRecapWidget extends ConsumerWidget {
     final activities = async.maybeWhen(
       data: (items) => items
           .take(6)
-          .map((a) => {
-                'title': _activityTitle(a.type),
-                'time': a.tripName,
-                'chaosVibe': _activityVibe(a.type),
-                'details': a.label,
-                'colorHex': _colorFor(a.type),
-              })
+          .map(
+            (a) => {
+              'title': _activityTitle(a.type),
+              'time': a.tripName,
+              'chaosVibe': _activityVibe(a.type),
+              'details': a.label,
+              'colorHex': _colorFor(a.type),
+            },
+          )
           .toList(),
       orElse: () => const <Map<String, dynamic>>[],
     );
@@ -89,7 +91,6 @@ class DailyRecapWidget extends ConsumerWidget {
     }
   }
 
-
   Widget _buildBody(
     BuildContext context,
     List<Map<String, dynamic>> activities,
@@ -131,9 +132,69 @@ class DailyRecapWidget extends ConsumerWidget {
                   ),
                 )
               : activities.isEmpty
-                  ? Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
+              ? Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                    color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                    border: Border.all(
+                      color: ink,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                    boxShadow: [
+                      BoxShadow(color: ink, offset: const Offset(0, 3)),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.history_toggle_off,
+                        size: 38,
+                        color: GenZTokens.orange,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'dashboard.recap_empty_title'.tr(),
+                              style: AppFonts.heading(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                                color: ink,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'dashboard.recap_empty_sub'.tr(),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontSize: 11,
+                                color: isDark
+                                    ? GenZTokens.inkSoftDark
+                                    : GenZTokens.inkSoft,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: activities.length,
+                  itemBuilder: (context, index) {
+                    final item = activities[index];
+                    final themeColor = Color(item['colorHex'] as int);
+
+                    return Container(
+                      width: 270,
+                      margin: const EdgeInsets.only(right: 14),
+                      padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
                           GenZTokens.radiusCard,
@@ -147,121 +208,59 @@ class DailyRecapWidget extends ConsumerWidget {
                           BoxShadow(color: ink, offset: const Offset(0, 3)),
                         ],
                       ),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.history_toggle_off,
-                            size: 38,
-                            color: GenZTokens.orange,
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'dashboard.recap_empty_title'.tr(),
-                                  style: AppFonts.heading(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 14,
-                                    color: ink,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'dashboard.recap_empty_sub'.tr(),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: 11,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              PillTag(
+                                text: item['title'] as String,
+                                color: themeColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  (item['time'] as String).toUpperCase(),
+                                  textAlign: TextAlign.end,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: AppFonts.mono(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
                                     color: isDark
                                         ? GenZTokens.inkSoftDark
                                         : GenZTokens.inkSoft,
                                   ),
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            item['chaosVibe'] as String,
+                            style: AppFonts.heading(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                              color: ink,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Expanded(
+                            child: Text(
+                              item['details'] as String,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontSize: 11,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    )
-                  : ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: activities.length,
-                      itemBuilder: (context, index) {
-                        final item = activities[index];
-                        final themeColor = Color(item['colorHex'] as int);
-
-                        return Container(
-                          width: 270,
-                          margin: const EdgeInsets.only(right: 14),
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              GenZTokens.radiusCard,
-                            ),
-                            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-                            border: Border.all(
-                              color: ink,
-                              width: GenZTokens.borderWidthThin,
-                            ),
-                            boxShadow: [
-                              BoxShadow(color: ink, offset: const Offset(0, 3)),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  PillTag(
-                                    text: item['title'] as String,
-                                    color: themeColor,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      (item['time'] as String).toUpperCase(),
-                                      textAlign: TextAlign.end,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style: AppFonts.mono(
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w700,
-                                        color: isDark
-                                            ? GenZTokens.inkSoftDark
-                                            : GenZTokens.inkSoft,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                item['chaosVibe'] as String,
-                                style: AppFonts.heading(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 13,
-                                  color: ink,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Expanded(
-                                child: Text(
-                                  item['details'] as String,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                    );
+                  },
+                ),
         ),
       ],
     );

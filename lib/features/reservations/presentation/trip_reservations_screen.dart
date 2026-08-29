@@ -21,8 +21,8 @@ class TripReservationsScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary => const Color(0xFF8B4DE8);
@@ -31,15 +31,51 @@ class TripReservationsScreen extends ConsumerWidget {
       isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
 
   static const _meta = <ReservationType, (String, IconData, Color)>{
-    ReservationType.flight: ('reservations.type_flight', PhosphorIconsFill.airplaneTilt, Color(0xFF3D8BFF)),
-    ReservationType.train: ('reservations.type_train', PhosphorIconsFill.train, Color(0xFF06B6D4)),
-    ReservationType.bus: ('reservations.type_bus', PhosphorIconsFill.bus, Color(0xFF1FA85C)),
-    ReservationType.hotel: ('reservations.type_hotel', PhosphorIconsFill.buildings, Color(0xFF8B4DE8)),
-    ReservationType.restaurant: ('reservations.type_restaurant', PhosphorIconsFill.forkKnife, Color(0xFFF5822B)),
-    ReservationType.car: ('reservations.type_car_rental', PhosphorIconsFill.car, Color(0xFFD6248C)),
-    ReservationType.event: ('reservations.type_event', PhosphorIconsFill.ticket, Color(0xFFFFB020)),
-    ReservationType.attraction: ('reservations.type_attraction', PhosphorIconsFill.mapPin, Color(0xFFEF4444)),
-    ReservationType.other: ('expense.cat_other', PhosphorIconsFill.bookmarkSimple, Color(0xFF64748B)),
+    ReservationType.flight: (
+      'reservations.type_flight',
+      PhosphorIconsFill.airplaneTilt,
+      Color(0xFF3D8BFF),
+    ),
+    ReservationType.train: (
+      'reservations.type_train',
+      PhosphorIconsFill.train,
+      Color(0xFF06B6D4),
+    ),
+    ReservationType.bus: (
+      'reservations.type_bus',
+      PhosphorIconsFill.bus,
+      Color(0xFF1FA85C),
+    ),
+    ReservationType.hotel: (
+      'reservations.type_hotel',
+      PhosphorIconsFill.buildings,
+      Color(0xFF8B4DE8),
+    ),
+    ReservationType.restaurant: (
+      'reservations.type_restaurant',
+      PhosphorIconsFill.forkKnife,
+      Color(0xFFF5822B),
+    ),
+    ReservationType.car: (
+      'reservations.type_car_rental',
+      PhosphorIconsFill.car,
+      Color(0xFFD6248C),
+    ),
+    ReservationType.event: (
+      'reservations.type_event',
+      PhosphorIconsFill.ticket,
+      Color(0xFFFFB020),
+    ),
+    ReservationType.attraction: (
+      'reservations.type_attraction',
+      PhosphorIconsFill.mapPin,
+      Color(0xFFEF4444),
+    ),
+    ReservationType.other: (
+      'expense.cat_other',
+      PhosphorIconsFill.bookmarkSimple,
+      Color(0xFF64748B),
+    ),
   };
 
   /// Phần tử thứ 1 trong `_meta` là KEY i18n (const map không gọi được .tr()).
@@ -69,7 +105,7 @@ class TripReservationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(tripReservationsProvider(tripId));
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
         foregroundColor: Colors.white,
@@ -132,8 +168,10 @@ class TripReservationsScreen extends ConsumerWidget {
       onLongPress: () => _showActions(context, ref, r),
       onTap: r.url == null || r.url!.isEmpty
           ? null
-          : () => launchUrl(Uri.parse(r.url!),
-              mode: LaunchMode.externalApplication),
+          : () => launchUrl(
+              Uri.parse(r.url!),
+              mode: LaunchMode.externalApplication,
+            ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
@@ -197,8 +235,10 @@ class TripReservationsScreen extends ConsumerWidget {
                       _line(Icons.place_outlined, r.location!),
                     if (r.confirmationNumber != null &&
                         r.confirmationNumber!.isNotEmpty)
-                      _line(Icons.confirmation_number_outlined,
-                          r.confirmationNumber!),
+                      _line(
+                        Icons.confirmation_number_outlined,
+                        r.confirmationNumber!,
+                      ),
                     if (r.price != null && r.price! > 0)
                       _line(
                         Icons.account_balance_wallet_outlined,
@@ -215,22 +255,22 @@ class TripReservationsScreen extends ConsumerWidget {
   }
 
   Widget _line(IconData icon, String text) => Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: Row(
-          children: [
-            Icon(icon, size: 13, color: _textSec),
-            const SizedBox(width: 6),
-            Expanded(
-              child: Text(
-                text,
-                style: AppFonts.body(fontSize: 12.5, color: _textSec),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+    padding: const EdgeInsets.only(top: 4),
+    child: Row(
+      children: [
+        Icon(icon, size: 13, color: _textSec),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            style: AppFonts.body(fontSize: 12.5, color: _textSec),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
-      );
+      ],
+    ),
+  );
 
   Future<void> _showActions(
     BuildContext context,
@@ -249,15 +289,25 @@ class TripReservationsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 8),
-            _actionTile(ctx, Icons.edit_outlined, 'reservations.edit'.tr(), 'edit'),
+            _actionTile(
+              ctx,
+              Icons.edit_outlined,
+              'reservations.edit'.tr(),
+              'edit',
+            ),
             _actionTile(
               ctx,
               cancelled ? Icons.check_circle_outline : Icons.cancel_outlined,
               cancelled ? 'Khôi phục (đã xác nhận)' : 'Đánh dấu đã huỷ',
               'toggle',
             ),
-            _actionTile(ctx, Icons.delete_outline, 'general.delete2'.tr(), 'delete',
-                danger: true),
+            _actionTile(
+              ctx,
+              Icons.delete_outline,
+              'general.delete2'.tr(),
+              'delete',
+              danger: true,
+            ),
             const SizedBox(height: 8),
           ],
         ),
@@ -270,7 +320,9 @@ class TripReservationsScreen extends ConsumerWidget {
         break;
       case 'toggle':
         HapticFeedback.selectionClick();
-        await ref.read(reservationsRepositoryProvider).update(
+        await ref
+            .read(reservationsRepositoryProvider)
+            .update(
               tripId,
               r.id,
               status: cancelled ? 'CONFIRMED' : 'CANCELLED',
@@ -326,11 +378,15 @@ class TripReservationsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('general.cancel'.tr(), style: AppFonts.body(color: _textSec)),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFD8422B)),
+              backgroundColor: const Color(0xFFD8422B),
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('general.delete2'.tr()),
           ),
@@ -339,9 +395,7 @@ class TripReservationsScreen extends ConsumerWidget {
     );
     if (ok == true) {
       HapticFeedback.mediumImpact();
-      await ref
-          .read(reservationsRepositoryProvider)
-          .remove(tripId, r.id);
+      await ref.read(reservationsRepositoryProvider).remove(tripId, r.id);
       ref.invalidate(tripReservationsProvider(tripId));
     }
   }
@@ -385,10 +439,11 @@ class TripReservationsScreen extends ConsumerWidget {
               maxLines: 6,
               style: AppFonts.body(color: _textPri, fontSize: 13),
               decoration: InputDecoration(
-                hintText: 'VD: Vé VN213 SGN 08:15 → HAN 10:20 ngày 20/07, mã ABCDEF...',
+                hintText:
+                    'VD: Vé VN213 SGN 08:15 → HAN 10:20 ngày 20/07, mã ABCDEF...',
                 hintStyle: AppFonts.body(color: _textSec, fontSize: 12),
                 filled: true,
-                fillColor: _bg,
+                fillColor: _bgOf(context),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -400,7 +455,10 @@ class TripReservationsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('general.cancel'.tr(), style: AppFonts.body(color: _textSec)),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: _primary),
@@ -436,10 +494,7 @@ class TripReservationsScreen extends ConsumerWidget {
       msg = 'Đã thêm $created đặt chỗ từ vé 🎫';
     }
     messenger.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        behavior: SnackBarBehavior.floating,
-      ),
+      SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -519,7 +574,8 @@ class TripReservationsScreen extends ConsumerWidget {
 
     try {
       final bytes = await file.readAsBytes();
-      final mime = file.mimeType ??
+      final mime =
+          file.mimeType ??
           (file.path.toLowerCase().endsWith('.png')
               ? 'image/png'
               : 'image/jpeg');
@@ -539,10 +595,7 @@ class TripReservationsScreen extends ConsumerWidget {
         msg = 'Đã nhận dạng $created đặt chỗ từ ảnh 🎫';
       }
       messenger.showSnackBar(
-        SnackBar(
-          content: Text(msg),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
       );
     } catch (_) {
       messenger.hideCurrentSnackBar();
@@ -560,33 +613,32 @@ class TripReservationsScreen extends ConsumerWidget {
     required IconData icon,
     required String label,
     required ImageSource source,
-  }) =>
-      GestureDetector(
-        onTap: () => Navigator.pop(ctx, source),
-        child: Container(
-          height: 52,
-          decoration: BoxDecoration(
-            color: _primary.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: _primary.withValues(alpha: 0.3)),
+  }) => GestureDetector(
+    onTap: () => Navigator.pop(ctx, source),
+    child: Container(
+      height: 52,
+      decoration: BoxDecoration(
+        color: _primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: _primary.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: _primary, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: AppFonts.heading(
+              fontWeight: FontWeight.w700,
+              color: _primary,
+              fontSize: 13,
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: _primary, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: AppFonts.heading(
-                  fontWeight: FontWeight.w700,
-                  color: _primary,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 
   Future<void> _addReservation(
     BuildContext context,
@@ -596,8 +648,9 @@ class TripReservationsScreen extends ConsumerWidget {
     final editing = existing != null;
     final titleCtrl = TextEditingController(text: existing?.title ?? '');
     final locCtrl = TextEditingController(text: existing?.location ?? '');
-    final confCtrl =
-        TextEditingController(text: existing?.confirmationNumber ?? '');
+    final confCtrl = TextEditingController(
+      text: existing?.confirmationNumber ?? '',
+    );
     final urlCtrl = TextEditingController(text: existing?.url ?? '');
     final priceCtrl = TextEditingController(
       text: existing?.price == null ? '' : existing!.price!.toStringAsFixed(0),
@@ -645,21 +698,24 @@ class TripReservationsScreen extends ConsumerWidget {
                       onTap: () => setSheet(() => type = t),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: sel ? m.$3 : _bg,
+                          color: sel ? m.$3 : _bgOf(context),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color:
-                                sel ? m.$3 : _textSec.withValues(alpha: 0.3),
+                            color: sel ? m.$3 : _textSec.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(m.$2,
-                                size: 14,
-                                color: sel ? Colors.white : _textSec),
+                            Icon(
+                              m.$2,
+                              size: 14,
+                              color: sel ? Colors.white : _textSec,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               m.$1,
@@ -676,15 +732,21 @@ class TripReservationsScreen extends ConsumerWidget {
                   }).toList(),
                 ),
                 const SizedBox(height: 14),
-                _field(titleCtrl, 'reservations.title_hint'.tr(), autofocus: true),
+                _field(
+                  context,
+                  titleCtrl,
+                  'reservations.title_hint'.tr(),
+                  autofocus: true,
+                ),
                 const SizedBox(height: 10),
-                _field(locCtrl, 'Địa điểm / nhà ga (tuỳ chọn)'),
+                _field(context, locCtrl, 'Địa điểm / nhà ga (tuỳ chọn)'),
                 const SizedBox(height: 10),
-                _field(confCtrl, 'Mã xác nhận (tuỳ chọn)'),
+                _field(context, confCtrl, 'Mã xác nhận (tuỳ chọn)'),
                 const SizedBox(height: 10),
-                _field(urlCtrl, 'Link vé (tuỳ chọn)'),
+                _field(context, urlCtrl, 'Link vé (tuỳ chọn)'),
                 const SizedBox(height: 10),
                 _field(
+                  context,
                   priceCtrl,
                   'Giá tiền (tuỳ chọn — tự chia cho nhóm)',
                   number: true,
@@ -707,19 +769,23 @@ class TripReservationsScreen extends ConsumerWidget {
                       context: ctx,
                       initialTime: TimeOfDay.now(),
                     );
-                    setSheet(() => when = DateTime(
-                          d.year,
-                          d.month,
-                          d.day,
-                          t?.hour ?? 0,
-                          t?.minute ?? 0,
-                        ));
+                    setSheet(
+                      () => when = DateTime(
+                        d.year,
+                        d.month,
+                        d.day,
+                        t?.hour ?? 0,
+                        t?.minute ?? 0,
+                      ),
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 14),
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
                     decoration: BoxDecoration(
-                      color: _bg,
+                      color: _bgOf(context),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Row(
@@ -752,9 +818,10 @@ class TripReservationsScreen extends ConsumerWidget {
                     ),
                     onPressed: () => Navigator.pop(ctx, true),
                     child: Text(
-                      editing ? 'reservations.save_changes'.tr() : 'reservations.save'.tr(),
-                      style:
-                          AppFonts.heading(fontWeight: FontWeight.w800),
+                      editing
+                          ? 'reservations.save_changes'.tr()
+                          : 'reservations.save'.tr(),
+                      style: AppFonts.heading(fontWeight: FontWeight.w800),
                     ),
                   ),
                 ),
@@ -779,8 +846,9 @@ class TripReservationsScreen extends ConsumerWidget {
           type: type,
           title: titleCtrl.text.trim(),
           location: locCtrl.text.trim().isEmpty ? null : locCtrl.text.trim(),
-          confirmationNumber:
-              confCtrl.text.trim().isEmpty ? null : confCtrl.text.trim(),
+          confirmationNumber: confCtrl.text.trim().isEmpty
+              ? null
+              : confCtrl.text.trim(),
           url: urlCtrl.text.trim().isEmpty ? null : urlCtrl.text.trim(),
           price: (price != null && price > 0) ? price : null,
           startTime: when,
@@ -791,8 +859,9 @@ class TripReservationsScreen extends ConsumerWidget {
           type: type,
           title: titleCtrl.text.trim(),
           location: locCtrl.text.trim().isEmpty ? null : locCtrl.text.trim(),
-          confirmationNumber:
-              confCtrl.text.trim().isEmpty ? null : confCtrl.text.trim(),
+          confirmationNumber: confCtrl.text.trim().isEmpty
+              ? null
+              : confCtrl.text.trim(),
           url: urlCtrl.text.trim().isEmpty ? null : urlCtrl.text.trim(),
           price: (price != null && price > 0) ? price : null,
           startTime: when,
@@ -810,91 +879,95 @@ class TripReservationsScreen extends ConsumerWidget {
     }
   }
 
-  Widget _field(TextEditingController c, String hint,
-          {bool autofocus = false, bool number = false}) =>
-      TextField(
-        controller: c,
-        autofocus: autofocus,
-        keyboardType: number ? TextInputType.number : TextInputType.text,
-        // Lọc chữ khi ô ấy là ô số — keyboardType chỉ gợi ý bàn phím.
-        inputFormatters: number
-            ? [FilteringTextInputFormatter.digitsOnly]
-            : null,
-        style: AppFonts.body(color: _textPri),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: AppFonts.body(color: _textSec),
-          filled: true,
-          fillColor: _bg,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        ),
-      );
+  Widget _field(
+    BuildContext context,
+    TextEditingController c,
+    String hint, {
+    bool autofocus = false,
+    bool number = false,
+  }) => TextField(
+    controller: c,
+    autofocus: autofocus,
+    keyboardType: number ? TextInputType.number : TextInputType.text,
+    // Lọc chữ khi ô ấy là ô số — keyboardType chỉ gợi ý bàn phím.
+    inputFormatters: number ? [FilteringTextInputFormatter.digitsOnly] : null,
+    style: AppFonts.body(color: _textPri),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: AppFonts.body(color: _textSec),
+      filled: true,
+      fillColor: _bgOf(context),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    ),
+  );
 
   Widget _empty() => ListView(
-        padding: const EdgeInsets.all(28),
-        children: [
-          const SizedBox(height: 50),
-          Icon(PhosphorIconsFill.ticket, size: 60, color: _primary),
-          const SizedBox(height: 16),
-          Text(
-            'Chưa có đặt chỗ nào',
-            textAlign: TextAlign.center,
-            style: AppFonts.heading(
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-              color: _textPri,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Lưu vé máy bay, khách sạn, nhà hàng... để cả squad nắm lịch và mã xác nhận.',
-            textAlign: TextAlign.center,
-            style: AppFonts.body(fontSize: 14, color: _textSec),
-          ),
-        ],
-      );
+    padding: const EdgeInsets.all(28),
+    children: [
+      const SizedBox(height: 50),
+      Icon(PhosphorIconsFill.ticket, size: 60, color: _primary),
+      const SizedBox(height: 16),
+      Text(
+        'Chưa có đặt chỗ nào',
+        textAlign: TextAlign.center,
+        style: AppFonts.heading(
+          fontWeight: FontWeight.w800,
+          fontSize: 20,
+          color: _textPri,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        'Lưu vé máy bay, khách sạn, nhà hàng... để cả squad nắm lịch và mã xác nhận.',
+        textAlign: TextAlign.center,
+        style: AppFonts.body(fontSize: 14, color: _textSec),
+      ),
+    ],
+  );
 
   Widget _skeleton() => ListView(
-        padding: const EdgeInsets.all(20),
-        children: List.generate(
-          5,
-          (i) => Container(
-            height: 84,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: isDarkMode
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.black.withValues(alpha: 0.04),
-              borderRadius: BorderRadius.circular(18),
-            ),
-          ),
+    padding: const EdgeInsets.all(20),
+    children: List.generate(
+      5,
+      (i) => Container(
+        height: 84,
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(18),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _error() => ListView(
-        children: [
-          const SizedBox(height: 120),
-          Center(
-            child: Column(
-              children: [
-                const Icon(Icons.cloud_off_rounded,
-                    color: Colors.redAccent, size: 40),
-                const SizedBox(height: 12),
-                Text(
-                  'Không tải được đặt chỗ',
-                  style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
-                    color: _textPri,
-                  ),
-                ),
-              ],
+    children: [
+      const SizedBox(height: 120),
+      Center(
+        child: Column(
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              color: Colors.redAccent,
+              size: 40,
             ),
-          ),
-        ],
-      );
+            const SizedBox(height: 12),
+            Text(
+              'Không tải được đặt chỗ',
+              style: AppFonts.heading(
+                fontWeight: FontWeight.w800,
+                color: _textPri,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

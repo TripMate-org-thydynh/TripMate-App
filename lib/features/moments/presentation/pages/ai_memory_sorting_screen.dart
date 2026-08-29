@@ -161,8 +161,7 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                       itemCount: pending.length,
                       separatorBuilder: (_, _) =>
                           const SizedBox(height: GenZTokens.space4),
-                      itemBuilder: (_, i) =>
-                          _card(isDark, tripId, pending[i]),
+                      itemBuilder: (_, i) => _card(isDark, tripId, pending[i]),
                     );
                   },
                 ),

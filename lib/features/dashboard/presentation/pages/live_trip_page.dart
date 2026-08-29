@@ -27,6 +27,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
   late final AnimationController _particlesController;
   final List<Particle> _particles = [];
   final Random _random = Random();
+
   /// Mức "vibe energy" đọc từ tiến độ XP THẬT của chuyến (xem
   /// [_vibeEnergy]). Biến này chỉ còn giữ phần thưởng tạm khi người dùng
   /// lắc máy, cộng dồn lên trên giá trị thật.
@@ -95,7 +96,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
         ? const Color(0xFF1FA85C)
         : const Color(0xFFFFD84D);
 
-    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final textPrimary = isDark
         ? const Color(0xFFFDF6D3)
@@ -363,22 +364,25 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
     );
   }
 
-
   /// Tên chuyến gần nhất của user. Trước đây header hardcode "Đà Lạt Chill".
   String _tripName() {
-    return ref.watch(tripsProvider).maybeWhen(
-      data: (trips) =>
-          trips.isEmpty ? 'live_trip.no_trip'.tr() : trips.first.name,
-      orElse: () => '…',
-    );
+    return ref
+        .watch(tripsProvider)
+        .maybeWhen(
+          data: (trips) =>
+              trips.isEmpty ? 'live_trip.no_trip'.tr() : trips.first.name,
+          orElse: () => '…',
+        );
   }
 
   /// Số thành viên thật. Trước đây luôn là "6 idiots".
   int _memberCount() {
-    return ref.watch(tripsProvider).maybeWhen(
-      data: (trips) => trips.isEmpty ? 0 : trips.first.memberCount,
-      orElse: () => 0,
-    );
+    return ref
+        .watch(tripsProvider)
+        .maybeWhen(
+          data: (trips) => trips.isEmpty ? 0 : trips.first.memberCount,
+          orElse: () => 0,
+        );
   }
 
   /// "Vibe energy" = tiến độ XP thật của chuyến, cộng thêm phần thưởng khi lắc

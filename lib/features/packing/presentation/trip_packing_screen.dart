@@ -20,8 +20,8 @@ class TripPackingScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary => const Color(0xFF1FA85C);
@@ -31,11 +31,31 @@ class TripPackingScreen extends ConsumerWidget {
 
   // ── Category metadata (label + icon + color) ──
   static const _categories = <String, (String, IconData, Color)>{
-    'CLOTHES': ('packing.cat_clothes', PhosphorIconsFill.tShirt, Color(0xFF3D8BFF)),
-    'TOILETRIES': ('packing.cat_toiletries', PhosphorIconsFill.drop, Color(0xFF06B6D4)),
-    'GADGETS': ('packing.cat_gadgets', PhosphorIconsFill.plugCharging, Color(0xFF8B4DE8)),
-    'DOCS': ('packing.cat_documents', PhosphorIconsFill.identificationCard, Color(0xFFF5822B)),
-    'OTHER': ('expense.cat_other', PhosphorIconsFill.package, Color(0xFFD6248C)),
+    'CLOTHES': (
+      'packing.cat_clothes',
+      PhosphorIconsFill.tShirt,
+      Color(0xFF3D8BFF),
+    ),
+    'TOILETRIES': (
+      'packing.cat_toiletries',
+      PhosphorIconsFill.drop,
+      Color(0xFF06B6D4),
+    ),
+    'GADGETS': (
+      'packing.cat_gadgets',
+      PhosphorIconsFill.plugCharging,
+      Color(0xFF8B4DE8),
+    ),
+    'DOCS': (
+      'packing.cat_documents',
+      PhosphorIconsFill.identificationCard,
+      Color(0xFFF5822B),
+    ),
+    'OTHER': (
+      'expense.cat_other',
+      PhosphorIconsFill.package,
+      Color(0xFFD6248C),
+    ),
   };
 
   /// Phần tử thứ 1 trong `_categories` là KEY i18n — dịch ở đây để mọi chỗ
@@ -92,10 +112,15 @@ class TripPackingScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('general.cancel'.tr(), style: AppFonts.body(color: _textSec)),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: const Color(0xFFD8422B)),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFD8422B),
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('general.delete2'.tr()),
           ),
@@ -148,7 +173,7 @@ class TripPackingScreen extends ConsumerWidget {
                   hintText: 'Tên món đồ',
                   hintStyle: AppFonts.body(color: _textSec),
                   filled: true,
-                  fillColor: _bg,
+                  fillColor: _bgOf(context),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -178,10 +203,12 @@ class TripPackingScreen extends ConsumerWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: selected ? e.value.$3 : _bg,
+                        color: selected ? e.value.$3 : _bgOf(context),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: selected ? e.value.$3 : _textSec.withValues(alpha: 0.3),
+                          color: selected
+                              ? e.value.$3
+                              : _textSec.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -219,7 +246,7 @@ class TripPackingScreen extends ConsumerWidget {
                     ),
                   ),
                   const Spacer(),
-                  _qtyButton(Icons.remove, () {
+                  _qtyButton(context, Icons.remove, () {
                     if (quantity > 1) setSheet(() => quantity--);
                   }),
                   Padding(
@@ -233,7 +260,11 @@ class TripPackingScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  _qtyButton(Icons.add, () => setSheet(() => quantity++)),
+                  _qtyButton(
+                    context,
+                    Icons.add,
+                    () => setSheet(() => quantity++),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -261,7 +292,9 @@ class TripPackingScreen extends ConsumerWidget {
     );
     if (ok == true && nameCtrl.text.trim().isNotEmpty) {
       HapticFeedback.mediumImpact();
-      await ref.read(packingProvider(tripId).notifier).add(
+      await ref
+          .read(packingProvider(tripId).notifier)
+          .add(
             name: nameCtrl.text.trim(),
             category: category,
             quantity: quantity,
@@ -269,13 +302,14 @@ class TripPackingScreen extends ConsumerWidget {
     }
   }
 
-  Widget _qtyButton(IconData icon, VoidCallback onTap) => GestureDetector(
+  Widget _qtyButton(BuildContext context, IconData icon, VoidCallback onTap) =>
+      GestureDetector(
         onTap: onTap,
         child: Container(
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: _bg,
+            color: _bgOf(context),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: _textSec.withValues(alpha: 0.3)),
           ),
@@ -287,7 +321,7 @@ class TripPackingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(packingProvider(tripId));
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
         foregroundColor: Colors.white,
@@ -338,7 +372,7 @@ class TripPackingScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
       children: [
-        _progressHeader(list),
+        _progressHeader(context, list),
         const SizedBox(height: 20),
         for (final key in orderedKeys) ...[
           _sectionHeader(key, grouped[key]!.length),
@@ -350,7 +384,7 @@ class TripPackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _progressHeader(PackingList list) {
+  Widget _progressHeader(BuildContext context, PackingList list) {
     final done = list.percent >= 100 && list.total > 0;
     return Container(
       padding: const EdgeInsets.all(18),
@@ -400,7 +434,7 @@ class TripPackingScreen extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: list.total == 0 ? 0 : list.packed / list.total,
               minHeight: 10,
-              backgroundColor: _bg,
+              backgroundColor: _bgOf(context),
               valueColor: AlwaysStoppedAnimation(_primary),
             ),
           ),
@@ -462,7 +496,9 @@ class TripPackingScreen extends ConsumerWidget {
                   color: item.isPacked ? _primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: item.isPacked ? _primary : _textSec.withValues(alpha: 0.5),
+                    color: item.isPacked
+                        ? _primary
+                        : _textSec.withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
@@ -488,7 +524,7 @@ class TripPackingScreen extends ConsumerWidget {
                 margin: const EdgeInsets.only(right: 8),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: _bg,
+                  color: _bgOf(context),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -558,41 +594,37 @@ class TripPackingScreen extends ConsumerWidget {
   }
 
   Widget _empty(WidgetRef ref) => ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          const SizedBox(height: 40),
-          Icon(
-            PhosphorIconsFill.suitcaseRolling,
-            size: 64,
-            color: _primary,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Chưa có gì trong balo',
-            textAlign: TextAlign.center,
-            style: AppFonts.heading(
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-              color: _textPri,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Chọn 1 template để bắt đầu nhanh, rồi cả squad cùng chia nhau mang.',
-            textAlign: TextAlign.center,
-            style: AppFonts.body(fontSize: 14, color: _textSec),
-          ),
-          const SizedBox(height: 24),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            children: _templates.entries
-                .map((e) => _templateChip(ref, e.key, e.value.$1.tr(), e.value.$2))
-                .toList(),
-          ),
-        ],
-      );
+    padding: const EdgeInsets.all(24),
+    children: [
+      const SizedBox(height: 40),
+      Icon(PhosphorIconsFill.suitcaseRolling, size: 64, color: _primary),
+      const SizedBox(height: 16),
+      Text(
+        'Chưa có gì trong balo',
+        textAlign: TextAlign.center,
+        style: AppFonts.heading(
+          fontWeight: FontWeight.w800,
+          fontSize: 20,
+          color: _textPri,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        'Chọn 1 template để bắt đầu nhanh, rồi cả squad cùng chia nhau mang.',
+        textAlign: TextAlign.center,
+        style: AppFonts.body(fontSize: 14, color: _textSec),
+      ),
+      const SizedBox(height: 24),
+      Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 10,
+        runSpacing: 10,
+        children: _templates.entries
+            .map((e) => _templateChip(ref, e.key, e.value.$1.tr(), e.value.$2))
+            .toList(),
+      ),
+    ],
+  );
 
   Widget _templateChip(WidgetRef ref, String key, String label, IconData icon) {
     return GestureDetector(
@@ -624,41 +656,44 @@ class TripPackingScreen extends ConsumerWidget {
   }
 
   Widget _skeleton() => ListView(
-        padding: const EdgeInsets.all(20),
-        children: List.generate(
-          6,
-          (i) => Container(
-            height: 56,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: isDarkMode
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.black.withValues(alpha: 0.04),
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
+    padding: const EdgeInsets.all(20),
+    children: List.generate(
+      6,
+      (i) => Container(
+        height: 56,
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(16),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _error() => ListView(
-        children: [
-          const SizedBox(height: 120),
-          Center(
-            child: Column(
-              children: [
-                const Icon(Icons.cloud_off_rounded,
-                    color: Colors.redAccent, size: 40),
-                const SizedBox(height: 12),
-                Text(
-                  'Không tải được danh sách',
-                  style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
-                    color: _textPri,
-                  ),
-                ),
-              ],
+    children: [
+      const SizedBox(height: 120),
+      Center(
+        child: Column(
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              color: Colors.redAccent,
+              size: 40,
             ),
-          ),
-        ],
-      );
+            const SizedBox(height: 12),
+            Text(
+              'Không tải được danh sách',
+              style: AppFonts.heading(
+                fontWeight: FontWeight.w800,
+                color: _textPri,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

@@ -18,8 +18,8 @@ class TripWishlistScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary =>
@@ -43,10 +43,7 @@ class TripWishlistScreen extends ConsumerWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'itinerary.wishlist_add_place'.tr(),
-          style: AppFonts.heading(
-            fontWeight: FontWeight.w800,
-            color: _textPri,
-          ),
+          style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -74,7 +71,10 @@ class TripWishlistScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('general.cancel'.tr(), style: AppFonts.body(color: _textSec)),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: _primary),
@@ -101,7 +101,7 @@ class TripWishlistScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(wishlistProvider(tripId));
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
         foregroundColor: Colors.white,

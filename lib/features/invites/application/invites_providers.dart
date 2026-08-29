@@ -15,7 +15,11 @@ class InvitesNotifier extends FamilyAsyncNotifier<List<TripInvite>, String> {
   }
 
   Future<TripInvite> create({String? expiresAt, int? maxUses}) async {
-    final invite = await _repo.create(arg, expiresAt: expiresAt, maxUses: maxUses);
+    final invite = await _repo.create(
+      arg,
+      expiresAt: expiresAt,
+      maxUses: maxUses,
+    );
     ref.invalidateSelf();
     return invite;
   }

@@ -8,11 +8,7 @@ class PackingAssignee {
   final String name;
   final String? avatarUrl;
 
-  const PackingAssignee({
-    required this.id,
-    required this.name,
-    this.avatarUrl,
-  });
+  const PackingAssignee({required this.id, required this.name, this.avatarUrl});
 
   factory PackingAssignee.fromJson(Map<String, dynamic> j) => PackingAssignee(
     id: j['id'] as String,
@@ -87,9 +83,11 @@ class PackingList {
         : <PackingItem>[];
     return PackingList(
       items: items,
-      total: (progress is Map ? progress['total'] as num? : null)?.toInt() ??
+      total:
+          (progress is Map ? progress['total'] as num? : null)?.toInt() ??
           items.length,
-      packed: (progress is Map ? progress['packed'] as num? : null)?.toInt() ??
+      packed:
+          (progress is Map ? progress['packed'] as num? : null)?.toInt() ??
           items.where((i) => i.isPacked).length,
       percent:
           (progress is Map ? progress['percent'] as num? : null)?.toInt() ?? 0,

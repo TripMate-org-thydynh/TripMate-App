@@ -23,8 +23,19 @@ class NotesNotifier extends FamilyAsyncNotifier<List<TripNote>, String> {
     ref.invalidateSelf();
   }
 
-  Future<void> edit(String noteId, {String? content, String? title, String? color}) async {
-    await _repo.update(arg, noteId, content: content, title: title, color: color);
+  Future<void> edit(
+    String noteId, {
+    String? content,
+    String? title,
+    String? color,
+  }) async {
+    await _repo.update(
+      arg,
+      noteId,
+      content: content,
+      title: title,
+      color: color,
+    );
     ref.invalidateSelf();
   }
 

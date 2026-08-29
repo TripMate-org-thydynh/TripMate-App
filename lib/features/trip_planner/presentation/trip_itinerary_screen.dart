@@ -23,8 +23,8 @@ class TripItineraryScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary =>
@@ -45,7 +45,9 @@ class TripItineraryScreen extends ConsumerWidget {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setStateDialog) => AlertDialog(
           backgroundColor: _surface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Text(
             'Thêm điểm dừng',
             style: AppFonts.heading(
@@ -64,7 +66,9 @@ class TripItineraryScreen extends ConsumerWidget {
                         controller: dayCtrl,
                         keyboardType: TextInputType.number,
                         // keyboardType chỉ gợi ý bàn phím — vẫn dán/gõ được chữ nếu không lọc.
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                         style: AppFonts.body(color: _textPri),
                         decoration: InputDecoration(
                           labelText: 'itinerary.day_label'.tr(),
@@ -112,15 +116,25 @@ class TripItineraryScreen extends ConsumerWidget {
                   ),
                   items: [
                     DropdownMenuItem(
-                        value: 'FOOD', child: Text('itinerary.cat_food'.tr())),
+                      value: 'FOOD',
+                      child: Text('itinerary.cat_food'.tr()),
+                    ),
                     DropdownMenuItem(
-                        value: 'ACTIVITIES', child: Text('itinerary.cat_fun'.tr())),
+                      value: 'ACTIVITIES',
+                      child: Text('itinerary.cat_fun'.tr()),
+                    ),
                     DropdownMenuItem(
-                        value: 'ACCOMMODATION', child: Text('itinerary.cat_stay'.tr())),
+                      value: 'ACCOMMODATION',
+                      child: Text('itinerary.cat_stay'.tr()),
+                    ),
                     DropdownMenuItem(
-                        value: 'COFFEE', child: Text('itinerary.cat_coffee'.tr())),
+                      value: 'COFFEE',
+                      child: Text('itinerary.cat_coffee'.tr()),
+                    ),
                     DropdownMenuItem(
-                        value: 'OTHER', child: Text('itinerary.cat_other'.tr())),
+                      value: 'OTHER',
+                      child: Text('itinerary.cat_other'.tr()),
+                    ),
                   ],
                   onChanged: (val) {
                     if (val != null) {
@@ -136,7 +150,10 @@ class TripItineraryScreen extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text('general.cancel'.tr(), style: AppFonts.body(color: _textSec)),
+              child: Text(
+                'general.cancel'.tr(),
+                style: AppFonts.body(color: _textSec),
+              ),
             ),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: _primary),
@@ -169,7 +186,7 @@ class TripItineraryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(tripItineraryProvider(tripId));
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
         foregroundColor: Colors.white,
@@ -198,7 +215,8 @@ class TripItineraryScreen extends ConsumerWidget {
           Expanded(
             child: RefreshIndicator(
               color: _primary,
-              onRefresh: () async => ref.invalidate(tripItineraryProvider(tripId)),
+              onRefresh: () async =>
+                  ref.invalidate(tripItineraryProvider(tripId)),
               child: async.when(
                 loading: () => _skeleton(),
                 error: (e, _) => _error(context, ref, e),
@@ -225,55 +243,61 @@ class TripItineraryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _dayHeader(BuildContext context, int day, List<ItineraryItem> items) =>
-      Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: _primary,
-              borderRadius: BorderRadius.circular(99),
-            ),
-            child: Text(
-              'Ngày $day',
-              style: AppFonts.heading(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-              ),
-            ),
+  Widget _dayHeader(
+    BuildContext context,
+    int day,
+    List<ItineraryItem> items,
+  ) => Row(
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: _primary,
+          borderRadius: BorderRadius.circular(99),
+        ),
+        child: Text(
+          'Ngày $day',
+          style: AppFonts.heading(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
           ),
-          const Spacer(),
-          // Mở lộ trình ngày này trên Google Maps (chuỗi điểm dừng theo thứ tự).
-          GestureDetector(
-            onTap: () => _openDayInMaps(context, items),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _surface,
-                borderRadius: BorderRadius.circular(99),
-                border: Border.all(color: _textPri.withValues(alpha: 0.12)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(PhosphorIcons.navigationArrow(PhosphorIconsStyle.fill),
-                      size: 13, color: _primary),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Đường đi',
-                    style: AppFonts.heading(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: _textPri,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        ),
+      ),
+      const Spacer(),
+      // Mở lộ trình ngày này trên Google Maps (chuỗi điểm dừng theo thứ tự).
+      GestureDetector(
+        onTap: () => _openDayInMaps(context, items),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: _surface,
+            borderRadius: BorderRadius.circular(99),
+            border: Border.all(color: _textPri.withValues(alpha: 0.12)),
           ),
-        ],
-      );
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                PhosphorIcons.navigationArrow(PhosphorIconsStyle.fill),
+                size: 13,
+                color: _primary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Đường đi',
+                style: AppFonts.heading(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: _textPri,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
 
   /// Ghép các điểm dừng trong ngày thành 1 URL chỉ đường Google Maps.
   /// Nếu tất cả điểm đều có toạ độ → tự tối ưu thứ tự (nearest-neighbor).
@@ -292,11 +316,13 @@ class TripItineraryScreen extends ConsumerWidget {
     }
 
     final stops = ordered
-        .map((it) => it.hasCoords
-            ? '${it.latitude},${it.longitude}'
-            : (it.placeAddress?.trim().isNotEmpty ?? false)
-                ? it.placeAddress!.trim()
-                : it.placeName.trim())
+        .map(
+          (it) => it.hasCoords
+              ? '${it.latitude},${it.longitude}'
+              : (it.placeAddress?.trim().isNotEmpty ?? false)
+              ? it.placeAddress!.trim()
+              : it.placeName.trim(),
+        )
         .where((s) => s.isNotEmpty)
         .toList();
     if (stops.length < 2) {
@@ -360,7 +386,8 @@ class TripItineraryScreen extends ConsumerWidget {
     double toRad(double d) => d * (math.pi / 180.0);
     final dLat = toRad(lat2 - lat1);
     final dLon = toRad(lon2 - lon1);
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(toRad(lat1)) *
             math.cos(toRad(lat2)) *
             math.sin(dLon / 2) *

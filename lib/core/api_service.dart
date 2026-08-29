@@ -53,10 +53,7 @@ class ApiService {
   static void _handleUnauthorized() {
     if (_handlingUnauthorized) return;
     _handlingUnauthorized = true;
-    showGlobalSnack(
-      'errors.session_expired'.tr(),
-      isError: true,
-    );
+    showGlobalSnack('errors.session_expired'.tr(), isError: true);
     onUnauthorized?.call();
     // Mở lại sau một nhịp để lần hết hạn sau vẫn xử lý được.
     Future.delayed(const Duration(seconds: 3), () {

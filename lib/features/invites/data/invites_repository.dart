@@ -26,20 +26,20 @@ class TripInvite {
   });
 
   factory TripInvite.fromJson(Map<String, dynamic> j) => TripInvite(
-        id: j['id'] as String,
-        tripId: j['tripId'] as String? ?? '',
-        code: j['code'] as String? ?? '',
-        isActive: j['isActive'] as bool? ?? true,
-        expiresAt: j['expiresAt'] != null
-            ? DateTime.tryParse(j['expiresAt'] as String)
-            : null,
-        maxUses: (j['maxUses'] as num?)?.toInt(),
-        useCount: (j['useCount'] as num?)?.toInt() ?? 0,
-        creatorName:
-            (j['creator'] as Map<String, dynamic>?)?['name'] as String? ?? '',
-        createdAt:
-            DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
-      );
+    id: j['id'] as String,
+    tripId: j['tripId'] as String? ?? '',
+    code: j['code'] as String? ?? '',
+    isActive: j['isActive'] as bool? ?? true,
+    expiresAt: j['expiresAt'] != null
+        ? DateTime.tryParse(j['expiresAt'] as String)
+        : null,
+    maxUses: (j['maxUses'] as num?)?.toInt(),
+    useCount: (j['useCount'] as num?)?.toInt() ?? 0,
+    creatorName:
+        (j['creator'] as Map<String, dynamic>?)?['name'] as String? ?? '',
+    createdAt:
+        DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
+  );
 
   bool get isExpired =>
       expiresAt != null && expiresAt!.isBefore(DateTime.now());

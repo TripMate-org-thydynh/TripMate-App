@@ -19,8 +19,10 @@ class ImportedPlace {
 class PlaceImportService {
   static ImportedPlace? parseExternalLink(String url) {
     final cleanUrl = url.trim().toLowerCase();
-    
-    if (cleanUrl.contains('google.com/maps') || cleanUrl.contains('maps.google') || cleanUrl.contains('goo.gl/maps')) {
+
+    if (cleanUrl.contains('google.com/maps') ||
+        cleanUrl.contains('maps.google') ||
+        cleanUrl.contains('goo.gl/maps')) {
       // Mock Google Maps import
       if (cleanUrl.contains('phu_quoc') || cleanUrl.contains('phuquoc')) {
         return const ImportedPlace(
@@ -30,7 +32,9 @@ class PlaceImportService {
           longitude: 104.0376,
           category: 'ACTIVITIES',
         );
-      } else if (cleanUrl.contains('food') || cleanUrl.contains('nhahang') || cleanUrl.contains('quan_an')) {
+      } else if (cleanUrl.contains('food') ||
+          cleanUrl.contains('nhahang') ||
+          cleanUrl.contains('quan_an')) {
         return const ImportedPlace(
           name: 'Lẩu Dê Cây Dừa 🍲',
           address: '20 Đường Nguyễn Đình Chiểu, Dương Đông, Phú Quốc',
@@ -49,8 +53,9 @@ class PlaceImportService {
         );
       }
     }
-    
-    if (cleanUrl.contains('tripadvisor.com') || cleanUrl.contains('tripadvisor.com.vn')) {
+
+    if (cleanUrl.contains('tripadvisor.com') ||
+        cleanUrl.contains('tripadvisor.com.vn')) {
       // Mock TripAdvisor import
       if (cleanUrl.contains('hotel') || cleanUrl.contains('resort')) {
         return const ImportedPlace(
@@ -71,7 +76,8 @@ class PlaceImportService {
       } else {
         // Default generic TripAdvisor mock import
         return ImportedPlace(
-          name: 'TripAdvisor Featured Attraction ${math.Random().nextInt(100)} ⭐',
+          name:
+              'TripAdvisor Featured Attraction ${math.Random().nextInt(100)} ⭐',
           address: 'imported via TripAdvisor link',
           latitude: 10.2200 + (math.Random().nextDouble() - 0.5) * 0.05,
           longitude: 103.9700 + (math.Random().nextDouble() - 0.5) * 0.05,

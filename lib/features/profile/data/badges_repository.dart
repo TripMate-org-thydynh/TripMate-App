@@ -44,4 +44,3 @@ final badgesProvider = FutureProvider<List<TripBadge>>((ref) async {
       .map((e) => TripBadge.fromJson(e.cast<String, dynamic>()))
       .toList();
 });
-

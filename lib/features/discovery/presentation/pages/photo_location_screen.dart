@@ -29,7 +29,8 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
   bool _loading = false;
   String? _error;
   Uint8List? _preview;
-  Map<String, dynamic>? _result; // {source, latitude, longitude, placeName, ...}
+  Map<String, dynamic>?
+  _result; // {source, latitude, longitude, placeName, ...}
 
   Color get _bg => Theme.of(context).scaffoldBackgroundColor;
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
@@ -55,7 +56,8 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
       });
       HapticFeedback.mediumImpact();
 
-      final mime = file.mimeType ??
+      final mime =
+          file.mimeType ??
           (file.path.toLowerCase().endsWith('.png')
               ? 'image/png'
               : 'image/jpeg');
@@ -76,7 +78,8 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
       } else {
         setState(() {
           _loading = false;
-          _error = (res is Map ? res['message'] as String? : null) ??
+          _error =
+              (res is Map ? res['message'] as String? : null) ??
               'Không xác định được vị trí từ ảnh này.';
         });
       }
@@ -94,8 +97,10 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
     final r = _result;
     final hasLoc = r != null && r['latitude'] != null;
     final center = hasLoc
-        ? LatLng((r['latitude'] as num).toDouble(),
-            (r['longitude'] as num).toDouble())
+        ? LatLng(
+            (r['latitude'] as num).toDouble(),
+            (r['longitude'] as num).toDouble(),
+          )
         : const LatLng(16.047, 108.206); // Đà Nẵng default
 
     return Scaffold(
@@ -262,10 +267,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
     }
     final r = _result;
     if (r == null) {
-      return Text(
-        'Đang phân tích...',
-        style: AppFonts.body(color: _sub),
-      );
+      return Text('Đang phân tích...', style: AppFonts.body(color: _sub));
     }
     final isExif = r['source'] == 'exif';
     return Column(

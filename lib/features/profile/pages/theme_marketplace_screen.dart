@@ -81,7 +81,10 @@ class _ThemeMarketplaceScreenState
             color: ink,
           ),
         ),
-        actions: [XpBalanceChip(isDark: isDark), const SizedBox(width: 12)],
+        actions: [
+          XpBalanceChip(isDark: isDark),
+          const SizedBox(width: 12),
+        ],
       ),
       body: ref
           .watch(themeStoreProvider)
@@ -133,9 +136,7 @@ class _ThemeMarketplaceScreenState
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
           color: ink,
-          width: isActive
-              ? GenZTokens.borderWidth
-              : GenZTokens.borderWidthThin,
+          width: isActive ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
         ),
       ),
       child: Column(

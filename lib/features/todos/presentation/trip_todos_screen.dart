@@ -19,8 +19,8 @@ class TripTodosScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary => const Color(0xFF8B4DE8);
@@ -33,6 +33,7 @@ class TripTodosScreen extends ConsumerWidget {
     'NORMAL': ('todos.priority_normal', Color(0xFF3D8BFF)),
     'LOW': ('todos.priority_relaxed', Color(0xFF64748B)),
   };
+
   /// Phần tử thứ 1 trong `_prio` là KEY i18n (const map không gọi được .tr()).
   (String, Color) _prioMeta(String p) {
     final m = _prio[p] ?? _prio['NORMAL']!;
@@ -54,23 +55,35 @@ class TripTodosScreen extends ConsumerWidget {
   }
 
   Future<void> _confirmDelete(
-      BuildContext context, WidgetRef ref, TodoItem it) async {
+    BuildContext context,
+    WidgetRef ref,
+    TodoItem it,
+  ) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Xoá "${it.title}"?',
-            style: GoogleFonts.spaceGrotesk(
-                fontWeight: FontWeight.w800, color: _textPri, fontSize: 16)),
+        title: Text(
+          'Xoá "${it.title}"?',
+          style: GoogleFonts.spaceGrotesk(
+            fontWeight: FontWeight.w800,
+            color: _textPri,
+            fontSize: 16,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('general.cancel'.tr(), style: GoogleFonts.outfit(color: _textSec)),
+            child: Text(
+              'general.cancel'.tr(),
+              style: GoogleFonts.outfit(color: _textSec),
+            ),
           ),
           FilledButton(
-            style:
-                FilledButton.styleFrom(backgroundColor: const Color(0xFFD8422B)),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFD8422B),
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('general.delete2'.tr()),
           ),
@@ -106,11 +119,14 @@ class TripTodosScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Thêm việc cần làm',
-                  style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 18,
-                      color: _textPri)),
+              Text(
+                'Thêm việc cần làm',
+                style: GoogleFonts.spaceGrotesk(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  color: _textPri,
+                ),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: titleCtrl,
@@ -120,7 +136,7 @@ class TripTodosScreen extends ConsumerWidget {
                   hintText: 'VD: Đặt vé tàu, đổi tiền, sạc dự phòng...',
                   hintStyle: GoogleFonts.outfit(color: _textSec),
                   filled: true,
-                  fillColor: _bg,
+                  fillColor: _bgOf(context),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -128,11 +144,14 @@ class TripTodosScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              Text('Ưu tiên',
-                  style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w700,
-                      color: _textSec,
-                      fontSize: 12)),
+              Text(
+                'Ưu tiên',
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w700,
+                  color: _textSec,
+                  fontSize: 12,
+                ),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: _prio.entries.map((e) {
@@ -143,14 +162,17 @@ class TripTodosScreen extends ConsumerWidget {
                       onTap: () => setSheet(() => priority = e.key),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: sel ? e.value.$2 : _bg,
+                          color: sel ? e.value.$2 : _bgOf(context),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                              color: sel
-                                  ? e.value.$2
-                                  : _textSec.withValues(alpha: 0.3)),
+                            color: sel
+                                ? e.value.$2
+                                : _textSec.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Text(
                           e.value.$1.tr(),
@@ -177,10 +199,12 @@ class TripTodosScreen extends ConsumerWidget {
                   if (d != null) setSheet(() => due = d);
                 },
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
-                    color: _bg,
+                    color: _bgOf(context),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
@@ -212,9 +236,12 @@ class TripTodosScreen extends ConsumerWidget {
                     ),
                   ),
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: Text('todos.add'.tr(),
-                      style:
-                          GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w800)),
+                  child: Text(
+                    'todos.add'.tr(),
+                    style: GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -224,11 +251,9 @@ class TripTodosScreen extends ConsumerWidget {
     );
     if (ok == true && titleCtrl.text.trim().isNotEmpty) {
       HapticFeedback.mediumImpact();
-      await ref.read(todosProvider(tripId).notifier).add(
-            title: titleCtrl.text.trim(),
-            priority: priority,
-            dueDate: due,
-          );
+      await ref
+          .read(todosProvider(tripId).notifier)
+          .add(title: titleCtrl.text.trim(), priority: priority, dueDate: due);
     }
   }
 
@@ -236,21 +261,28 @@ class TripTodosScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(todosProvider(tripId));
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
         foregroundColor: Colors.white,
         onPressed: () => _addTodo(context, ref),
         icon: const Icon(Icons.add),
-        label: Text('packing.add'.tr(),
-            style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w800)),
+        label: Text(
+          'packing.add'.tr(),
+          style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w800),
+        ),
       ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('Việc cần làm',
-            style: GoogleFonts.spaceGrotesk(
-                fontSize: 17, fontWeight: FontWeight.w800, color: _textPri)),
+        title: Text(
+          'Việc cần làm',
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
+            color: _textPri,
+          ),
+        ),
       ),
       body: RefreshIndicator(
         color: _primary,
@@ -263,7 +295,7 @@ class TripTodosScreen extends ConsumerWidget {
               : ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                   children: [
-                    _progress(list),
+                    _progress(context, list),
                     const SizedBox(height: 18),
                     ...list.items.map((it) => _tile(context, ref, it)),
                   ],
@@ -273,7 +305,7 @@ class TripTodosScreen extends ConsumerWidget {
     );
   }
 
-  Widget _progress(TodoList list) {
+  Widget _progress(BuildContext context, TodoList list) {
     final done = list.percent >= 100 && list.total > 0;
     return Container(
       padding: const EdgeInsets.all(18),
@@ -301,16 +333,20 @@ class TripTodosScreen extends ConsumerWidget {
                       ? 'Squad xong hết việc rồi! 🎉'
                       : 'Đã xong ${list.done}/${list.total} việc',
                   style: GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: _textPri),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    color: _textPri,
+                  ),
                 ),
               ),
-              Text('${list.percent}%',
-                  style: GoogleFonts.spaceMono(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                      color: _primary)),
+              Text(
+                '${list.percent}%',
+                style: GoogleFonts.spaceMono(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  color: _primary,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -319,7 +355,7 @@ class TripTodosScreen extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: list.total == 0 ? 0 : list.done / list.total,
               minHeight: 10,
-              backgroundColor: _bg,
+              backgroundColor: _bgOf(context),
               valueColor: AlwaysStoppedAnimation(_primary),
             ),
           ),
@@ -354,7 +390,9 @@ class TripTodosScreen extends ConsumerWidget {
                   color: it.isDone ? _primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: it.isDone ? _primary : _textSec.withValues(alpha: 0.5),
+                    color: it.isDone
+                        ? _primary
+                        : _textSec.withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
@@ -374,8 +412,7 @@ class TripTodosScreen extends ConsumerWidget {
                       fontWeight: FontWeight.w600,
                       fontSize: 14.5,
                       color: it.isDone ? _textSec : _textPri,
-                      decoration:
-                          it.isDone ? TextDecoration.lineThrough : null,
+                      decoration: it.isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -383,7 +420,9 @@ class TripTodosScreen extends ConsumerWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 2),
+                          horizontal: 7,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: pm.$2.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
@@ -433,14 +472,18 @@ class TripTodosScreen extends ConsumerWidget {
         height: 30,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: _textSec.withValues(alpha: 0.4), width: 1.5),
+          border: Border.all(
+            color: _textSec.withValues(alpha: 0.4),
+            width: 1.5,
+          ),
         ),
         child: Icon(Icons.person_add_alt, size: 15, color: _textSec),
       );
     }
     final url = it.assignee!.avatarUrl;
-    final initial =
-        it.assignee!.name.isNotEmpty ? it.assignee!.name[0].toUpperCase() : '?';
+    final initial = it.assignee!.name.isNotEmpty
+        ? it.assignee!.name[0].toUpperCase()
+        : '?';
     return Container(
       width: 30,
       height: 30,
@@ -453,64 +496,81 @@ class TripTodosScreen extends ConsumerWidget {
       ),
       alignment: Alignment.center,
       child: (url == null || url.isEmpty)
-          ? Text(initial,
+          ? Text(
+              initial,
               style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 13,
-                  color: Colors.white))
+                fontWeight: FontWeight.w800,
+                fontSize: 13,
+                color: Colors.white,
+              ),
+            )
           : null,
     );
   }
 
   Widget _empty() => ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          const SizedBox(height: 50),
-          Icon(PhosphorIconsFill.listChecks, size: 60, color: _primary),
-          const SizedBox(height: 16),
-          Text('Chưa có việc nào',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.spaceGrotesk(
-                  fontWeight: FontWeight.w800, fontSize: 20, color: _textPri)),
-          const SizedBox(height: 6),
-          Text('Thêm việc cần chuẩn bị, chia nhau làm để không sót gì.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(fontSize: 14, color: _textSec)),
-        ],
-      );
+    padding: const EdgeInsets.all(24),
+    children: [
+      const SizedBox(height: 50),
+      Icon(PhosphorIconsFill.listChecks, size: 60, color: _primary),
+      const SizedBox(height: 16),
+      Text(
+        'Chưa có việc nào',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.spaceGrotesk(
+          fontWeight: FontWeight.w800,
+          fontSize: 20,
+          color: _textPri,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        'Thêm việc cần chuẩn bị, chia nhau làm để không sót gì.',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.outfit(fontSize: 14, color: _textSec),
+      ),
+    ],
+  );
 
   Widget _skeleton() => ListView(
-        padding: const EdgeInsets.all(20),
-        children: List.generate(
-          6,
-          (i) => Container(
-            height: 56,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: isDarkMode
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.black.withValues(alpha: 0.04),
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
+    padding: const EdgeInsets.all(20),
+    children: List.generate(
+      6,
+      (i) => Container(
+        height: 56,
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(16),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _error() => ListView(
-        children: [
-          const SizedBox(height: 120),
-          Center(
-            child: Column(
-              children: [
-                const Icon(Icons.cloud_off_rounded,
-                    color: Colors.redAccent, size: 40),
-                const SizedBox(height: 12),
-                Text('Không tải được danh sách',
-                    style: GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.w800, color: _textPri)),
-              ],
+    children: [
+      const SizedBox(height: 120),
+      Center(
+        child: Column(
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              color: Colors.redAccent,
+              size: 40,
             ),
-          ),
-        ],
-      );
+            const SizedBox(height: 12),
+            Text(
+              'Không tải được danh sách',
+              style: GoogleFonts.spaceGrotesk(
+                fontWeight: FontWeight.w800,
+                color: _textPri,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

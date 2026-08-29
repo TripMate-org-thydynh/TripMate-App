@@ -24,10 +24,9 @@ class TripDocumentsScreen extends ConsumerStatefulWidget {
       _TripDocumentsScreenState();
 }
 
-class _TripDocumentsScreenState
-    extends ConsumerState<TripDocumentsScreen> {
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
       widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textSec =>
@@ -60,14 +59,11 @@ class _TripDocumentsScreenState
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom,
-        ),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
         child: Container(
           decoration: BoxDecoration(
-            color: _bg,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(28)),
+            color: _bgOf(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             border: Border.all(color: _ink.withValues(alpha: 0.12)),
           ),
           padding: const EdgeInsets.all(24),
@@ -89,9 +85,10 @@ class _TripDocumentsScreenState
               Text(
                 'documents.add'.tr(),
                 style: AppFonts.heading(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: _ink),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: _ink,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -106,11 +103,14 @@ class _TripDocumentsScreenState
                   hintText: 'Tên tài liệu (vé máy bay, passport...)',
                   hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                        color: Color(0xFFF5822B), width: 2),
+                      color: Color(0xFFF5822B),
+                      width: 2,
+                    ),
                   ),
                   filled: true,
                   fillColor: _card,
@@ -124,11 +124,14 @@ class _TripDocumentsScreenState
                   hintText: 'documents.url_hint'.tr(),
                   hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                        color: Color(0xFFF5822B), width: 2),
+                      color: Color(0xFFF5822B),
+                      width: 2,
+                    ),
                   ),
                   filled: true,
                   fillColor: _card,
@@ -141,12 +144,13 @@ class _TripDocumentsScreenState
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF5822B),
                     foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                       side: const BorderSide(
-                          color: Color(0xFF141210), width: 2),
+                        color: Color(0xFF141210),
+                        width: 2,
+                      ),
                     ),
                     elevation: 0,
                   ),
@@ -173,9 +177,10 @@ class _TripDocumentsScreenState
                   child: Text(
                     'documents.save'.tr(),
                     style: AppFonts.heading(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -191,15 +196,18 @@ class _TripDocumentsScreenState
     final docsAsync = ref.watch(documentsProvider(widget.tripId));
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: _bgOf(context),
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'documents.title'.tr(),
           style: AppFonts.heading(
-              fontSize: 18, fontWeight: FontWeight.w900, color: _ink),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: _ink,
+          ),
         ),
         actions: [
           IconButton(
@@ -220,21 +228,25 @@ class _TripDocumentsScreenState
         label: Text(
           'documents.add'.tr(),
           style: AppFonts.heading(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: Colors.white),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
         ),
       ),
       body: docsAsync.when(
         loading: () => Center(
-            child: CircularProgressIndicator(
-                color: const Color(0xFFF5822B))),
+          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+        ),
         error: (e, _) => Center(
-          child: Text('documents.load_error'.tr(),
-              style: AppFonts.heading(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: _ink)),
+          child: Text(
+            'documents.load_error'.tr(),
+            style: AppFonts.heading(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _ink,
+            ),
+          ),
         ),
         data: (docs) {
           if (docs.isEmpty) {
@@ -242,16 +254,19 @@ class _TripDocumentsScreenState
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(PhosphorIcons.folders(PhosphorIconsStyle.fill),
-                      size: 72,
-                      color: _textSec.withValues(alpha: 0.4)),
+                  Icon(
+                    PhosphorIcons.folders(PhosphorIconsStyle.fill),
+                    size: 72,
+                    color: _textSec.withValues(alpha: 0.4),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Kho tài liệu trống',
                     style: AppFonts.heading(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: _textSec),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: _textSec,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -274,17 +289,22 @@ class _TripDocumentsScreenState
                   color: _card,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: _ink.withValues(alpha: 0.12), width: 1.5),
+                    color: _ink.withValues(alpha: 0.12),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                        color: _ink.withValues(alpha: 0.06),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2)),
+                      color: _ink.withValues(alpha: 0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
                 child: ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   leading: Container(
                     width: 48,
                     height: 48,
@@ -292,77 +312,92 @@ class _TripDocumentsScreenState
                       color: _mimeColor(doc).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: _mimeColor(doc).withValues(alpha: 0.3)),
+                        color: _mimeColor(doc).withValues(alpha: 0.3),
+                      ),
                     ),
-                    child: Icon(_mimeIcon(doc),
-                        color: _mimeColor(doc), size: 24),
+                    child: Icon(
+                      _mimeIcon(doc),
+                      color: _mimeColor(doc),
+                      size: 24,
+                    ),
                   ),
                   title: Text(
                     doc.name,
                     style: AppFonts.heading(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: _ink),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: _ink,
+                    ),
                   ),
                   subtitle: Text(
                     '${doc.uploaderName}${doc.sizeLabel.isNotEmpty ? ' · ${doc.sizeLabel}' : ''}',
-                    style:
-                        AppFonts.body(fontSize: 12, color: _textSec),
+                    style: AppFonts.body(fontSize: 12, color: _textSec),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(PhosphorIcons.arrowSquareOut(),
-                            color: const Color(0xFF3D8BFF), size: 20),
+                        icon: Icon(
+                          PhosphorIcons.arrowSquareOut(),
+                          color: const Color(0xFF3D8BFF),
+                          size: 20,
+                        ),
                         onPressed: () async {
                           final uri = Uri.tryParse(doc.url);
                           if (uri != null) {
-                            await launchUrl(uri,
-                                mode: LaunchMode.externalApplication);
+                            await launchUrl(
+                              uri,
+                              mode: LaunchMode.externalApplication,
+                            );
                           }
                         },
                       ),
                       IconButton(
-                        icon: Icon(PhosphorIcons.trash(),
-                            color: Colors.red, size: 20),
+                        icon: Icon(
+                          PhosphorIcons.trash(),
+                          color: Colors.red,
+                          size: 20,
+                        ),
                         onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              backgroundColor: _bg,
+                              backgroundColor: _bgOf(context),
                               title: Text(
                                 'documents.delete_confirm'.tr(),
                                 style: AppFonts.heading(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: _ink),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: _ink,
+                                ),
                               ),
                               actions: [
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(ctx, false),
-                                  child: Text('general.cancel'.tr(),
-                                      style: AppFonts.body(
-                                          fontSize: 14,
-                                          color: const Color(
-                                              0xFFF5822B))),
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: Text(
+                                    'general.cancel'.tr(),
+                                    style: AppFonts.body(
+                                      fontSize: 14,
+                                      color: const Color(0xFFF5822B),
+                                    ),
+                                  ),
                                 ),
                                 TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(ctx, true),
-                                  child: Text('general.delete'.tr(),
-                                      style: AppFonts.body(
-                                          fontSize: 14,
-                                          color: Colors.red)),
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: Text(
+                                    'general.delete'.tr(),
+                                    style: AppFonts.body(
+                                      fontSize: 14,
+                                      color: Colors.red,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           );
                           if (confirm == true) {
                             await ref
-                                .read(documentsProvider(widget.tripId)
-                                    .notifier)
+                                .read(documentsProvider(widget.tripId).notifier)
                                 .remove(doc.id);
                           }
                         },

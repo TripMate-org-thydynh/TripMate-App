@@ -6,17 +6,13 @@ class JournalPhoto {
   final String mediaUrl;
   final String? caption;
 
-  const JournalPhoto({
-    required this.id,
-    required this.mediaUrl,
-    this.caption,
-  });
+  const JournalPhoto({required this.id, required this.mediaUrl, this.caption});
 
   factory JournalPhoto.fromJson(Map<String, dynamic> j) => JournalPhoto(
-        id: j['id'] as String,
-        mediaUrl: j['mediaUrl'] as String? ?? '',
-        caption: j['caption'] as String?,
-      );
+    id: j['id'] as String,
+    mediaUrl: j['mediaUrl'] as String? ?? '',
+    caption: j['caption'] as String?,
+  );
 }
 
 class JournalEntry {
@@ -51,27 +47,29 @@ class JournalEntry {
   });
 
   factory JournalEntry.fromJson(Map<String, dynamic> j) => JournalEntry(
-        id: j['id'] as String,
-        tripId: j['tripId'] as String? ?? '',
-        authorId: (j['author'] as Map<String, dynamic>?)?['id'] as String? ?? '',
-        authorName: (j['author'] as Map<String, dynamic>?)?['name'] as String? ?? '',
-        authorAvatarUrl:
-            (j['author'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
-        title: j['title'] as String?,
-        body: j['body'] as String? ?? '',
-        mood: j['mood'] as String? ?? 'CHILL',
-        entryDate:
-            DateTime.tryParse(j['entryDate'] as String? ?? '') ?? DateTime.now(),
-        latitude: (j['latitude'] as num?)?.toDouble(),
-        longitude: (j['longitude'] as num?)?.toDouble(),
-        photos: (j['photos'] as List?)
-                ?.whereType<Map>()
-                .map((e) => JournalPhoto.fromJson(e.cast<String, dynamic>()))
-                .toList() ??
-            [],
-        createdAt:
-            DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
-      );
+    id: j['id'] as String,
+    tripId: j['tripId'] as String? ?? '',
+    authorId: (j['author'] as Map<String, dynamic>?)?['id'] as String? ?? '',
+    authorName:
+        (j['author'] as Map<String, dynamic>?)?['name'] as String? ?? '',
+    authorAvatarUrl:
+        (j['author'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
+    title: j['title'] as String?,
+    body: j['body'] as String? ?? '',
+    mood: j['mood'] as String? ?? 'CHILL',
+    entryDate:
+        DateTime.tryParse(j['entryDate'] as String? ?? '') ?? DateTime.now(),
+    latitude: (j['latitude'] as num?)?.toDouble(),
+    longitude: (j['longitude'] as num?)?.toDouble(),
+    photos:
+        (j['photos'] as List?)
+            ?.whereType<Map>()
+            .map((e) => JournalPhoto.fromJson(e.cast<String, dynamic>()))
+            .toList() ??
+        [],
+    createdAt:
+        DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
+  );
 }
 
 class JournalRepository {

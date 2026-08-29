@@ -102,9 +102,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
           color: ink,
-          width: isPodium
-              ? GenZTokens.borderWidth
-              : GenZTokens.borderWidthThin,
+          width: isPodium ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
         ),
       ),
       child: Row(

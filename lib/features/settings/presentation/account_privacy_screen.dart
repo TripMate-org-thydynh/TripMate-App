@@ -23,8 +23,8 @@ class AccountPrivacyScreen extends ConsumerStatefulWidget {
 class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
   bool _deleting = false;
 
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _ink =>
@@ -44,10 +44,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Xoá tài khoản?',
-          style: AppFonts.heading(
-            fontWeight: FontWeight.w800,
-            color: _textPri,
-          ),
+          style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
         ),
         content: Text(
           'Toàn bộ dữ liệu của bạn sẽ bị xoá và không thể khôi phục. '
@@ -57,7 +54,10 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('general.cancel'.tr(), style: AppFonts.body(color: _textSec)),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
@@ -86,7 +86,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

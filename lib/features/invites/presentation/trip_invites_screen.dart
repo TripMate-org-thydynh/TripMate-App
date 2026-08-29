@@ -26,8 +26,8 @@ class TripInvitesScreen extends ConsumerStatefulWidget {
 }
 
 class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
       widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textSec =>
@@ -47,9 +47,10 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
         builder: (context, setModalState) {
           return Container(
             decoration: BoxDecoration(
-              color: _bg,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(28)),
+              color: _bgOf(context),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
               border: Border.all(color: _ink.withValues(alpha: 0.12)),
             ),
             padding: const EdgeInsets.all(24),
@@ -71,7 +72,10 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 Text(
                   'Tạo link mời 🔗',
                   style: AppFonts.heading(
-                      fontSize: 20, fontWeight: FontWeight.w900, color: _ink),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: _ink,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -83,20 +87,35 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 Text(
                   'Thời hạn',
                   style: AppFonts.heading(
-                      fontSize: 13, fontWeight: FontWeight.w700, color: _textSec),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: _textSec,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   children: [
-                    _optionChip('Không giới hạn', null == selectedExpiry,
-                        () => setModalState(() => selectedExpiry = null)),
-                    _optionChip('invites.expiry_1h'.tr(), selectedExpiry == '1h',
-                        () => setModalState(() => selectedExpiry = '1h')),
-                    _optionChip('invites.expiry_24h'.tr(), selectedExpiry == '24h',
-                        () => setModalState(() => selectedExpiry = '24h')),
-                    _optionChip('7 ngày', selectedExpiry == '7d',
-                        () => setModalState(() => selectedExpiry = '7d')),
+                    _optionChip(
+                      'Không giới hạn',
+                      null == selectedExpiry,
+                      () => setModalState(() => selectedExpiry = null),
+                    ),
+                    _optionChip(
+                      'invites.expiry_1h'.tr(),
+                      selectedExpiry == '1h',
+                      () => setModalState(() => selectedExpiry = '1h'),
+                    ),
+                    _optionChip(
+                      'invites.expiry_24h'.tr(),
+                      selectedExpiry == '24h',
+                      () => setModalState(() => selectedExpiry = '24h'),
+                    ),
+                    _optionChip(
+                      '7 ngày',
+                      selectedExpiry == '7d',
+                      () => setModalState(() => selectedExpiry = '7d'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -104,20 +123,35 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 Text(
                   'Số lượt dùng',
                   style: AppFonts.heading(
-                      fontSize: 13, fontWeight: FontWeight.w700, color: _textSec),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: _textSec,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   children: [
-                    _optionChip('Không giới hạn', null == selectedMaxUses,
-                        () => setModalState(() => selectedMaxUses = null)),
-                    _optionChip('1 lần', selectedMaxUses == 1,
-                        () => setModalState(() => selectedMaxUses = 1)),
-                    _optionChip('5 lần', selectedMaxUses == 5,
-                        () => setModalState(() => selectedMaxUses = 5)),
-                    _optionChip('10 lần', selectedMaxUses == 10,
-                        () => setModalState(() => selectedMaxUses = 10)),
+                    _optionChip(
+                      'Không giới hạn',
+                      null == selectedMaxUses,
+                      () => setModalState(() => selectedMaxUses = null),
+                    ),
+                    _optionChip(
+                      '1 lần',
+                      selectedMaxUses == 1,
+                      () => setModalState(() => selectedMaxUses = 1),
+                    ),
+                    _optionChip(
+                      '5 lần',
+                      selectedMaxUses == 5,
+                      () => setModalState(() => selectedMaxUses = 5),
+                    ),
+                    _optionChip(
+                      '10 lần',
+                      selectedMaxUses == 10,
+                      () => setModalState(() => selectedMaxUses = 10),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -131,7 +165,9 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                         side: const BorderSide(
-                            color: Color(0xFF141210), width: 2),
+                          color: Color(0xFF141210),
+                          width: 2,
+                        ),
                       ),
                       elevation: 0,
                     ),
@@ -141,15 +177,17 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                       if (selectedExpiry != null) {
                         final now = DateTime.now();
                         if (selectedExpiry == '1h') {
-                          expiresAt =
-                              now.add(const Duration(hours: 1)).toIso8601String();
+                          expiresAt = now
+                              .add(const Duration(hours: 1))
+                              .toIso8601String();
                         } else if (selectedExpiry == '24h') {
                           expiresAt = now
                               .add(const Duration(hours: 24))
                               .toIso8601String();
                         } else if (selectedExpiry == '7d') {
-                          expiresAt =
-                              now.add(const Duration(days: 7)).toIso8601String();
+                          expiresAt = now
+                              .add(const Duration(days: 7))
+                              .toIso8601String();
                         }
                       }
                       final invite = await ref
@@ -165,9 +203,10 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                     child: Text(
                       'Tạo & Chia sẻ Link',
                       style: AppFonts.heading(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -224,15 +263,18 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
     final invitesAsync = ref.watch(invitesProvider(widget.tripId));
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: _bgOf(context),
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'Link mời squad',
           style: AppFonts.heading(
-              fontSize: 18, fontWeight: FontWeight.w900, color: _ink),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: _ink,
+          ),
         ),
         actions: [
           IconButton(
@@ -253,17 +295,25 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
         label: Text(
           'Tạo link mời',
           style: AppFonts.heading(
-              fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
         ),
       ),
       body: invitesAsync.when(
         loading: () => Center(
-            child: CircularProgressIndicator(
-                color: const Color(0xFFF5822B))),
+          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+        ),
         error: (e, _) => Center(
-          child: Text('Lỗi tải link mời',
-              style: AppFonts.heading(
-                  fontSize: 16, fontWeight: FontWeight.w700, color: _ink)),
+          child: Text(
+            'Lỗi tải link mời',
+            style: AppFonts.heading(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _ink,
+            ),
+          ),
         ),
         data: (invites) {
           if (invites.isEmpty) {
@@ -271,15 +321,19 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(PhosphorIcons.linkSimple(PhosphorIconsStyle.fill),
-                      size: 72, color: _textSec.withValues(alpha: 0.4)),
+                  Icon(
+                    PhosphorIcons.linkSimple(PhosphorIconsStyle.fill),
+                    size: 72,
+                    color: _textSec.withValues(alpha: 0.4),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Chưa có link mời',
                     style: AppFonts.heading(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: _textSec),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: _textSec,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -298,8 +352,9 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
               final invite = invites[i];
               final isValid =
                   invite.isActive && !invite.isExpired && !invite.isExhausted;
-              final statusColor =
-                  isValid ? const Color(0xFF1FA85C) : Colors.red;
+              final statusColor = isValid
+                  ? const Color(0xFF1FA85C)
+                  : Colors.red;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
@@ -307,12 +362,15 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                   color: _card,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: statusColor.withValues(alpha: 0.3), width: 1.5),
+                    color: statusColor.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                        color: _ink.withValues(alpha: 0.06),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2)),
+                      color: _ink.withValues(alpha: 0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
                 padding: const EdgeInsets.all(16),
@@ -326,15 +384,18 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           child: Text(
                             invite.code,
                             style: AppFonts.mono(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFFF5822B)),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFF5822B),
+                            ),
                           ),
                         ),
                         // Status badge
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
@@ -342,9 +403,10 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           child: Text(
                             invite.statusLabel,
                             style: AppFonts.heading(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: statusColor),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: statusColor,
+                            ),
                           ),
                         ),
                       ],
@@ -353,7 +415,11 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                     Row(
                       children: [
                         if (invite.expiresAt != null) ...[
-                          Icon(PhosphorIcons.clock(), size: 13, color: _textSec),
+                          Icon(
+                            PhosphorIcons.clock(),
+                            size: 13,
+                            color: _textSec,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Hết hạn: ${DateFormat('dd/MM HH:mm').format(invite.expiresAt!)}',
@@ -362,7 +428,11 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           const SizedBox(width: 12),
                         ],
                         if (invite.maxUses != null) ...[
-                          Icon(PhosphorIcons.users(), size: 13, color: _textSec),
+                          Icon(
+                            PhosphorIcons.users(),
+                            size: 13,
+                            color: _textSec,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${invite.useCount}/${invite.maxUses} lượt',
@@ -386,29 +456,44 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                                 backgroundColor: const Color(0xFFF5822B),
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 16),
+                                  vertical: 10,
+                                  horizontal: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   side: const BorderSide(
-                                      color: Color(0xFF141210), width: 1.5),
+                                    color: Color(0xFF141210),
+                                    width: 1.5,
+                                  ),
                                 ),
                                 elevation: 0,
                               ),
                               onPressed: () => _shareInvite(invite),
-                              icon: Icon(PhosphorIcons.shareNetwork(), size: 16),
-                              label: Text('invites.share'.tr(),
-                                  style: AppFonts.heading(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white)),
+                              icon: Icon(
+                                PhosphorIcons.shareNetwork(),
+                                size: 16,
+                              ),
+                              label: Text(
+                                'invites.share'.tr(),
+                                style: AppFonts.heading(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           IconButton(
-                            icon: Icon(PhosphorIcons.copy(), color: _ink, size: 20),
+                            icon: Icon(
+                              PhosphorIcons.copy(),
+                              color: _ink,
+                              size: 20,
+                            ),
                             onPressed: () {
                               Clipboard.setData(
-                                  ClipboardData(text: invite.code));
+                                ClipboardData(text: invite.code),
+                              );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('invites.copied'.tr()),
@@ -419,8 +504,11 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           ),
                         ],
                         IconButton(
-                          icon: Icon(PhosphorIcons.trash(),
-                              color: Colors.red, size: 20),
+                          icon: Icon(
+                            PhosphorIcons.trash(),
+                            color: Colors.red,
+                            size: 20,
+                          ),
                           onPressed: () async {
                             await ref
                                 .read(invitesProvider(widget.tripId).notifier)

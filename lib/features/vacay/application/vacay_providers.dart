@@ -33,10 +33,10 @@ class VacayMyDaysNotifier extends AutoDisposeAsyncNotifier<VacayMyDaysResult> {
 
 final vacayMyDaysProvider =
     AutoDisposeAsyncNotifierProvider<VacayMyDaysNotifier, VacayMyDaysResult>(
-  VacayMyDaysNotifier.new,
-);
+      VacayMyDaysNotifier.new,
+    );
 
 final bridgeSuggestionsProvider =
     FutureProvider.autoDispose<List<BridgeSuggestion>>((ref) {
-  return ref.watch(vacayRepositoryProvider).fetchBridgeSuggestions();
-});
+      return ref.watch(vacayRepositoryProvider).fetchBridgeSuggestions();
+    });

@@ -24,8 +24,8 @@ class MyTripsScreen extends ConsumerWidget {
   final bool isDarkMode;
   const MyTripsScreen({super.key, this.isDarkMode = false});
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _primary => const Color(0xFFF5822B);
   Color get _ink =>
       isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
@@ -38,7 +38,7 @@ class MyTripsScreen extends ConsumerWidget {
     final tripsAsync = ref.watch(tripsProvider);
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       floatingActionButton: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
@@ -226,9 +226,7 @@ class MyTripsScreen extends ConsumerWidget {
     }.toList();
     final filtered = selected == null
         ? trips
-        : trips
-            .where((t) => (t.vibe ?? '').toUpperCase() == selected)
-            .toList();
+        : trips.where((t) => (t.vibe ?? '').toUpperCase() == selected).toList();
 
     final chipRow = present.length >= 2
         ? SizedBox(
@@ -237,18 +235,26 @@ class MyTripsScreen extends ConsumerWidget {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
               children: [
-                _filterChip(ref, null, 'trips.filter_all'.tr(), null, selected == null),
+                _filterChip(
+                  ref,
+                  null,
+                  'trips.filter_all'.tr(),
+                  null,
+                  selected == null,
+                ),
                 for (final code in present)
-                  Builder(builder: (_) {
-                    final v = TripVibe.of(code)!;
-                    return _filterChip(
-                      ref,
-                      code,
-                      v.label,
-                      v.icon,
-                      selected == code,
-                    );
-                  }),
+                  Builder(
+                    builder: (_) {
+                      final v = TripVibe.of(code)!;
+                      return _filterChip(
+                        ref,
+                        code,
+                        v.label,
+                        v.icon,
+                        selected == code,
+                      );
+                    },
+                  ),
               ],
             ),
           )
@@ -277,8 +283,8 @@ class MyTripsScreen extends ConsumerWidget {
             color: selected
                 ? _primary
                 : (isDarkMode
-                    ? const Color(0xFF262019)
-                    : const Color(0xFFFFFDF5)),
+                      ? const Color(0xFF262019)
+                      : const Color(0xFFFFFDF5)),
             borderRadius: BorderRadius.circular(99),
             border: Border.all(color: _ink, width: 2),
           ),
@@ -286,8 +292,7 @@ class MyTripsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(icon,
-                    size: 15, color: selected ? Colors.white : _textSec),
+                Icon(icon, size: 15, color: selected ? Colors.white : _textSec),
                 const SizedBox(width: 6),
               ],
               Text(
@@ -390,42 +395,41 @@ class MyTripsScreen extends ConsumerWidget {
                         ].join(' · '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppFonts.body(
-                          fontSize: 13,
-                          color: _textSec,
-                        ),
+                        style: AppFonts.body(fontSize: 13, color: _textSec),
                       ),
                       if (TripVibe.of(t.vibe) != null) ...[
                         const SizedBox(height: 6),
-                        Builder(builder: (_) {
-                          final v = TripVibe.of(t.vibe)!;
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: v.color.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(99),
-                              border: Border.all(color: v.color, width: 1.2),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(v.icon, size: 12, color: v.color),
-                                const SizedBox(width: 4),
-                                Text(
-                                  v.label,
-                                  style: AppFonts.heading(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: _textPri,
+                        Builder(
+                          builder: (_) {
+                            final v = TripVibe.of(t.vibe)!;
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: v.color.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(99),
+                                border: Border.all(color: v.color, width: 1.2),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(v.icon, size: 12, color: v.color),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    v.label,
+                                    style: AppFonts.heading(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      color: _textPri,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ],
                   ),

@@ -90,9 +90,9 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
       HapticFeedback.mediumImpact();
       messenger.showSnackBar(
         SnackBar(
-          content: Text('vibe_deck.saved'.tr(
-            namedArgs: {'count': '${_liked.length}'},
-          )),
+          content: Text(
+            'vibe_deck.saved'.tr(namedArgs: {'count': '${_liked.length}'}),
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -116,8 +116,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
 
   Color get _primary =>
       widget.isDarkMode ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _textPri =>
       widget.isDarkMode ? Colors.white : const Color(0xFF141210);
   Color get _textSec =>
@@ -136,7 +136,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   Widget build(BuildContext context) {
     final done = _index >= _places.length;
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       body: SafeArea(
         child: Column(
           children: [
@@ -518,11 +518,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             _liked.isEmpty
                 ? 'Bạn chưa thích chỗ nào. Thử lại với gu khác nha.'
                 : 'Đây là ${_liked.length} nơi bạn muốn đi — thêm vào lịch trình thôi!',
-            style: AppFonts.body(
-              fontSize: 14,
-              color: _textSec,
-              height: 1.4,
-            ),
+            style: AppFonts.body(fontSize: 14, color: _textSec, height: 1.4),
           ),
           const SizedBox(height: 20),
           Expanded(

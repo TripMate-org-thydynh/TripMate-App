@@ -82,7 +82,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   }
 }
 
-final profileDataProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((ref) {
-  ref.watch(authProvider);
-  return ProfileNotifier();
-});
+final profileDataProvider =
+    StateNotifierProvider<ProfileNotifier, ProfileState>((ref) {
+      ref.watch(authProvider);
+      return ProfileNotifier();
+    });

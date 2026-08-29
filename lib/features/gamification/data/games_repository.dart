@@ -49,11 +49,7 @@ class XpBreakdown {
   final int count;
   final int xp;
 
-  const XpBreakdown({
-    required this.key,
-    required this.count,
-    required this.xp,
-  });
+  const XpBreakdown({required this.key, required this.count, required this.xp});
 
   /// Nhãn đã dịch. BE chỉ trả `key` để app hiển thị đúng ngôn ngữ đang chọn.
   String get label => 'games.xp_source_$key'.tr();
@@ -128,9 +124,18 @@ class GameChallenge {
   /// Id lạ (BE thêm nhiệm vụ mới) rơi về nhãn chung thay vì hiện key thô.
   static String _label(String id, String suffix) {
     const known = {
-      'week-moments', 'week-expenses', 'week-plan', 'week-notes',
-      'season-winter', 'season-spring', 'season-summer', 'season-autumn',
-      'day-moments', 'day-expenses', 'day-plan', 'day-games',
+      'week-moments',
+      'week-expenses',
+      'week-plan',
+      'week-notes',
+      'season-winter',
+      'season-spring',
+      'season-summer',
+      'season-autumn',
+      'day-moments',
+      'day-expenses',
+      'day-plan',
+      'day-games',
     };
     final key = known.contains(id) ? id.replaceAll('-', '_') : 'unknown';
     return 'games.challenge_${key}_$suffix'.tr();
@@ -257,10 +262,11 @@ final squadXpProvider = FutureProvider.family<SquadXp, String>((ref, tripId) {
   return ref.watch(gamesRepositoryProvider).fetchXp(tripId);
 });
 
-final leaderboardProvider =
-    FutureProvider.family<List<LeaderboardRow>, String>((ref, tripId) {
-      return ref.watch(gamesRepositoryProvider).fetchLeaderboard(tripId);
-    });
+final leaderboardProvider = FutureProvider.family<List<LeaderboardRow>, String>(
+  (ref, tripId) {
+    return ref.watch(gamesRepositoryProvider).fetchLeaderboard(tripId);
+  },
+);
 
 final weeklyChallengesProvider =
     FutureProvider.family<List<GameChallenge>, String>((ref, tripId) {
@@ -283,10 +289,12 @@ final seasonalEventsProvider =
 /// nên lấy chuyến gần nhất của user. `null` = chưa có chuyến nào → màn game
 /// hiển thị empty state thay vì số liệu bịa.
 final activeTripIdProvider = Provider<String?>((ref) {
-  return ref.watch(tripsProvider).maybeWhen(
-    data: (trips) => trips.isEmpty ? null : trips.first.id,
-    orElse: () => null,
-  );
+  return ref
+      .watch(tripsProvider)
+      .maybeWhen(
+        data: (trips) => trips.isEmpty ? null : trips.first.id,
+        orElse: () => null,
+      );
 });
 
 /// Một thử thách "chaos" do BE bốc, đã điền tên thành viên THẬT của chuyến.
@@ -318,4 +326,3 @@ class SquadDare {
     chaosLabel: j['chaosFactor']?.toString() ?? '',
   );
 }
-

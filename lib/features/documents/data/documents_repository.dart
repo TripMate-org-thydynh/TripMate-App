@@ -27,20 +27,20 @@ class TripDocument {
   });
 
   factory TripDocument.fromJson(Map<String, dynamic> j) => TripDocument(
-        id: j['id'] as String,
-        tripId: j['tripId'] as String? ?? '',
-        name: j['name'] as String? ?? '',
-        url: j['url'] as String? ?? '',
-        mimeType: j['mimeType'] as String? ?? 'application/octet-stream',
-        sizeBytes: (j['sizeBytes'] as num?)?.toInt(),
-        linkedType: j['linkedType'] as String?,
-        uploaderName:
-            (j['uploader'] as Map<String, dynamic>?)?['name'] as String? ?? '',
-        uploaderAvatarUrl:
-            (j['uploader'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
-        createdAt:
-            DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
-      );
+    id: j['id'] as String,
+    tripId: j['tripId'] as String? ?? '',
+    name: j['name'] as String? ?? '',
+    url: j['url'] as String? ?? '',
+    mimeType: j['mimeType'] as String? ?? 'application/octet-stream',
+    sizeBytes: (j['sizeBytes'] as num?)?.toInt(),
+    linkedType: j['linkedType'] as String?,
+    uploaderName:
+        (j['uploader'] as Map<String, dynamic>?)?['name'] as String? ?? '',
+    uploaderAvatarUrl:
+        (j['uploader'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
+    createdAt:
+        DateTime.tryParse(j['createdAt'] as String? ?? '') ?? DateTime.now(),
+  );
 
   bool get isImage => mimeType.startsWith('image/');
   bool get isPdf => mimeType == 'application/pdf';

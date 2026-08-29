@@ -15,27 +15,21 @@ class WeatherForecastSheet extends StatelessWidget {
     required this.isDarkMode,
   });
 
-  static void show(
-    BuildContext context,
-    WeatherData weather,
-    bool isDarkMode,
-  ) {
+  static void show(BuildContext context, WeatherData weather, bool isDarkMode) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => WeatherForecastSheet(
-        weather: weather,
-        isDarkMode: isDarkMode,
-      ),
+      builder: (_) =>
+          WeatherForecastSheet(weather: weather, isDarkMode: isDarkMode),
     );
   }
 
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _inkSoft => isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _inkSoft =>
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color _bg(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
+  Color _bg(BuildContext context) => Theme.of(context).scaffoldBackgroundColor;
 
   static const _weekdaysVi = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
   static const _weekdaysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -51,8 +45,12 @@ class WeatherForecastSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final days = weather.daily;
     // Miền nhiệt độ để vẽ thanh gradient tương đối.
-    final allMin = days.map((d) => d.minTemp).fold<double>(999, (a, b) => a < b ? a : b);
-    final allMax = days.map((d) => d.maxTemp).fold<double>(-999, (a, b) => a > b ? a : b);
+    final allMin = days
+        .map((d) => d.minTemp)
+        .fold<double>(999, (a, b) => a < b ? a : b);
+    final allMax = days
+        .map((d) => d.maxTemp)
+        .fold<double>(-999, (a, b) => a > b ? a : b);
     final span = (allMax - allMin).abs() < 1 ? 1 : (allMax - allMin);
 
     return DraggableScrollableSheet(
@@ -117,13 +115,20 @@ class WeatherForecastSheet extends StatelessWidget {
                 itemCount: days.length,
                 itemBuilder: (context, i) {
                   final d = days[i];
-                  final leftFrac = ((d.minTemp - allMin) / span).clamp(0.0, 1.0);
-                  final widthFrac =
-                      ((d.maxTemp - d.minTemp) / span).clamp(0.08, 1.0);
+                  final leftFrac = ((d.minTemp - allMin) / span).clamp(
+                    0.0,
+                    1.0,
+                  );
+                  final widthFrac = ((d.maxTemp - d.minTemp) / span).clamp(
+                    0.08,
+                    1.0,
+                  );
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: _paper,
                       borderRadius: BorderRadius.circular(14),

@@ -7,6 +7,7 @@ import '../data/games_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart' show tr;
 import '../../../core/app_messenger.dart';
+
 class EndTripAwardsScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
@@ -18,7 +19,8 @@ class EndTripAwardsScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<EndTripAwardsScreen> createState() => _EndTripAwardsScreenState();
+  ConsumerState<EndTripAwardsScreen> createState() =>
+      _EndTripAwardsScreenState();
 }
 
 class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
@@ -80,25 +82,55 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     }
 
     final photographer = topBy((r) => r.moments);
-    add('📸', 'games.award_photographer', 'games.award_photographer_desc',
-        const Color(0xFFC9B8FF), photographer, photographer?.moments ?? 0);
+    add(
+      '📸',
+      'games.award_photographer',
+      'games.award_photographer_desc',
+      const Color(0xFFC9B8FF),
+      photographer,
+      photographer?.moments ?? 0,
+    );
 
     final sponsor = topBy((r) => r.expenses);
-    add('💸', 'games.award_sponsor', 'games.award_sponsor_desc',
-        const Color(0xFF1FA85C), sponsor, sponsor?.expenses ?? 0);
+    add(
+      '💸',
+      'games.award_sponsor',
+      'games.award_sponsor_desc',
+      const Color(0xFF1FA85C),
+      sponsor,
+      sponsor?.expenses ?? 0,
+    );
 
     final planner = topBy((r) => r.plans);
-    add('🗺️', 'games.award_planner', 'games.award_planner_desc',
-        const Color(0xFFFFC107), planner, planner?.plans ?? 0);
+    add(
+      '🗺️',
+      'games.award_planner',
+      'games.award_planner_desc',
+      const Color(0xFFFFC107),
+      planner,
+      planner?.plans ?? 0,
+    );
 
     final scribe = topBy((r) => r.notes);
-    add('📝', 'games.award_scribe', 'games.award_scribe_desc',
-        const Color(0xFF64B5F6), scribe, scribe?.notes ?? 0);
+    add(
+      '📝',
+      'games.award_scribe',
+      'games.award_scribe_desc',
+      const Color(0xFF64B5F6),
+      scribe,
+      scribe?.notes ?? 0,
+    );
 
     // Giải chung cuộc cho người đóng góp nhiều XP nhất.
     final mvp = rows.first.xp > 0 ? rows.first : null;
-    add('🏆', 'games.award_mvp', 'games.award_mvp_desc',
-        const Color(0xFFFF6B6B), mvp, mvp?.xp ?? 0);
+    add(
+      '🏆',
+      'games.award_mvp',
+      'games.award_mvp_desc',
+      const Color(0xFFFF6B6B),
+      mvp,
+      mvp?.xp ?? 0,
+    );
 
     return defs;
   }
@@ -135,18 +167,24 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     final tripId = ref.watch(activeTripIdProvider);
     final rows = tripId == null
         ? const <LeaderboardRow>[]
-        : ref.watch(leaderboardProvider(tripId)).maybeWhen(
-            data: (r) => r,
-            orElse: () => const <LeaderboardRow>[],
-          );
+        : ref
+              .watch(leaderboardProvider(tripId))
+              .maybeWhen(
+                data: (r) => r,
+                orElse: () => const <LeaderboardRow>[],
+              );
     final awards = _buildAwards(rows);
     if (awards.isEmpty) {
       return Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0A0A1A) : const Color(0xFFF0F0FF),
+        backgroundColor: isDark
+            ? const Color(0xFF0A0A1A)
+            : const Color(0xFFF0F0FF),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
+          iconTheme: IconThemeData(
+            color: isDark ? Colors.white : Colors.black87,
+          ),
         ),
         body: AppEmptyState(
           isDark: isDark,

@@ -43,7 +43,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
   String? _error;
 
   bool get _dark => widget.isDarkMode;
-  Color get _bg => _dark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary =>
@@ -219,12 +220,11 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 return GridView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(20),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                      ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
                   itemCount: stickers.length,
                   itemBuilder: (_, i) => GestureDetector(
                     onTap: () {
@@ -291,7 +291,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -30,12 +30,15 @@ final connectivityWatcherProvider = StreamProvider<bool>((ref) {
 
   // Đọc trạng thái ban đầu — stream chỉ phát khi CÓ thay đổi.
   unawaited(
-    connectivity.checkConnectivity().then((results) {
-      if (disposed) return;
-      ref.read(offlineProvider.notifier).state = isOffline(results);
-    }).catchError((_) {
-      // Nền tảng không hỗ trợ → coi như online, để repository tự phát hiện.
-    }),
+    connectivity
+        .checkConnectivity()
+        .then((results) {
+          if (disposed) return;
+          ref.read(offlineProvider.notifier).state = isOffline(results);
+        })
+        .catchError((_) {
+          // Nền tảng không hỗ trợ → coi như online, để repository tự phát hiện.
+        }),
   );
 
   return connectivity.onConnectivityChanged.map((results) {

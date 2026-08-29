@@ -114,11 +114,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
               child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
             )
           else if (_error != null)
-            AppErrorState(
-              isDark: isDark,
-              error: _error,
-              onRetry: _run,
-            )
+            AppErrorState(isDark: isDark, error: _error, onRetry: _run)
           else if (_result != null)
             _resultCard(isDark, _result!)
           else
@@ -176,10 +172,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: GenZTokens.pink,
             foregroundColor: GenZTokens.ink,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 16,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
             elevation: 0,
             side: BorderSide(color: ink, width: GenZTokens.borderWidth),
             shape: RoundedRectangleBorder(
@@ -286,10 +279,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
                     ),
                     child: Text(
                       t,
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        color: GenZTokens.ink,
-                      ),
+                      style: AppFonts.body(fontSize: 12, color: GenZTokens.ink),
                     ),
                   ),
               ],

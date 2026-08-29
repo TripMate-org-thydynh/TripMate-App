@@ -97,7 +97,12 @@ class WeatherService {
       }
 
       // Check if rain or storm in next 24 hours (first 2 days)
-      bool hasRainSoon = codes.take(2).any((code) => [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].contains(code));
+      bool hasRainSoon = codes
+          .take(2)
+          .any(
+            (code) =>
+                [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].contains(code),
+          );
 
       return WeatherData(
         temp: currentTemp,
@@ -118,19 +123,47 @@ class WeatherService {
 
   _WmoMapping _mapWmoCode(int code) {
     if (code == 0) {
-      return _WmoMapping('Trời quang', Icons.wb_sunny_outlined, GenZTokens.yellow);
+      return _WmoMapping(
+        'Trời quang',
+        Icons.wb_sunny_outlined,
+        GenZTokens.yellow,
+      );
     } else if ([1, 2, 3].contains(code)) {
-      return _WmoMapping('weather.cond_scattered_clouds'.tr(), Icons.cloud_queue_outlined, GenZTokens.lilac);
+      return _WmoMapping(
+        'weather.cond_scattered_clouds'.tr(),
+        Icons.cloud_queue_outlined,
+        GenZTokens.lilac,
+      );
     } else if ([45, 48].contains(code)) {
-      return _WmoMapping('Sương mù', Icons.filter_drama_outlined, GenZTokens.lilac);
+      return _WmoMapping(
+        'Sương mù',
+        Icons.filter_drama_outlined,
+        GenZTokens.lilac,
+      );
     } else if ([51, 53, 55].contains(code)) {
-      return _WmoMapping('Mưa phùn', Icons.water_drop_outlined, GenZTokens.blue);
+      return _WmoMapping(
+        'Mưa phùn',
+        Icons.water_drop_outlined,
+        GenZTokens.blue,
+      );
     } else if ([61, 63, 65].contains(code)) {
-      return _WmoMapping('weather.cond_rain'.tr(), Icons.umbrella_outlined, GenZTokens.blue);
+      return _WmoMapping(
+        'weather.cond_rain'.tr(),
+        Icons.umbrella_outlined,
+        GenZTokens.blue,
+      );
     } else if ([71, 73, 75, 77, 85, 86].contains(code)) {
-      return _WmoMapping('weather.cond_snow'.tr(), Icons.ac_unit_outlined, GenZTokens.blue);
+      return _WmoMapping(
+        'weather.cond_snow'.tr(),
+        Icons.ac_unit_outlined,
+        GenZTokens.blue,
+      );
     } else if ([80, 81, 82].contains(code)) {
-      return _WmoMapping('weather.cond_showers'.tr(), Icons.thunderstorm_outlined, GenZTokens.blue);
+      return _WmoMapping(
+        'weather.cond_showers'.tr(),
+        Icons.thunderstorm_outlined,
+        GenZTokens.blue,
+      );
     } else if ([95, 96, 99].contains(code)) {
       return _WmoMapping('Giông bão', Icons.thunderstorm, GenZTokens.red);
     }
@@ -167,11 +200,17 @@ class WeatherStateNotifier extends StateNotifier<AsyncValue<WeatherData?>> {
 }
 
 final weatherProvider =
-    StateNotifierProvider<WeatherStateNotifier, AsyncValue<WeatherData?>>((ref) {
-  return WeatherStateNotifier(ref.watch(weatherServiceProvider));
-});
+    StateNotifierProvider<WeatherStateNotifier, AsyncValue<WeatherData?>>((
+      ref,
+    ) {
+      return WeatherStateNotifier(ref.watch(weatherServiceProvider));
+    });
 
-final weatherFutureProvider =
-    FutureProvider.family<WeatherData?, LatLng>((ref, latLng) async {
-  return ref.watch(weatherServiceProvider).fetchWeather(latLng.latitude, latLng.longitude);
+final weatherFutureProvider = FutureProvider.family<WeatherData?, LatLng>((
+  ref,
+  latLng,
+) async {
+  return ref
+      .watch(weatherServiceProvider)
+      .fetchWeather(latLng.latitude, latLng.longitude);
 });

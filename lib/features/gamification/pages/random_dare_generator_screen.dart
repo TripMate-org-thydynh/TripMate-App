@@ -52,14 +52,16 @@ class _RandomDareGeneratorScreenState
   /// Trước đây fallback là 'Lê Minh' — một người không hề tồn tại, khiến thử
   /// thách vô nghĩa với nhóm chưa có thành viên nào.
   String? _randomFriend(WidgetRef ref) {
-    return ref.read(tripsProvider).maybeWhen(
-      data: (trips) {
-        if (trips.isEmpty || trips.first.members.isEmpty) return null;
-        final members = trips.first.members;
-        return members[Random().nextInt(members.length)].name;
-      },
-      orElse: () => null,
-    );
+    return ref
+        .read(tripsProvider)
+        .maybeWhen(
+          data: (trips) {
+            if (trips.isEmpty || trips.first.members.isEmpty) return null;
+            final members = trips.first.members;
+            return members[Random().nextInt(members.length)].name;
+          },
+          orElse: () => null,
+        );
   }
 
   Future<void> _generateDare() async {
@@ -119,8 +121,8 @@ class _RandomDareGeneratorScreenState
     final Color activeColor = _selectedLevel == 'Chill 🥤'
         ? GenZTokens.green
         : _selectedLevel == 'Chaos ⚡'
-            ? GenZTokens.orange
-            : GenZTokens.red;
+        ? GenZTokens.orange
+        : GenZTokens.red;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -197,7 +199,8 @@ class _RandomDareGeneratorScreenState
                               HapticFeedback.mediumImpact();
                               setState(() {
                                 _selectedLevel = level;
-                                _currentDare = 'Nhấn nút bên dưới để bốc thử thách!';
+                                _currentDare =
+                                    'Nhấn nút bên dưới để bốc thử thách!';
                               });
                             },
                       child: Container(
@@ -210,7 +213,12 @@ class _RandomDareGeneratorScreenState
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: inkColor, width: 2),
                           boxShadow: isSelected
-                              ? [BoxShadow(color: inkColor, offset: const Offset(0, 3))]
+                              ? [
+                                  BoxShadow(
+                                    color: inkColor,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ]
                               : null,
                         ),
                         child: Text(
@@ -230,7 +238,10 @@ class _RandomDareGeneratorScreenState
 
               // Comical warning text
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: activeColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
@@ -243,8 +254,8 @@ class _RandomDareGeneratorScreenState
                       _selectedLevel == 'Chill 🥤'
                           ? Icons.check_circle_outline
                           : _selectedLevel == 'Chaos ⚡'
-                              ? Icons.warning_amber_rounded
-                              : Icons.dangerous_outlined,
+                          ? Icons.warning_amber_rounded
+                          : Icons.dangerous_outlined,
                       color: activeColor,
                       size: 18,
                     ),
@@ -253,8 +264,8 @@ class _RandomDareGeneratorScreenState
                       _selectedLevel == 'Chill 🥤'
                           ? 'Chế độ nhẹ nhàng vui vẻ'
                           : _selectedLevel == 'Chaos ⚡'
-                              ? 'Chế độ bắt đầu hỗn loạn'
-                              : 'Chế độ cực kỳ nguy hiểm!',
+                          ? 'Chế độ bắt đầu hỗn loạn'
+                          : 'Chế độ cực kỳ nguy hiểm!',
                       style: AppFonts.heading(
                         color: activeColor,
                         fontSize: 12,
@@ -278,10 +289,7 @@ class _RandomDareGeneratorScreenState
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: inkColor, width: 2.5),
                       boxShadow: [
-                        BoxShadow(
-                          color: inkColor,
-                          offset: const Offset(0, 6),
-                        ),
+                        BoxShadow(color: inkColor, offset: const Offset(0, 6)),
                       ],
                     ),
                     child: Column(
@@ -291,8 +299,8 @@ class _RandomDareGeneratorScreenState
                           _selectedLevel == 'Chill 🥤'
                               ? Icons.emoji_emotions_outlined
                               : _selectedLevel == 'Chaos ⚡'
-                                  ? Icons.bolt
-                                  : Icons.dangerous_outlined,
+                              ? Icons.bolt
+                              : Icons.dangerous_outlined,
                           color: activeColor,
                           size: 64,
                         ),
@@ -329,10 +337,7 @@ class _RandomDareGeneratorScreenState
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: inkColor, width: 2.5),
                     boxShadow: [
-                      BoxShadow(
-                        color: inkColor,
-                        offset: const Offset(0, 5),
-                      ),
+                      BoxShadow(color: inkColor, offset: const Offset(0, 5)),
                     ],
                   ),
                   child: Row(
@@ -350,11 +355,7 @@ class _RandomDareGeneratorScreenState
                           ),
                         )
                       else
-                        Icon(
-                          Icons.casino,
-                          color: GenZTokens.ink,
-                          size: 24,
-                        ),
+                        Icon(Icons.casino, color: GenZTokens.ink, size: 24),
                       const SizedBox(width: 10),
                       Text(
                         _isGenerating ? 'ĐANG BỐC...' : 'BỐC DARE NGAY!',

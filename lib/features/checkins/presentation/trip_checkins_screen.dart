@@ -21,8 +21,8 @@ class TripCheckinsScreen extends ConsumerWidget {
     required this.isDarkMode,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
       isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textSec =>
@@ -36,11 +36,7 @@ class TripCheckinsScreen extends ConsumerWidget {
     'OUT': Color(0xFFFF4444),
   };
 
-  static const _statusEmoji = {
-    'GOING': '✅',
-    'MAYBE': '🤔',
-    'OUT': '❌',
-  };
+  static const _statusEmoji = {'GOING': '✅', 'MAYBE': '🤔', 'OUT': '❌'};
 
   static const _statusLabel = {
     'GOING': 'checkins.status_going',
@@ -70,8 +66,8 @@ class TripCheckinsScreen extends ConsumerWidget {
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
             color: selected
                 ? (color.computeLuminance() > 0.5
-                    ? const Color(0xFF141210)
-                    : Colors.white)
+                      ? const Color(0xFF141210)
+                      : Colors.white)
                 : color,
           ),
         ),
@@ -94,15 +90,18 @@ class TripCheckinsScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: _bgOf(context),
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'Điểm danh',
           style: AppFonts.heading(
-              fontSize: 18, fontWeight: FontWeight.w900, color: _ink),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: _ink,
+          ),
         ),
         actions: [
           IconButton(
@@ -114,14 +113,18 @@ class TripCheckinsScreen extends ConsumerWidget {
       ),
       body: checkinsAsync.when(
         loading: () => Center(
-            child: CircularProgressIndicator(
-                color: const Color(0xFFF5822B))),
+          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+        ),
         error: (e, _) => Center(
-            child: Text('Lỗi tải điểm danh',
-                style: AppFonts.heading(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: _ink))),
+          child: Text(
+            'Lỗi tải điểm danh',
+            style: AppFonts.heading(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _ink,
+            ),
+          ),
+        ),
         data: (checkins) {
           // Group checkins by day
           final Map<int, List<DayCheckin>> byDay = {};
@@ -141,13 +144,16 @@ class TripCheckinsScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: _card,
                   borderRadius: BorderRadius.circular(16),
-                  border:
-                      Border.all(color: _ink.withValues(alpha: 0.12), width: 1.5),
+                  border: Border.all(
+                    color: _ink.withValues(alpha: 0.12),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                        color: _ink.withValues(alpha: 0.06),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2)),
+                      color: _ink.withValues(alpha: 0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
                 ),
                 padding: const EdgeInsets.all(16),
@@ -158,19 +164,24 @@ class TripCheckinsScreen extends ConsumerWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF5822B),
                             borderRadius: BorderRadius.circular(99),
                             border: Border.all(
-                                color: const Color(0xFF141210), width: 2),
+                              color: const Color(0xFF141210),
+                              width: 2,
+                            ),
                           ),
                           child: Text(
                             'Ngày $day',
                             style: AppFonts.heading(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -178,8 +189,9 @@ class TripCheckinsScreen extends ConsumerWidget {
                         Text(
                           '${dayCheckins.where((c) => c.status == 'GOING').length} đi',
                           style: AppFonts.body(
-                              fontSize: 12,
-                              color: const Color(0xFF1FA85C)),
+                            fontSize: 12,
+                            color: const Color(0xFF1FA85C),
+                          ),
                         ),
                       ],
                     ),
@@ -187,8 +199,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                       const SizedBox(height: 12),
                       Text(
                         'Chưa ai điểm danh ngày này',
-                        style: AppFonts.body(
-                            fontSize: 13, color: _textSec),
+                        style: AppFonts.body(fontSize: 13, color: _textSec),
                       ),
                     ] else ...[
                       const SizedBox(height: 12),
@@ -196,34 +207,37 @@ class TripCheckinsScreen extends ConsumerWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: dayCheckins.map((c) {
-                          final color =
-                              _statusColors[c.status] ?? Colors.grey;
+                          final color = _statusColors[c.status] ?? Colors.grey;
                           return Chip(
                             avatar: c.userAvatarUrl != null
                                 ? CircleAvatar(
-                                    backgroundImage:
-                                        NetworkImage(c.userAvatarUrl!),
+                                    backgroundImage: NetworkImage(
+                                      c.userAvatarUrl!,
+                                    ),
                                   )
                                 : CircleAvatar(
-                                    backgroundColor: color.withValues(alpha: 0.2),
+                                    backgroundColor: color.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     child: Text(
                                       c.userName.isNotEmpty
                                           ? c.userName[0].toUpperCase()
                                           : '?',
                                       style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          color: color),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: color,
+                                      ),
                                     ),
                                   ),
                             label: Text(
                               '${c.userName} ${_statusEmoji[c.status] ?? ''}',
-                              style: AppFonts.body(
-                                  fontSize: 12, color: _ink),
+                              style: AppFonts.body(fontSize: 12, color: _ink),
                             ),
                             backgroundColor: color.withValues(alpha: 0.12),
                             side: BorderSide(
-                                color: color.withValues(alpha: 0.3)),
+                              color: color.withValues(alpha: 0.3),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -233,9 +247,10 @@ class TripCheckinsScreen extends ConsumerWidget {
                     Text(
                       'Trạng thái của tôi:',
                       style: AppFonts.heading(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: _textSec),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: _textSec,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -243,17 +258,13 @@ class TripCheckinsScreen extends ConsumerWidget {
                         final selected = myStatusForDay(dayCheckins) == status;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: _statusChip(
-                            status,
-                            selected,
-                            () {
-                              if (selected) return;
-                              HapticFeedback.selectionClick();
-                              ref
-                                  .read(checkinsProvider(tripId).notifier)
-                                  .upsert(day: day, status: status);
-                            },
-                          ),
+                          child: _statusChip(status, selected, () {
+                            if (selected) return;
+                            HapticFeedback.selectionClick();
+                            ref
+                                .read(checkinsProvider(tripId).notifier)
+                                .upsert(day: day, status: status);
+                          }),
                         );
                       }).toList(),
                     ),

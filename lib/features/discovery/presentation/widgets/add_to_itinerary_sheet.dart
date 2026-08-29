@@ -47,12 +47,12 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
   final TextEditingController _notesController = TextEditingController();
   bool _isSaving = false;
   bool _showSuccess = false;
+
   /// Nhãn phân loại gửi kèm khi lưu (BE nhận field `category`).
   final String _activeTag = 'CHILL';
 
   late AnimationController _successController;
   late Animation<double> _scaleAnimation;
-
 
   final List<String> _timeOptions = [
     '08:00 AM',
@@ -186,7 +186,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
     final secondaryColor = isDark
         ? const Color(0xFF1FA85C)
         : const Color(0xFFFFD84D);
-    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final surfaceColor = isDark
         ? const Color(0xFF262019)
         : const Color(0xFFFFFDF5);
@@ -493,11 +493,11 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                     // Phải cuộn ngang: chuyến dài (7 ngày trở lên) làm hàng nút
                     // tràn khỏi màn — "RIGHT OVERFLOWED BY 142 PIXELS".
                     SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: List.generate(_tripDays, (i) => i + 1).map((
-                            day,
-                          ) {
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(_tripDays, (i) => i + 1).map((
+                          day,
+                        ) {
                           final isSelected = _selectedDay == day;
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
@@ -517,7 +517,9 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                   color: isSelected
                                       ? primaryColor.withValues(alpha: 0.15)
                                       : (isDark
-                                            ? Colors.white.withValues(alpha: 0.04)
+                                            ? Colors.white.withValues(
+                                                alpha: 0.04,
+                                              )
                                             : Colors.black.withValues(
                                                 alpha: 0.03,
                                               )),
@@ -626,10 +628,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: TextField(
                         controller: _notesController,
-                        style: AppFonts.body(
-                          fontSize: 11,
-                          color: textColor,
-                        ),
+                        style: AppFonts.body(fontSize: 11, color: textColor),
                         decoration: InputDecoration(
                           hintText: 'itinerary.notes_hint'.tr(),
                           hintStyle: const TextStyle(

@@ -20,7 +20,7 @@ class ExpensesRepository {
       if (data is List) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('cache_expenses_$tripId', jsonEncode(data));
-        
+
         _ref.read(offlineProvider.notifier).state = false;
 
         return data
@@ -96,7 +96,10 @@ class ExpensesRepository {
     return _client.deleteData('${_base(tripId)}/$expenseId');
   }
 
-  Future<Map<String, dynamic>> scanReceipt(String tripId, String receiptUrl) async {
+  Future<Map<String, dynamic>> scanReceipt(
+    String tripId,
+    String receiptUrl,
+  ) async {
     final data = await _client.postData('${_base(tripId)}/ocr', {
       'receiptUrl': receiptUrl,
     });

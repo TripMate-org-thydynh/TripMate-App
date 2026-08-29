@@ -46,10 +46,7 @@ class BadgeDetailScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: badge.unlocked ? GenZTokens.yellow : surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(
-                color: ink,
-                width: GenZTokens.borderWidth,
-              ),
+              border: Border.all(color: ink, width: GenZTokens.borderWidth),
             ),
             child: Column(
               children: [

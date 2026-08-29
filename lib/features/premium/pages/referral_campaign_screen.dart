@@ -2,6 +2,7 @@ import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import '../../../core/app_messenger.dart';
+
 class ReferralCampaignScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
@@ -302,10 +303,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Refer 3 friends to get trip.mate Elite for life.',
-                    style: AppFonts.body(
-                      fontSize: 14,
-                      color: textSecondary,
-                    ),
+                    style: AppFonts.body(fontSize: 14, color: textSecondary),
                   ),
 
                   const SizedBox(height: 36),

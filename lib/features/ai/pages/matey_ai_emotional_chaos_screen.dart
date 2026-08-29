@@ -81,7 +81,12 @@ class _MateyAiEmotionalChaosScreenState
           .ask(prompt: text, tripId: tripId);
       if (!mounted) return;
       setState(() {
-        _messages.add({'type': 'ai', 'text': reply, 'time': 'just now', 'likes': 0});
+        _messages.add({
+          'type': 'ai',
+          'text': reply,
+          'time': 'just now',
+          'likes': 0,
+        });
         _isThinking = false;
       });
     } catch (e) {

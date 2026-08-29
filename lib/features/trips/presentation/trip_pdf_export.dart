@@ -41,8 +41,9 @@ class TripPdfExporter {
                   padding: const pw.EdgeInsets.all(32),
                   decoration: pw.BoxDecoration(
                     color: const PdfColor.fromInt(0xFFF5822B),
-                    borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(16)),
+                    borderRadius: const pw.BorderRadius.all(
+                      pw.Radius.circular(16),
+                    ),
                   ),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -78,17 +79,20 @@ class TripPdfExporter {
                 ),
                 pw.SizedBox(height: 32),
                 _infoRow(
-                    'trips.pdf_depart'.tr(),
-                    '${trip.startDate.day}/${trip.startDate.month}/${trip.startDate.year}'),
+                  'trips.pdf_depart'.tr(),
+                  '${trip.startDate.day}/${trip.startDate.month}/${trip.startDate.year}',
+                ),
                 _infoRow(
-                    'trips.pdf_return'.tr(),
-                    '${trip.endDate.day}/${trip.endDate.month}/${trip.endDate.year}'),
+                  'trips.pdf_return'.tr(),
+                  '${trip.endDate.day}/${trip.endDate.month}/${trip.endDate.year}',
+                ),
                 _infoRow('Số ngày', '${trip.durationDays} ngày'),
                 _infoRow('Thành viên', '${trip.memberCount} người'),
                 if (trip.budget != null)
                   _infoRow(
-                      'Ngân sách',
-                      '${trip.budget!.toStringAsFixed(0)} ${trip.currency}'),
+                    'Ngân sách',
+                    '${trip.budget!.toStringAsFixed(0)} ${trip.currency}',
+                  ),
               ],
             ),
           );
@@ -105,8 +109,7 @@ class TripPdfExporter {
           build: (ctx) => [
             pw.Text(
               '📅 Lịch trình chi tiết',
-              style: pw.TextStyle(
-                  fontSize: 22, fontWeight: pw.FontWeight.bold),
+              style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 16),
             ...itinerary.entries.expand((entry) {
@@ -116,17 +119,21 @@ class TripPdfExporter {
               return [
                 pw.Container(
                   padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: pw.BoxDecoration(
                     color: const PdfColor.fromInt(0xFFF5822B),
-                    borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(8)),
+                    borderRadius: const pw.BorderRadius.all(
+                      pw.Radius.circular(8),
+                    ),
                   ),
                   child: pw.Text(
                     'Ngày $day',
                     style: pw.TextStyle(
-                        color: PdfColors.white,
-                        fontWeight: pw.FontWeight.bold),
+                      color: PdfColors.white,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
                 ),
                 pw.SizedBox(height: 8),
@@ -135,20 +142,28 @@ class TripPdfExporter {
                     padding: const pw.EdgeInsets.only(left: 8, bottom: 6),
                     child: pw.Row(
                       children: [
-                        pw.Text('${item.startTime}  ',
-                            style: const pw.TextStyle(
-                                color: PdfColor.fromInt(0xFF888888),
-                                fontSize: 11)),
-                        pw.Text(item.placeName,
-                            style: pw.TextStyle(
-                                fontWeight: pw.FontWeight.bold,
-                                fontSize: 12)),
+                        pw.Text(
+                          '${item.startTime}  ',
+                          style: const pw.TextStyle(
+                            color: PdfColor.fromInt(0xFF888888),
+                            fontSize: 11,
+                          ),
+                        ),
+                        pw.Text(
+                          item.placeName,
+                          style: pw.TextStyle(
+                            fontWeight: pw.FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                         if (item.category != null)
                           pw.Text(
-                              '  [${item.category}]',
-                              style: const pw.TextStyle(
-                                  color: PdfColor.fromInt(0xFF888888),
-                                  fontSize: 11)),
+                            '  [${item.category}]',
+                            style: const pw.TextStyle(
+                              color: PdfColor.fromInt(0xFF888888),
+                              fontSize: 11,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -170,14 +185,15 @@ class TripPdfExporter {
           build: (ctx) => [
             pw.Text(
               '🧳 Đồ cần mang',
-              style: pw.TextStyle(
-                  fontSize: 22, fontWeight: pw.FontWeight.bold),
+              style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 8),
             pw.Text(
               '${packing.packed}/${packing.total} đã chuẩn bị',
               style: const pw.TextStyle(
-                  fontSize: 14, color: PdfColor.fromInt(0xFF888888)),
+                fontSize: 14,
+                color: PdfColor.fromInt(0xFF888888),
+              ),
             ),
             pw.SizedBox(height: 16),
             ...packing.items.map(
@@ -190,12 +206,14 @@ class TripPdfExporter {
                       height: 16,
                       decoration: pw.BoxDecoration(
                         border: pw.Border.all(
-                            color: const PdfColor.fromInt(0xFF141210)),
+                          color: const PdfColor.fromInt(0xFF141210),
+                        ),
                         color: item.isPacked
                             ? const PdfColor.fromInt(0xFF1FA85C)
                             : PdfColors.white,
                         borderRadius: const pw.BorderRadius.all(
-                            pw.Radius.circular(4)),
+                          pw.Radius.circular(4),
+                        ),
                       ),
                     ),
                     pw.SizedBox(width: 8),
@@ -212,8 +230,9 @@ class TripPdfExporter {
                       pw.Text(
                         ' x${item.quantity}',
                         style: const pw.TextStyle(
-                            fontSize: 12,
-                            color: PdfColor.fromInt(0xFF888888)),
+                          fontSize: 12,
+                          color: PdfColor.fromInt(0xFF888888),
+                        ),
                       ),
                   ],
                 ),
@@ -233,8 +252,7 @@ class TripPdfExporter {
           build: (ctx) => [
             pw.Text(
               'trips.pdf_reservations'.tr(),
-              style: pw.TextStyle(
-                  fontSize: 22, fontWeight: pw.FontWeight.bold),
+              style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 16),
             ...reservations.map(
@@ -243,22 +261,32 @@ class TripPdfExporter {
                 padding: const pw.EdgeInsets.all(12),
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(
-                      color: const PdfColor.fromInt(0xFFDDDDDD)),
-                  borderRadius:
-                      const pw.BorderRadius.all(pw.Radius.circular(8)),
+                    color: const PdfColor.fromInt(0xFFDDDDDD),
+                  ),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(8),
+                  ),
                 ),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text(r.title,
-                        style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.bold, fontSize: 13)),
+                    pw.Text(
+                      r.title,
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
                     if (r.location != null)
-                      pw.Text('📍 ${r.location}',
-                          style: const pw.TextStyle(fontSize: 11)),
+                      pw.Text(
+                        '📍 ${r.location}',
+                        style: const pw.TextStyle(fontSize: 11),
+                      ),
                     if (r.confirmationNumber != null)
-                      pw.Text('🔖 Mã: ${r.confirmationNumber}',
-                          style: const pw.TextStyle(fontSize: 11)),
+                      pw.Text(
+                        '🔖 Mã: ${r.confirmationNumber}',
+                        style: const pw.TextStyle(fontSize: 11),
+                      ),
                   ],
                 ),
               ),
@@ -285,13 +313,14 @@ class TripPdfExporter {
             child: pw.Text(
               label,
               style: const pw.TextStyle(
-                  color: PdfColor.fromInt(0xFF888888), fontSize: 13),
+                color: PdfColor.fromInt(0xFF888888),
+                fontSize: 13,
+              ),
             ),
           ),
           pw.Text(
             value,
-            style: pw.TextStyle(
-                fontWeight: pw.FontWeight.bold, fontSize: 13),
+            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 13),
           ),
         ],
       ),
@@ -328,7 +357,8 @@ class ExportPdfButton extends ConsumerWidget {
       ),
       onPressed: () async {
         HapticFeedback.mediumImpact();
-        final itinerary = itineraryAsync.valueOrNull ?? const <int, List<ItineraryItem>>{};
+        final itinerary =
+            itineraryAsync.valueOrNull ?? const <int, List<ItineraryItem>>{};
         final packing = packingAsync.valueOrNull ?? const PackingList();
         try {
           await TripPdfExporter.exportAndShare(
@@ -354,7 +384,10 @@ class ExportPdfButton extends ConsumerWidget {
       label: Text(
         'trips.pdf_export'.tr(),
         style: AppFonts.heading(
-            fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
+          fontSize: 14,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+        ),
       ),
     );
   }

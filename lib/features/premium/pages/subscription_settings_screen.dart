@@ -126,9 +126,7 @@ class _SubscriptionSettingsScreenState
                 ),
                 const SizedBox(height: GenZTokens.space2),
                 Text(
-                  'premium.price_monthly'.tr(
-                    args: [_money(price)],
-                  ),
+                  'premium.price_monthly'.tr(args: [_money(price)]),
                   style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
                 ),
                 if (next != null) ...[

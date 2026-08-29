@@ -76,7 +76,8 @@ class TodoList {
     return TodoList(
       items: items,
       total: (p is Map ? p['total'] as num? : null)?.toInt() ?? items.length,
-      done: (p is Map ? p['done'] as num? : null)?.toInt() ??
+      done:
+          (p is Map ? p['done'] as num? : null)?.toInt() ??
           items.where((i) => i.isDone).length,
       percent: (p is Map ? p['percent'] as num? : null)?.toInt() ?? 0,
     );

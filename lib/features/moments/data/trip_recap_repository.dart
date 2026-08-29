@@ -58,6 +58,8 @@ final tripRecapProvider = FutureProvider.family<TripRecap, String>((
   ref,
   tripId,
 ) async {
-  final data = await ref.watch(apiClientProvider).getData('/trips/$tripId/recap');
+  final data = await ref
+      .watch(apiClientProvider)
+      .getData('/trips/$tripId/recap');
   return TripRecap.fromJson((data as Map).cast<String, dynamic>());
 });

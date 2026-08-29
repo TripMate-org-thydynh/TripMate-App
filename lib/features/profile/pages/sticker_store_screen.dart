@@ -69,7 +69,10 @@ class _StickerStoreScreenState extends ConsumerState<StickerStoreScreen> {
             color: ink,
           ),
         ),
-        actions: [XpBalanceChip(isDark: isDark), const SizedBox(width: 12)],
+        actions: [
+          XpBalanceChip(isDark: isDark),
+          const SizedBox(width: 12),
+        ],
       ),
       body: ref
           .watch(stickerStoreProvider)

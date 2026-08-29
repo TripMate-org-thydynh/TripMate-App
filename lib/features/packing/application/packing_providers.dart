@@ -33,7 +33,9 @@ class PackingNotifier extends FamilyAsyncNotifier<PackingList, String> {
         items: updated,
         total: updated.length,
         packed: packed,
-        percent: updated.isEmpty ? 0 : ((packed / updated.length) * 100).round(),
+        percent: updated.isEmpty
+            ? 0
+            : ((packed / updated.length) * 100).round(),
       ),
     );
 

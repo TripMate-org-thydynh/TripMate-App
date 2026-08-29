@@ -27,8 +27,7 @@ class BucketListRepository {
     return const [];
   }
 
-  Future<void> add(String title) =>
-      _client.postData(_base, {'title': title});
+  Future<void> add(String title) => _client.postData(_base, {'title': title});
 
   Future<void> setCompleted(String id, bool isCompleted) =>
       _client.patchData('$_base/$id', {'isCompleted': isCompleted});

@@ -60,7 +60,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
   };
 
   bool get _dark => widget.isDarkMode;
-  Color get _bg => _dark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary =>
@@ -134,7 +135,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _bg,
+        color: _bgOf(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: SafeArea(
@@ -181,7 +182,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                   if (result != null && mounted) {
                     setState(() {
                       final double amount = result['amount'] as double;
-                      final String description = result['description'] as String;
+                      final String description =
+                          result['description'] as String;
                       _amount.text = amount.toStringAsFixed(0);
                       _desc.text = description;
                       _category = 'FOOD';
@@ -190,7 +192,10 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: GenZTokens.yellow,
                     borderRadius: BorderRadius.circular(16),
@@ -200,7 +205,11 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.qr_code_scanner_rounded, color: GenZTokens.ink, size: 20),
+                      const Icon(
+                        Icons.qr_code_scanner_rounded,
+                        color: GenZTokens.ink,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'expense.scan_receipt_ai'.tr(),

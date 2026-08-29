@@ -147,7 +147,9 @@ String optimizedMedia(String url, {int? width}) {
   if (!url.contains('/upload/')) return url;
   final t = <String>['f_auto', 'q_auto'];
   if (width != null) {
-    t..add('w_$width')..add('c_limit');
+    t
+      ..add('w_$width')
+      ..add('c_limit');
   }
   return url.replaceFirst('/upload/', '/upload/${t.join(',')}/');
 }

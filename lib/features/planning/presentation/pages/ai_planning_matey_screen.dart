@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+
 class AIPlanningMateyScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
@@ -93,7 +94,7 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
     final secondaryColor = isDark
         ? const Color(0xFF1FA85C)
         : const Color(0xFF059669);
-    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final textPrimary = isDark ? Colors.white : const Color(0xFF141210);
     final textMuted = isDark ? Colors.white60 : Colors.black54;

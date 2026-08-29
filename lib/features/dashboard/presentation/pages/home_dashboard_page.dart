@@ -81,12 +81,16 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       } else if (name.contains('đà nẵng') || name.contains('da nang')) {
         lat = 16.0470;
         lng = 108.2060;
-      } else if (name.contains('sài gòn') || name.contains('hồ chí minh') || name.contains('hcm')) {
+      } else if (name.contains('sài gòn') ||
+          name.contains('hồ chí minh') ||
+          name.contains('hcm')) {
         lat = 10.7769;
         lng = 106.7009;
       }
 
-      final weather = await ref.read(weatherServiceProvider).fetchWeather(lat, lng);
+      final weather = await ref
+          .read(weatherServiceProvider)
+          .fetchWeather(lat, lng);
       if (mounted) {
         setState(() {
           _weatherData = weather;
@@ -122,12 +126,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
 
         // ── 2. SOCIAL CHAOS MARQUEE ──
         const SliverToBoxAdapter(
-          child: Column(
-            children: [
-              SocialChaosMarquee(),
-              SizedBox(height: 20),
-            ],
-          ),
+          child: Column(children: [SocialChaosMarquee(), SizedBox(height: 20)]),
         ),
 
         // ── 3. TRIP COVER CARD ──
@@ -264,86 +263,90 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             onTap: _weatherData == null
                 ? null
                 : () => WeatherForecastSheet.show(
-                      context,
-                      _weatherData!,
-                      isDarkMode,
-                    ),
+                    context,
+                    _weatherData!,
+                    isDarkMode,
+                  ),
             child: HardShadowBox(
-            color: _paper,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'dashboard.weather'.tr(),
-                      style: AppFonts.heading(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: _ink,
-                      ),
-                    ),
-                    Icon(
-                      _weatherData?.icon ?? Icons.wb_sunny_outlined,
-                      color: _weatherData?.color ?? GenZTokens.yellow,
-                      size: 26,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.psychology_outlined, color: _inkSoft, size: 12),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        _isLoadingWeather
-                            ? 'dashboard.weather_checking'.tr()
-                            : (_weatherData?.details.isNotEmpty == true
-                                  ? _weatherData!.details
-                                  : 'weather.unavailable'.tr()),
-                        style: AppFonts.body(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: _inkSoft,
+              color: _paper,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'dashboard.weather'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: _ink,
                         ),
                       ),
+                      Icon(
+                        _weatherData?.icon ?? Icons.wb_sunny_outlined,
+                        color: _weatherData?.color ?? GenZTokens.yellow,
+                        size: 26,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.psychology_outlined,
+                        color: _inkSoft,
+                        size: 12,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          _isLoadingWeather
+                              ? 'dashboard.weather_checking'.tr()
+                              : (_weatherData?.details.isNotEmpty == true
+                                    ? _weatherData!.details
+                                    : 'weather.unavailable'.tr()),
+                          style: AppFonts.body(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: _inkSoft,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Chỉ hiện số liệu khi THẬT SỰ có dữ liệu. Trước đây gọi API
+                  // thất bại vẫn hiện "22°C · mây rải rác" từ fallback cứng.
+                  if (_isLoadingWeather) ...[
+                    const PillTag(
+                      text: '-- °C',
+                      icon: Icons.thermostat_outlined,
+                      color: GenZTokens.lilac,
+                    ),
+                    const SizedBox(height: 6),
+                    PillTag(
+                      text: 'dashboard.loading'.tr(),
+                      icon: Icons.wb_cloudy_outlined,
+                      color: GenZTokens.yellow,
+                    ),
+                  ] else if (_weatherData != null) ...[
+                    PillTag(
+                      text: '${_weatherData!.temp.toStringAsFixed(0)}°C',
+                      icon: Icons.thermostat_outlined,
+                      color: GenZTokens.lilac,
+                    ),
+                    const SizedBox(height: 6),
+                    PillTag(
+                      text: _weatherData!.description,
+                      icon: _weatherData!.icon,
+                      color: _weatherData!.color,
                     ),
                   ],
-                ),
-                const SizedBox(height: 12),
-                // Chỉ hiện số liệu khi THẬT SỰ có dữ liệu. Trước đây gọi API
-                // thất bại vẫn hiện "22°C · mây rải rác" từ fallback cứng.
-                if (_isLoadingWeather) ...[
-                  const PillTag(
-                    text: '-- °C',
-                    icon: Icons.thermostat_outlined,
-                    color: GenZTokens.lilac,
-                  ),
-                  const SizedBox(height: 6),
-                  PillTag(
-                    text: 'dashboard.loading'.tr(),
-                    icon: Icons.wb_cloudy_outlined,
-                    color: GenZTokens.yellow,
-                  ),
-                ] else if (_weatherData != null) ...[
-                  PillTag(
-                    text: '${_weatherData!.temp.toStringAsFixed(0)}°C',
-                    icon: Icons.thermostat_outlined,
-                    color: GenZTokens.lilac,
-                  ),
-                  const SizedBox(height: 6),
-                  PillTag(
-                    text: _weatherData!.description,
-                    icon: _weatherData!.icon,
-                    color: _weatherData!.color,
-                  ),
                 ],
-              ],
+              ),
             ),
-          ),
           ),
         ),
         const SizedBox(width: 12),
@@ -629,10 +632,12 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   Widget _buildSquadCluster() {
     return Consumer(
       builder: (context, ref, _) {
-        final members = ref.watch(tripsProvider).maybeWhen(
-          data: (trips) => trips.isEmpty ? const [] : trips.first.members,
-          orElse: () => const [],
-        );
+        final members = ref
+            .watch(tripsProvider)
+            .maybeWhen(
+              data: (trips) => trips.isEmpty ? const [] : trips.first.members,
+              orElse: () => const [],
+            );
         if (members.isEmpty) return const SizedBox.shrink();
 
         const maxShown = 2;
@@ -723,9 +728,9 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         builder: (context, ref, _) {
           final tripsAsync = ref.watch(tripsProvider);
           return tripsAsync.when(
-            loading: () => _tripCoverShell(child: const Center(
-              child: CircularProgressIndicator(),
-            )),
+            loading: () => _tripCoverShell(
+              child: const Center(child: CircularProgressIndicator()),
+            ),
             error: (e, _) => _tripCoverEmpty(context),
             data: (trips) => trips.isEmpty
                 ? _tripCoverEmpty(context)
@@ -847,7 +852,11 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.place, size: 15, color: GenZTokens.paper),
+                      const Icon(
+                        Icons.place,
+                        size: 15,
+                        color: GenZTokens.paper,
+                      ),
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
@@ -1073,9 +1082,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 height: 200,
                 child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
               ),
-              error: (_, _) => _scrapbookPlaceholder(
-                'dashboard.scrapbook_error'.tr(),
-              ),
+              error: (_, _) =>
+                  _scrapbookPlaceholder('dashboard.scrapbook_error'.tr()),
               data: (moments) {
                 if (moments.isEmpty) {
                   return _scrapbookPlaceholder(
@@ -1145,8 +1153,11 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       ),
       child: Column(
         children: [
-          Icon(Icons.photo_camera_outlined,
-              size: 28, color: _ink.withValues(alpha: 0.5)),
+          Icon(
+            Icons.photo_camera_outlined,
+            size: 28,
+            color: _ink.withValues(alpha: 0.5),
+          ),
           const SizedBox(height: 8),
           Text(
             message,

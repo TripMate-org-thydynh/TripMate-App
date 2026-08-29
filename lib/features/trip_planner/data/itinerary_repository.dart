@@ -20,7 +20,7 @@ class ItineraryRepository {
         // Cache data locally
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('cache_itinerary_$tripId', jsonEncode(data));
-        
+
         // Reset offline status
         _ref.read(offlineProvider.notifier).state = false;
 

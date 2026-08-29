@@ -86,7 +86,8 @@ class AppErrorState extends StatelessWidget {
   });
 
   /// Câu thông báo: ưu tiên message của [ApiException]; mất mạng thì đổi icon.
-  ApiException? get _api => error is ApiException ? error as ApiException : null;
+  ApiException? get _api =>
+      error is ApiException ? error as ApiException : null;
 
   @override
   Widget build(BuildContext context) {

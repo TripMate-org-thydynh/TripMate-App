@@ -137,88 +137,90 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                         // tên chuyến bên trong ném lỗi layout và cả màn trắng.
                         Expanded(
                           child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: surfaceColor,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: textPrimary,
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.05,
-                                      ),
-                                      blurRadius: 0,
-                                      offset: const Offset(0, 4),
+                            children: [
+                              GestureDetector(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: surfaceColor,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: textPrimary,
+                                      width: 2,
                                     ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  Icons.arrow_back_ios_new,
-                                  color: textPrimary,
-                                  size: 16,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Tên chuyến THẬT đang mở.
-                            //
-                            // Trước đây in cứng "Hà Giang Loop 🏍️" và
-                            // "Oct 14, 2023 • Squad Album" nên ai mở Memory
-                            // Wall cũng thấy album của một chuyến không có.
-                            Expanded(
-                              child: Consumer(
-                                builder: (context, ref, _) {
-                                  final tripId = ref.watch(activeTripIdProvider);
-                                  final trip = ref
-                                      .watch(tripsProvider)
-                                      .maybeWhen(
-                                        data: (trips) => trips
-                                            .where((t) => t.id == tripId)
-                                            .firstOrNull,
-                                        orElse: () => null,
-                                      );
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        trip?.name ?? 'moments.wall'.tr(),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppFonts.body(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color: textPrimary,
-                                          letterSpacing: -0.5,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.05,
                                         ),
-                                      ),
-                                      Text(
-                                        trip == null
-                                            ? 'moments.wall_sub'.tr()
-                                            : '${DateFormat.yMMMd().format(trip.startDate)} • ${'moments.wall_sub'.tr()}',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppFonts.heading(
-                                          fontSize: 11,
-                                          color: textSecondary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        blurRadius: 0,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
-                                  );
-                                },
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_back_ios_new,
+                                    color: textPrimary,
+                                    size: 16,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(width: 12),
+                              // Tên chuyến THẬT đang mở.
+                              //
+                              // Trước đây in cứng "Hà Giang Loop 🏍️" và
+                              // "Oct 14, 2023 • Squad Album" nên ai mở Memory
+                              // Wall cũng thấy album của một chuyến không có.
+                              Expanded(
+                                child: Consumer(
+                                  builder: (context, ref, _) {
+                                    final tripId = ref.watch(
+                                      activeTripIdProvider,
+                                    );
+                                    final trip = ref
+                                        .watch(tripsProvider)
+                                        .maybeWhen(
+                                          data: (trips) => trips
+                                              .where((t) => t.id == tripId)
+                                              .firstOrNull,
+                                          orElse: () => null,
+                                        );
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          trip?.name ?? 'moments.wall'.tr(),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppFonts.body(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimary,
+                                            letterSpacing: -0.5,
+                                          ),
+                                        ),
+                                        Text(
+                                          trip == null
+                                              ? 'moments.wall_sub'.tr()
+                                              : '${DateFormat.yMMMd().format(trip.startDate)} • ${'moments.wall_sub'.tr()}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppFonts.heading(
+                                            fontSize: 11,
+                                            color: textSecondary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         // Dark/Light Theme Toggle
                         GestureDetector(
@@ -272,7 +274,12 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                             }
                             return SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                16,
+                                16,
+                                96,
+                              ),
                               child: Wrap(
                                 spacing: 16,
                                 runSpacing: 20,
@@ -779,8 +786,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                   GestureDetector(
                     onTap: () => _openWithTrip(
                       context,
-                      (tripId) =>
-                          TripRecapReelScreen(isDarkMode: isDark, tripId: tripId),
+                      (tripId) => TripRecapReelScreen(
+                        isDarkMode: isDark,
+                        tripId: tripId,
+                      ),
                       pop: false,
                     ),
                     child: Container(
@@ -934,9 +943,9 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
     final tripId = container.read(activeTripIdProvider);
     if (pop) Navigator.pop(context);
     if (tripId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('games.need_trip_body'.tr())),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('games.need_trip_body'.tr())));
       return;
     }
     Navigator.push(context, MaterialPageRoute(builder: (_) => builder(tripId)));
@@ -997,10 +1006,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                   ),
                   Text(
                     desc,
-                    style: AppFonts.heading(
-                      fontSize: 8,
-                      color: textSecondary,
-                    ),
+                    style: AppFonts.heading(fontSize: 8, color: textSecondary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

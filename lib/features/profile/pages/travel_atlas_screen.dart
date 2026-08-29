@@ -12,21 +12,20 @@ import '../domain/travel_stats.dart';
 class TravelAtlasScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
 
-  const TravelAtlasScreen({
-    super.key,
-    required this.isDarkMode,
-  });
+  const TravelAtlasScreen({super.key, required this.isDarkMode});
 
   @override
   ConsumerState<TravelAtlasScreen> createState() => _TravelAtlasScreenState();
 }
 
-class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with SingleTickerProviderStateMixin {
+class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _bg => Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface => widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _surface =>
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   @override
   void initState() {
@@ -168,10 +167,15 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with Sing
         bottom: TabBar(
           controller: _tabController,
           labelColor: _ink,
-          unselectedLabelColor: widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+          unselectedLabelColor: widget.isDarkMode
+              ? GenZTokens.inkSoftDark
+              : GenZTokens.inkSoft,
           indicatorColor: GenZTokens.yellow,
           indicatorWeight: 4,
-          labelStyle: AppFonts.heading(fontWeight: FontWeight.w800, fontSize: 14),
+          labelStyle: AppFonts.heading(
+            fontWeight: FontWeight.w800,
+            fontSize: 14,
+          ),
           tabs: const [
             Tab(text: 'Bản Đồ 🗺️'),
             Tab(text: 'Thành Tích 🏆'),
@@ -249,7 +253,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with Sing
             decoration: BoxDecoration(
               color: _surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: _ink, width: GenZTokens.borderWidthThin),
+              border: Border.all(
+                color: _ink,
+                width: GenZTokens.borderWidthThin,
+              ),
               boxShadow: GenZTokens.hardShadow(_ink),
             ),
             child: Row(
@@ -294,10 +301,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with Sing
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const Text(
-                  '🔥',
-                  style: TextStyle(fontSize: 44),
-                ),
+                const Text('🔥', style: TextStyle(fontSize: 44)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -431,7 +435,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with Sing
               decoration: BoxDecoration(
                 color: _surface.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                border: Border.all(color: _ink.withValues(alpha: 0.2), width: 2),
+                border: Border.all(
+                  color: _ink.withValues(alpha: 0.2),
+                  width: 2,
+                ),
               ),
               child: Text(
                 'Chưa có huy hiệu nào. Đi chuyến đầu tiên để mở khoá nhé!',
@@ -444,68 +451,84 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with Sing
             )
           else
             ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: badges.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final badge = badges[index];
-              return Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: badge.isUnlocked ? _surface : _surface.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                  border: Border.all(
-                    color: badge.isUnlocked ? _ink : _ink.withValues(alpha: 0.3),
-                    width: GenZTokens.borderWidthThin,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: badges.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final badge = badges[index];
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: badge.isUnlocked
+                        ? _surface
+                        : _surface.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                    border: Border.all(
+                      color: badge.isUnlocked
+                          ? _ink
+                          : _ink.withValues(alpha: 0.3),
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                    boxShadow: badge.isUnlocked
+                        ? GenZTokens.hardShadow(_ink)
+                        : null,
                   ),
-                  boxShadow: badge.isUnlocked ? GenZTokens.hardShadow(_ink) : null,
-                ),
-                child: Row(
-                  children: [
-                    Opacity(
-                      opacity: badge.isUnlocked ? 1.0 : 0.4,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: badge.isUnlocked ? GenZTokens.yellow : Colors.grey,
-                          shape: BoxShape.circle,
+                  child: Row(
+                    children: [
+                      Opacity(
+                        opacity: badge.isUnlocked ? 1.0 : 0.4,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: badge.isUnlocked
+                                ? GenZTokens.yellow
+                                : Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.military_tech,
+                            color: GenZTokens.ink,
+                            size: 24,
+                          ),
                         ),
-                        child: const Icon(Icons.military_tech, color: GenZTokens.ink, size: 24),
                       ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            badge.title,
-                            style: AppFonts.heading(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15,
-                              color: badge.isUnlocked ? _ink : _ink.withValues(alpha: 0.5),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              badge.title,
+                              style: AppFonts.heading(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15,
+                                color: badge.isUnlocked
+                                    ? _ink
+                                    : _ink.withValues(alpha: 0.5),
+                              ),
                             ),
-                          ),
-                          Text(
-                            badge.description,
-                            style: AppFonts.body(
-                              fontSize: 12,
-                              color: badge.isUnlocked
-                                  ? (widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft)
-                                  : Colors.grey,
+                            Text(
+                              badge.description,
+                              style: AppFonts.body(
+                                fontSize: 12,
+                                color: badge.isUnlocked
+                                    ? (widget.isDarkMode
+                                          ? GenZTokens.inkSoftDark
+                                          : GenZTokens.inkSoft)
+                                    : Colors.grey,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    if (!badge.isUnlocked)
-                      const Icon(Icons.lock, size: 16, color: Colors.grey),
-                  ],
-                ),
-              );
-            },
-          ),
+                      if (!badge.isUnlocked)
+                        const Icon(Icons.lock, size: 16, color: Colors.grey),
+                    ],
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -536,100 +559,116 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with Sing
                     ref.read(bucketListProvider.notifier).toggle(item.id),
                 onLongPress: () => _confirmDeleteBucket(item),
                 child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: item.isCompleted ? GenZTokens.green.withValues(alpha: 0.15) : _surface,
-              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: _ink, width: GenZTokens.borderWidthThin),
-              boxShadow: GenZTokens.hardShadow(_ink),
-            ),
-            child: Row(
-              children: [
-                // Brutalist tick box
-                Container(
-                  width: 24,
-                  height: 24,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
-                    color: item.isCompleted ? GenZTokens.green : Colors.transparent,
-                    border: Border.all(color: _ink, width: 2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: item.isCompleted
-                      ? const Icon(Icons.check, size: 16, color: GenZTokens.ink)
-                      : null,
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    item.title,
-                    style: AppFonts.heading(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
+                    color: item.isCompleted
+                        ? GenZTokens.green.withValues(alpha: 0.15)
+                        : _surface,
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                    border: Border.all(
                       color: _ink,
-                      decoration: item.isCompleted ? TextDecoration.lineThrough : null,
+                      width: GenZTokens.borderWidthThin,
                     ),
+                    boxShadow: GenZTokens.hardShadow(_ink),
+                  ),
+                  child: Row(
+                    children: [
+                      // Brutalist tick box
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: item.isCompleted
+                              ? GenZTokens.green
+                              : Colors.transparent,
+                          border: Border.all(color: _ink, width: 2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: item.isCompleted
+                            ? const Icon(
+                                Icons.check,
+                                size: 16,
+                                color: GenZTokens.ink,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: AppFonts.heading(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: _ink,
+                            decoration: item.isCompleted
+                                ? TextDecoration.lineThrough
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
-                );
-              },
-            ),
-          );
-        },
-      );
+        );
+      },
+    );
   }
 
   Widget _bucketEmpty() => ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(28),
-        children: [
-          const SizedBox(height: 40),
-          const Icon(Icons.checklist_rtl, size: 60, color: GenZTokens.green),
-          const SizedBox(height: 16),
-          Text(
-            'Bucket list còn trống',
-            textAlign: TextAlign.center,
-            style: AppFonts.heading(
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-              color: _ink,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Thêm những điều bạn muốn làm trên đường đi — rồi tick khi hoàn thành!',
-            textAlign: TextAlign.center,
-            style: AppFonts.body(
-              fontSize: 14,
-              color: widget.isDarkMode
-                  ? GenZTokens.inkSoftDark
-                  : GenZTokens.inkSoft,
-            ),
-          ),
-        ],
-      );
+    physics: const AlwaysScrollableScrollPhysics(),
+    padding: const EdgeInsets.all(28),
+    children: [
+      const SizedBox(height: 40),
+      const Icon(Icons.checklist_rtl, size: 60, color: GenZTokens.green),
+      const SizedBox(height: 16),
+      Text(
+        'Bucket list còn trống',
+        textAlign: TextAlign.center,
+        style: AppFonts.heading(
+          fontWeight: FontWeight.w800,
+          fontSize: 20,
+          color: _ink,
+        ),
+      ),
+      const SizedBox(height: 6),
+      Text(
+        'Thêm những điều bạn muốn làm trên đường đi — rồi tick khi hoàn thành!',
+        textAlign: TextAlign.center,
+        style: AppFonts.body(
+          fontSize: 14,
+          color: widget.isDarkMode
+              ? GenZTokens.inkSoftDark
+              : GenZTokens.inkSoft,
+        ),
+      ),
+    ],
+  );
 
   Widget _bucketError() => ListView(
-        children: [
-          const SizedBox(height: 120),
-          Center(
-            child: Column(
-              children: [
-                const Icon(Icons.cloud_off_rounded,
-                    color: Colors.redAccent, size: 40),
-                const SizedBox(height: 12),
-                Text(
-                  'Không tải được bucket list',
-                  style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
-                    color: _ink,
-                  ),
-                ),
-              ],
+    children: [
+      const SizedBox(height: 120),
+      Center(
+        child: Column(
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              color: Colors.redAccent,
+              size: 40,
             ),
-          ),
-        ],
-      );
+            const SizedBox(height: 12),
+            Text(
+              'Không tải được bucket list',
+              style: AppFonts.heading(fontWeight: FontWeight.w800, color: _ink),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }

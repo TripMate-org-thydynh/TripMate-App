@@ -34,8 +34,8 @@ class TripHubScreen extends StatelessWidget {
   final bool isDarkMode;
   const TripHubScreen({super.key, required this.trip, this.isDarkMode = false});
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _primary => const Color(0xFFF5822B);
   Color get _ink =>
       isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
@@ -56,11 +56,11 @@ class TripHubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: _bg,
+            backgroundColor: _bgOf(context),
             pinned: true,
             expandedHeight: 180,
             iconTheme: IconThemeData(color: _textPri),

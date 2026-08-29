@@ -24,12 +24,14 @@ class TodosNotifier extends FamilyAsyncNotifier<TodoList, String> {
         .map((i) => i.id == itemId ? i.copyWith(isDone: next) : i)
         .toList();
     final done = updated.where((i) => i.isDone).length;
-    state = AsyncData(TodoList(
-      items: updated,
-      total: updated.length,
-      done: done,
-      percent: updated.isEmpty ? 0 : ((done / updated.length) * 100).round(),
-    ));
+    state = AsyncData(
+      TodoList(
+        items: updated,
+        total: updated.length,
+        done: done,
+        percent: updated.isEmpty ? 0 : ((done / updated.length) * 100).round(),
+      ),
+    );
     try {
       await _repo.toggleDone(arg, itemId, next);
     } catch (_) {

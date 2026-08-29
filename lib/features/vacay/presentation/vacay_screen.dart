@@ -19,8 +19,8 @@ class VacayScreen extends ConsumerStatefulWidget {
 class _VacayScreenState extends ConsumerState<VacayScreen> {
   int _selectedYear = 2026;
 
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
       widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textSec =>
@@ -41,9 +41,10 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
         builder: (context, setModalState) {
           return Container(
             decoration: BoxDecoration(
-              color: _bg,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(28)),
+              color: _bgOf(context),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
               border: Border.all(color: _ink.withValues(alpha: 0.12)),
             ),
             padding: EdgeInsets.only(
@@ -70,7 +71,10 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                 Text(
                   'Thêm ngày nghỉ 🗓️',
                   style: AppFonts.heading(
-                      fontSize: 20, fontWeight: FontWeight.w900, color: _ink),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: _ink,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 // Date picker
@@ -96,7 +100,9 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     decoration: BoxDecoration(
                       color: _card,
                       borderRadius: BorderRadius.circular(12),
@@ -105,10 +111,10 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                     child: Row(
                       children: [
                         Icon(
-                            PhosphorIcons.calendarBlank(
-                                PhosphorIconsStyle.fill),
-                            color: const Color(0xFFF5822B),
-                            size: 18),
+                          PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
+                          color: const Color(0xFFF5822B),
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           DateFormat('dd/MM/yyyy').format(selectedDate),
@@ -122,11 +128,19 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                 // Type selector
                 Row(
                   children: [
-                    _typeButton('trips.hub_leave_days'.tr(), 'LEAVE', selectedType == 'LEAVE',
-                        () => setModalState(() => selectedType = 'LEAVE')),
+                    _typeButton(
+                      'trips.hub_leave_days'.tr(),
+                      'LEAVE',
+                      selectedType == 'LEAVE',
+                      () => setModalState(() => selectedType = 'LEAVE'),
+                    ),
                     const SizedBox(width: 8),
-                    _typeButton('vacay.holiday'.tr(), 'HOLIDAY', selectedType == 'HOLIDAY',
-                        () => setModalState(() => selectedType = 'HOLIDAY')),
+                    _typeButton(
+                      'vacay.holiday'.tr(),
+                      'HOLIDAY',
+                      selectedType == 'HOLIDAY',
+                      () => setModalState(() => selectedType = 'HOLIDAY'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -138,11 +152,14 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                     hintText: 'Ghi chú (đi Đà Lạt, nghỉ ốm...)',
                     hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                          color: Color(0xFFF5822B), width: 2),
+                        color: Color(0xFFF5822B),
+                        width: 2,
+                      ),
                     ),
                     filled: true,
                     fillColor: _card,
@@ -159,14 +176,17 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                         side: const BorderSide(
-                            color: Color(0xFF141210), width: 2),
+                          color: Color(0xFF141210),
+                          width: 2,
+                        ),
                       ),
                       elevation: 0,
                     ),
                     onPressed: () async {
                       Navigator.pop(ctx);
-                      final formattedDate =
-                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                      final formattedDate = DateFormat(
+                        'yyyy-MM-dd',
+                      ).format(selectedDate);
                       await ref
                           .read(vacayMyDaysProvider.notifier)
                           .addDay(
@@ -180,9 +200,10 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                     child: Text(
                       'Thêm ngày',
                       style: AppFonts.heading(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -195,7 +216,11 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
   }
 
   Widget _typeButton(
-      String label, String type, bool selected, VoidCallback onTap) {
+    String label,
+    String type,
+    bool selected,
+    VoidCallback onTap,
+  ) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -234,21 +259,26 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
     final bridgeAsync = ref.watch(bridgeSuggestionsProvider);
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: _bgOf(context),
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'Nghỉ phép thông minh 🏖️',
           style: AppFonts.heading(
-              fontSize: 18, fontWeight: FontWeight.w900, color: _ink),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: _ink,
+          ),
         ),
         actions: [
           IconButton(
             icon: Icon(PhosphorIcons.arrowsClockwise(), color: _ink),
             onPressed: () {
-              ref.read(vacayMyDaysProvider.notifier).refresh(year: _selectedYear);
+              ref
+                  .read(vacayMyDaysProvider.notifier)
+                  .refresh(year: _selectedYear);
             },
           ),
         ],
@@ -264,17 +294,25 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
         label: Text(
           'trips.hub_leave_days'.tr(),
           style: AppFonts.heading(
-              fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
         ),
       ),
       body: myDaysAsync.when(
         loading: () => Center(
-            child: CircularProgressIndicator(
-                color: const Color(0xFFF5822B))),
+          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+        ),
         error: (e, _) => Center(
-          child: Text('Lỗi tải ngày nghỉ',
-              style: AppFonts.heading(
-                  fontSize: 16, fontWeight: FontWeight.w700, color: _ink)),
+          child: Text(
+            'Lỗi tải ngày nghỉ',
+            style: AppFonts.heading(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _ink,
+            ),
+          ),
         ),
         data: (res) {
           final days = res.days;
@@ -292,9 +330,10 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                   border: Border.all(color: const Color(0xFF141210), width: 2),
                   boxShadow: const [
                     BoxShadow(
-                        color: Color(0xFF141210),
-                        offset: Offset(4, 4),
-                        blurRadius: 0),
+                      color: Color(0xFF141210),
+                      offset: Offset(4, 4),
+                      blurRadius: 0,
+                    ),
                   ],
                 ),
                 child: Column(
@@ -303,18 +342,22 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                     Text(
                       'vacay.overview'.tr(),
                       style: AppFonts.heading(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white.withValues(alpha: 0.8)),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white.withValues(alpha: 0.8),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _summaryCol('Đã nghỉ', '${summary.totalLeave}', 'ngày'),
+                        _summaryCol('Còn lại', '${summary.remaining}', 'ngày'),
                         _summaryCol(
-                            'Còn lại', '${summary.remaining}', 'ngày'),
-                        _summaryCol('vacay.holiday_vn'.tr(), '${summary.totalHoliday}', 'ngày'),
+                          'vacay.holiday_vn'.tr(),
+                          '${summary.totalHoliday}',
+                          'ngày',
+                        ),
                       ],
                     ),
                   ],
@@ -328,25 +371,26 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                   Text(
                     'Ngày đã đăng ký',
                     style: AppFonts.heading(
-                        fontSize: 16, fontWeight: FontWeight.w800, color: _ink),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: _ink,
+                    ),
                   ),
                   DropdownButton<int>(
                     value: _selectedYear,
                     dropdownColor: _card,
                     style: AppFonts.heading(
-                        fontSize: 14, fontWeight: FontWeight.w700, color: _ink),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: _ink,
+                    ),
                     items: [2025, 2026, 2027].map((y) {
-                      return DropdownMenuItem<int>(
-                        value: y,
-                        child: Text('$y'),
-                      );
+                      return DropdownMenuItem<int>(value: y, child: Text('$y'));
                     }).toList(),
                     onChanged: (y) {
                       if (y != null) {
                         setState(() => _selectedYear = y);
-                        ref
-                            .read(vacayMyDaysProvider.notifier)
-                            .refresh(year: y);
+                        ref.read(vacayMyDaysProvider.notifier).refresh(year: y);
                       }
                     },
                   ),
@@ -364,43 +408,57 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                 )
               else
                 ...days.map((d) {
-                  final formattedDate =
-                      DateFormat('dd/MM/yyyy').format(d.date);
+                  final formattedDate = DateFormat('dd/MM/yyyy').format(d.date);
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
                       color: _card,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                          color: _ink.withValues(alpha: 0.12), width: 1.5),
+                        color: _ink.withValues(alpha: 0.12),
+                        width: 1.5,
+                      ),
                     ),
                     child: ListTile(
                       title: Text(
                         formattedDate,
                         style: AppFonts.heading(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: _ink),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: _ink,
+                        ),
                       ),
                       subtitle: d.note != null
-                          ? Text(d.note!,
+                          ? Text(
+                              d.note!,
                               style: AppFonts.body(
-                                  fontSize: 12, color: _textSec))
+                                fontSize: 12,
+                                color: _textSec,
+                              ),
+                            )
                           : null,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: d.type == 'LEAVE'
-                                  ? const Color(0xFF3D8BFF).withValues(alpha: 0.1)
-                                  : const Color(0xFF1FA85C).withValues(alpha: 0.1),
+                                  ? const Color(
+                                      0xFF3D8BFF,
+                                    ).withValues(alpha: 0.1)
+                                  : const Color(
+                                      0xFF1FA85C,
+                                    ).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              d.type == 'LEAVE' ? tr('vacay.leave') : tr('vacay.holiday'),
+                              d.type == 'LEAVE'
+                                  ? tr('vacay.leave')
+                                  : tr('vacay.holiday'),
                               style: AppFonts.heading(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -411,11 +469,15 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(PhosphorIcons.trash(),
-                                color: Colors.red, size: 18),
+                            icon: Icon(
+                              PhosphorIcons.trash(),
+                              color: Colors.red,
+                              size: 18,
+                            ),
                             onPressed: () async {
-                              final isoStr =
-                                  DateFormat('yyyy-MM-dd').format(d.date);
+                              final isoStr = DateFormat(
+                                'yyyy-MM-dd',
+                              ).format(d.date);
                               await ref
                                   .read(vacayMyDaysProvider.notifier)
                                   .removeDay(isoStr);
@@ -431,17 +493,23 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
               Text(
                 'Gợi ý nghỉ bắc cầu (VN 2026) 💡',
                 style: AppFonts.heading(
-                    fontSize: 16, fontWeight: FontWeight.w800, color: _ink),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: _ink,
+                ),
               ),
               const SizedBox(height: 12),
               bridgeAsync.when(
                 loading: () => const Center(
-                    child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: CircularProgressIndicator(),
-                )),
-                error: (e, _) => Text('Lỗi tải gợi ý: ${friendlyError(e)}',
-                    style: AppFonts.body(fontSize: 13, color: Colors.red)),
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (e, _) => Text(
+                  'Lỗi tải gợi ý: ${friendlyError(e)}',
+                  style: AppFonts.body(fontSize: 13, color: Colors.red),
+                ),
                 data: (suggestions) {
                   if (suggestions.isEmpty) {
                     return Padding(
@@ -458,16 +526,23 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                         margin: const EdgeInsets.only(bottom: 10),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFCF9FFF).withValues(alpha: 0.15),
+                          color: const Color(
+                            0xFFCF9FFF,
+                          ).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                              color: const Color(0xFFCF9FFF), width: 1.5),
+                            color: const Color(0xFFCF9FFF),
+                            width: 1.5,
+                          ),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                                color: const Color(0xFF8B4DE8), size: 20),
+                            Icon(
+                              PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                              color: const Color(0xFF8B4DE8),
+                              size: 20,
+                            ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Column(
@@ -476,15 +551,18 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                   Text(
                                     'Nghỉ bắc cầu: Xin nghỉ ${s.days} ngày',
                                     style: AppFonts.heading(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        color: _ink),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: _ink,
+                                    ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'Từ ${s.from} đến ${s.to} để có kỳ nghỉ dài!',
                                     style: AppFonts.body(
-                                        fontSize: 12, color: _textSec),
+                                      fontSize: 12,
+                                      color: _textSec,
+                                    ),
                                   ),
                                   const SizedBox(height: 6),
                                   Wrap(
@@ -492,17 +570,23 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                     children: s.holidays.map((h) {
                                       return Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 3),
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF141210)
-                                              .withValues(alpha: 0.08),
-                                          borderRadius:
-                                              BorderRadius.circular(6),
+                                          color: const Color(
+                                            0xFF141210,
+                                          ).withValues(alpha: 0.08),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
                                           tr('vacay.holidays.$h'),
                                           style: AppFonts.body(
-                                              fontSize: 10, color: _ink),
+                                            fontSize: 10,
+                                            color: _ink,
+                                          ),
                                         ),
                                       );
                                     }).toList(),
@@ -530,12 +614,17 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
         Text(
           value,
           style: AppFonts.heading(
-              fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white),
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+          ),
         ),
         Text(
           '$label ($unit)',
           style: AppFonts.body(
-              fontSize: 11, color: Colors.white.withValues(alpha: 0.8)),
+            fontSize: 11,
+            color: Colors.white.withValues(alpha: 0.8),
+          ),
         ),
       ],
     );

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../gamification/data/games_repository.dart';
 import '../../moments/data/trip_recap_repository.dart';
 import '../../trips/application/trips_providers.dart';
+
 /// Trợ lý ngân sách.
 ///
 /// Trước đây màn này in cứng "Total Financial Damage $1,420.69" và "Remaining
@@ -635,10 +636,7 @@ class _AiBudgetAssistantScreenState
                       children: [
                         Text(
                           'Remaining',
-                          style: AppFonts.body(
-                            fontSize: 10,
-                            color: textMuted,
-                          ),
+                          style: AppFonts.body(fontSize: 10, color: textMuted),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -655,10 +653,7 @@ class _AiBudgetAssistantScreenState
                       children: [
                         Text(
                           'Pace',
-                          style: AppFonts.body(
-                            fontSize: 10,
-                            color: textMuted,
-                          ),
+                          style: AppFonts.body(fontSize: 10, color: textMuted),
                         ),
                         const SizedBox(height: 2),
                         Row(

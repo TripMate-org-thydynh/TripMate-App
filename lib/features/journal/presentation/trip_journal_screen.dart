@@ -22,7 +22,15 @@ class TripJournalScreen extends ConsumerStatefulWidget {
 }
 
 class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
-  static const _moods = ['HAPPY', 'CHILL', 'TIRED', 'WOW', 'SAD', 'EXCITED', 'ANNOYED'];
+  static const _moods = [
+    'HAPPY',
+    'CHILL',
+    'TIRED',
+    'WOW',
+    'SAD',
+    'EXCITED',
+    'ANNOYED',
+  ];
   static const _moodEmoji = {
     'HAPPY': '😄',
     'CHILL': '😌',
@@ -51,8 +59,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
     'ANNOYED': Color(0xFFFF7E7E),
   };
 
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
       widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textSec =>
@@ -71,237 +79,255 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return StatefulBuilder(builder: (context, setModalState) {
-          return Container(
-            decoration: BoxDecoration(
-              color: _bg,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(28)),
-              border: Border.all(color: _ink.withValues(alpha: 0.12)),
-            ),
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-              top: 24,
-              left: 24,
-              right: 24,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: _textSec.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(99),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              decoration: BoxDecoration(
+                color: _bgOf(context),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+                border: Border.all(color: _ink.withValues(alpha: 0.12)),
+              ),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+                top: 24,
+                left: 24,
+                right: 24,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: _textSec.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Viết nhật ký ✍️',
-                    style: AppFonts.heading(
+                    const SizedBox(height: 20),
+                    Text(
+                      'Viết nhật ký ✍️',
+                      style: AppFonts.heading(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
-                        color: _ink),
-                  ),
-                  const SizedBox(height: 16),
-                  // Date picker
-                  GestureDetector(
-                    onTap: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate,
-                        firstDate: DateTime(2024),
-                        lastDate: DateTime(2030),
-                        builder: (context, child) => Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: const ColorScheme.light(
-                              primary: Color(0xFFF5822B),
-                            ),
-                          ),
-                          child: child!,
-                        ),
-                      );
-                      if (date != null) {
-                        setModalState(() => selectedDate = date);
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _card,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                            color: _ink.withValues(alpha: 0.2)),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                              PhosphorIcons.calendarBlank(
-                                  PhosphorIconsStyle.fill),
-                              color: const Color(0xFFF5822B),
-                              size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            DateFormat('dd/MM/yyyy').format(selectedDate),
-                            style: AppFonts.body(
-                                fontSize: 14, color: _ink),
-                          ),
-                        ],
+                        color: _ink,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Title
-                  TextField(
-                    controller: titleCtrl,
-                    style: AppFonts.heading(
+                    const SizedBox(height: 16),
+                    // Date picker
+                    GestureDetector(
+                      onTap: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime(2024),
+                          lastDate: DateTime(2030),
+                          builder: (context, child) => Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                primary: Color(0xFFF5822B),
+                              ),
+                            ),
+                            child: child!,
+                          ),
+                        );
+                        if (date != null) {
+                          setModalState(() => selectedDate = date);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _card,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _ink.withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              PhosphorIcons.calendarBlank(
+                                PhosphorIconsStyle.fill,
+                              ),
+                              color: const Color(0xFFF5822B),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              DateFormat('dd/MM/yyyy').format(selectedDate),
+                              style: AppFonts.body(fontSize: 14, color: _ink),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Title
+                    TextField(
+                      controller: titleCtrl,
+                      style: AppFonts.heading(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: _ink),
-                    decoration: InputDecoration(
-                      hintText: 'Tiêu đề hôm nay (tuỳ chọn)',
-                      hintStyle:
-                          AppFonts.body(fontSize: 14, color: _textSec),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                            color: Color(0xFFF5822B), width: 2),
+                        color: _ink,
                       ),
-                      filled: true,
-                      fillColor: _card,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Body
-                  TextField(
-                    controller: bodyCtrl,
-                    minLines: 4,
-                    maxLines: 10,
-                    style: AppFonts.body(fontSize: 14, color: _ink),
-                    decoration: InputDecoration(
-                      hintText:
-                          'Hôm nay bạn trải qua điều gì? Kể cho squad nghe...',
-                      hintStyle:
-                          AppFonts.body(fontSize: 14, color: _textSec),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                            color: Color(0xFFF5822B), width: 2),
+                      decoration: InputDecoration(
+                        hintText: 'Tiêu đề hôm nay (tuỳ chọn)',
+                        hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFF5822B),
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: _card,
                       ),
-                      filled: true,
-                      fillColor: _card,
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Mood picker
-                  Text(
-                    'Mood hôm nay',
-                    style: AppFonts.heading(
+                    const SizedBox(height: 12),
+                    // Body
+                    TextField(
+                      controller: bodyCtrl,
+                      minLines: 4,
+                      maxLines: 10,
+                      style: AppFonts.body(fontSize: 14, color: _ink),
+                      decoration: InputDecoration(
+                        hintText:
+                            'Hôm nay bạn trải qua điều gì? Kể cho squad nghe...',
+                        hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFF5822B),
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: _card,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Mood picker
+                    Text(
+                      'Mood hôm nay',
+                      style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: _textSec),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _moods.map((mood) {
-                      final selected = mood == selectedMood;
-                      final color =
-                          _moodColors[mood] ?? const Color(0xFFF5822B);
-                      return GestureDetector(
-                        onTap: () =>
-                            setModalState(() => selectedMood = mood),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? color
-                                : color.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(99),
-                            border: Border.all(
-                              color: selected
-                                  ? color
-                                  : color.withValues(alpha: 0.3),
-                              width: selected ? 2 : 1,
-                            ),
-                          ),
-                          child: Text(
-                            '${_moodEmoji[mood]} ${_moodLabel[mood]!.tr()}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: selected
-                                  ? FontWeight.w800
-                                  : FontWeight.w500,
-                              color: selected
-                                  ? (color.computeLuminance() > 0.5
-                                      ? const Color(0xFF141210)
-                                      : Colors.white)
-                                  : color,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFF5822B),
-                        foregroundColor: Colors.white,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: const BorderSide(
-                              color: Color(0xFF141210), width: 2),
-                        ),
-                        elevation: 0,
-                      ),
-                      onPressed: () async {
-                        final body = bodyCtrl.text.trim();
-                        if (body.isEmpty) return;
-                        Navigator.pop(ctx);
-                        await ref
-                            .read(journalProvider(widget.tripId).notifier)
-                            .add(
-                              body: body,
-                              mood: selectedMood,
-                              entryDate: DateFormat('yyyy-MM-dd')
-                                  .format(selectedDate),
-                              title: titleCtrl.text.trim().isEmpty
-                                  ? null
-                                  : titleCtrl.text.trim(),
-                            );
-                      },
-                      child: Text(
-                        'Lưu nhật ký',
-                        style: AppFonts.heading(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white),
+                        color: _textSec,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _moods.map((mood) {
+                        final selected = mood == selectedMood;
+                        final color =
+                            _moodColors[mood] ?? const Color(0xFFF5822B);
+                        return GestureDetector(
+                          onTap: () => setModalState(() => selectedMood = mood),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: selected
+                                  ? color
+                                  : color.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(99),
+                              border: Border.all(
+                                color: selected
+                                    ? color
+                                    : color.withValues(alpha: 0.3),
+                                width: selected ? 2 : 1,
+                              ),
+                            ),
+                            child: Text(
+                              '${_moodEmoji[mood]} ${_moodLabel[mood]!.tr()}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: selected
+                                    ? FontWeight.w800
+                                    : FontWeight.w500,
+                                color: selected
+                                    ? (color.computeLuminance() > 0.5
+                                          ? const Color(0xFF141210)
+                                          : Colors.white)
+                                    : color,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFF5822B),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: const BorderSide(
+                              color: Color(0xFF141210),
+                              width: 2,
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () async {
+                          final body = bodyCtrl.text.trim();
+                          if (body.isEmpty) return;
+                          Navigator.pop(ctx);
+                          await ref
+                              .read(journalProvider(widget.tripId).notifier)
+                              .add(
+                                body: body,
+                                mood: selectedMood,
+                                entryDate: DateFormat(
+                                  'yyyy-MM-dd',
+                                ).format(selectedDate),
+                                title: titleCtrl.text.trim().isEmpty
+                                    ? null
+                                    : titleCtrl.text.trim(),
+                              );
+                        },
+                        child: Text(
+                          'Lưu nhật ký',
+                          style: AppFonts.heading(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          },
+        );
       },
     );
   }
@@ -311,15 +337,18 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
     final entriesAsync = ref.watch(journalProvider(widget.tripId));
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: _bgOf(context),
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'journal.title'.tr(),
           style: AppFonts.heading(
-              fontSize: 18, fontWeight: FontWeight.w900, color: _ink),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: _ink,
+          ),
         ),
         actions: [
           IconButton(
@@ -340,21 +369,25 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
         label: Text(
           'Viết nhật ký',
           style: AppFonts.heading(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: Colors.white),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
         ),
       ),
       body: entriesAsync.when(
         loading: () => Center(
-            child: CircularProgressIndicator(
-                color: const Color(0xFFF5822B))),
+          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+        ),
         error: (e, _) => Center(
-          child: Text('Lỗi tải nhật ký',
-              style: AppFonts.heading(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: _ink)),
+          child: Text(
+            'Lỗi tải nhật ký',
+            style: AppFonts.heading(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _ink,
+            ),
+          ),
         ),
         data: (entries) {
           if (entries.isEmpty) {
@@ -362,22 +395,24 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
-                      size: 72,
-                      color: _textSec.withValues(alpha: 0.4)),
+                  Icon(
+                    PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
+                    size: 72,
+                    color: _textSec.withValues(alpha: 0.4),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Nhật ký trống',
                     style: AppFonts.heading(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: _textSec),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: _textSec,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Ghi lại những khoảnh khắc đáng nhớ nhé!',
-                    style: AppFonts.body(
-                        fontSize: 14, color: _textSec),
+                    style: AppFonts.body(fontSize: 14, color: _textSec),
                   ),
                 ],
               ),
@@ -398,12 +433,15 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                   color: _card,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                      color: _ink.withValues(alpha: 0.12), width: 1.5),
+                    color: _ink.withValues(alpha: 0.12),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
-                        color: _ink.withValues(alpha: 0.06),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4)),
+                      color: _ink.withValues(alpha: 0.06),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
                   ],
                 ),
                 child: Column(
@@ -415,7 +453,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       decoration: BoxDecoration(
                         color: moodColor,
                         borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(20)),
+                          top: Radius.circular(20),
+                        ),
                       ),
                     ),
                     Padding(
@@ -428,7 +467,9 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               // Date
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: moodColor.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(8),
@@ -436,66 +477,76 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                 child: Text(
                                   DateFormat('dd/MM').format(entry.entryDate),
                                   style: AppFonts.heading(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                      color: moodColor),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    color: moodColor,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 '${_moodEmoji[entry.mood]} ${_moodLabel[entry.mood]!.tr()}',
                                 style: AppFonts.heading(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: _textSec),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: _textSec,
+                                ),
                               ),
                               const Spacer(),
                               IconButton(
-                                icon: Icon(PhosphorIcons.trash(),
-                                    color: Colors.red.withValues(alpha: 0.7),
-                                    size: 18),
+                                icon: Icon(
+                                  PhosphorIcons.trash(),
+                                  color: Colors.red.withValues(alpha: 0.7),
+                                  size: 18,
+                                ),
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
                                 onPressed: () async {
-                                  final confirm =
-                                      await showDialog<bool>(
+                                  final confirm = await showDialog<bool>(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
-                                      backgroundColor: _bg,
-                                      title: Text('Xóa nhật ký?',
-                                          style: AppFonts.heading(
-                                              fontSize: 16,
-                                              fontWeight:
-                                                  FontWeight.w700,
-                                              color: _ink)),
+                                      backgroundColor: _bgOf(context),
+                                      title: Text(
+                                        'Xóa nhật ký?',
+                                        style: AppFonts.heading(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: _ink,
+                                        ),
+                                      ),
                                       actions: [
                                         TextButton(
                                           onPressed: () =>
-                                              Navigator.pop(
-                                                  ctx, false),
-                                          child: Text('general.cancel'.tr(),
-                                              style: AppFonts.body(
-                                                  fontSize: 14,
-                                                  color: const Color(
-                                                      0xFFF5822B))),
+                                              Navigator.pop(ctx, false),
+                                          child: Text(
+                                            'general.cancel'.tr(),
+                                            style: AppFonts.body(
+                                              fontSize: 14,
+                                              color: const Color(0xFFF5822B),
+                                            ),
+                                          ),
                                         ),
                                         TextButton(
                                           onPressed: () =>
-                                              Navigator.pop(
-                                                  ctx, true),
-                                          child: Text('general.delete'.tr(),
-                                              style: AppFonts.body(
-                                                  fontSize: 14,
-                                                  color: Colors.red)),
+                                              Navigator.pop(ctx, true),
+                                          child: Text(
+                                            'general.delete'.tr(),
+                                            style: AppFonts.body(
+                                              fontSize: 14,
+                                              color: Colors.red,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
                                   );
                                   if (confirm == true) {
                                     await ref
-                                        .read(journalProvider(
-                                                widget.tripId)
-                                            .notifier)
+                                        .read(
+                                          journalProvider(
+                                            widget.tripId,
+                                          ).notifier,
+                                        )
                                         .remove(entry.id);
                                   }
                                 },
@@ -508,9 +559,10 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                             Text(
                               entry.title!,
                               style: AppFonts.heading(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  color: _ink),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: _ink,
+                              ),
                             ),
                           ],
                           const SizedBox(height: 8),
@@ -518,8 +570,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                             entry.body,
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
-                            style: AppFonts.body(
-                                fontSize: 14, color: _ink),
+                            style: AppFonts.body(fontSize: 14, color: _ink),
                           ),
                           if (entry.photos.isNotEmpty) ...[
                             const SizedBox(height: 12),
@@ -533,14 +584,11 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                   return Container(
                                     width: 80,
                                     height: 80,
-                                    margin:
-                                        const EdgeInsets.only(right: 8),
+                                    margin: const EdgeInsets.only(right: 8),
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10),
                                       image: DecorationImage(
-                                        image: NetworkImage(
-                                            photo.mediaUrl),
+                                        image: NetworkImage(photo.mediaUrl),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -555,29 +603,34 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               if (entry.authorAvatarUrl != null)
                                 CircleAvatar(
                                   radius: 12,
-                                  backgroundImage:
-                                      NetworkImage(entry.authorAvatarUrl!),
+                                  backgroundImage: NetworkImage(
+                                    entry.authorAvatarUrl!,
+                                  ),
                                 )
                               else
                                 CircleAvatar(
                                   radius: 12,
-                                  backgroundColor: moodColor
-                                      .withValues(alpha: 0.2),
+                                  backgroundColor: moodColor.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   child: Text(
                                     entry.authorName.isNotEmpty
                                         ? entry.authorName[0].toUpperCase()
                                         : '?',
                                     style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: moodColor),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: moodColor,
+                                    ),
                                   ),
                                 ),
                               const SizedBox(width: 6),
                               Text(
                                 entry.authorName,
                                 style: AppFonts.body(
-                                    fontSize: 12, color: _textSec),
+                                  fontSize: 12,
+                                  color: _textSec,
+                                ),
                               ),
                             ],
                           ),

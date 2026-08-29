@@ -35,7 +35,11 @@ class QuickActionsPanel extends StatelessWidget {
     // khắc; ô này nay mở Memory Wall để xem kỷ niệm thật.
     {'labelKey': 'dashboard.memories', 'type': 'memories', 'isPrimary': false},
     {'labelKey': 'dashboard.bingo', 'type': 'bingo', 'isPrimary': false},
-    {'labelKey': 'dashboard.vibe_match', 'type': 'vibe_match', 'isPrimary': true},
+    {
+      'labelKey': 'dashboard.vibe_match',
+      'type': 'vibe_match',
+      'isPrimary': true,
+    },
   ];
 
   // ── Secondary actions (compact horizontal row) ────────────────────────────────

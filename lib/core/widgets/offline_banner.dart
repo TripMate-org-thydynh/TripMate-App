@@ -15,7 +15,9 @@ class OfflineBanner extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final bgColor = isDark ? const Color(0xFFC2410C) : const Color(0xFFF97316); // Orange accent
+    final bgColor = isDark
+        ? const Color(0xFFC2410C)
+        : const Color(0xFFF97316); // Orange accent
     final textInk = GenZTokens.ink;
 
     return Container(
@@ -30,11 +32,7 @@ class OfflineBanner extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.wifi_off_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
+          const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

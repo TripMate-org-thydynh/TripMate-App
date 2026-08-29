@@ -16,8 +16,8 @@ class NotificationsScreen extends ConsumerWidget {
   final bool isDarkMode;
   const NotificationsScreen({super.key, this.isDarkMode = false});
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary => const Color(0xFFF5822B);
@@ -49,7 +49,7 @@ class NotificationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(notificationsProvider);
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -274,7 +274,9 @@ class NotificationsScreen extends ConsumerWidget {
 
   void _showNotificationSettingsModal(BuildContext context, WidgetRef ref) {
     final borderCol = isDarkMode ? Colors.white : const Color(0xFF141210);
-    final cardBgCol = isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final cardBgCol = isDarkMode
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
 
     showModalBottomSheet(
       context: context,
@@ -315,10 +317,7 @@ class NotificationsScreen extends ConsumerWidget {
                   const SizedBox(height: 6),
                   Text(
                     'system_phases.notif_settings_desc'.tr(),
-                    style: AppFonts.body(
-                      fontSize: 13,
-                      color: _textSec,
-                    ),
+                    style: AppFonts.body(fontSize: 13, color: _textSec),
                   ),
                   const SizedBox(height: 20),
 
@@ -328,7 +327,10 @@ class NotificationsScreen extends ConsumerWidget {
                     value: pushEnabled,
                     onChanged: (val) {
                       HapticFeedback.lightImpact();
-                      ref.read(pushNotificationsEnabledProvider.notifier).state = val;
+                      ref
+                              .read(pushNotificationsEnabledProvider.notifier)
+                              .state =
+                          val;
                     },
                     borderCol: borderCol,
                   ),
@@ -340,7 +342,8 @@ class NotificationsScreen extends ConsumerWidget {
                     value: smsEnabled,
                     onChanged: (val) {
                       HapticFeedback.lightImpact();
-                      ref.read(smsNotificationsEnabledProvider.notifier).state = val;
+                      ref.read(smsNotificationsEnabledProvider.notifier).state =
+                          val;
                       debugPrint('SMS notification simulation set to: $val');
                     },
                     borderCol: borderCol,
@@ -353,7 +356,10 @@ class NotificationsScreen extends ConsumerWidget {
                     value: emailEnabled,
                     onChanged: (val) {
                       HapticFeedback.lightImpact();
-                      ref.read(emailNotificationsEnabledProvider.notifier).state = val;
+                      ref
+                              .read(emailNotificationsEnabledProvider.notifier)
+                              .state =
+                          val;
                       debugPrint('Email notification simulation set to: $val');
                     },
                     borderCol: borderCol,

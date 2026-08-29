@@ -16,8 +16,8 @@ class TripmateMcpScreen extends StatefulWidget {
 class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
   bool _mcpEnabled = true;
 
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _ink =>
@@ -29,10 +29,12 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
   @override
   Widget build(BuildContext context) {
     final borderCol = _ink;
-    final jsonString = const JsonEncoder.withIndent('  ').convert(TripMateMcpConfig.schema);
+    final jsonString = const JsonEncoder.withIndent(
+      '  ',
+    ).convert(TripMateMcpConfig.schema);
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -64,7 +66,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: borderCol, width: 2.5),
                 boxShadow: [
-                  BoxShadow(color: borderCol, offset: const Offset(0, 4))
+                  BoxShadow(color: borderCol, offset: const Offset(0, 4)),
                 ],
               ),
               child: Column(
@@ -79,7 +81,9 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                             width: 14,
                             height: 14,
                             decoration: BoxDecoration(
-                              color: _mcpEnabled ? const Color(0xFF1FA85C) : Colors.grey,
+                              color: _mcpEnabled
+                                  ? const Color(0xFF1FA85C)
+                                  : Colors.grey,
                               shape: BoxShape.circle,
                               border: Border.all(color: _ink, width: 1.5),
                             ),
@@ -137,7 +141,9 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: widget.isDarkMode ? const Color(0xFF141210) : const Color(0xFF262019),
+                color: widget.isDarkMode
+                    ? const Color(0xFF141210)
+                    : const Color(0xFF262019),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: borderCol, width: 2),
               ),
@@ -157,7 +163,11 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                     top: 0,
                     right: 0,
                     child: IconButton(
-                      icon: const Icon(Icons.copy, color: Colors.white70, size: 18),
+                      icon: const Icon(
+                        Icons.copy,
+                        color: Colors.white70,
+                        size: 18,
+                      ),
                       tooltip: 'Copy schema',
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: jsonString));

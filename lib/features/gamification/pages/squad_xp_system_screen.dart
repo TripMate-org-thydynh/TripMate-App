@@ -177,54 +177,58 @@ class SquadXpSystemScreen extends ConsumerWidget {
             ),
           )
         else
-          ...xp.breakdown.where((b) => b.count > 0).map(
-            (b) => Padding(
-              padding: const EdgeInsets.only(bottom: GenZTokens.space2),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: GenZTokens.space4,
-                  vertical: GenZTokens.space3,
-                ),
-                decoration: BoxDecoration(
-                  color: surface,
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-                  border: Border.all(
-                    color: ink,
-                    width: GenZTokens.borderWidthThin,
+          ...xp.breakdown
+              .where((b) => b.count > 0)
+              .map(
+                (b) => Padding(
+                  padding: const EdgeInsets.only(bottom: GenZTokens.space2),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: GenZTokens.space4,
+                      vertical: GenZTokens.space3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: surface,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusInput,
+                      ),
+                      border: Border.all(
+                        color: ink,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            b.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.body(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: ink,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '×${b.count}',
+                          style: AppFonts.mono(fontSize: 12, color: inkSoft),
+                        ),
+                        const SizedBox(width: GenZTokens.space3),
+                        Text(
+                          '+${b.xp}',
+                          style: AppFonts.mono(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: GenZTokens.green,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        b.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppFonts.body(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: ink,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '×${b.count}',
-                      style: AppFonts.mono(fontSize: 12, color: inkSoft),
-                    ),
-                    const SizedBox(width: GenZTokens.space3),
-                    Text(
-                      '+${b.xp}',
-                      style: AppFonts.mono(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: GenZTokens.green,
-                      ),
-                    ),
-                  ],
-                ),
               ),
-            ),
-          ),
       ],
     );
   }

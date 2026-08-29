@@ -20,7 +20,8 @@ class AiReceiptScannerScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<AiReceiptScannerScreen> createState() => _AiReceiptScannerScreenState();
+  ConsumerState<AiReceiptScannerScreen> createState() =>
+      _AiReceiptScannerScreenState();
 }
 
 class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
@@ -101,7 +102,9 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         // Hiện đúng lý do BE trả về (AI hết quota, ảnh mờ...) thay vì một câu
         // chung chung khiến người dùng cứ bấm lại mãi.
         showGlobalSnack(
-          e is ApiException ? e.message : 'Không thể quét hóa đơn. Thử lại nhé!',
+          e is ApiException
+              ? e.message
+              : 'Không thể quét hóa đơn. Thử lại nhé!',
           isError: true,
         );
         setState(() {
@@ -118,9 +121,13 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
   Widget build(BuildContext context) {
     final primaryColor = const Color(0xFFF5822B);
     final secondaryColor = const Color(0xFF1FA85C);
-    final bgColor = widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
-    final textPrimary = widget.isDarkMode ? Colors.white : const Color(0xFF262019);
-    final textSecondary = widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textPrimary = widget.isDarkMode
+        ? Colors.white
+        : const Color(0xFF262019);
+    final textSecondary = widget.isDarkMode
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
     final cardBg = widget.isDarkMode ? const Color(0xFF262019) : Colors.white;
 
     return Scaffold(
@@ -147,15 +154,30 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           child: _isSelecting
               ? _buildReceiptSelector(textPrimary, textSecondary, cardBg)
               : _isScanning
-                  ? _buildScanningViewport(primaryColor, secondaryColor, textPrimary, textSecondary)
-                  : _buildItemsBreakdown(primaryColor, secondaryColor, cardBg, textPrimary, textSecondary),
+              ? _buildScanningViewport(
+                  primaryColor,
+                  secondaryColor,
+                  textPrimary,
+                  textSecondary,
+                )
+              : _buildItemsBreakdown(
+                  primaryColor,
+                  secondaryColor,
+                  cardBg,
+                  textPrimary,
+                  textSecondary,
+                ),
         ),
       ),
     );
   }
 
   // Màn hình chọn hóa đơn mẫu để quét
-  Widget _buildReceiptSelector(Color textPrimary, Color textSecondary, Color cardBg) {
+  Widget _buildReceiptSelector(
+    Color textPrimary,
+    Color textSecondary,
+    Color cardBg,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       key: const ValueKey('selector_view'),
@@ -296,7 +318,12 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
   }
 
   // Hiệu ứng quét hóa đơn
-  Widget _buildScanningViewport(Color primaryColor, Color secondaryColor, Color textPrimary, Color textSecondary) {
+  Widget _buildScanningViewport(
+    Color primaryColor,
+    Color secondaryColor,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Center(
       key: const ValueKey('scanning_view'),
       child: Padding(
@@ -321,7 +348,11 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.receipt_long, size: 80, color: Colors.white),
+                        const Icon(
+                          Icons.receipt_long,
+                          size: 80,
+                          color: Colors.white,
+                        ),
                         const SizedBox(height: 8),
                         Text(
                           _selectedReceiptName ?? 'SCANNING...',
@@ -373,10 +404,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             Text(
               'Hệ thống trích xuất tên món và giá tiền từ ảnh chụp.',
               textAlign: TextAlign.center,
-              style: AppFonts.body(
-                color: textSecondary,
-                fontSize: 12,
-              ),
+              style: AppFonts.body(color: textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -535,7 +563,11 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.check_circle_outline, color: Colors.white, size: 18),
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),

@@ -396,7 +396,8 @@ class AiHubScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AiChatHistoryScreen(isDarkMode: isDark),
+                      builder: (context) =>
+                          AiChatHistoryScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),

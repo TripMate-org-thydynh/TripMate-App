@@ -34,8 +34,8 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
 
   int _selectedColorIndex = 0;
 
-  Color get _bg =>
-      widget.isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
       widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textSec =>
@@ -64,9 +64,10 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
           builder: (context, setModalState) {
             return Container(
               decoration: BoxDecoration(
-                color: _bg,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(28)),
+                color: _bgOf(context),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
                 border: Border.all(color: _ink.withValues(alpha: 0.12)),
               ),
               padding: EdgeInsets.only(
@@ -104,21 +105,25 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                   TextField(
                     controller: titleCtrl,
                     style: AppFonts.heading(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: _ink),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: _ink,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Tiêu đề (tuỳ chọn)',
                       hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                            color: _ink.withValues(alpha: 0.2)),
+                          color: _ink.withValues(alpha: 0.2),
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                            color: const Color(0xFFF5822B), width: 2),
+                          color: const Color(0xFFF5822B),
+                          width: 2,
+                        ),
                       ),
                       filled: true,
                       fillColor: _card,
@@ -130,20 +135,22 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                     controller: contentCtrl,
                     minLines: 3,
                     maxLines: 7,
-                    style:
-                        AppFonts.body(fontSize: 14, color: _ink),
+                    style: AppFonts.body(fontSize: 14, color: _ink),
                     decoration: InputDecoration(
                       hintText: 'Nội dung ghi chú...',
                       hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                            color: _ink.withValues(alpha: 0.2)),
+                          color: _ink.withValues(alpha: 0.2),
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                            color: const Color(0xFFF5822B), width: 2),
+                          color: const Color(0xFFF5822B),
+                          width: 2,
+                        ),
                       ),
                       filled: true,
                       fillColor: _card,
@@ -154,9 +161,10 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                   Text(
                     'Màu note',
                     style: AppFonts.heading(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: _textSec),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: _textSec,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -174,21 +182,24 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                               color: c,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: selected
-                                    ? _ink
-                                    : Colors.transparent,
+                                color: selected ? _ink : Colors.transparent,
                                 width: selected ? 3 : 0,
                               ),
                               boxShadow: selected
                                   ? [
                                       BoxShadow(
-                                          color: _ink, offset: const Offset(0, 2))
+                                        color: _ink,
+                                        offset: const Offset(0, 2),
+                                      ),
                                     ]
                                   : [],
                             ),
                             child: selected
-                                ? Icon(PhosphorIcons.check(),
-                                    size: 14, color: _ink)
+                                ? Icon(
+                                    PhosphorIcons.check(),
+                                    size: 14,
+                                    color: _ink,
+                                  )
                                 : null,
                           ),
                         ),
@@ -207,7 +218,9 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                           side: const BorderSide(
-                              color: Color(0xFF141210), width: 2),
+                            color: Color(0xFF141210),
+                            width: 2,
+                          ),
                         ),
                         elevation: 0,
                       ),
@@ -215,8 +228,9 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                         final content = contentCtrl.text.trim();
                         if (content.isEmpty) return;
                         Navigator.pop(ctx);
-                        final notifier =
-                            ref.read(notesProvider(widget.tripId).notifier);
+                        final notifier = ref.read(
+                          notesProvider(widget.tripId).notifier,
+                        );
                         if (editing == null) {
                           await notifier.add(
                             content: content,
@@ -240,9 +254,10 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                       child: Text(
                         editing == null ? 'notes.save'.tr() : 'Cập nhật',
                         style: AppFonts.heading(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -260,15 +275,18 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
     final notesAsync = ref.watch(notesProvider(widget.tripId));
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: _bgOf(context),
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'Ghi chú nhóm',
           style: AppFonts.heading(
-              fontSize: 18, fontWeight: FontWeight.w900, color: _ink),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: _ink,
+          ),
         ),
         actions: [
           IconButton(
@@ -289,7 +307,10 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
         label: Text(
           'Thêm note',
           style: AppFonts.heading(
-              fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
         ),
       ),
       body: notesAsync.when(
@@ -302,11 +323,14 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
             children: [
               Icon(PhosphorIcons.warningCircle(), size: 48, color: Colors.red),
               const SizedBox(height: 12),
-              Text('notes.load_error'.tr(),
-                  style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: _ink)),
+              Text(
+                'notes.load_error'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: _ink,
+                ),
+              ),
             ],
           ),
         ),
@@ -316,21 +340,24 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(PhosphorIcons.notepad(PhosphorIconsStyle.fill),
-                      size: 72, color: _textSec.withValues(alpha: 0.4)),
+                  Icon(
+                    PhosphorIcons.notepad(PhosphorIconsStyle.fill),
+                    size: 72,
+                    color: _textSec.withValues(alpha: 0.4),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Chưa có ghi chú nào',
                     style: AppFonts.heading(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: _textSec),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: _textSec,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Nhấn + để thêm ghi chú cho squad',
-                    style:
-                        AppFonts.body(fontSize: 14, color: _textSec),
+                    style: AppFonts.body(fontSize: 14, color: _textSec),
                   ),
                 ],
               ),
@@ -364,16 +391,25 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            backgroundColor: _bg,
-            title: Text('notes.delete_confirm'.tr(),
-                style: AppFonts.heading(
-                    fontSize: 16, fontWeight: FontWeight.w700, color: _ink)),
+            backgroundColor: _bgOf(context),
+            title: Text(
+              'notes.delete_confirm'.tr(),
+              style: AppFonts.heading(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: _ink,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: Text('general.cancel'.tr(),
-                    style: AppFonts.body(
-                        fontSize: 14, color: const Color(0xFFF5822B))),
+                child: Text(
+                  'general.cancel'.tr(),
+                  style: AppFonts.body(
+                    fontSize: 14,
+                    color: const Color(0xFFF5822B),
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: () async {
@@ -382,8 +418,10 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                       .read(notesProvider(widget.tripId).notifier)
                       .remove(note.id);
                 },
-                child: Text('general.delete'.tr(),
-                    style: AppFonts.body(fontSize: 14, color: Colors.red)),
+                child: Text(
+                  'general.delete'.tr(),
+                  style: AppFonts.body(fontSize: 14, color: Colors.red),
+                ),
               ),
             ],
           ),
@@ -396,9 +434,10 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
           border: Border.all(color: const Color(0xFF141210), width: 2),
           boxShadow: const [
             BoxShadow(
-                color: Color(0xFF141210),
-                offset: Offset(3, 3),
-                blurRadius: 0),
+              color: Color(0xFF141210),
+              offset: Offset(3, 3),
+              blurRadius: 0,
+            ),
           ],
         ),
         padding: const EdgeInsets.all(14),
@@ -439,16 +478,18 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                 else
                   CircleAvatar(
                     radius: 10,
-                    backgroundColor:
-                        const Color(0xFF141210).withValues(alpha: 0.2),
+                    backgroundColor: const Color(
+                      0xFF141210,
+                    ).withValues(alpha: 0.2),
                     child: Text(
                       note.authorName.isNotEmpty
                           ? note.authorName[0].toUpperCase()
                           : '?',
                       style: const TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF141210)),
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF141210),
+                      ),
                     ),
                   ),
                 const SizedBox(width: 4),

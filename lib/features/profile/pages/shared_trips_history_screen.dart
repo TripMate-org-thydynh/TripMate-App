@@ -53,9 +53,7 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
               final now = DateTime.now();
               final today = DateTime(now.year, now.month, now.day);
               final past =
-                  trips
-                      .where((t) => t.endDate.isBefore(today))
-                      .toList()
+                  trips.where((t) => t.endDate.isBefore(today)).toList()
                     ..sort((a, b) => b.endDate.compareTo(a.endDate));
 
               if (past.isEmpty) {

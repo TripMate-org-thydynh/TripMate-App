@@ -31,10 +31,8 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
   /// Chuyến đang xem. `null` = chưa chọn → dùng chuyến đầu danh sách.
   String? _selectedTripId;
 
-  Color get _ink =>
-      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _bg =>
-      Theme.of(context).scaffoldBackgroundColor;
+  Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +151,10 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
                 decoration: BoxDecoration(
                   color: GenZTokens.yellow,
                   shape: BoxShape.circle,
-                  border: Border.all(color: _ink, width: GenZTokens.borderWidth),
+                  border: Border.all(
+                    color: _ink,
+                    width: GenZTokens.borderWidth,
+                  ),
                 ),
                 child: Icon(icon, size: 34, color: GenZTokens.ink),
               ),

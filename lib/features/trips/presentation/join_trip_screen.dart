@@ -169,7 +169,10 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                 decoration: BoxDecoration(
                   color: GenZTokens.yellow,
                   borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                  border: Border.all(color: _ink, width: GenZTokens.borderWidth),
+                  border: Border.all(
+                    color: _ink,
+                    width: GenZTokens.borderWidth,
+                  ),
                 ),
                 child: Column(
                   children: [

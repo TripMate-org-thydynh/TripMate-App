@@ -17,17 +17,42 @@ class TripVibe {
   String get label => labelKey.tr();
 
   static const _all = <String, TripVibe>{
-    'CHILL': TripVibe('CHILL', 'trips.vibe_chill', Icons.cloud_outlined, Color(0xFF06B6D4)),
-    'PARTY':
-        TripVibe('PARTY', 'trips.vibe_party', Icons.celebration_outlined, Color(0xFFD6248C)),
+    'CHILL': TripVibe(
+      'CHILL',
+      'trips.vibe_chill',
+      Icons.cloud_outlined,
+      Color(0xFF06B6D4),
+    ),
+    'PARTY': TripVibe(
+      'PARTY',
+      'trips.vibe_party',
+      Icons.celebration_outlined,
+      Color(0xFFD6248C),
+    ),
     'ADVENTURE': TripVibe(
-        'ADVENTURE', 'trips.vibe_adventure', Icons.terrain_outlined, Color(0xFF1FA85C)),
-    'FOODIE':
-        TripVibe('FOODIE', 'trips.vibe_foodie', Icons.restaurant_outlined, Color(0xFFF5822B)),
+      'ADVENTURE',
+      'trips.vibe_adventure',
+      Icons.terrain_outlined,
+      Color(0xFF1FA85C),
+    ),
+    'FOODIE': TripVibe(
+      'FOODIE',
+      'trips.vibe_foodie',
+      Icons.restaurant_outlined,
+      Color(0xFFF5822B),
+    ),
     'CULTURE': TripVibe(
-        'CULTURE', 'trips.vibe_culture', Icons.account_balance_outlined, Color(0xFF8B4DE8)),
+      'CULTURE',
+      'trips.vibe_culture',
+      Icons.account_balance_outlined,
+      Color(0xFF8B4DE8),
+    ),
     'AESTHETIC': TripVibe(
-        'AESTHETIC', 'trips.vibe_aesthetic', Icons.camera_alt_outlined, Color(0xFFFFB020)),
+      'AESTHETIC',
+      'trips.vibe_aesthetic',
+      Icons.camera_alt_outlined,
+      Color(0xFFFFB020),
+    ),
   };
 
   /// Trả metadata cho code, hoặc null nếu không nhận diện được.

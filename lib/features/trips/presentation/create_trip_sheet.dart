@@ -49,9 +49,21 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
 
   // Cover mood (dùng chung với màn onboarding tạo chuyến).
   static const _covers = <Map<String, String>>[
-    {'id': 'cover-1', 'title': 'tokyo drift', 'image': 'assets/images/cover_tokyo_drift.webp'},
-    {'id': 'cover-2', 'title': 'island time', 'image': 'assets/images/cover_island_time.webp'},
-    {'id': 'cover-3', 'title': 'alpine glow', 'image': 'assets/images/cover_alpine_glow.webp'},
+    {
+      'id': 'cover-1',
+      'title': 'tokyo drift',
+      'image': 'assets/images/cover_tokyo_drift.webp',
+    },
+    {
+      'id': 'cover-2',
+      'title': 'island time',
+      'image': 'assets/images/cover_island_time.webp',
+    },
+    {
+      'id': 'cover-3',
+      'title': 'alpine glow',
+      'image': 'assets/images/cover_alpine_glow.webp',
+    },
   ];
 
   // Vibe chuyến đi (lưu code chữ hoa vào BE).
@@ -67,7 +79,8 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
   static const _currencies = ['VND', 'USD', 'THB', 'JPY', 'EUR'];
 
   bool get _dark => widget.isDarkMode;
-  Color get _bg => _dark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary => const Color(0xFFF5822B);
@@ -121,8 +134,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
               destination: _destination.text.trim().isEmpty
                   ? null
                   : _destination.text.trim(),
-              description:
-                  _desc.text.trim().isEmpty ? null : _desc.text.trim(),
+              description: _desc.text.trim().isEmpty ? null : _desc.text.trim(),
               startDate: _range!.start,
               endDate: _range!.end,
               coverImage: cover['image'],
@@ -173,7 +185,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _bg,
+        color: _bgOf(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border(
           top: BorderSide(color: _ink, width: 2.5),
@@ -399,8 +411,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(v.$3,
-                        size: 15, color: sel ? Colors.white : _textSec),
+                    Icon(v.$3, size: 15, color: sel ? Colors.white : _textSec),
                     const SizedBox(width: 6),
                     Text(
                       v.$2.tr(),
@@ -434,8 +445,11 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                   decoration: InputDecoration(
                     hintText: 'vd: 3000000',
                     hintStyle: AppFonts.body(color: _textSec),
-                    prefixIcon:
-                        Icon(PhosphorIcons.wallet(), color: _textSec, size: 20),
+                    prefixIcon: Icon(
+                      PhosphorIcons.wallet(),
+                      color: _textSec,
+                      size: 20,
+                    ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),

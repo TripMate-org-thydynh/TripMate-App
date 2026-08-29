@@ -34,8 +34,7 @@ class PickTripSheet extends ConsumerWidget {
     );
   }
 
-  Color _bg(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
+  Color _bg(BuildContext context) => Theme.of(context).scaffoldBackgroundColor;
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _sub => isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -92,10 +91,8 @@ class PickTripSheet extends ConsumerWidget {
                     padding: EdgeInsets.all(28),
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                  error: (e, _) => _empty(
-                    context,
-                    'Không tải được danh sách chuyến.',
-                  ),
+                  error: (e, _) =>
+                      _empty(context, 'Không tải được danh sách chuyến.'),
                   data: (trips) => trips.isEmpty
                       ? _empty(context, 'Bạn chưa có chuyến nào.')
                       : ListView.separated(
@@ -103,7 +100,8 @@ class PickTripSheet extends ConsumerWidget {
                           itemCount: trips.length,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 10),
-                          itemBuilder: (context, i) => _tripRow(context, trips[i]),
+                          itemBuilder: (context, i) =>
+                              _tripRow(context, trips[i]),
                         ),
                 ),
               ),

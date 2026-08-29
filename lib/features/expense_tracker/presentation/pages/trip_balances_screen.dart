@@ -28,8 +28,8 @@ class TripBalancesScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color get _bg =>
-      isDarkMode ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary =>
@@ -43,7 +43,7 @@ class TripBalancesScreen extends ConsumerWidget {
     final async = ref.watch(tripBalancesProvider(tripId));
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
         foregroundColor: Colors.white,
@@ -71,10 +71,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 color: _textPri,
               ),
             ),
-            Text(
-              tripName,
-              style: AppFonts.body(fontSize: 12, color: _textSec),
-            ),
+            Text(tripName, style: AppFonts.body(fontSize: 12, color: _textSec)),
           ],
         ),
         actions: [

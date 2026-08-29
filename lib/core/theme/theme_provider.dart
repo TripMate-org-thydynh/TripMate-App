@@ -163,7 +163,7 @@ extension AppFontOptionX on AppFontOption {
     }[this]!;
     return key.tr();
   }
-  
+
   String get description {
     final key = const {
       AppFontOption.playful: 'theme.desc_playful',
@@ -189,10 +189,13 @@ class FontNotifier extends StateNotifier<AppFontOption> {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getString(_fontKey);
       if (saved != null) {
-        final match = AppFontOption.values.where((f) => f.key == saved).firstOrNull;
+        final match = AppFontOption.values
+            .where((f) => f.key == saved)
+            .firstOrNull;
         if (match != null) {
           state = match;
-          AppFonts.currentOption = match; // Sync static option for inline styles
+          AppFonts.currentOption =
+              match; // Sync static option for inline styles
         }
       }
     } catch (_) {}

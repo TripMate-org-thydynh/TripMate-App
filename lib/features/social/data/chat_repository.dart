@@ -17,14 +17,8 @@ class ChatRepository {
     String? cursor,
     int limit = 30,
   }) async {
-    final query = <String, dynamic>{
-      'limit': limit,
-      'cursor': ?cursor,
-    };
-    final data = await _client.getData(
-      _base(tripId),
-      query: query,
-    );
+    final query = <String, dynamic>{'limit': limit, 'cursor': ?cursor};
+    final data = await _client.getData(_base(tripId), query: query);
     if (data is List) {
       final list = data
           .whereType<Map>()

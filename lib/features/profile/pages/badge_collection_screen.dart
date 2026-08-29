@@ -67,15 +67,15 @@ class BadgeCollectionScreen extends ConsumerWidget {
                 onRefresh: () async => ref.invalidate(badgesProvider),
                 child: GridView.builder(
                   padding: const EdgeInsets.all(GenZTokens.space5),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: GenZTokens.space4,
-                        mainAxisSpacing: GenZTokens.space4,
-                        childAspectRatio: 0.92,
-                      ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: GenZTokens.space4,
+                    mainAxisSpacing: GenZTokens.space4,
+                    childAspectRatio: 0.92,
+                  ),
                   itemCount: badges.length,
-                  itemBuilder: (context, i) => _tile(context, isDark, badges[i]),
+                  itemBuilder: (context, i) =>
+                      _tile(context, isDark, badges[i]),
                 ),
               );
             },

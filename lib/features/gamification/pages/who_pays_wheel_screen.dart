@@ -85,7 +85,8 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
           final sectorAngle = (2 * pi) / _currentParticipants.length;
           final alignedAngle = (5 * pi / 2 - finalAngle) % (2 * pi);
           _winnerIndex =
-              ((alignedAngle / sectorAngle).floor()) % _currentParticipants.length;
+              ((alignedAngle / sectorAngle).floor()) %
+              _currentParticipants.length;
         });
         _showChaosPayerDialog();
       }
@@ -128,11 +129,16 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     final tripId = ref.read(activeTripIdProvider);
     if (tripId == null) return;
     try {
-      await ref.read(gamesRepositoryProvider).createSession(
-        tripId,
-        gameType: 'SPIN_WHEEL',
-        state: {'winner': winnerName, 'players': _currentParticipants.length},
-      );
+      await ref
+          .read(gamesRepositoryProvider)
+          .createSession(
+            tripId,
+            gameType: 'SPIN_WHEEL',
+            state: {
+              'winner': winnerName,
+              'players': _currentParticipants.length,
+            },
+          );
       ref.invalidate(squadXpProvider(tripId));
       ref.invalidate(squadActivitiesProvider);
     } catch (_) {
@@ -368,10 +374,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                   const SizedBox(height: 8),
                   Text(
                     'Chế độ tăng cực mạnh chỉ số hỗn loạn của cả Squad!',
-                    style: AppFonts.body(
-                      fontSize: 14,
-                      color: textSecondary,
-                    ),
+                    style: AppFonts.body(fontSize: 14, color: textSecondary),
                   ),
                   const SizedBox(height: 48),
 
@@ -764,7 +767,7 @@ class _FloatingBubbleState extends State<FloatingBubble>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _translateAnimation = Tween<double>(
       begin: -6.0,
       end: 6.0,

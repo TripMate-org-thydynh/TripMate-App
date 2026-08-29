@@ -141,10 +141,7 @@ class _SubscriptionCheckoutScreenState
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppFonts.heading(
-                fontSize: 13,
-                color: Colors.grey[500],
-              ),
+              style: AppFonts.heading(fontSize: 13, color: Colors.grey[500]),
             ),
             const SizedBox(height: 24),
             SizedBox(

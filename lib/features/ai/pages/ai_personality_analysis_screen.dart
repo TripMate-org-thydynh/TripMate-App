@@ -48,8 +48,7 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
           if (tripId != null)
             IconButton(
               icon: Icon(Icons.refresh, color: ink),
-              onPressed: () =>
-                  ref.invalidate(squadPersonalityProvider(tripId)),
+              onPressed: () => ref.invalidate(squadPersonalityProvider(tripId)),
             ),
         ],
       ),

@@ -59,7 +59,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
         ? const Color(0xFFFFB783)
         : const Color(0xFFF5822B);
 
-    final bgColor = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final textPrimary = isDark
         ? const Color(0xFFFDF6D3)

@@ -34,7 +34,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
 
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _bg => Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface => widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _surface =>
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +83,10 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
           }
 
           final LatLng center = displayMoments.isNotEmpty
-              ? LatLng(displayMoments.first.latitude!, displayMoments.first.longitude!)
+              ? LatLng(
+                  displayMoments.first.latitude!,
+                  displayMoments.first.longitude!,
+                )
               : const LatLng(11.9406, 108.4452); // Default Da Lat
 
           return Stack(
@@ -90,10 +94,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
               // OpenStreetMap Canvas
               FlutterMap(
                 mapController: _mapController,
-                options: MapOptions(
-                  initialCenter: center,
-                  initialZoom: 14.0,
-                ),
+                options: MapOptions(initialCenter: center, initialZoom: 14.0),
                 children: [
                   TileLayer(
                     urlTemplate: widget.isDarkMode
@@ -123,17 +124,25 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                             child: ClipOval(
                               child: CachedNetworkImage(
                                 // Marker bé xíu — không cần tải ảnh gốc.
-                                imageUrl: optimizedMedia(m.mediaUrl, width: 160),
+                                imageUrl: optimizedMedia(
+                                  m.mediaUrl,
+                                  width: 160,
+                                ),
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Container(
                                   color: GenZTokens.lilac,
                                   child: const Center(
-                                    child: CircularProgressIndicator(strokeWidth: 1.5),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 1.5,
+                                    ),
                                   ),
                                 ),
                                 errorWidget: (context, url, err) => Container(
                                   color: GenZTokens.lilac,
-                                  child: Icon(Icons.photo_outlined, color: _ink),
+                                  child: Icon(
+                                    Icons.photo_outlined,
+                                    color: _ink,
+                                  ),
                                 ),
                               ),
                             ),
@@ -154,8 +163,13 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: _surface,
-                      border: Border.all(color: _ink, width: GenZTokens.borderWidth),
-                      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                      border: Border.all(
+                        color: _ink,
+                        width: GenZTokens.borderWidth,
+                      ),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusCard,
+                      ),
                       boxShadow: GenZTokens.hardShadow(_ink),
                     ),
                     padding: const EdgeInsets.all(16),
@@ -168,7 +182,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                           children: [
                             CircleAvatar(
                               radius: 18,
-                              backgroundImage: _selectedMoment!.authorAvatar != null
+                              backgroundImage:
+                                  _selectedMoment!.authorAvatar != null
                                   ? NetworkImage(_selectedMoment!.authorAvatar!)
                                   : null,
                               backgroundColor: GenZTokens.lilac,
@@ -190,7 +205,9 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                     ),
                                   ),
                                   Text(
-                                    DateFormat('dd/MM/yyyy HH:mm').format(_selectedMoment!.createdAt),
+                                    DateFormat(
+                                      'dd/MM/yyyy HH:mm',
+                                    ).format(_selectedMoment!.createdAt),
                                     style: AppFonts.mono(
                                       fontSize: 10,
                                       color: widget.isDarkMode
@@ -231,7 +248,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                         const SizedBox(height: 12),
 
                         // Caption
-                        if (_selectedMoment!.caption != null && _selectedMoment!.caption!.isNotEmpty) ...[
+                        if (_selectedMoment!.caption != null &&
+                            _selectedMoment!.caption!.isNotEmpty) ...[
                           Text(
                             _selectedMoment!.caption!,
                             style: AppFonts.body(
@@ -246,15 +264,19 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                         // GPS location name/address
                         Row(
                           children: [
-                            const Icon(Icons.location_on, color: GenZTokens.red, size: 16),
+                            const Icon(
+                              Icons.location_on,
+                              color: GenZTokens.red,
+                              size: 16,
+                            ),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 _isLoadingAddress
                                     ? 'Đang lấy địa chỉ...'
                                     : (_selectedAddress ??
-                                        _selectedMoment!.placeName ??
-                                        'Tọa độ: ${_selectedMoment!.latitude!.toStringAsFixed(4)}, ${_selectedMoment!.longitude!.toStringAsFixed(4)}'),
+                                          _selectedMoment!.placeName ??
+                                          'Tọa độ: ${_selectedMoment!.latitude!.toStringAsFixed(4)}, ${_selectedMoment!.longitude!.toStringAsFixed(4)}'),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppFonts.mono(
@@ -289,7 +311,9 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
     _mapController.move(LatLng(m.latitude!, m.longitude!), 15.0);
 
     // Call Nominatim API for reverse geocoding
-    final addr = await ref.read(nominatimServiceProvider).reverseGeocode(m.latitude!, m.longitude!);
+    final addr = await ref
+        .read(nominatimServiceProvider)
+        .reverseGeocode(m.latitude!, m.longitude!);
     if (mounted && _selectedMoment?.id == m.id) {
       setState(() {
         _selectedAddress = addr;

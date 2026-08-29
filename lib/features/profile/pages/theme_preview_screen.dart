@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+
 class ThemePreviewScreen extends StatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;

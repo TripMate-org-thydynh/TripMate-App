@@ -13,7 +13,11 @@ import '../domain/trip.dart';
 class EditTripSheet extends ConsumerStatefulWidget {
   final Trip trip;
   final bool isDarkMode;
-  const EditTripSheet({super.key, required this.trip, required this.isDarkMode});
+  const EditTripSheet({
+    super.key,
+    required this.trip,
+    required this.isDarkMode,
+  });
 
   static Future<bool?> show(BuildContext context, Trip trip, bool isDarkMode) {
     return showModalBottomSheet<bool>(
@@ -45,7 +49,8 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
   bool _busy = false;
 
   bool get _dark => widget.isDarkMode;
-  Color get _bg => _dark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+  Color _bgOf(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _primary => const Color(0xFFF5822B);
@@ -111,11 +116,14 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
       final budget = double.tryParse(
         _budget.text.trim().replaceAll(RegExp(r'[^0-9.]'), ''),
       );
-      await ref.read(tripsProvider.notifier).updateTrip(
+      await ref
+          .read(tripsProvider.notifier)
+          .updateTrip(
             widget.trip.id,
             name: _name.text.trim(),
-            destination:
-                _destination.text.trim().isEmpty ? null : _destination.text.trim(),
+            destination: _destination.text.trim().isEmpty
+                ? null
+                : _destination.text.trim(),
             description: _desc.text.trim().isEmpty ? null : _desc.text.trim(),
             startDate: _range.start,
             endDate: _range.end,
@@ -151,7 +159,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _bg,
+        color: _bgOf(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border(
           top: BorderSide(color: _ink, width: 2.5),
@@ -186,9 +194,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                 ),
               ),
               const SizedBox(height: 16),
-              Flexible(
-                child: SingleChildScrollView(child: _form()),
-              ),
+              Flexible(child: SingleChildScrollView(child: _form())),
               const SizedBox(height: 18),
               SizedBox(
                 width: double.infinity,
@@ -278,7 +284,10 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
             return GestureDetector(
               onTap: () => setState(() => _vibe = sel ? null : v.$1),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: sel ? _primary : _surface,
                   borderRadius: BorderRadius.circular(12),
@@ -320,8 +329,11 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                   decoration: InputDecoration(
                     hintText: 'vd: 3000000',
                     hintStyle: AppFonts.body(color: _textSec),
-                    prefixIcon:
-                        Icon(PhosphorIcons.wallet(), color: _textSec, size: 20),
+                    prefixIcon: Icon(
+                      PhosphorIcons.wallet(),
+                      color: _textSec,
+                      size: 20,
+                    ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   ),
@@ -361,8 +373,10 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
               hintText: 'Kế hoạch, lưu ý cho cả nhóm...',
               hintStyle: AppFonts.body(color: _textSec),
               border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
             ),
           ),
         ),
@@ -406,22 +420,22 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
   }
 
   Widget _label(String t) => Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Text(
-          t,
-          style: AppFonts.body(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: _textSec,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(
+      t,
+      style: AppFonts.body(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        color: _textSec,
+      ),
+    ),
+  );
 
   BoxDecoration _boxDeco() => BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _ink, width: 2),
-      );
+    color: _surface,
+    borderRadius: BorderRadius.circular(12),
+    border: Border.all(color: _ink, width: 2),
+  );
 
   Widget _field(TextEditingController c, String hint, IconData icon) {
     return Container(

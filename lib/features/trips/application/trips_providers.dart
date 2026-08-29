@@ -78,7 +78,9 @@ class TripsNotifier extends AsyncNotifier<List<Trip>> {
     String? vibe,
     bool? isPublic,
   }) async {
-    final trip = await ref.read(tripsRepositoryProvider).updateTrip(
+    final trip = await ref
+        .read(tripsRepositoryProvider)
+        .updateTrip(
           id,
           name: name,
           description: description,

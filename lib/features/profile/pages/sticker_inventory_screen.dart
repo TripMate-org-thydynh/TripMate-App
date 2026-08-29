@@ -38,7 +38,10 @@ class StickerInventoryScreen extends ConsumerWidget {
             color: ink,
           ),
         ),
-        actions: [XpBalanceChip(isDark: isDark), const SizedBox(width: 12)],
+        actions: [
+          XpBalanceChip(isDark: isDark),
+          const SizedBox(width: 12),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(
@@ -83,13 +86,12 @@ class StickerInventoryScreen extends ConsumerWidget {
                     GenZTokens.space5,
                     96,
                   ),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: GenZTokens.space3,
-                        mainAxisSpacing: GenZTokens.space3,
-                        childAspectRatio: 0.85,
-                      ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: GenZTokens.space3,
+                    mainAxisSpacing: GenZTokens.space3,
+                    childAspectRatio: 0.85,
+                  ),
                   itemCount: items.length,
                   itemBuilder: (_, i) => _tile(isDark, items[i]),
                 ),

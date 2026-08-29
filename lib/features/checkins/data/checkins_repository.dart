@@ -23,16 +23,16 @@ class DayCheckin {
   });
 
   factory DayCheckin.fromJson(Map<String, dynamic> j) => DayCheckin(
-        id: j['id'] as String,
-        tripId: j['tripId'] as String? ?? '',
-        userId: (j['user'] as Map<String, dynamic>?)?['id'] as String? ?? '',
-        userName: (j['user'] as Map<String, dynamic>?)?['name'] as String? ?? '',
-        userAvatarUrl:
-            (j['user'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
-        day: (j['day'] as num?)?.toInt() ?? 1,
-        status: j['status'] as String? ?? 'GOING',
-        note: j['note'] as String?,
-      );
+    id: j['id'] as String,
+    tripId: j['tripId'] as String? ?? '',
+    userId: (j['user'] as Map<String, dynamic>?)?['id'] as String? ?? '',
+    userName: (j['user'] as Map<String, dynamic>?)?['name'] as String? ?? '',
+    userAvatarUrl:
+        (j['user'] as Map<String, dynamic>?)?['avatarUrl'] as String?,
+    day: (j['day'] as num?)?.toInt() ?? 1,
+    status: j['status'] as String? ?? 'GOING',
+    note: j['note'] as String?,
+  );
 }
 
 class CheckinsRepository {

@@ -150,7 +150,10 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
               DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                  border: Border.all(color: _ink, width: GenZTokens.borderWidth),
+                  border: Border.all(
+                    color: _ink,
+                    width: GenZTokens.borderWidth,
+                  ),
                   boxShadow: GenZTokens.hardShadow(_ink),
                 ),
                 child: ElevatedButton(
@@ -162,8 +165,9 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                     shadowColor: Colors.transparent,
                     minimumSize: const Size(double.infinity, 56),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(GenZTokens.radiusButton),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
                     ),
                   ),
                   child: _loading

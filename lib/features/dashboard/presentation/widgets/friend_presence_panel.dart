@@ -141,7 +141,9 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
               Expanded(
                 child: Text(
                   _tripName.isNotEmpty
-                      ? 'dashboard.squad_named'.tr(namedArgs: {'name': _tripName})
+                      ? 'dashboard.squad_named'.tr(
+                          namedArgs: {'name': _tripName},
+                        )
                       : 'dashboard.squad_online_panel'.tr(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

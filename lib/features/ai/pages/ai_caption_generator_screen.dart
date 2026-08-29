@@ -9,6 +9,7 @@ import '../../gamification/data/games_repository.dart';
 import '../data/ai_repository.dart';
 import '../../../core/app_messenger.dart';
 import 'package:flutter/services.dart';
+
 class AICaptionGeneratorScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
@@ -24,7 +25,8 @@ class AICaptionGeneratorScreen extends ConsumerStatefulWidget {
       _AICaptionGeneratorScreenState();
 }
 
-class _AICaptionGeneratorScreenState extends ConsumerState<AICaptionGeneratorScreen>
+class _AICaptionGeneratorScreenState
+    extends ConsumerState<AICaptionGeneratorScreen>
     with TickerProviderStateMixin {
   late AnimationController _auroraController;
   late AnimationController _pulseController;
@@ -217,7 +219,7 @@ class _AICaptionGeneratorScreenState extends ConsumerState<AICaptionGeneratorScr
     final isDark = widget.isDarkMode;
 
     // Theme Tokens
-    final bgStart = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final bgStart = Theme.of(context).scaffoldBackgroundColor;
     final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
     final secondary = isDark
@@ -475,7 +477,7 @@ class _AICaptionGeneratorScreenState extends ConsumerState<AICaptionGeneratorScr
                             isDark,
                           ),
 
-                          const SizedBox(height: 100),
+                          const SizedBox(height: 32),
                         ],
                       ),
                     ),
@@ -483,9 +485,6 @@ class _AICaptionGeneratorScreenState extends ConsumerState<AICaptionGeneratorScr
                 ],
               ),
             ),
-
-            // ── Custom Floating Bottom Navigation Bar ────────────────────────
-            _buildFloatingNavbar(surface, primary, secondary, textMuted),
           ],
         ),
       ),
@@ -537,11 +536,7 @@ class _AICaptionGeneratorScreenState extends ConsumerState<AICaptionGeneratorScr
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Icon(
-                        Icons.auto_awesome,
-                        color: textPrimary,
-                        size: 24,
-                      ),
+                    : Icon(Icons.auto_awesome, color: textPrimary, size: 24),
                 onPressed: _isGenerating ? null : _generate,
                 tooltip: 'ai.generate_captions'.tr(),
               ),
@@ -819,108 +814,6 @@ class _AICaptionGeneratorScreenState extends ConsumerState<AICaptionGeneratorScr
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFloatingNavbar(
-    Color surface,
-    Color primary,
-    Color secondary,
-    Color textMuted,
-  ) {
-    final isDark = widget.isDarkMode;
-    return Positioned(
-      bottom: 24,
-      left: 20,
-      right: 20,
-      child: Center(
-        child: Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(maxWidth: 400),
-          decoration: BoxDecoration(
-            color: surface.withValues(alpha: 0.85),
-            borderRadius: BorderRadius.circular(40),
-            border: Border.all(
-              color: (isDark ? Colors.white : Colors.black),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
-                blurRadius: 0,
-                offset: const Offset(0, 10),
-              ),
-              if (isDark)
-                BoxShadow(
-                  color: secondary.withValues(alpha: 0.1),
-                  blurRadius: 0,
-                  spreadRadius: 1,
-                ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavbarItem(
-                Icons.explore_outlined,
-                false,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.group_outlined,
-                false,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.add_circle_rounded,
-                true,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.chat_bubble_outline_rounded,
-                false,
-                textMuted,
-                secondary,
-              ),
-              _buildNavbarItem(
-                Icons.person_outline_rounded,
-                false,
-                textMuted,
-                secondary,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavbarItem(
-    IconData icon,
-    bool isActive,
-    Color textMuted,
-    Color secondary,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: isActive
-          ? BoxDecoration(
-              color: secondary.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: secondary.withValues(alpha: 0.25),
-                  blurRadius: 0,
-                  spreadRadius: 2,
-                ),
-              ],
-            )
-          : null,
-      child: Icon(icon, color: isActive ? secondary : textMuted, size: 24),
     );
   }
 }

@@ -13,7 +13,8 @@ class UpcomingReservationsWidget extends ConsumerWidget {
   const UpcomingReservationsWidget({super.key, required this.isDarkMode});
 
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _inkSoft => isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _inkSoft =>
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   static const _meta = <ReservationType, (IconData, Color)>{
@@ -21,11 +22,17 @@ class UpcomingReservationsWidget extends ConsumerWidget {
     ReservationType.train: (PhosphorIconsFill.train, Color(0xFF06B6D4)),
     ReservationType.bus: (PhosphorIconsFill.bus, Color(0xFF1FA85C)),
     ReservationType.hotel: (PhosphorIconsFill.buildings, Color(0xFF8B4DE8)),
-    ReservationType.restaurant: (PhosphorIconsFill.forkKnife, Color(0xFFF5822B)),
+    ReservationType.restaurant: (
+      PhosphorIconsFill.forkKnife,
+      Color(0xFFF5822B),
+    ),
     ReservationType.car: (PhosphorIconsFill.car, Color(0xFFD6248C)),
     ReservationType.event: (PhosphorIconsFill.ticket, Color(0xFFFFB020)),
     ReservationType.attraction: (PhosphorIconsFill.mapPin, Color(0xFFEF4444)),
-    ReservationType.other: (PhosphorIconsFill.bookmarkSimple, Color(0xFF64748B)),
+    ReservationType.other: (
+      PhosphorIconsFill.bookmarkSimple,
+      Color(0xFF64748B),
+    ),
   };
 
   (IconData, Color) _typeMeta(ReservationType t) =>
@@ -112,8 +119,10 @@ class UpcomingReservationsWidget extends ConsumerWidget {
               const Spacer(),
               if (r.startTime != null)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: meta.$2,
                     borderRadius: BorderRadius.circular(99),

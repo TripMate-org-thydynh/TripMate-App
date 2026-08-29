@@ -47,8 +47,12 @@ class Moment {
       reactionCount: count is Map ? (count['reactions'] as int? ?? 0) : 0,
       createdAt:
           DateTime.tryParse(j['createdAt']?.toString() ?? '') ?? DateTime.now(),
-      latitude: j['latitude'] != null ? (j['latitude'] as num).toDouble() : null,
-      longitude: j['longitude'] != null ? (j['longitude'] as num).toDouble() : null,
+      latitude: j['latitude'] != null
+          ? (j['latitude'] as num).toDouble()
+          : null,
+      longitude: j['longitude'] != null
+          ? (j['longitude'] as num).toDouble()
+          : null,
       placeName: j['placeName'] as String?,
     );
   }

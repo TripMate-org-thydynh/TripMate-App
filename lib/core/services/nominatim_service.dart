@@ -4,11 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NominatimService {
   final Dio _dio = Dio(
-    BaseOptions(
-      headers: {
-        'User-Agent': 'TripMateApp/1.0 (com.tripmate.app)',
-      },
-    ),
+    BaseOptions(headers: {'User-Agent': 'TripMateApp/1.0 (com.tripmate.app)'}),
   );
 
   Future<String?> reverseGeocode(double lat, double lng) async {

@@ -44,13 +44,18 @@ class GenZTokens {
   static const double borderWidthThin = DsTokens.borderWidthThin;
   static const double borderWidthFocus = DsTokens.borderWidthFocus;
 
-  static const Offset shadowOffset =
-      Offset(DsTokens.shadowOffsetX, DsTokens.shadowOffsetY);
+  static const Offset shadowOffset = Offset(
+    DsTokens.shadowOffsetX,
+    DsTokens.shadowOffsetY,
+  );
 
   /// Hard shadow chuẩn: lệch xuống 4px, blur 0.
   static List<BoxShadow> hardShadow([Color color = ink]) => [
     BoxShadow(
-        color: color, offset: shadowOffset, blurRadius: DsTokens.shadowBlur),
+      color: color,
+      offset: shadowOffset,
+      blurRadius: DsTokens.shadowBlur,
+    ),
   ];
 
   /// Viền đen ngoài chữ để tăng độ tương phản (đặc biệt cho chữ màu vàng/vàng cam trên nền sáng)

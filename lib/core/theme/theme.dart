@@ -83,7 +83,6 @@ class TripMateTheme {
     required Color ink,
     required Color inkSoft,
   }) {
-
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
@@ -181,14 +180,8 @@ class TripMateTheme {
         filled: true,
         fillColor: surface,
         contentPadding: GenZTokens.inputPadding,
-        labelStyle: AppFonts.body(
-          color: inkSoft,
-          fontWeight: FontWeight.w600,
-        ),
-        hintStyle: AppFonts.body(
-          color: inkSoft,
-          fontWeight: FontWeight.w600,
-        ),
+        labelStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w600),
+        hintStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w600),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
           borderSide: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
@@ -323,9 +316,5 @@ class TripMateTheme {
     double fontSize = 16,
     FontWeight fontWeight = FontWeight.w700,
     Color? color,
-  }) => AppFonts.mono(
-    fontSize: fontSize,
-    fontWeight: fontWeight,
-    color: color,
-  );
+  }) => AppFonts.mono(fontSize: fontSize, fontWeight: fontWeight, color: color);
 }

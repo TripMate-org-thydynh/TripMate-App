@@ -15,6 +15,7 @@ class CreateTripScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
   final bool hideNavigationBar;
+
   /// Callback gọi sau khi tạo chuyến thành công — dashboard dùng để switch tab.
   final VoidCallback? onTripCreated;
 
@@ -185,18 +186,20 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       final budget = double.tryParse(
         _budgetController.text.trim().replaceAll(RegExp(r'[^0-9.]'), ''),
       );
-      await ref.read(tripsProvider.notifier).create(
-        name: name,
-        destination: _destinationController.text.trim().isEmpty
-            ? null
-            : _destinationController.text.trim(),
-        startDate: _startDate!,
-        endDate: _endDate!,
-        coverImage: selectedCover['image'],
-        budget: budget,
-        vibe: _vibe,
-        theme: selectedCover['id'],
-      );
+      await ref
+          .read(tripsProvider.notifier)
+          .create(
+            name: name,
+            destination: _destinationController.text.trim().isEmpty
+                ? null
+                : _destinationController.text.trim(),
+            startDate: _startDate!,
+            endDate: _endDate!,
+            coverImage: selectedCover['image'],
+            budget: budget,
+            vibe: _vibe,
+            theme: selectedCover['id'],
+          );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -238,6 +241,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       setState(() => _busy = false);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
@@ -255,7 +259,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
         ? TripMateTheme.darkTextSecondary
         : TripMateTheme.lightTextSecondary;
 
-    final canvasBg = isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3);
+    final canvasBg = Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
       backgroundColor: canvasBg,
@@ -788,18 +792,20 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                       : CachedNetworkImage(
                                           imageUrl: cover['image']!,
                                           fit: BoxFit.cover,
-                                          placeholder: (context, url) => Container(
-                                            color: Colors.black12,
-                                            child: const Center(
-                                              child: SizedBox(
-                                                width: 20,
-                                                height: 20,
-                                                child: CircularProgressIndicator(
-                                                  strokeWidth: 2,
+                                          placeholder: (context, url) =>
+                                              Container(
+                                                color: Colors.black12,
+                                                child: const Center(
+                                                  child: SizedBox(
+                                                    width: 20,
+                                                    height: 20,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                        ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
                                           errorWidget: (context, url, error) =>
                                               Container(color: Colors.black38),
                                         ),
@@ -905,9 +911,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(v.$3,
-                              size: 16,
-                              color: sel ? Colors.white : textPrimary),
+                          Icon(
+                            v.$3,
+                            size: 16,
+                            color: sel ? Colors.white : textPrimary,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             v.$2.tr(),
@@ -1055,24 +1063,32 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                         boxShadow: const [
                                           BoxShadow(
                                             color: Colors.black26,
-                                          blurRadius: 0,
+                                            blurRadius: 0,
                                           ),
                                         ],
                                       ),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(22),
-                                        child: 'assets/images/avatar_minh_nhat.webp'.startsWith('assets/')
+                                        child:
+                                            'assets/images/avatar_minh_nhat.webp'
+                                                .startsWith('assets/')
                                             ? Image.asset(
                                                 'assets/images/avatar_minh_nhat.webp',
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
-                                                imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
+                                                imageUrl:
+                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
                                                 fit: BoxFit.cover,
                                                 placeholder: (context, url) =>
-                                                    Container(color: Colors.black12),
-                                                errorWidget: (context, url, error) =>
-                                                    const Icon(Icons.person),
+                                                    Container(
+                                                      color: Colors.black12,
+                                                    ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(
+                                                          Icons.person,
+                                                        ),
                                               ),
                                       ),
                                     ),
@@ -1110,18 +1126,26 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                       ),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(25),
-                                        child: 'assets/images/avatar_thao_ly.webp'.startsWith('assets/')
+                                        child:
+                                            'assets/images/avatar_thao_ly.webp'
+                                                .startsWith('assets/')
                                             ? Image.asset(
                                                 'assets/images/avatar_thao_ly.webp',
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
-                                                imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
+                                                imageUrl:
+                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
                                                 fit: BoxFit.cover,
                                                 placeholder: (context, url) =>
-                                                    Container(color: Colors.black12),
-                                                errorWidget: (context, url, error) =>
-                                                    const Icon(Icons.person),
+                                                    Container(
+                                                      color: Colors.black12,
+                                                    ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(
+                                                          Icons.person,
+                                                        ),
                                               ),
                                       ),
                                     ),
@@ -1162,8 +1186,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                         child: Image.asset(
                                           'assets/images/avatar_user.webp',
                                           fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) =>
-                                              const Icon(Icons.person),
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(Icons.person),
                                         ),
                                       ),
                                     ),
@@ -1265,7 +1290,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
           bottom: 12,
         ),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1A1712) : const Color(0xFFFDF6D3),
+          color: Theme.of(context).scaffoldBackgroundColor,
           border: Border(bottom: BorderSide(color: ink, width: 2.5)),
         ),
         child: Row(
