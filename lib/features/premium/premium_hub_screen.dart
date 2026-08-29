@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../profile/data/profile_provider.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'pages/subscription_checkout_screen.dart';
 import 'pages/billing_history_screen.dart';
@@ -137,13 +140,32 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                     color: textPrimary,
                                   ),
                                 ),
-                                Text(
-                                  '@adventure_seeker',
-                                  style: AppFonts.body(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: tertiaryColor,
-                                  ),
+                                // Username THẬT của user.
+                                //
+                                // Trước đây in cứng '@adventure_seeker' nên ai
+                                // mở màn Premium cũng thấy tên tài khoản của
+                                // một người không tồn tại.
+                                Consumer(
+                                  builder: (context, ref, _) {
+                                    final p = ref
+                                        .watch(profileDataProvider)
+                                        .profile;
+                                    final name =
+                                        p?['username'] as String? ??
+                                        p?['name'] as String? ??
+                                        '';
+                                    if (name.isEmpty) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Text(
+                                      '@$name',
+                                      style: AppFonts.body(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: tertiaryColor,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),

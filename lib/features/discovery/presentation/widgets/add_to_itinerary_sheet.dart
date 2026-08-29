@@ -479,7 +479,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
 
                     // Inline Schedule pickers
                     Text(
-                      'Schedule Spot',
+                      'itinerary.schedule_spot'.tr(),
                       style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -630,9 +630,9 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                           fontSize: 11,
                           color: textColor,
                         ),
-                        decoration: const InputDecoration(
-                          hintText: 'Add aesthetic / photo notes... 📸✨',
-                          hintStyle: TextStyle(
+                        decoration: InputDecoration(
+                          hintText: 'itinerary.notes_hint'.tr(),
+                          hintStyle: const TextStyle(
                             color: Colors.grey,
                             fontSize: 11,
                           ),
@@ -697,7 +697,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        'Add to Trip',
+                                        'itinerary.add_to_trip'.tr(),
                                         style: AppFonts.heading(
                                           color: Colors.white,
                                           fontSize: 12,
