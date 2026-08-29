@@ -132,7 +132,11 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
+                        // Expanded: Row trong nằm giữa `spaceBetween` nên không
+                        // có chiều rộng xác định; thiếu nó thì `Expanded` của
+                        // tên chuyến bên trong ném lỗi layout và cả màn trắng.
+                        Expanded(
+                          child: Row(
                           children: [
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
@@ -214,6 +218,7 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               ),
                             ),
                           ],
+                        ),
                         ),
                         // Dark/Light Theme Toggle
                         GestureDetector(
