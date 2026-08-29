@@ -76,6 +76,10 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
       // Nút đăng khoảnh khắc — trước đây app KHÔNG có đường nào đưa ảnh lên,
       // nên Memory Wall chỉ đọc được dữ liệu do script kiểm thử đẩy vào.
       floatingActionButton: Row(
+        // Bắt buộc: ô đặt FAB không giới hạn chiều rộng, Row mặc định cố giãn
+        // hết cỡ nên ném "RenderFlex children have non-zero flex but incoming
+        // width constraints are unbounded" và cả màn trắng xoá.
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           // Chọn từ thư viện — đường chậm hơn, cho ảnh đã chụp sẵn.
