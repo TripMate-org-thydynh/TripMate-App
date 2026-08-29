@@ -43,6 +43,15 @@ class ChatRepository {
     return ChatMessage.fromJson((data as Map).cast<String, dynamic>());
   }
 
+  /// Gửi một sticker đã sở hữu. BE từ chối 403 nếu chưa mua.
+  Future<ChatMessage> sendSticker(String tripId, String stickerId) async {
+    final data = await _client.postData(_base(tripId), {
+      'content': stickerId,
+      'type': 'STICKER',
+    });
+    return ChatMessage.fromJson((data as Map).cast<String, dynamic>());
+  }
+
   Future<void> react(String tripId, String messageId, String emoji) => _client
       .postData('${_base(tripId)}/$messageId/reactions', {'emoji': emoji});
 }

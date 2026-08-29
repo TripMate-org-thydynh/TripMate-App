@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 
+import 'data/xp_repository.dart';
 import '../moments/data/moments_repository.dart';
 import '../moments/presentation/pages/memory_wall_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -2253,14 +2254,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
               const SizedBox(height: 16),
 
-              // 4 colour swatches
-              Row(
+              // Bảng màu: 4 accent miễn phí + 3 accent đổi bằng XP.
+              //
+              // Accent premium chưa mua thì KHÓA — bấm vào mở thẳng chợ thay vì
+              // đổi màu, để không ai dùng được thứ chưa trả XP.
+              Builder(
+                builder: (context) {
+                  final ownedThemeIds =
+                      ref
+                          .watch(themeStoreProvider)
+                          .maybeWhen(
+                            data: (items) => items
+                                .where((t) => t.owned)
+                                .map((t) => t.id)
+                                .toSet(),
+                            orElse: () => <String>{},
+                          );
+                  bool unlocked(AppAccent a) =>
+                      !kPremiumAccents.contains(a) ||
+                      ownedThemeIds.contains(kAccentThemeId[a]);
+
+                  return Row(
                 children: AppAccent.values.map((accent) {
                   final selected = accent == currentAccent;
+                  final isUnlocked = unlocked(accent);
                   return Expanded(
                     child: GestureDetector(
-                      onTap: () =>
-                          ref.read(accentProvider.notifier).setAccent(accent),
+                      onTap: () {
+                        if (!isUnlocked) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ThemeMarketplaceScreen(
+                                isDarkMode: isDark,
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        ref.read(accentProvider.notifier).setAccent(accent);
+                      },
                       child: Column(
                         children: [
                           // Swatch cặp màu preset (accent trên, pair dưới),
@@ -2339,6 +2372,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                     ),
                   );
                 }).toList(),
+                  );
+                },
               ),
 
               const SizedBox(height: 16),

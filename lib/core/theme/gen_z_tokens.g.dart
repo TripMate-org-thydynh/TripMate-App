@@ -117,4 +117,25 @@ const Map<String, DsAccentPreset> dsAccents = {
     bg: Color(0xFFFDEEDC),
     soft: Color(0xFFFFD9B3),
   ),
+  'neon': DsAccentPreset(
+    primary: Color(0xFFFF2E93),
+    onPrimary: Color(0xFF141210),
+    pair: Color(0xFF3D8BFF),
+    bg: Color(0xFFFDE7F1),
+    soft: Color(0xFFFFC2DE),
+  ),
+  'pine': DsAccentPreset(
+    primary: Color(0xFF0F766E),
+    onPrimary: Color(0xFFFFFFFF),
+    pair: Color(0xFFFFD84D),
+    bg: Color(0xFFE4F2F0),
+    soft: Color(0xFFB9DDD9),
+  ),
+  'cyber': DsAccentPreset(
+    primary: Color(0xFF3D8BFF),
+    onPrimary: Color(0xFF141210),
+    pair: Color(0xFFFF2E93),
+    bg: Color(0xFFE4EEFD),
+    soft: Color(0xFFBBD5FF),
+  ),
 };

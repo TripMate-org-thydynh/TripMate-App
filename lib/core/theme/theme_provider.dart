@@ -9,7 +9,21 @@ import 'theme.dart';
 // ── Accent presets Gen Z Neo-Brutalist ───────────────────────────────────────
 // Tên enum giữ nguyên (key đã lưu trong SharedPreferences) — chỉ đổi màu/nhãn:
 // mint → Vàng/Tím · sun → Xanh lá/Vàng · pastel → Xanh dương/Hồng · grape → Cam/Ink
-enum AppAccent { mint, sun, pastel, grape }
+enum AppAccent { mint, sun, pastel, grape, neon, pine, cyber }
+
+/// Ba accent cuối phải đổi bằng XP mới dùng được. Bốn cái đầu luôn miễn phí.
+const Set<AppAccent> kPremiumAccents = {
+  AppAccent.neon,
+  AppAccent.pine,
+  AppAccent.cyber,
+};
+
+/// Khoá theme ở backend tương ứng với accent — để đối chiếu với `themes/mine`.
+const Map<AppAccent, String> kAccentThemeId = {
+  AppAccent.neon: 'theme-neon',
+  AppAccent.pine: 'theme-pine',
+  AppAccent.cyber: 'theme-cyber',
+};
 
 extension AppAccentX on AppAccent {
   String get key => name;
@@ -39,6 +53,9 @@ extension AppAccentX on AppAccent {
       AppAccent.sun: 'theme.accent_sun',
       AppAccent.pastel: 'theme.accent_pastel',
       AppAccent.grape: 'theme.accent_grape',
+      AppAccent.neon: 'xp.item_neon',
+      AppAccent.pine: 'xp.item_pine',
+      AppAccent.cyber: 'xp.item_cyber',
     }[this]!;
     return key.tr();
   }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,10 @@ import '../../../../core/network/error_message.dart';
 
 import '../../../../core/network/chat_socket.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/app_messenger.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../profile/data/xp_repository.dart';
+import '../../../profile/pages/sticker_store_screen.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_message.dart';
 
@@ -154,6 +159,109 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
       });
     }
     _input.clear();
+  }
+
+  /// Mở bảng chọn sticker — chỉ hiện sticker THẬT SỰ đã sở hữu.
+  void _openStickerPicker() {
+    HapticFeedback.selectionClick();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: _surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetCtx) => Consumer(
+        builder: (context, ref, _) => ref
+            .watch(myStickersProvider)
+            .when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(40),
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              ),
+              error: (_, _) => Padding(
+                padding: const EdgeInsets.all(28),
+                child: Text(
+                  'errors.load_failed'.tr(),
+                  style: AppFonts.body(color: _textSec),
+                ),
+              ),
+              data: (stickers) {
+                if (stickers.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'xp.inventory_empty'.tr(),
+                          textAlign: TextAlign.center,
+                          style: AppFonts.body(color: _textSec, height: 1.4),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(sheetCtx);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StickerStoreScreen(
+                                  isDarkMode: widget.isDarkMode,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Text('xp.open_store'.tr()),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return GridView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.all(20),
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                  itemCount: stickers.length,
+                  itemBuilder: (_, i) => GestureDetector(
+                    onTap: () {
+                      Navigator.pop(sheetCtx);
+                      _sendSticker(stickers[i].id);
+                    },
+                    child: Center(
+                      child: Text(
+                        stickers[i].emoji ?? '❔',
+                        style: const TextStyle(fontSize: 36),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+      ),
+    );
+  }
+
+  Future<void> _sendSticker(String stickerId) async {
+    HapticFeedback.lightImpact();
+    try {
+      final m = await ref
+          .read(chatRepositoryProvider)
+          .sendSticker(widget.tripId, stickerId);
+      if (_disposed || !mounted) return;
+      setState(() => _messages.add(m));
+      _scrollToEnd();
+    } catch (e) {
+      if (_disposed || !mounted) return;
+      // BE trả 403 nếu chưa sở hữu — hiện đúng câu đó.
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
   }
 
   void _scrollToEnd() {
@@ -334,18 +442,47 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                       width: 2,
                     ),
             ),
-            child: Text(
-              m.content ?? '',
-              style: AppFonts.body(
-                fontSize: 14,
-                color: isMe ? Colors.white : _textPri,
-                height: 1.3,
-              ),
-            ),
+            // Tin nhắn sticker: `content` là MÃ sticker (stk-fire), không phải
+            // chữ để đọc. Đổi sang emoji cỡ lớn, nếu không người nhận sẽ thấy
+            // đúng chuỗi "stk-fire".
+            child: m.type == 'STICKER'
+                ? Text(
+                    _stickerEmoji(m.content) ?? '❔',
+                    style: const TextStyle(fontSize: 44),
+                  )
+                : Text(
+                    m.content ?? '',
+                    style: AppFonts.body(
+                      fontSize: 14,
+                      color: isMe ? Colors.white : _textPri,
+                      height: 1.3,
+                    ),
+                  ),
           ),
         ],
       ),
     );
+  }
+
+  /// Emoji của một mã sticker.
+  ///
+  /// Ưu tiên tra trong kho đã tải; không có (người khác gửi sticker mình chưa
+  /// mua) thì tra bảng dự phòng khớp với danh mục của backend.
+  String? _stickerEmoji(String? stickerId) {
+    if (stickerId == null) return null;
+    final mine = ref.read(myStickersProvider).valueOrNull;
+    final hit = mine?.where((s) => s.id == stickerId).firstOrNull;
+    if (hit?.emoji != null) return hit!.emoji;
+    return const {
+      'stk-laugh': '😂',
+      'stk-roast': '😜',
+      'stk-broke': '💸',
+      'stk-party': '🚀',
+      'stk-fire': '🔥',
+      'stk-cry': '😭',
+      'stk-skull': '💀',
+      'stk-crown': '👑',
+    }[stickerId];
   }
 
   Widget _composer() {
@@ -354,6 +491,25 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
         padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
         child: Row(
           children: [
+            // Nút sticker — chỗ DÙNG sticker đã đổi bằng XP. Không có chỗ này
+            // thì việc mua sticker chẳng để làm gì.
+            GestureDetector(
+              onTap: _openStickerPicker,
+              child: Container(
+                width: 40,
+                height: 40,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  color: _surface,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  PhosphorIcons.smiley(PhosphorIconsStyle.fill),
+                  color: _primary,
+                  size: 22,
+                ),
+              ),
+            ),
             Expanded(
               child: TextField(
                 controller: _input,
