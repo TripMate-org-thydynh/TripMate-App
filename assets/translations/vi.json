@@ -528,7 +528,9 @@
     "suggest_again": "Viết lại",
     "take_photo": "Chụp ảnh",
     "uploading": "Đang tải lên... {}%",
-    "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!"
+    "wall": "Bức tường kỷ niệm",
+    "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!",
+    "wall_sub": "Album của squad"
   },
   "nav": {
     "create": "Tạo chuyến",

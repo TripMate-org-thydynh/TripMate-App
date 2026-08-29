@@ -13,6 +13,7 @@ import 'post_moment_screen.dart';
 import 'trip_recap_reel_screen.dart';
 import '../../../discovery/presentation/pages/photo_map_screen.dart';
 import '../../../gamification/data/games_repository.dart';
+import '../../../trips/application/trips_providers.dart';
 
 class MemoryWallScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -138,27 +139,54 @@ class _MemoryWallScreenState extends State<MemoryWallScreen> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Hà Giang Loop 🏍️',
-                                  style: AppFonts.body(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: textPrimary,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                                Text(
-                                  'Oct 14, 2023 • Squad Album',
-                                  style: AppFonts.heading(
-                                    fontSize: 11,
-                                    color: textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
+                            // Tên chuyến THẬT đang mở.
+                            //
+                            // Trước đây in cứng "Hà Giang Loop 🏍️" và
+                            // "Oct 14, 2023 • Squad Album" nên ai mở Memory
+                            // Wall cũng thấy album của một chuyến không có.
+                            Expanded(
+                              child: Consumer(
+                                builder: (context, ref, _) {
+                                  final tripId = ref.watch(activeTripIdProvider);
+                                  final trip = ref
+                                      .watch(tripsProvider)
+                                      .maybeWhen(
+                                        data: (trips) => trips
+                                            .where((t) => t.id == tripId)
+                                            .firstOrNull,
+                                        orElse: () => null,
+                                      );
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        trip?.name ?? 'moments.wall'.tr(),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppFonts.body(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          color: textPrimary,
+                                          letterSpacing: -0.5,
+                                        ),
+                                      ),
+                                      Text(
+                                        trip == null
+                                            ? 'moments.wall_sub'.tr()
+                                            : '${DateFormat.yMMMd().format(trip.startDate)} • ${'moments.wall_sub'.tr()}',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppFonts.heading(
+                                          fontSize: 11,
+                                          color: textSecondary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
                           ],
                         ),
