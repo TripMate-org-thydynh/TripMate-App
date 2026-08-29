@@ -40,7 +40,11 @@
     "prompts_title": "Prompt ideas 💡",
     "queue_title": "AI queue ⚙️",
     "timeline_empty": "No suggestions yet. Add a description and dates to your trip, then retry.",
-    "timeline_title": "Suggested plan 🕒"
+    "timeline_title": "Suggested plan 🕒",
+    "vibe_add": "Add to itinerary",
+    "vibe_hint": "Type a place and let AI score how well it fits your squad's vibe.",
+    "vibe_placeholder": "e.g. hillside coffee shop in Da Lat",
+    "vibe_title": "Vibe Match ✨"
   },
   "ai_hub": {
     "boost": "Boost ⚡",
@@ -132,6 +136,7 @@
     "loading": "Loading...",
     "matey_ai": "Matey AI",
     "member_count": "{count} people",
+    "memories": "Memories",
     "no_trips_subtitle": "Create your first trip and invite the squad!",
     "no_trips_title": "No trips yet",
     "paid_label": "{percent}% PAID",
@@ -503,8 +508,15 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "caption_saved": "Caption saved 🪄",
+    "no_caption": "This photo has no caption yet.",
     "photo_map_empty_body": "Post a moment with a location so the squad can see the route on the map.",
     "photo_map_empty_title": "No geotagged photos yet",
+    "save_caption": "Save",
+    "sorting_empty": "Every photo in this trip already has a caption!",
+    "sorting_title": "AI captions 🪄",
+    "suggest": "Ask AI",
+    "suggest_again": "Rewrite",
     "wall_empty": "Your memory wall is empty. Post your first moment from a trip!"
   },
   "nav": {

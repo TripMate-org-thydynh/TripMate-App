@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:easy_localization/easy_localization.dart';
+
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_exception.dart';
 
 /// Một dòng "roast" tính cách do AI viết cho một thành viên THẬT của chuyến.
 class SquadRoast {
@@ -228,3 +231,55 @@ final aiHistoryProvider = FutureProvider<List<AiQueueItem>>((ref) async {
     return AiQueueItem.fromJson({...m, 'task': m['prompt']});
   }).toList();
 });
+
+/// Kết quả Vibe Match do AI chấm cho một địa điểm.
+class VibeMatch {
+  final int matchPercentage;
+  final List<String> vibeTags;
+  final String analysis;
+  final String locationName;
+  final String locationAddress;
+
+  const VibeMatch({
+    required this.matchPercentage,
+    required this.vibeTags,
+    required this.analysis,
+    required this.locationName,
+    required this.locationAddress,
+  });
+
+  factory VibeMatch.fromJson(Map<String, dynamic> j) => VibeMatch(
+    matchPercentage: (j['matchPercentage'] as num?)?.toInt() ?? 0,
+    vibeTags:
+        (j['vibeTags'] as List?)?.whereType<String>().toList() ?? const [],
+    analysis: j['analysis'] as String? ?? '',
+    locationName: j['locationName'] as String? ?? '',
+    locationAddress: j['locationAddress'] as String? ?? '',
+  );
+}
+
+/// Chấm độ hợp vibe của một địa điểm với squad.
+///
+/// Màn Vibe Match trước đây in cứng "The Hill Station · Old Town, Hội An" kèm
+/// phần trăm và avatar của những người không tồn tại, không gọi API nào.
+class VibeMatchService {
+  final ApiClient _client;
+  VibeMatchService(this._client);
+
+  Future<VibeMatch> match({required String prompt, String? tripId}) async {
+    final data = await _client.postData('/ai/request', {
+      'type': 'VIBE_MATCH',
+      'prompt': prompt,
+      'tripId': ?tripId,
+    });
+    final res = (data is Map) ? data['response'] : null;
+    if (res is! Map) {
+      throw ApiException('errors.load_failed'.tr());
+    }
+    return VibeMatch.fromJson(res.cast<String, dynamic>());
+  }
+}
+
+final vibeMatchServiceProvider = Provider<VibeMatchService>(
+  (ref) => VibeMatchService(ref.watch(apiClientProvider)),
+);

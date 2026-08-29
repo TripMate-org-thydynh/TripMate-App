@@ -1,9 +1,29 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
-class AddToItinerarySheet extends StatefulWidget {
+
+import '../../../../core/app_messenger.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../trip_planner/data/itinerary_repository.dart';
+import '../../../gamification/data/games_repository.dart';
+import '../../../trips/application/trips_providers.dart';
+
+/// Sheet thêm một địa điểm vào lịch trình chuyến.
+///
+/// Trước đây hàm lưu chỉ là `Future.delayed(1s)` kèm chú thích "Simulate NestJS
+/// POST request", rồi hiện dấu tick và đóng — người dùng thấy "Successfully
+/// added to Itinerary! 🎉" nhưng không có gì được ghi. Nay gọi
+/// `POST /trips/:id/itinerary` thật và báo lỗi nếu hỏng.
+class AddToItinerarySheet extends ConsumerStatefulWidget {
   final String placeName;
   final String placeAddress;
   final bool isDarkMode;
+
+  /// Chuyến sẽ thêm vào. `null` thì lấy chuyến đang hoạt động.
+  final String? tripId;
+
+  /// Gọi sau khi đã lưu THÀNH CÔNG.
   final Function(Map<String, dynamic> itineraryData) onAdded;
 
   const AddToItinerarySheet({
@@ -12,13 +32,15 @@ class AddToItinerarySheet extends StatefulWidget {
     required this.placeAddress,
     required this.isDarkMode,
     required this.onAdded,
+    this.tripId,
   });
 
   @override
-  State<AddToItinerarySheet> createState() => _AddToItinerarySheetState();
+  ConsumerState<AddToItinerarySheet> createState() =>
+      _AddToItinerarySheetState();
 }
 
-class _AddToItinerarySheetState extends State<AddToItinerarySheet>
+class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
     with SingleTickerProviderStateMixin {
   int _selectedDay = 1;
   String _selectedTime = '10:30 AM';
@@ -64,36 +86,93 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet>
     super.dispose();
   }
 
-  void _saveToItinerary() {
-    setState(() {
-      _isSaving = true;
-    });
+  /// Chuyến đang chọn — ưu tiên tham số, không có thì lấy chuyến hiện hành.
+  String? get _tripId => widget.tripId ?? ref.read(activeTripIdProvider);
 
-    // Simulate NestJS POST request save action
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      if (mounted) {
-        setState(() {
-          _isSaving = false;
-          _showSuccess = true;
-        });
-        _successController.forward();
+  /// Số ngày của chuyến, để danh sách ngày không vượt quá độ dài thật.
+  ///
+  /// Trước đây bộ chọn ngày cứng là `[1, 2, 3]` bất kể chuyến dài bao nhiêu.
+  int get _tripDays {
+    final id = _tripId;
+    if (id == null) return 3;
+    return ref
+        .read(tripsProvider)
+        .maybeWhen(
+          data: (trips) {
+            for (final t in trips) {
+              if (t.id != id) continue;
+              final n = t.endDate.difference(t.startDate).inDays + 1;
+              return n > 0 ? n : 1;
+            }
+            return 3;
+          },
+          orElse: () => 3,
+        );
+  }
 
-        widget.onAdded({
-          'day': _selectedDay,
-          'startTime': _selectedTime,
-          'placeName': widget.placeName,
-          'placeAddress': widget.placeAddress,
-          'notes': _notesController.text,
-        });
+  /// '10:30 AM' -> '10:30', '07:00 PM' -> '19:00' (BE nhận giờ 24h).
+  static String _to24h(String label) {
+    final parts = label.split(' ');
+    if (parts.length != 2) return label;
+    final hm = parts[0].split(':');
+    var h = int.tryParse(hm[0]) ?? 0;
+    final m = hm.length > 1 ? hm[1] : '00';
+    final isPm = parts[1].toUpperCase() == 'PM';
+    if (isPm && h != 12) h += 12;
+    if (!isPm && h == 12) h = 0;
+    return '${h.toString().padLeft(2, '0')}:$m';
+  }
 
-        // Close sheet after showing checkmark success animation
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        });
-      }
-    });
+  Future<void> _saveToItinerary() async {
+    final tripId = _tripId;
+    if (tripId == null) {
+      showGlobalSnack('games.need_trip_body'.tr(), isError: true);
+      return;
+    }
+    setState(() => _isSaving = true);
+
+    try {
+      await ref
+          .read(itineraryRepositoryProvider)
+          .create(
+            tripId,
+            day: _selectedDay,
+            startTime: _to24h(_selectedTime),
+            placeName: widget.placeName,
+            placeAddress: widget.placeAddress,
+            notes: _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
+            category: _activeTag,
+          );
+      if (!mounted) return;
+      // Lịch trình đã đổi — buộc màn lịch trình tải lại.
+      ref.invalidate(tripItineraryProvider(tripId));
+      setState(() {
+        _isSaving = false;
+        _showSuccess = true;
+      });
+      _successController.forward();
+
+      widget.onAdded({
+        'day': _selectedDay,
+        'startTime': _selectedTime,
+        'placeName': widget.placeName,
+        'placeAddress': widget.placeAddress,
+        'notes': _notesController.text,
+      });
+
+      await Future.delayed(const Duration(milliseconds: 1500));
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      // Nói thẳng là lưu hỏng, thay vì hiện dấu tick như trước.
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
   }
 
   @override
@@ -600,7 +679,9 @@ class _AddToItinerarySheetState extends State<AddToItinerarySheet>
 
                     // Days selector
                     Row(
-                      children: [1, 2, 3].map((day) {
+                      children: List.generate(_tripDays, (i) => i + 1).map((
+                        day,
+                      ) {
                         final isSelected = _selectedDay == day;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8.0),

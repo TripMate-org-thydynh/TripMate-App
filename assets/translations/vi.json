@@ -40,7 +40,11 @@
     "prompts_title": "Câu lệnh gợi ý 💡",
     "queue_title": "Hàng chờ AI ⚙️",
     "timeline_empty": "AI chưa đề xuất được gì. Thêm mô tả và ngày cho chuyến rồi thử lại nha!",
-    "timeline_title": "Hành trình gợi ý 🕒"
+    "timeline_title": "Hành trình gợi ý 🕒",
+    "vibe_add": "Thêm vào lịch trình",
+    "vibe_hint": "Nhập tên quán/địa điểm để AI chấm xem có hợp gu cả nhóm không.",
+    "vibe_placeholder": "VD: quán cà phê view đồi ở Đà Lạt",
+    "vibe_title": "Vibe Match ✨"
   },
   "ai_hub": {
     "boost": "Bứt Tốc ⚡",
@@ -132,6 +136,7 @@
     "loading": "Đang tải...",
     "matey_ai": "Matey AI",
     "member_count": "{count} người",
+    "memories": "Kỷ niệm",
     "no_trips_subtitle": "Tạo chuyến đầu tiên và rủ squad nào!",
     "no_trips_title": "Chưa có chuyến nào",
     "paid_label": "{percent}% ĐÃ TRẢ",
@@ -503,8 +508,15 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "caption_saved": "Đã lưu caption cho ảnh 🪄",
+    "no_caption": "Ảnh này chưa có caption.",
     "photo_map_empty_body": "Đăng khoảnh khắc kèm vị trí để cả nhóm thấy hành trình trên bản đồ.",
     "photo_map_empty_title": "Chưa có ảnh nào gắn vị trí",
+    "save_caption": "Lưu",
+    "sorting_empty": "Mọi ảnh trong chuyến đều đã có caption rồi!",
+    "sorting_title": "AI đặt caption 🪄",
+    "suggest": "Nhờ AI viết",
+    "suggest_again": "Viết lại",
     "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!"
   },
   "nav": {

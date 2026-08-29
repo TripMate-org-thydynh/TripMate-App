@@ -39,6 +39,13 @@ class MomentsRepository {
   Future<void> comment(String tripId, String momentId, String text) =>
       _client.postData('${_base(tripId)}/$momentId/comments', {'text': text});
 
+  /// Đặt lại caption cho khoảnh khắc (chỉ tác giả sửa được).
+  Future<void> updateCaption(
+    String tripId,
+    String momentId,
+    String caption,
+  ) => _client.patchData('${_base(tripId)}/$momentId', {'caption': caption});
+
   Future<void> delete(String tripId, String momentId) =>
       _client.deleteData('${_base(tripId)}/$momentId');
 

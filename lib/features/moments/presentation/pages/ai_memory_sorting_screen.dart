@@ -1,349 +1,318 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AIMemorySortingScreen extends StatefulWidget {
+import '../../../../core/app_messenger.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../../core/theme/app_fonts.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
+import '../../../../core/widgets/state_views.dart';
+import '../../../ai/data/ai_repository.dart';
+import '../../../gamification/data/games_repository.dart';
+import '../../data/moments_repository.dart';
+import '../../domain/moment.dart';
+
+/// AI đặt caption cho những tấm ảnh chưa có chú thích.
+///
+/// Trước đây màn này hiển thị 2 tấm ảnh Unsplash (đền Kyoto, tô ramen) với
+/// caption AI viết sẵn, và nút "Approve Sorting" chỉ lật một cờ trong bộ nhớ
+/// rồi hiện snackbar — không có gì được lưu, thoát ra là mất. Nay lấy ảnh THẬT
+/// chưa có caption trong chuyến, nhờ AI đặt caption, và "Lưu" ghi thẳng vào
+/// khoảnh khắc qua `PATCH /trips/:id/moments/:momentId`.
+class AIMemorySortingScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
-  final VoidCallback onThemeToggle;
+  final VoidCallback? onThemeToggle;
 
   const AIMemorySortingScreen({
     super.key,
     required this.isDarkMode,
-    required this.onThemeToggle,
+    this.onThemeToggle,
   });
 
   @override
-  State<AIMemorySortingScreen> createState() => _AIMemorySortingScreenState();
+  ConsumerState<AIMemorySortingScreen> createState() =>
+      _AIMemorySortingScreenState();
 }
 
-class _AIMemorySortingScreenState extends State<AIMemorySortingScreen> {
-  final List<Map<String, dynamic>> _sortingTasks = [
-    {
-      'id': '1',
-      'url': 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400',
-      'aiCategory': '🌿 Deep Chill Vibe',
-      'aiCaption':
-          '"Kyoto temples look gorgeous when you guys aren\'t arguing about train passes." 🍵',
-      'tags': ['Kyoto', 'Chill', 'Temple'],
-      'isSorted': false,
-    },
-    {
-      'id': '2',
-      'url':
-          'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400',
-      'aiCategory': '🍜 Foodie Chaos',
-      'aiCaption':
-          '"Eating 4 bowls of ramen and crying about the credit card bills later is our squad signature." 💸🍲',
-      'tags': ['Ramen', 'Market', 'BrokeStudent'],
-      'isSorted': false,
-    },
-  ];
+class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
+  /// Caption AI đề xuất theo id khoảnh khắc.
+  final Map<String, String> _suggested = {};
+
+  /// Id đang gọi AI hoặc đang lưu.
+  final Set<String> _busy = {};
+
+  /// Id đã lưu xong trong phiên này — để ẩn khỏi danh sách chờ.
+  final Set<String> _done = {};
+
+  Future<void> _suggest(String tripId, Moment m) async {
+    if (_busy.contains(m.id)) return;
+    setState(() => _busy.add(m.id));
+    try {
+      final text = await ref
+          .read(mateyChatProvider)
+          .ask(
+            prompt:
+                'Viết 1 caption ngắn, vui, kiểu Gen Z Việt cho một tấm ảnh du '
+                'lịch. Chỉ trả về đúng câu caption, không giải thích.',
+            tripId: tripId,
+          );
+      if (!mounted) return;
+      setState(() {
+        _suggested[m.id] = text.trim();
+        _busy.remove(m.id);
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _busy.remove(m.id));
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _save(String tripId, Moment m) async {
+    final caption = _suggested[m.id];
+    if (caption == null || caption.isEmpty || _busy.contains(m.id)) return;
+    setState(() => _busy.add(m.id));
+    try {
+      await ref
+          .read(momentsRepositoryProvider)
+          .updateCaption(tripId, m.id, caption);
+      if (!mounted) return;
+      // Bảng tin và scrapbook đang hiển thị caption cũ — buộc tải lại.
+      ref.invalidate(tripMomentsProvider(tripId));
+      ref.invalidate(recentMomentsProvider);
+      setState(() {
+        _busy.remove(m.id);
+        _done.add(m.id);
+      });
+      showGlobalSnack('moments.caption_saved'.tr());
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _busy.remove(m.id));
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bgGradStart = isDark
-        ? const Color(0xFF1A1712)
-        : const Color(0xFFFDF6D3);
-    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final textPrimary = isDark ? Colors.white : Colors.black87;
-    final textSecondary = isDark ? Colors.white60 : Colors.black54;
-
-    final primaryColor = isDark
-        ? const Color(0xFFF5822B)
-        : const Color(0xFFF5822B);
-    final secondaryColor = isDark
-        ? const Color(0xFF3D8BFF)
-        : const Color(0xFFFFD84D);
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: bgGradStart),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.arrow_back_ios_new,
-                            color: textPrimary,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'AI Memory Sorting',
-                          style: AppFonts.body(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        isDark
-                            ? Icons.light_mode_outlined
-                            : Icons.dark_mode_outlined,
-                        color: textPrimary,
-                      ),
-                      onPressed: widget.onThemeToggle,
-                    ),
-                  ],
-                ),
-              ),
-
-              // Title advice from Matey
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 4,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: primaryColor, width: 2),
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: ink),
+        title: Text(
+          'moments.sorting_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
+          ),
+        ),
+      ),
+      body: tripId == null
+          ? AppEmptyState(
+              isDark: isDark,
+              icon: Icons.auto_awesome_outlined,
+              title: 'games.need_trip_title'.tr(),
+              body: 'games.need_trip_body'.tr(),
+            )
+          : ref
+                .watch(tripMomentsProvider(tripId))
+                .when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                  child: Row(
-                    children: [
-                      const Text('🤖', style: TextStyle(fontSize: 24)),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          '"Let me sort out your trip moments. I will tag them according to your crew vibe!"',
-                          style: GoogleFonts.caveat(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                    ],
+                  error: (e, _) => AppErrorState(
+                    isDark: isDark,
+                    error: e,
+                    onRetry: () => ref.invalidate(tripMomentsProvider(tripId)),
                   ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Task List
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _sortingTasks.length,
-                  itemBuilder: (context, index) {
-                    final task = _sortingTasks[index];
-                    final isSorted = task['isSorted'] as bool;
-
-                    if (isSorted) return const SizedBox.shrink();
-
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: cardBg,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.08)
-                              : Colors.black,
-                          width: 2,
-                        ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Main moment preview
-                            Container(
-                              height: 180,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(task['url'] as String),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'AI Category Suggestion:',
-                                        style: AppFonts.body(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: textSecondary,
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: secondaryColor.withValues(
-                                            alpha: 0.15,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          task['aiCategory'] as String,
-                                          style: AppFonts.body(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: secondaryColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    task['aiCaption'] as String,
-                                    style: GoogleFonts.caveat(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: textPrimary,
-                                      height: 1.3,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  // Tags rows
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: (task['tags'] as List)
-                                        .map<Widget>((tag) {
-                                          return Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: cardBg,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: textSecondary,
-                                                width: 2,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              '#$tag',
-                                              style: AppFonts.heading(
-                                                fontSize: 11,
-                                                color: textSecondary,
-                                              ),
-                                            ),
-                                          );
-                                        })
-                                        .toList(),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  // Actions
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _sortingTasks[index]['isSorted'] =
-                                                  true;
-                                            });
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: const Text(
-                                                  'Approved AI categorization & sorting tags! 📂✨',
-                                                ),
-                                                backgroundColor: secondaryColor,
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                              ),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: secondaryColor,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'Approve Sorting',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      OutlinedButton(
-                                        onPressed: () {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                'Skipped current suggestion.',
-                                              ),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                            ),
-                                          );
-                                        },
-                                        style: OutlinedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                          ),
-                                        ),
-                                        child: const Text('Skip'),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  data: (moments) {
+                    // Chỉ những ảnh CHƯA có caption mới cần AI đặt tên.
+                    final pending = moments
+                        .where(
+                          (m) =>
+                              (m.caption?.trim().isEmpty ?? true) &&
+                              !_done.contains(m.id),
+                        )
+                        .toList();
+                    if (pending.isEmpty) {
+                      return AppEmptyState(
+                        isDark: isDark,
+                        icon: Icons.check_circle_outline,
+                        title: 'moments.sorting_title'.tr(),
+                        body: 'moments.sorting_empty'.tr(),
+                      );
+                    }
+                    return ListView.separated(
+                      padding: const EdgeInsets.all(GenZTokens.space5),
+                      itemCount: pending.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: GenZTokens.space4),
+                      itemBuilder: (_, i) =>
+                          _card(isDark, tripId, pending[i]),
                     );
                   },
                 ),
-              ),
-            ],
+    );
+  }
+
+  Widget _card(bool isDark, String tripId, Moment m) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final suggestion = _suggested[m.id];
+    final busy = _busy.contains(m.id);
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 180,
+            width: double.infinity,
+            child: m.mediaUrl.startsWith('http')
+                ? CachedNetworkImage(
+                    imageUrl: m.mediaUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (_, _) =>
+                        const ColoredBox(color: GenZTokens.lilac),
+                    errorWidget: (_, _, _) =>
+                        const ColoredBox(color: GenZTokens.lilac),
+                  )
+                : const ColoredBox(color: GenZTokens.lilac),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.all(GenZTokens.space4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  m.placeName?.isNotEmpty == true
+                      ? '${m.authorName} · ${m.placeName}'
+                      : m.authorName,
+                  style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+                ),
+                const SizedBox(height: GenZTokens.space3),
+                if (suggestion != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(GenZTokens.space3),
+                    decoration: BoxDecoration(
+                      color: GenZTokens.yellow,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: GenZTokens.ink,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                    ),
+                    child: Text(
+                      suggestion,
+                      style: AppFonts.body(
+                        fontSize: 14,
+                        color: GenZTokens.ink,
+                        height: 1.4,
+                      ),
+                    ),
+                  )
+                else
+                  Text(
+                    'moments.no_caption'.tr(),
+                    style: AppFonts.body(fontSize: 13, color: inkSoft),
+                  ),
+                const SizedBox(height: GenZTokens.space4),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: busy ? null : () => _suggest(tripId, m),
+                        icon: busy
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.auto_awesome, size: 16),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: ink,
+                          side: BorderSide(
+                            color: ink,
+                            width: GenZTokens.borderWidthThin,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusButton,
+                            ),
+                          ),
+                        ),
+                        label: Text(
+                          suggestion == null
+                              ? 'moments.suggest'.tr()
+                              : 'moments.suggest_again'.tr(),
+                          style: AppFonts.heading(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: ink,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: GenZTokens.space3),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: suggestion == null || busy
+                            ? null
+                            : () => _save(tripId, m),
+                        icon: const Icon(Icons.check, size: 16),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: GenZTokens.green,
+                          foregroundColor: GenZTokens.ink,
+                          elevation: 0,
+                          side: BorderSide(
+                            color: ink,
+                            width: GenZTokens.borderWidthThin,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusButton,
+                            ),
+                          ),
+                        ),
+                        label: Text(
+                          'moments.save_caption'.tr(),
+                          style: AppFonts.heading(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: GenZTokens.ink,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

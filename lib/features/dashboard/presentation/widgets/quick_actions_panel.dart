@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../discovery/presentation/pages/vibe_swipe_deck_screen.dart';
-import '../../../moments/presentation/pages/ghost_cam_screen.dart';
+import '../../../moments/presentation/pages/memory_wall_screen.dart';
 import '../../../gamification/gamification_screen.dart';
 import '../../../profile/profile_screen.dart';
 import '../../../ai/ai_hub_screen.dart';
@@ -29,7 +29,11 @@ class QuickActionsPanel extends StatelessWidget {
   // ── Primary 4 actions (2×2 Spark-style colored cards) ────────────────────────
   static const List<Map<String, dynamic>> _primaryActions = [
     {'labelKey': 'dashboard.split_money', 'type': 'expense', 'isPrimary': true},
-    {'labelKey': 'dashboard.ghost_cam', 'type': 'ghost_cam', 'isPrimary': false},
+    // Trước đây ô này mở Ghost Cam — một màn "máy ảnh" mà khung ngắm chỉ là
+    // ảnh Unsplash và nút chụp chỉ hiện "Captured ... moment!" chứ không chụp
+    // hay lưu gì. App chưa có đường tải ảnh lên nên chưa đăng được khoảnh
+    // khắc; ô này nay mở Memory Wall để xem kỷ niệm thật.
+    {'labelKey': 'dashboard.memories', 'type': 'memories', 'isPrimary': false},
     {'labelKey': 'dashboard.bingo', 'type': 'bingo', 'isPrimary': false},
     {'labelKey': 'dashboard.vibe_match', 'type': 'vibe_match', 'isPrimary': true},
   ];
@@ -47,7 +51,7 @@ class QuickActionsPanel extends StatelessWidget {
     switch (type) {
       case 'expense':
         return PhosphorIcons.wallet();
-      case 'ghost_cam':
+      case 'memories':
         return PhosphorIcons.camera();
       case 'bingo':
         return PhosphorIcons.gameController();
@@ -109,11 +113,11 @@ class QuickActionsPanel extends StatelessWidget {
             );
           }
         }();
-      case 'ghost_cam':
+      case 'memories':
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => GhostCamScreen(
+            builder: (_) => MemoryWallScreen(
               isDarkMode: isDarkMode,
               onThemeToggle: onThemeToggle,
             ),
