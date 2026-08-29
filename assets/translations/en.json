@@ -573,6 +573,13 @@
     "atlas_bucket_hint": "e.g. See snow in Sapa",
     "atlas_places": "Places",
     "atlas_streak": "TRAVEL STREAK",
+    "badge_condition": "Requirement",
+    "badge_locked": "Not unlocked yet",
+    "badge_remaining": {
+      "one": "{} to go",
+      "other": "{} to go"
+    },
+    "badge_unlocked": "Unlocked 🎉",
     "bio": "Bio",
     "buddies_empty_body": "Invite friends with your trip code — they show up here after the trip.",
     "buddies_empty_title": "No travel buddies yet",

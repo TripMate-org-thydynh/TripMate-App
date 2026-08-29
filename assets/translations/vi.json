@@ -573,6 +573,13 @@
     "atlas_bucket_hint": "VD: Ngắm tuyết rơi ở Sapa",
     "atlas_places": "Địa Điểm",
     "atlas_streak": "STREAK PHƯỢT THỦ",
+    "badge_condition": "Điều kiện",
+    "badge_locked": "Chưa mở khoá",
+    "badge_remaining": {
+      "one": "còn {} nữa",
+      "other": "còn {} nữa"
+    },
+    "badge_unlocked": "Đã mở khoá 🎉",
     "bio": "Tiểu sử / Bio",
     "buddies_empty_body": "Rủ bạn vào chuyến bằng mã mời, xong chuyến họ sẽ hiện ở đây.",
     "buddies_empty_title": "Chưa đi chung với ai",

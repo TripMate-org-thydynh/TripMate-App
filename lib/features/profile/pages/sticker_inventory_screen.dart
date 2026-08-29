@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import '../../../core/app_messenger.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/api_service.dart';
 
 class StickerInventoryScreen extends StatefulWidget {
@@ -25,36 +24,6 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
   List<dynamic> _ownedStickers = [];
   bool _isLoading = true;
 
-  final List<Map<String, dynamic>> _ownedPacks = const [
-    {
-      'icon': Icons.local_cafe,
-      'rarity': 'Rare',
-      'rarityColor': Color(0xFF64B5F6),
-      'name': 'Cafe Addiction',
-      'desc': 'Fuel for the 6AM airport run.',
-    },
-    {
-      'icon': Icons.payments,
-      'rarity': 'Epic',
-      'rarityColor': Color(0xFFC9B8FF),
-      'name': 'Financial Damage',
-      'desc': 'For splitting the exorbitant dinner bill.',
-    },
-    {
-      'icon': Icons.star,
-      'rarity': 'Legendary',
-      'rarityColor': Color(0xFFFFD700),
-      'name': 'Main Character',
-      'desc': "It's your trip, they just live in it.",
-    },
-    {
-      'icon': Icons.map_outlined,
-      'rarity': 'Common',
-      'rarityColor': Color(0xFF1FA85C),
-      'name': 'Lost Again',
-      'desc': 'Send when GPS fails entirely.',
-    },
-  ];
 
   final List<String> _recentStickers = const [
     '🔥',
@@ -377,137 +346,12 @@ class _StickerInventoryScreenState extends State<StickerInventoryScreen>
                           ),
                         ),
 
-                        const SizedBox(height: 28),
-
-                        // Owned Collections
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.inventory_2_outlined,
-                              size: 18,
-                              color: Color(0xFFC9B8FF),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Owned Collections',
-                              style: AppFonts.heading(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        ...List.generate(_ownedPacks.length, (i) {
-                          final pack = _ownedPacks[i];
-                          final rarityColor = pack['rarityColor'] as Color;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(18),
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(
-                                  sigmaX: 20,
-                                  sigmaY: 20,
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: surface,
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(color: borderColor),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 48,
-                                        height: 48,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: rarityColor.withValues(
-                                            alpha: 0.15,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          pack['icon'] as IconData,
-                                          color: rarityColor,
-                                          size: 22,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 7,
-                                                        vertical: 2,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          6,
-                                                        ),
-                                                    color: rarityColor
-                                                        .withValues(
-                                                          alpha: 0.15,
-                                                        ),
-                                                  ),
-                                                  child: Text(
-                                                    pack['rarity'] as String,
-                                                    style:
-                                                        GoogleFonts.plusJakartaSans(
-                                                          fontSize: 9,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: rarityColor,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              pack['name'] as String,
-                                              style: AppFonts.heading(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w700,
-                                                color: textPrimary,
-                                              ),
-                                            ),
-                                            Text(
-                                              pack['desc'] as String,
-                                              style: AppFonts.body(
-                                                fontSize: 11,
-                                                color: textSecondary,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.chevron_right,
-                                        color: textSecondary,
-                                        size: 20,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
+                        // Khối "Owned Collections" đã bỏ.
+                        //
+                        // Đó là 4 gói sticker in cứng (Cafe Addiction,
+                        // ...) hiện ra như thể người dùng đã sở hữu dù
+                        // chưa mua gì. Kho THẬT lấy từ
+                        // /users/me/stickers được vẽ ở khối bên dưới.
 
                         const SizedBox(height: 28),
 

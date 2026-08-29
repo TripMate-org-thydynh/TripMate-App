@@ -2,53 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/network/api_client.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/widgets/state_views.dart';
-
-/// Một danh hiệu và tiến độ đạt được của user.
-class Badge {
-  final String id;
-  final String title;
-  final String desc;
-  final int current;
-  final int target;
-  final bool unlocked;
-
-  const Badge({
-    required this.id,
-    required this.title,
-    required this.desc,
-    required this.current,
-    required this.target,
-    required this.unlocked,
-  });
-
-  int get percent =>
-      target <= 0 ? 0 : ((current / target) * 100).clamp(0, 100).round();
-
-  factory Badge.fromJson(Map<String, dynamic> j) {
-    final p = j['progress'];
-    return Badge(
-      id: j['id'] as String? ?? '',
-      title: j['title'] as String? ?? '',
-      desc: j['desc'] as String? ?? '',
-      current: (p is Map ? (p['current'] as num?)?.toInt() : 0) ?? 0,
-      target: (p is Map ? (p['target'] as num?)?.toInt() : 1) ?? 1,
-      unlocked: j['unlocked'] as bool? ?? false,
-    );
-  }
-}
-
-final badgesProvider = FutureProvider<List<Badge>>((ref) async {
-  final data = await ref.watch(apiClientProvider).getData('/users/me/badges');
-  if (data is! List) return const [];
-  return data
-      .whereType<Map>()
-      .map((e) => Badge.fromJson(e.cast<String, dynamic>()))
-      .toList();
-});
+import '../../profile/data/badges_repository.dart';
 
 /// Danh hiệu đã mở khoá và tiến độ tới các danh hiệu còn lại.
 ///
@@ -155,7 +112,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
     );
   }
 
-  Widget _card(bool isDark, Badge b) {
+  Widget _card(bool isDark, TripBadge b) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
