@@ -734,7 +734,9 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
-                                  videoDuration == null ? "REC" : "REC $videoDuration",
+                                  videoDuration == null
+                                      ? "REC"
+                                      : "REC $videoDuration",
                                   style: GoogleFonts.shareTechMono(
                                     color: Colors.white,
                                     fontSize: 8,

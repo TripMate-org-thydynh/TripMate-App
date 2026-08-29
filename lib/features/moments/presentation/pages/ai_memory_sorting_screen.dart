@@ -52,10 +52,8 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
     try {
       final text = await ref
           .read(mateyChatProvider)
-          .ask(
-            prompt:
-                'Viết 1 caption ngắn, vui, kiểu Gen Z Việt cho một tấm ảnh du '
-                'lịch. Chỉ trả về đúng câu caption, không giải thích.',
+          .caption(
+            prompt: 'Một tấm ảnh du lịch của nhóm bạn trẻ Việt.',
             tripId: tripId,
           );
       if (!mounted) return;
@@ -190,7 +188,7 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
             width: double.infinity,
             child: m.mediaUrl.startsWith('http')
                 ? CachedNetworkImage(
-                    imageUrl: optimizedMedia(m.mediaUrl, width: 640),
+                    imageUrl: posterMedia(m.mediaUrl, m.type, width: 640),
                     fit: BoxFit.cover,
                     placeholder: (_, _) =>
                         const ColoredBox(color: GenZTokens.lilac),

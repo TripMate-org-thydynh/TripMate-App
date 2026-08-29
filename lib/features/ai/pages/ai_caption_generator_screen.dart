@@ -162,20 +162,16 @@ class _AICaptionGeneratorScreenState
     setState(() => _isGenerating = true);
     try {
       final tripId = ref.read(activeTripIdProvider);
-      final text = await ref
-          .read(mateyChatProvider)
-          .ask(
-            prompt:
-                'Viết 3 caption ngắn cho ảnh du lịch theo vibe "$_selectedVibe", '
-                'kèm 2 hashtag mỗi caption. Mỗi caption một dòng.',
-            tripId: tripId,
-          );
-      final lines = text
-          .split(RegExp(r'\n+'))
-          .map((l) => l.trim())
-          .where((l) => l.isNotEmpty)
-          .take(5)
-          .toList();
+      final lines =
+          (await ref
+                  .read(mateyChatProvider)
+                  .captions(
+                    prompt:
+                        'Ảnh du lịch theo vibe "$_selectedVibe", kèm 2 hashtag mỗi caption.',
+                    tripId: tripId,
+                  ))
+              .take(5)
+              .toList();
       if (!mounted) return;
       setState(() {
         _aiOptions[_selectedVibe] = lines

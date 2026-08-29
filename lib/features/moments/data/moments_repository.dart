@@ -89,6 +89,7 @@ class RecentMoment {
   final String tripId;
   final String tripName;
   final String mediaUrl;
+
   /// Anh bia — voi VIDEO day la frame dau (.jpg) do backend suy ra.
   final String posterUrl;
   final String type;
@@ -113,8 +114,7 @@ class RecentMoment {
     tripId: j['tripId'] as String? ?? '',
     tripName: j['tripName'] as String? ?? '',
     mediaUrl: j['mediaUrl'] as String? ?? '',
-    posterUrl:
-        j['posterUrl'] as String? ?? j['mediaUrl'] as String? ?? '',
+    posterUrl: j['posterUrl'] as String? ?? j['mediaUrl'] as String? ?? '',
     type: j['type'] as String? ?? 'PHOTO',
     caption: j['caption'] as String?,
     authorName: j['authorName'] as String? ?? '',

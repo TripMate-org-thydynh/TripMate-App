@@ -195,6 +195,42 @@ class MateyChatService {
     return _textOf(res) ?? prompt;
   }
 
+  /// Xin AI đặt caption — dùng đúng `CAPTION_GEN`.
+  ///
+  /// Trước đây các màn caption gọi [ask] (tức `ITINERARY_PLAN`) nên Gemini trả
+  /// về cả một lịch trình nhiều đoạn thay vì mấy câu caption.
+  Future<List<String>> captions({
+    required String prompt,
+    String? tripId,
+  }) async {
+    final data = await _client.postData('/ai/request', {
+      'type': 'CAPTION_GEN',
+      'prompt': prompt,
+      'tripId': ?tripId,
+    });
+    final res = (data is Map) ? data['response'] : null;
+    // Schema BE: { "captions": string[] }.
+    if (res is Map) {
+      final list = res['captions'];
+      if (list is List) {
+        final out = list
+            .whereType<String>()
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList();
+        if (out.isNotEmpty) return out;
+      }
+    }
+    final fallback = _textOf(res);
+    return fallback == null ? const [] : [fallback];
+  }
+
+  /// Một caption duy nhất (câu đầu tiên AI gợi ý).
+  Future<String> caption({required String prompt, String? tripId}) async {
+    final list = await captions(prompt: prompt, tripId: tripId);
+    return list.isEmpty ? '' : list.first;
+  }
+
   /// Lấy đoạn chữ dài nhất trong JSON trả về — mỗi loại yêu cầu có khoá khác
   /// nhau (`analysis`, `roastText`, `recapScript`...), nên không cố định khoá.
   String? _textOf(Object? node) {

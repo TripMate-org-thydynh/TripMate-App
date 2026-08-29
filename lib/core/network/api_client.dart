@@ -151,6 +151,12 @@ final dioProvider = Provider<Dio>((ref) {
     InterceptorsWrapper(
       onRequest: (options, handler) {
         options.headers['Accept-Language'] = ApiClient.currentLanguage;
+        // Goi AI di qua Gemini nen thuong 15-40s. Voi timeout chung 15s thi
+        // moi lan nho AI viet caption deu bi huy giua chung ma nguoi dung
+        // khong hieu vi sao.
+        if (options.path.startsWith('/ai/')) {
+          options.receiveTimeout = const Duration(seconds: 60);
+        }
         return handler.next(options);
       },
     ),

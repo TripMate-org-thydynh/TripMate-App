@@ -153,3 +153,14 @@ String optimizedMedia(String url, {int? width}) {
   }
   return url.replaceFirst('/upload/', '/upload/${t.join(',')}/');
 }
+
+/// Anh bia cho mot moment: voi VIDEO thi doi duoi sang .jpg de Cloudinary tra
+/// frame dau. Cung quy tac ma backend dung o `StorageService.posterFor`, de
+/// cho nao ve bang widget anh cung khong ra o "khong tai duoc anh".
+String posterMedia(String url, String type, {int? width}) {
+  if (type != 'VIDEO') return optimizedMedia(url, width: width);
+  final dot = url.lastIndexOf('.');
+  final slash = url.lastIndexOf('/');
+  final jpg = dot > slash ? '${url.substring(0, dot)}.jpg' : '$url.jpg';
+  return optimizedMedia(jpg, width: width);
+}
