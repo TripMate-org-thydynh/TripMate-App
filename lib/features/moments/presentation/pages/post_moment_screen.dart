@@ -11,6 +11,7 @@ import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/media_uploader.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
+import '../../../profile/data/xp_repository.dart';
 import '../../application/moments_providers.dart';
 import '../../data/moments_repository.dart';
 
@@ -96,6 +97,7 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
       // Bảng tin, scrapbook và ví XP (đăng ảnh được +40 XP) đều đổi.
       ref.invalidate(momentsProvider(widget.tripId));
       ref.invalidate(recentMomentsProvider);
+      ref.invalidate(xpWalletProvider);
       HapticFeedback.mediumImpact();
       showGlobalSnack('moments.posted'.tr());
       Navigator.pop(context, true);

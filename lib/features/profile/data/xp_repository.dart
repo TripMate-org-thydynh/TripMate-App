@@ -168,19 +168,21 @@ final xpRepositoryProvider = Provider<XpRepository>(
   (ref) => XpRepository(ref.watch(apiClientProvider)),
 );
 
-final xpWalletProvider = FutureProvider<XpWallet>(
+/// `autoDispose` có chủ đích: XP tăng ở khắp nơi (chơi game, đăng ảnh, ghi chi
+/// tiêu), nên số dư phải đọc lại mỗi lần mở màn thay vì dùng bản cache cũ.
+final xpWalletProvider = FutureProvider.autoDispose<XpWallet>(
   (ref) => ref.watch(xpRepositoryProvider).fetchWallet(),
 );
 
-final stickerStoreProvider = FutureProvider<List<StoreItem>>(
+final stickerStoreProvider = FutureProvider.autoDispose<List<StoreItem>>(
   (ref) => ref.watch(xpRepositoryProvider).fetchStickerStore(),
 );
 
-final myStickersProvider = FutureProvider<List<StoreItem>>(
+final myStickersProvider = FutureProvider.autoDispose<List<StoreItem>>(
   (ref) => ref.watch(xpRepositoryProvider).fetchMyStickers(),
 );
 
-final themeStoreProvider = FutureProvider<List<StoreItem>>(
+final themeStoreProvider = FutureProvider.autoDispose<List<StoreItem>>(
   (ref) => ref.watch(xpRepositoryProvider).fetchThemeStore(),
 );
 

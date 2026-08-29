@@ -8,6 +8,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/widgets/state_views.dart';
+import '../../profile/data/xp_repository.dart';
 import '../data/games_repository.dart';
 
 /// Bảng thử thách chaos của squad.
@@ -104,6 +105,8 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
       if (!mounted) return;
       ref.invalidate(squadXpProvider(tripId));
       ref.invalidate(leaderboardProvider(tripId));
+      // Ví XP cá nhân vừa tăng — làm mới để chip số dư không hiện số cũ.
+      ref.invalidate(xpWalletProvider);
       showGlobalSnack('games.chaos_done'.tr(args: ['${dare.xpReward}']));
     } catch (e) {
       if (!mounted) return;

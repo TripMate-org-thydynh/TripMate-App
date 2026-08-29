@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../profile/data/xp_repository.dart';
 import '../data/games_repository.dart';
 import 'package:flutter/services.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -159,6 +160,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
               if (!mounted) return;
               ref.invalidate(squadXpProvider(tripId));
               ref.invalidate(leaderboardProvider(tripId));
+              ref.invalidate(xpWalletProvider);
             })
             .catchError((_) {});
       }
