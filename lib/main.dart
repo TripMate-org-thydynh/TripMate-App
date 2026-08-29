@@ -6,6 +6,7 @@ import 'core/theme/theme_provider.dart'; // themeProvider + accentProvider
 import 'core/router/app_router.dart';
 import 'core/app_messenger.dart';
 import 'core/api_service.dart';
+import 'core/services/widget_sync.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/network/api_client.dart';
 
@@ -44,7 +45,19 @@ class MyApp extends ConsumerWidget {
     // giống AuthInterceptor của ApiClient.
     ApiService.onUnauthorized = () {
       ref.read(authProvider.notifier).logout();
+      // Xoá ảnh squad khỏi widget màn hình chính khi phiên hết hạn — không để
+      // ảnh của nhóm nằm lại trên máy sau khi người dùng đã đăng xuất.
+      ref.read(widgetSyncProvider).clear();
     };
+
+    // Đồng bộ widget mỗi lần mở app: đây là một trong hai lần cập nhật chắc
+    // chắn (lần kia là ngay sau khi chính mình gửi ảnh). Ảnh của người khác
+    // phụ thuộc lịch làm mới của hệ điều hành — xem ios/WIDGET_SETUP.md.
+    ref.listen(authProvider, (prev, next) {
+      if (next.isAuthenticated && prev?.isAuthenticated != true) {
+        ref.read(widgetSyncProvider).refresh();
+      }
+    });
 
     final themeMode = ref.watch(themeProvider);
     final accent    = ref.watch(accentProvider);

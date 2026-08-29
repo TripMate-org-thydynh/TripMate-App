@@ -2,17 +2,22 @@
     <!-- Chỉ khai báo quyền app THỰC SỰ dùng. Khai thừa sẽ lệch với bảng
          Data Safety trên Google Play và làm người dùng ngại cài. -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- CAMERA + READ_MEDIA_IMAGES: image_picker (chụp ảnh vị trí, quét vé). -->
+    <!-- CAMERA: Squad Cam (khung ngắm trực tiếp, chụp ảnh và quay clip ngắn),
+         image_picker (chụp ảnh vị trí, quét vé). -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- RECORD_AUDIO: quay clip ngắn CÓ TIẾNG ở Squad Cam (giữ nút chụp). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- VIBRATE: HapticFeedback ở các thao tác chính. -->
     <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Máy không có camera vẫn cài được; Squad Cam sẽ báo lỗi rõ ràng. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <!-- Đã gỡ (không có code nào dùng):
          ACCESS_FINE_LOCATION / ACCESS_COARSE_LOCATION — app lấy toạ độ từ EXIF
            ảnh và từ lịch trình, không đọc GPS thiết bị.
-         READ_MEDIA_VIDEO — chỉ chọn ảnh (pickImage), không chọn video.
-         RECORD_AUDIO — không có tính năng ghi âm.
+         READ_MEDIA_VIDEO — chỉ chọn ảnh (pickImage), clip do app tự quay.
          RECEIVE_BOOT_COMPLETED — không có notification/alarm chạy nền.
          Thêm lại kèm code sử dụng khi làm tính năng tương ứng. -->
 
@@ -69,6 +74,19 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Widget màn hình chính: khoảnh khắc mới nhất của squad.
+             Dữ liệu do Flutter ghi qua package home_widget. -->
+        <receiver
+            android:name=".TripMateWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/tripmate_widget_info" />
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

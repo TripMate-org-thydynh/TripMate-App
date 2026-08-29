@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Squad Cam: khung ngắm trực tiếp, chụp ảnh và quay clip ngắn có tiếng.
+	     iOS bắt buộc phải giải thích lý do, nếu không app bị từ chối duyệt. -->
+	<key>NSCameraUsageDescription</key>
+	<string>TripMate cần camera để bạn chụp ảnh và quay clip ngắn gửi cho squad.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>TripMate cần micro để clip ngắn bạn quay có âm thanh.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TripMate cần truy cập thư viện để bạn chọn ảnh đăng cho squad.</string>
 </dict>
 </plist>

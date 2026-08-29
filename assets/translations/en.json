@@ -511,8 +511,12 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "cam_hint": "Tap to snap · Hold to record",
+    "cam_none": "No camera found on this device.",
+    "cam_title": "Squad Cam",
     "caption_hint": "Say something about this one...",
     "caption_saved": "Caption saved 🪄",
+    "caption_short": "Add a line...",
     "from_gallery": "Gallery",
     "no_caption": "This photo has no caption yet.",
     "photo_map_empty_body": "Post a moment with a location so the squad can see the route on the map.",
@@ -521,7 +525,10 @@
     "post": "Post",
     "post_title": "Post a moment 📸",
     "posted": "Moment posted 🎉 +40 XP",
+    "recording": "RECORDING",
     "save_caption": "Save",
+    "send_to_squad": "Send to squad",
+    "sent_to_squad": "Sent to your squad 🎉 +40 XP",
     "sorting_empty": "Every photo in this trip already has a caption!",
     "sorting_title": "AI captions 🪄",
     "suggest": "Ask AI",

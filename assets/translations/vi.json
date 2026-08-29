@@ -511,8 +511,12 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "cam_hint": "Bấm để chụp · Giữ để quay",
+    "cam_none": "Không tìm thấy camera nào trên máy.",
+    "cam_title": "Squad Cam",
     "caption_hint": "Viết gì đó về tấm này...",
     "caption_saved": "Đã lưu caption cho ảnh 🪄",
+    "caption_short": "Thêm một dòng...",
     "from_gallery": "Thư viện",
     "no_caption": "Ảnh này chưa có caption.",
     "photo_map_empty_body": "Đăng khoảnh khắc kèm vị trí để cả nhóm thấy hành trình trên bản đồ.",
@@ -521,7 +525,10 @@
     "post": "Đăng lên",
     "post_title": "Đăng khoảnh khắc 📸",
     "posted": "Đã đăng khoảnh khắc 🎉 +40 XP",
+    "recording": "ĐANG QUAY",
     "save_caption": "Lưu",
+    "send_to_squad": "Gửi cho squad",
+    "sent_to_squad": "Đã gửi cho squad 🎉 +40 XP",
     "sorting_empty": "Mọi ảnh trong chuyến đều đã có caption rồi!",
     "sorting_title": "AI đặt caption 🪄",
     "suggest": "Nhờ AI viết",
