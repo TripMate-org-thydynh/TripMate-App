@@ -226,6 +226,7 @@
   "errors": {
     "connection_lost": "Mất kết nối — kiểm tra mạng và thử lại.",
     "load_failed": "Không tải được dữ liệu",
+    "request_invalid": "Yêu cầu không hợp lệ. Bọn mình đã ghi nhận, thử lại giúp nhé!",
     "server_error": "Máy chủ đang gặp sự cố, thử lại sau.",
     "session_expired": "Phiên đăng nhập đã hết hạn.",
     "unauthorized": "Bạn không có quyền thực hiện thao tác này.",

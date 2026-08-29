@@ -49,6 +49,11 @@ class MomentsRepository {
   Future<void> delete(String tripId, String momentId) =>
       _client.deleteData('${_base(tripId)}/$momentId');
 
+  /// Tạo khoảnh khắc mới.
+  ///
+  /// KHÔNG gửi `placeName`: DTO của backend bật whitelist nên trường lạ làm cả
+  /// request bị từ chối 400, kể cả khi giá trị là null. Bảng `moments` cũng
+  /// không có cột này — vị trí lưu ở `latitude`/`longitude`.
   Future<Moment> create({
     required String tripId,
     required String mediaUrl,
@@ -56,15 +61,15 @@ class MomentsRepository {
     String? caption,
     double? latitude,
     double? longitude,
-    String? placeName,
   }) async {
     final res = await _client.postData(_base(tripId), {
       'mediaUrl': mediaUrl,
       'type': type,
-      'caption': caption,
-      'latitude': latitude,
-      'longitude': longitude,
-      'placeName': placeName,
+      // Chỉ gửi trường CÓ giá trị: whitelist của BE từ chối trường lạ, và gửi
+      // null vô ích chỉ làm payload to thêm.
+      'caption': ?caption,
+      'latitude': ?latitude,
+      'longitude': ?longitude,
     });
     return Moment.fromJson(res as Map<String, dynamic>);
   }

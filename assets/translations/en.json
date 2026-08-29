@@ -226,6 +226,7 @@
   "errors": {
     "connection_lost": "Connection lost - check network and try again.",
     "load_failed": "Couldn't load data",
+    "request_invalid": "That request was invalid. We logged it — please try again.",
     "server_error": "Server is having issues, try again later.",
     "session_expired": "Session has expired.",
     "unauthorized": "You are not authorized to perform this action.",
