@@ -22,7 +22,9 @@ import 'pages/public_profile_screen.dart';
 import 'pages/shared_trips_history_screen.dart';
 import 'pages/social_links_manager_screen.dart';
 import '../gamification/pages/squad_leaderboard_screen.dart';
-import 'pages/sticker_store_screen.dart';
+import 'pages/sticker_inventory_screen.dart';
+import 'pages/xp_wallet_screen.dart';
+import 'widgets/xp_balance_chip.dart';
 import 'pages/theme_marketplace_screen.dart';
 import 'pages/travel_atlas_screen.dart';
 import 'pages/backup_restore_screen.dart';
@@ -1032,10 +1034,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        const StickerStoreScreen(),
+                                        StickerInventoryScreen(
+                                          isDarkMode: isDark,
+                                        ),
                                   ),
                                 );
                               },
+                            ),
+                          ),
+                        ),
+                        // Lối vào ví XP — chỗ duy nhất xem được số dư và sổ
+                        // cái. Trước đây không màn nào cho biết số dư, vì chưa
+                        // hề có số dư nào.
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            right: 8.0,
+                            top: 12.0,
+                          ),
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      XpWalletScreen(isDarkMode: isDark),
+                                ),
+                              ),
+                              child: XpBalanceChip(isDark: isDark),
                             ),
                           ),
                         ),
