@@ -32,7 +32,7 @@ class AiHubScreen extends StatelessWidget {
     // Token Gen Z Neo-Brutalist
     const primaryColor = GenZTokens.purple;
     const secondaryColor = GenZTokens.yellow;
-    final backgroundColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 

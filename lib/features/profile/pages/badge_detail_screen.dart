@@ -31,7 +31,7 @@ class BadgeDetailScreen extends StatelessWidget {
     final remaining = badge.target - badge.current;
 
     return Scaffold(
-      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

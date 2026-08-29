@@ -34,7 +34,8 @@ class WeatherForecastSheet extends StatelessWidget {
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _inkSoft => isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _bg(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
 
   static const _weekdaysVi = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
   static const _weekdaysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -61,7 +62,7 @@ class WeatherForecastSheet extends StatelessWidget {
       expand: false,
       builder: (context, scrollCtrl) => Container(
         decoration: BoxDecoration(
-          color: _bg,
+          color: _bg(context),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           border: Border.all(color: _ink, width: 2),
         ),

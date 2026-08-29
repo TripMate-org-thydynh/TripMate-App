@@ -25,7 +25,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen> with Sing
   late TabController _tabController;
 
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
   Color get _surface => widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   @override

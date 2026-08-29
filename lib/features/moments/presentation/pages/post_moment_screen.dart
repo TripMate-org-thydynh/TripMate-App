@@ -119,7 +119,7 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
     return Scaffold(
-      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

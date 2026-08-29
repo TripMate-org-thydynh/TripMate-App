@@ -31,7 +31,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
   Uint8List? _preview;
   Map<String, dynamic>? _result; // {source, latitude, longitude, placeName, ...}
 
-  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _sub =>
       widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;

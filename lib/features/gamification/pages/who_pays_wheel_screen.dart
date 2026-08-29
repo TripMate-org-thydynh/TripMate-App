@@ -274,7 +274,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     // nên yêu cầu tối thiểu 2 thành viên.
     if (_currentParticipants.length < 2) {
       return Scaffold(
-        backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,

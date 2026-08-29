@@ -53,7 +53,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
   }
 
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 

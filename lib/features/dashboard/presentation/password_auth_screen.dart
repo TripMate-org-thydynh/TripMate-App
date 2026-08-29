@@ -35,7 +35,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
     super.dispose();
   }
 
-  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _sub =>
       widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;

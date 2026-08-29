@@ -34,7 +34,8 @@ class PickTripSheet extends ConsumerWidget {
     );
   }
 
-  Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _bg(BuildContext context) =>
+      Theme.of(context).scaffoldBackgroundColor;
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _sub => isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -48,7 +49,7 @@ class PickTripSheet extends ConsumerWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.72,
       ),
       decoration: BoxDecoration(
-        color: _bg,
+        color: _bg(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border(
           top: BorderSide(color: _ink, width: 2.5),

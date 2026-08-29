@@ -34,7 +34,7 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
   Color get _ink =>
       widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _bg =>
-      widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+      Theme.of(context).scaffoldBackgroundColor;
 
   @override
   Widget build(BuildContext context) {

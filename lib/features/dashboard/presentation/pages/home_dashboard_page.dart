@@ -108,7 +108,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   Color get _inkSoft =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
 
   // ─── Build ───────────────────────────────────────────────────────────────────
 

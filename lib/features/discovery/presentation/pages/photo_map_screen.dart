@@ -33,7 +33,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
   bool _isLoadingAddress = false;
 
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
   Color get _surface => widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   @override
