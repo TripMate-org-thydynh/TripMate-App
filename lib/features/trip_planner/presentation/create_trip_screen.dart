@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -956,260 +955,250 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               // Invite Crew Card
               ClipRRect(
                 borderRadius: BorderRadius.circular(24),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 28,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF262019)
-                          : const Color(0xFFFFFDF5),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: textPrimary, width: 2.5),
-                      boxShadow: [
-                        BoxShadow(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 28,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF262019)
+                        : const Color(0xFFFFFDF5),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: textPrimary, width: 2.5),
+                    boxShadow: [
+                      BoxShadow(color: textPrimary, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'trips.invite_the_crew'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                           color: textPrimary,
-                          offset: const Offset(0, 4),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'trips.invite_the_crew'.tr(),
-                          style: AppFonts.heading(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
+                      ),
+                      const SizedBox(height: 20),
 
-                        // QR Box & Floating profiles
-                        SizedBox(
-                          height: 180,
-                          width: double.infinity,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Middle QR Code
-                              Container(
-                                width: 140,
-                                height: 140,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? const Color(0xFF262019)
-                                      : const Color(0xFFFFFDF5),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
+                      // QR Box & Floating profiles
+                      SizedBox(
+                        height: 180,
+                        width: double.infinity,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Middle QR Code
+                            Container(
+                              width: 140,
+                              height: 140,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF262019)
+                                    : const Color(0xFFFFFDF5),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: textPrimary,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
                                     color: textPrimary,
-                                    width: 2,
+                                    offset: const Offset(0, 3),
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: textPrimary,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
+                                ],
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: isDark
+                                        ? Colors.white24
+                                        : Colors.black12,
+                                    width: 3.0,
+                                    style: BorderStyle.solid,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: isDark
-                                          ? Colors.white24
-                                          : Colors.black12,
-                                      width: 3.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.qr_code_2,
-                                      size: 54,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                    ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.qr_code_2,
+                                    size: 54,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : Colors.black54,
                                   ),
                                 ),
                               ),
+                            ),
 
-                              // Avatar 1: Minh Nhật (Left-Floating)
-                              AnimatedBuilder(
-                                animation: _floatController1,
-                                builder: (context, child) {
-                                  final offset =
-                                      math.sin(
-                                        _floatController1.value * math.pi * 2,
-                                      ) *
-                                      8;
-                                  return Positioned(
-                                    left: screenWidth * 0.08,
-                                    top: 15 + offset,
-                                    child: Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: surfaceColor,
-                                          width: 2.0,
-                                        ),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 0,
-                                          ),
-                                        ],
+                            // Avatar 1: Minh Nhật (Left-Floating)
+                            AnimatedBuilder(
+                              animation: _floatController1,
+                              builder: (context, child) {
+                                final offset =
+                                    math.sin(
+                                      _floatController1.value * math.pi * 2,
+                                    ) *
+                                    8;
+                                return Positioned(
+                                  left: screenWidth * 0.08,
+                                  top: 15 + offset,
+                                  child: Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: surfaceColor,
+                                        width: 2.0,
                                       ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(22),
-                                        child:
-                                            'assets/images/avatar_minh_nhat.webp'
-                                                .startsWith('assets/')
-                                            ? Image.asset(
-                                                'assets/images/avatar_minh_nhat.webp',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                imageUrl:
-                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    Container(
-                                                      color: Colors.black12,
-                                                    ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(
-                                                          Icons.person,
-                                                        ),
-                                              ),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(22),
+                                      child:
+                                          'assets/images/avatar_minh_nhat.webp'
+                                              .startsWith('assets/')
+                                          ? Image.asset(
+                                              'assets/images/avatar_minh_nhat.webp',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl:
+                                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Container(
+                                                    color: Colors.black12,
+                                                  ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.person),
+                                            ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // Avatar 2: Thảo Ly (Right-Floating)
+                            AnimatedBuilder(
+                              animation: _floatController2,
+                              builder: (context, child) {
+                                final offset =
+                                    math.cos(
+                                      _floatController2.value * math.pi * 2,
+                                    ) *
+                                    10;
+                                return Positioned(
+                                  right: screenWidth * 0.06,
+                                  top: 40 + offset,
+                                  child: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: surfaceColor,
+                                        width: 2.0,
+                                      ),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(25),
+                                      child:
+                                          'assets/images/avatar_thao_ly.webp'
+                                              .startsWith('assets/')
+                                          ? Image.asset(
+                                              'assets/images/avatar_thao_ly.webp',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl:
+                                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Container(
+                                                    color: Colors.black12,
+                                                  ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(Icons.person),
+                                            ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // Avatar 3: User (Bottom-Floating)
+                            AnimatedBuilder(
+                              animation: _floatController3,
+                              builder: (context, child) {
+                                final offset =
+                                    math.sin(
+                                      _floatController3.value * math.pi * 2,
+                                    ) *
+                                    6;
+                                return Positioned(
+                                  left: screenWidth * 0.15,
+                                  bottom: 15 + offset,
+                                  child: Container(
+                                    width: 38,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: surfaceColor,
+                                        width: 2.0,
+                                      ),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(19),
+                                      child: Image.asset(
+                                        'assets/images/avatar_user.webp',
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(Icons.person),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-
-                              // Avatar 2: Thảo Ly (Right-Floating)
-                              AnimatedBuilder(
-                                animation: _floatController2,
-                                builder: (context, child) {
-                                  final offset =
-                                      math.cos(
-                                        _floatController2.value * math.pi * 2,
-                                      ) *
-                                      10;
-                                  return Positioned(
-                                    right: screenWidth * 0.06,
-                                    top: 40 + offset,
-                                    child: Container(
-                                      width: 50,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: surfaceColor,
-                                          width: 2.0,
-                                        ),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 0,
-                                          ),
-                                        ],
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(25),
-                                        child:
-                                            'assets/images/avatar_thao_ly.webp'
-                                                .startsWith('assets/')
-                                            ? Image.asset(
-                                                'assets/images/avatar_thao_ly.webp',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                imageUrl:
-                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    Container(
-                                                      color: Colors.black12,
-                                                    ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(
-                                                          Icons.person,
-                                                        ),
-                                              ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-
-                              // Avatar 3: User (Bottom-Floating)
-                              AnimatedBuilder(
-                                animation: _floatController3,
-                                builder: (context, child) {
-                                  final offset =
-                                      math.sin(
-                                        _floatController3.value * math.pi * 2,
-                                      ) *
-                                      6;
-                                  return Positioned(
-                                    left: screenWidth * 0.15,
-                                    bottom: 15 + offset,
-                                    child: Container(
-                                      width: 38,
-                                      height: 38,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: surfaceColor,
-                                          width: 2.0,
-                                        ),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 0,
-                                          ),
-                                        ],
-                                      ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(19),
-                                        child: Image.asset(
-                                          'assets/images/avatar_user.webp',
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Icon(Icons.person),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'trips.or_share_link'.tr(),
-                          style: AppFonts.body(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.5,
-                            color: textSecondary.withValues(alpha: 0.5),
-                          ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'trips.or_share_link'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.5,
+                          color: textSecondary.withValues(alpha: 0.5),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -1379,62 +1368,57 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
         padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-            child: Container(
-              height: 70,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF262019)
-                    : const Color(0xFFFFFDF5),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: ink, width: 2.5),
-                boxShadow: [BoxShadow(color: ink, offset: const Offset(0, 4))],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(Icons.map, 'map', false, isDark, primaryColor),
-                  _buildNavItem(
-                    Icons.search,
-                    'search',
-                    false,
-                    isDark,
-                    primaryColor,
-                  ),
-                  _buildNavItem(
-                    Icons.add_circle,
-                    'add_circle',
-                    !_showEmptyState,
-                    isDark,
-                    primaryColor,
-                    onTap: () {
-                      setState(() {
-                        _showEmptyState = false;
-                      });
-                    },
-                  ),
-                  _buildNavItem(
-                    Icons.auto_awesome,
-                    'auto_awesome',
-                    _showEmptyState,
-                    isDark,
-                    primaryColor,
-                    onTap: () {
-                      setState(() {
-                        _showEmptyState = true;
-                      });
-                    },
-                  ),
-                  _buildNavItem(
-                    Icons.person,
-                    'person',
-                    false,
-                    isDark,
-                    primaryColor,
-                  ),
-                ],
-              ),
+          child: Container(
+            height: 70,
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: ink, width: 2.5),
+              boxShadow: [BoxShadow(color: ink, offset: const Offset(0, 4))],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(Icons.map, 'map', false, isDark, primaryColor),
+                _buildNavItem(
+                  Icons.search,
+                  'search',
+                  false,
+                  isDark,
+                  primaryColor,
+                ),
+                _buildNavItem(
+                  Icons.add_circle,
+                  'add_circle',
+                  !_showEmptyState,
+                  isDark,
+                  primaryColor,
+                  onTap: () {
+                    setState(() {
+                      _showEmptyState = false;
+                    });
+                  },
+                ),
+                _buildNavItem(
+                  Icons.auto_awesome,
+                  'auto_awesome',
+                  _showEmptyState,
+                  isDark,
+                  primaryColor,
+                  onTap: () {
+                    setState(() {
+                      _showEmptyState = true;
+                    });
+                  },
+                ),
+                _buildNavItem(
+                  Icons.person,
+                  'person',
+                  false,
+                  isDark,
+                  primaryColor,
+                ),
+              ],
             ),
           ),
         ),

@@ -48,7 +48,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
         title: Text(
-          'Photo Map 🗺️📸',
+          'photo.map_title'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             fontSize: 20,

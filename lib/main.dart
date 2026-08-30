@@ -60,9 +60,11 @@ class MyApp extends ConsumerWidget {
     });
 
     final themeMode = ref.watch(themeProvider);
-    final accent    = ref.watch(accentProvider);
-    final _         = ref.watch(fontProvider); // Watch font changes to trigger global rebuild
-    final router    = ref.watch(appRouterProvider);
+    final accent = ref.watch(accentProvider);
+    final _ = ref.watch(
+      fontProvider,
+    ); // Watch font changes to trigger global rebuild
+    final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
       routerConfig: router,
@@ -72,7 +74,7 @@ class MyApp extends ConsumerWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      theme:     TripMateTheme.buildLight(accent),
+      theme: TripMateTheme.buildLight(accent),
       darkTheme: TripMateTheme.buildDark(accent),
       themeMode: themeMode,
     );

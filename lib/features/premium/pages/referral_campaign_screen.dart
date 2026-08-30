@@ -1,9 +1,20 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../profile/data/profile_provider.dart';
 import '../../../core/app_messenger.dart';
 
-class ReferralCampaignScreen extends StatefulWidget {
+/// Man gioi thieu ban be.
+///
+/// Truoc day link moi in cung _inviteLink — mot
+/// username khong co that — va nut sao chep chi hien thong bao chu khong he
+/// ghi vao clipboard. Nay link dung username THAT cua nguoi dung va bam la
+/// copy that.
+class ReferralCampaignScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
 
@@ -14,10 +25,20 @@ class ReferralCampaignScreen extends StatefulWidget {
   });
 
   @override
-  State<ReferralCampaignScreen> createState() => _ReferralCampaignScreenState();
+  ConsumerState<ReferralCampaignScreen> createState() => _ReferralCampaignScreenState();
 }
 
-class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
+class _ReferralCampaignScreenState
+    extends ConsumerState<ReferralCampaignScreen> {
+  /// Link moi dua tren username that; chua co username thi de trong.
+  String get _inviteLink {
+    final u =
+        ref.watch(profileDataProvider).profile?['username'] as String? ?? '';
+    return u.isEmpty
+        ? 'https://tripmate.app/invite'
+        : 'https://tripmate.app/invite/$u';
+  }
+
   int _spotsFilled = 0;
 
   void _shareLink() {
@@ -72,7 +93,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'https://tripmate.app/invite/ryo_neon',
+                      _inviteLink,
                       style: AppFonts.body(
                         fontSize: 13,
                         color: widget.isDarkMode
@@ -86,7 +107,11 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                   const SizedBox(width: 12),
                   IconButton(
                     icon: const Icon(Icons.copy),
-                    onPressed: () {
+                    onPressed: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: _inviteLink),
+                      );
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -123,7 +148,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
             ? TripMateTheme.darkSurface
             : Colors.white,
         title: Text(
-          'How does it work?',
+          'premium.how_it_works'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.bold),
         ),
         content: Text(
@@ -277,7 +302,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'EXCLUSIVE OFFER',
+                          'premium.exclusive'.tr(),
                           style: AppFonts.heading(
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
@@ -302,7 +327,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Refer 3 friends to get trip.mate Elite for life.',
+                    'premium.refer_desc'.tr(),
                     style: AppFonts.body(fontSize: 14, color: textSecondary),
                   ),
 
@@ -324,7 +349,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Your Squad',
+                              'premium.your_squad'.tr(),
                               style: AppFonts.heading(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -394,7 +419,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Share Invite Link',
+                              'premium.share_invite'.tr(),
                               style: AppFonts.heading(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -414,7 +439,7 @@ class _ReferralCampaignScreenState extends State<ReferralCampaignScreen> {
                     child: TextButton(
                       onPressed: _showInstruction,
                       child: Text(
-                        'How does it work?',
+                        'premium.how_it_works'.tr(),
                         style: AppFonts.heading(
                           fontWeight: FontWeight.bold,
                           color: textSecondary,

@@ -214,7 +214,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                     ),
                                   ),
                                   Text(
-                                    'vibe energy',
+                                    'live.vibe_energy'.tr(),
                                     style: AppFonts.body(
                                       fontSize: 9,
                                       fontWeight: FontWeight.bold,
@@ -267,7 +267,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    'Shake to Vibe Boost',
+                                    'live.shake_hint'.tr(),
                                     textAlign: TextAlign.center,
                                     style: AppFonts.heading(
                                       color: Colors.white,
@@ -287,7 +287,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
 
                   // Real-time Live Updates timeline list section
                   Text(
-                    'Live Updates',
+                    'live.updates'.tr(),
                     style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

@@ -1,3 +1,6 @@
+// Chi lay `tr`: easy_localization re-export intl, va intl cung co
+// TextDirection -> va cham voi dart:ui trong SlideGradientTransform.
+import 'package:easy_localization/easy_localization.dart' show tr;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,7 +23,10 @@ class PremiumHubScreen extends StatefulWidget {
 class _PremiumHubScreenState extends State<PremiumHubScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _shimmerController;
-  bool _isDarkMode = false; // State of theme (mặc định sáng như app)
+
+  /// Theo đúng chế độ sáng/tối của app thay vì giữ cờ riêng — cờ riêng làm màn
+  /// này lệch pha với theme người dùng đã chọn.
+  bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
 
   final List<String> _themes = [
     'Tokyo Neon',
@@ -93,25 +99,12 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         onPressed: () => Navigator.pop(context),
                       ),
                       Text(
-                        'Elite Squad',
+                        tr('premium.elite_squad'),
                         style: AppFonts.heading(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: textPrimary,
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          isDark
-                              ? Icons.light_mode_outlined
-                              : Icons.dark_mode_outlined,
-                          color: primaryColor,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isDarkMode = !_isDarkMode;
-                          });
-                        },
                       ),
                     ],
                   ),
@@ -186,7 +179,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         const SizedBox(height: 18),
 
                         Text(
-                          'Your memories deserve better than camera roll chaos.',
+                          tr('premium.hero_sub'),
                           style: AppFonts.heading(
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
@@ -198,7 +191,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
 
                         // Cinematic themes section
                         Text(
-                          'Cinematic Themes',
+                          tr('premium.cinematic_themes'),
                           style: AppFonts.heading(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -352,7 +345,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Join the Elite Squad',
+                                      tr('premium.join_elite'),
                                       style: AppFonts.heading(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
@@ -376,7 +369,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
 
                         // Secondary Options list
                         Text(
-                          'Services Settings',
+                          tr('premium.services_settings'),
                           style: AppFonts.heading(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -448,9 +441,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                               MaterialPageRoute(
                                 builder: (context) => ReferralCampaignScreen(
                                   isDarkMode: _isDarkMode,
-                                  onThemeToggle: () => setState(
-                                    () => _isDarkMode = !_isDarkMode,
-                                  ),
+                                  onThemeToggle: () {},
                                 ),
                               ),
                             );

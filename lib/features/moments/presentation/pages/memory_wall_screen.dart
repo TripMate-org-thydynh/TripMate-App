@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../data/moments_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -325,64 +324,61 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                 child: Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: surfaceColor,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: textPrimary, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Tha cam xuc nay nam o tung tam polaroid (co
-                            // moment de gui len server), khong con o day.
-                            GestureDetector(
-                              onTap: () => _showHubMenu(context),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: primary.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: primary, width: 2),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.auto_awesome_mosaic_outlined,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: surfaceColor,
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: textPrimary, width: 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Tha cam xuc nay nam o tung tam polaroid (co
+                          // moment de gui len server), khong con o day.
+                          GestureDetector(
+                            onTap: () => _showHubMenu(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: primary.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: primary, width: 2),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.auto_awesome_mosaic_outlined,
+                                    color: primary,
+                                    size: 12,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    "Hub Hub 🔮",
+                                    style: AppFonts.body(
                                       color: primary,
-                                      size: 12,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      "Hub Hub 🔮",
-                                      style: AppFonts.body(
-                                        color: primary,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -823,181 +819,172 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
             topLeft: Radius.circular(32),
             topRight: Radius.circular(32),
           ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-            child: Container(
-              color: surface.withValues(alpha: 0.9),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 20,
-              ).copyWith(bottom: 24 + MediaQuery.of(context).padding.bottom),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 44,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: textPrimary.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+          child: Container(
+            color: surface.withValues(alpha: 0.9),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 20,
+            ).copyWith(bottom: 24 + MediaQuery.of(context).padding.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 44,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: textPrimary.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  Text(
-                    'Memory Wall Hub',
-                    style: AppFonts.body(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                      letterSpacing: -0.5,
-                    ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'moments.wall_hub'.tr(),
+                  style: AppFonts.body(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                    letterSpacing: -0.5,
                   ),
-                  const SizedBox(height: 16),
-                  // ── Trip Wrapped hero banner ────────────────────────────────
-                  GestureDetector(
-                    onTap: () => _openWithTrip(
-                      context,
-                      (tripId) => TripRecapReelScreen(
-                        isDarkMode: isDark,
-                        tripId: tripId,
-                      ),
-                      pop: false,
+                ),
+                const SizedBox(height: 16),
+                // ── Trip Wrapped hero banner ────────────────────────────────
+                GestureDetector(
+                  onTap: () => _openWithTrip(
+                    context,
+                    (tripId) =>
+                        TripRecapReelScreen(isDarkMode: isDark, tripId: tripId),
+                    pop: false,
+                  ),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Color(0xFF8B4DE8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFF5822B).withValues(alpha: 0.3),
+                          blurRadius: 0,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Color(0xFF8B4DE8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFFF5822B,
-                            ).withValues(alpha: 0.3),
-                            blurRadius: 0,
-                            offset: const Offset(0, 6),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(14),
                           ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: const Icon(
-                              Icons.auto_awesome,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Trip Wrapped',
-                                  style: AppFonts.heading(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                    letterSpacing: -0.3,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Xem & chia sẻ tổng kết chuyến đi',
-                                  style: AppFonts.body(
-                                    fontSize: 12.5,
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(
-                            Icons.arrow_forward,
+                          child: const Icon(
+                            Icons.auto_awesome,
                             color: Colors.white,
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 2.0,
-                    children: [
-                      _buildFeatureTile(
-                        context,
-                        icon: Icons.auto_awesome_outlined,
-                        title: 'AI Caption Studio',
-                        desc: 'Witty quote roasts',
-                        color: const Color(0xFFFFB300),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => AICaptionGeneratorScreen(
-                                isDarkMode: isDark,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
-                        icon: Icons.auto_mode_outlined,
-                        title: 'AI Auto-Sorter',
-                        desc: 'Tag & organize chaos',
-                        color: Colors.tealAccent,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) => AIMemorySortingScreen(
-                                isDarkMode: isDark,
-                                onThemeToggle: widget.onThemeToggle,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildFeatureTile(
-                        context,
-                        icon: Icons.map_outlined,
-                        title: 'Photo Map',
-                        desc: 'Moments on map',
-                        color: Colors.orangeAccent,
-                        // Trước đây mở Photo Map bằng id bịa
-                        // 'hagiang-loop-123' — chuyến không tồn tại nên màn
-                        // bản đồ luôn trắng/lỗi.
-                        onTap: () => _openWithTrip(
-                          context,
-                          (tripId) => PhotoMapScreen(
-                            tripId: tripId,
-                            isDarkMode: isDark,
+                            size: 24,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'games.trip_wrapped_title'.tr(),
+                                style: AppFonts.heading(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Xem & chia sẻ tổng kết chuyến đi',
+                                style: AppFonts.body(
+                                  fontSize: 12.5,
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 2.0,
+                  children: [
+                    _buildFeatureTile(
+                      context,
+                      icon: Icons.auto_awesome_outlined,
+                      title: 'AI Caption Studio',
+                      desc: 'Witty quote roasts',
+                      color: const Color(0xFFFFB300),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (c) => AICaptionGeneratorScreen(
+                              isDarkMode: isDark,
+                              onThemeToggle: widget.onThemeToggle,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildFeatureTile(
+                      context,
+                      icon: Icons.auto_mode_outlined,
+                      title: 'AI Auto-Sorter',
+                      desc: 'Tag & organize chaos',
+                      color: Colors.tealAccent,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (c) => AIMemorySortingScreen(
+                              isDarkMode: isDark,
+                              onThemeToggle: widget.onThemeToggle,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildFeatureTile(
+                      context,
+                      icon: Icons.map_outlined,
+                      title: 'Photo Map',
+                      desc: 'Moments on map',
+                      color: Colors.orangeAccent,
+                      // Trước đây mở Photo Map bằng id bịa
+                      // 'hagiang-loop-123' — chuyến không tồn tại nên màn
+                      // bản đồ luôn trắng/lỗi.
+                      onTap: () => _openWithTrip(
+                        context,
+                        (tripId) =>
+                            PhotoMapScreen(tripId: tripId, isDarkMode: isDark),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );

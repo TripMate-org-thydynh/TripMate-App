@@ -1,11 +1,11 @@
-import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/widgets/state_views.dart';
 import '../data/games_repository.dart';
+import '../../trips/application/trips_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:easy_localization/easy_localization.dart' show tr;
+import 'package:easy_localization/easy_localization.dart';
 import '../../../core/app_messenger.dart';
 
 class EndTripAwardsScreen extends ConsumerStatefulWidget {
@@ -161,6 +161,41 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     super.dispose();
   }
 
+  /// Ten chuyen dang mo — rong thi de trong de khong bia ten.
+  String get _tripName {
+    final id = ref.watch(activeTripIdProvider);
+    return ref
+            .watch(tripsProvider)
+            .maybeWhen(
+              data: (trips) {
+                for (final t in trips) {
+                  if (t.id == id) return t.name;
+                }
+                return null;
+              },
+              orElse: () => null,
+            ) ??
+        '';
+  }
+
+  /// So ngay cua chuyen, tinh tu startDate/endDate that.
+  int get _tripDays {
+    final id = ref.watch(activeTripIdProvider);
+    final t = ref
+        .watch(tripsProvider)
+        .maybeWhen(
+          data: (trips) {
+            for (final x in trips) {
+              if (x.id == id) return x;
+            }
+            return null;
+          },
+          orElse: () => null,
+        );
+    if (t == null) return 0;
+    return t.endDate.difference(t.startDate).inDays + 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
@@ -287,7 +322,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                             ).withValues(alpha: isDark ? 0.1 : 0.2),
                           ),
                           child: Text(
-                            'TRIP WRAPPED',
+                            'games.trip_wrapped'.tr(),
                             style: AppFonts.heading(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
@@ -331,7 +366,9 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                         const SizedBox(height: 20),
 
                         Text(
-                          'The Phú Quốc Awards',
+                          // Ten chuyen THAT — truoc day moi chuyen deu hien
+                          // "The Phu Quoc Awards".
+                          'games.awards_title'.tr(args: [_tripName]),
                           style: AppFonts.heading(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
@@ -344,7 +381,8 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                         const SizedBox(height: 8),
 
                         Text(
-                          'Friendship survived 7 days of financial chaos.',
+                          // So ngay THAT cua chuyen, khong con in cung "7 days".
+                          'games.awards_sub'.plural(_tripDays),
                           style: AppFonts.body(
                             fontSize: 14,
                             color: textSecondary,
@@ -405,7 +443,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Share the Damage',
+                                        'games.share_damage'.tr(),
                                         style: AppFonts.heading(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
@@ -446,87 +484,84 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       padding: const EdgeInsets.only(bottom: 12),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-          child: Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: accentColor, width: 2),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: accentColor.withValues(alpha: 0.15),
-                    border: Border.all(color: accentColor, width: 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: accentColor.withValues(alpha: 0.2),
-                        blurRadius: 0,
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      award['emoji'] as String,
-                      style: const TextStyle(fontSize: 26),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: accentColor, width: 2),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: accentColor.withValues(alpha: 0.15),
+                  border: Border.all(color: accentColor, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accentColor.withValues(alpha: 0.2),
+                      blurRadius: 0,
                     ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    award['emoji'] as String,
+                    style: const TextStyle(fontSize: 26),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: accentColor.withValues(alpha: 0.15),
-                        ),
-                        child: Text(
-                          award['label'] as String,
-                          style: AppFonts.heading(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: accentColor,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        award['winner'] as String,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: accentColor.withValues(alpha: 0.15),
+                      ),
+                      child: Text(
+                        award['label'] as String,
                         style: AppFonts.heading(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w800,
-                          color: textPrimary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: accentColor,
+                          letterSpacing: 0.5,
                         ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        award['desc'] as String,
-                        style: AppFonts.body(
-                          fontSize: 12,
-                          color: textSecondary,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      award['winner'] as String,
+                      style: AppFonts.heading(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: textPrimary,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      award['desc'] as String,
+                      style: AppFonts.body(
+                        fontSize: 12,
+                        color: textSecondary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -542,28 +577,25 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       onTap: onTap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(50),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-          child: Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
+        child: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.05),
+            border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.05),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.black,
-                width: 2,
-              ),
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.black,
+              width: 2,
             ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-            ),
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: isDark ? Colors.white : const Color(0xFF1A1A2E),
           ),
         ),
       ),

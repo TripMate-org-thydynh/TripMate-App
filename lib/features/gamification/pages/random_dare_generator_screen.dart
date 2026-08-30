@@ -162,7 +162,7 @@ class _RandomDareGeneratorScreenState
 
               // Title block
               Text(
-                'Squad Dare 🎲',
+                'games.dare_title'.tr(),
                 style: AppFonts.heading(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,

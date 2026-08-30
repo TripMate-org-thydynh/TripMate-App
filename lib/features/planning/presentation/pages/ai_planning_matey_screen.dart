@@ -1,8 +1,21 @@
-import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AIPlanningMateyScreen extends StatefulWidget {
+import '../../../../core/app_messenger.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../ai/data/ai_repository.dart';
+import '../../../gamification/data/games_repository.dart';
+import '../../../trips/application/trips_providers.dart';
+
+/// Màn "AI Itinerary Planner".
+///
+/// Trước đây màn này KHÔNG gọi AI: `initState` đợi 3 giây cho giống đang nghĩ
+/// rồi hiện 2 gợi ý in cứng ("Still Cafe", "The Hill Station" kèm "98% Crew
+/// Match"), giống hệt nhau cho mọi tài khoản và mọi chuyến. Nay gọi thật
+/// `POST /ai/request` với `ITINERARY_PLAN`.
+class AIPlanningMateyScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
 
@@ -13,12 +26,13 @@ class AIPlanningMateyScreen extends StatefulWidget {
   });
 
   @override
-  State<AIPlanningMateyScreen> createState() => _AIPlanningMateyScreenState();
+  ConsumerState<AIPlanningMateyScreen> createState() =>
+      _AIPlanningMateyScreenState();
 }
 
-class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
+class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
     with TickerProviderStateMixin {
-  bool _isGenerating = true;
+  bool _isGenerating = false;
   final List<String> _selectedParams = [
     '3-Day Weekend Trip',
     'Deep Chill',
@@ -36,24 +50,8 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
     {'name': 'City Exploration', 'emoji': '🌃'},
   ];
 
-  final List<Map<String, dynamic>> _suggestions = [
-    {
-      'time': '09:00',
-      'title': 'Still Cafe',
-      'desc': 'Japanese-style wooden house with quiet gardens.',
-      'tag': 'Coffee',
-      'match': '98% Crew Match',
-      'matchPct': 0.98,
-    },
-    {
-      'time': '11:30',
-      'title': 'The Hill Station',
-      'desc': 'Signature cold cuts and wine with a valley view.',
-      'tag': 'Brunch',
-      'match': '85% Crew Match',
-      'matchPct': 0.85,
-    },
-  ];
+  /// Hoạt động do AI trả về — rỗng cho tới khi người dùng bấm nút.
+  List<Map<String, dynamic>> _suggestions = [];
 
   @override
   void initState() {
@@ -66,15 +64,50 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
-    _simulatePlanning();
   }
 
-  void _simulatePlanning() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() => _isGenerating = false);
-      }
-    });
+  /// Gọi AI lên lịch trình theo các tiêu chí đang chọn.
+  Future<void> _generate() async {
+    if (_isGenerating) return;
+    setState(() => _isGenerating = true);
+    try {
+      final tripId = ref.read(activeTripIdProvider);
+      // Bat buoc kem diem den: BE chi truyen nguyen `prompt` sang Gemini, khong
+      // tu doc chuyen tu tripId. Thieu cho nay thi AI len lich cho mot noi
+      // khong lien quan (dang o chuyen Da Lat ma no goi y Moc Chau).
+      final trip = ref
+          .read(tripsProvider)
+          .maybeWhen(
+            data: (t) => t.isEmpty ? null : t.first,
+            orElse: () => null,
+          );
+      final place = (trip?.destination?.trim().isNotEmpty ?? false)
+          ? trip!.destination!.trim()
+          : trip?.name;
+      final where = place == null ? '' : ' tại $place';
+      final items = await ref
+          .read(mateyChatProvider)
+          .itineraryPlan(
+            prompt: _selectedParams.isEmpty
+                ? 'Một chuyến đi cho nhóm bạn trẻ Việt$where.'
+                : 'Chuyến đi cho nhóm bạn trẻ Việt$where, tiêu chí: '
+                      '${_selectedParams.join(", ")}.',
+            tripId: tripId,
+          );
+      if (!mounted) return;
+      setState(() {
+        _suggestions = items;
+        _isGenerating = false;
+      });
+      if (items.isEmpty) showGlobalSnack('ai.plan_empty'.tr(), isError: true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isGenerating = false);
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    }
   }
 
   @override
@@ -140,7 +173,11 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                         children: [
                           // TITLE: Matey is planning...
                           Text(
-                            'Matey is planning...',
+                            _isGenerating
+                                ? 'ai.plan_working'.tr()
+                                : _suggestions.isEmpty
+                                ? 'ai.plan_idle'.tr()
+                                : 'ai.plan_done'.tr(),
                             style: AppFonts.heading(
                               fontSize: 28,
                               fontWeight: FontWeight.w900,
@@ -166,7 +203,7 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Squad Vibe Parameters',
+                                'ai.plan_params'.tr(),
                                 style: AppFonts.heading(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
@@ -176,14 +213,14 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                               GestureDetector(
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Editing parameters... ✏️'),
+                                    SnackBar(
+                                      content: Text('ai.plan_editing'.tr()),
                                       behavior: SnackBarBehavior.floating,
                                     ),
                                   );
                                 },
                                 child: Text(
-                                  'Edit Parameters',
+                                  'ai.plan_edit_params'.tr(),
                                   style: AppFonts.heading(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -275,7 +312,7 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                           Row(
                             children: [
                               Text(
-                                'Drafting Day 1...',
+                                'ai.plan_section'.tr(),
                                 style: AppFonts.heading(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
@@ -325,6 +362,31 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                             );
                           }),
 
+                          if (_suggestions.isEmpty && !_isGenerating)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: cardBg,
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Text(
+                                'ai.plan_hint'.tr(),
+                                textAlign: TextAlign.center,
+                                style: AppFonts.body(
+                                  fontSize: 13.5,
+                                  color: textMuted,
+                                  height: 1.45,
+                                ),
+                              ),
+                            ),
+
                           // Third item placeholder (still loading)
                           if (_isGenerating)
                             _buildLoadingPlaceholder(
@@ -362,44 +424,41 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
     Color textMuted,
   ) {
     return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
-            border: Border(
-              bottom: BorderSide(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.black.withValues(alpha: 0.05),
-              ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
+          border: Border(
+            bottom: BorderSide(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.05),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_new,
-                  color: textPrimary,
-                  size: 18,
-                ),
-                onPressed: () => Navigator.pop(context),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_new,
+                color: textPrimary,
+                size: 18,
               ),
-              Text(
-                'trip.mate',
-                style: AppFonts.heading(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  fontStyle: FontStyle.italic,
-                  color: primaryColor,
-                  letterSpacing: -1.2,
-                ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            Text(
+              'trip.mate',
+              style: AppFonts.heading(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+                color: primaryColor,
+                letterSpacing: -1.2,
               ),
-              Icon(Icons.notifications_outlined, color: primaryColor, size: 24),
-            ],
-          ),
+            ),
+            Icon(Icons.notifications_outlined, color: primaryColor, size: 24),
+          ],
         ),
       ),
     );
@@ -434,7 +493,13 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Đà Lạt Chill',
+            ref
+                    .watch(tripsProvider)
+                    .maybeWhen(
+                      data: (t) => t.isEmpty ? null : t.first.name,
+                      orElse: () => null,
+                    ) ??
+                'ai.plan_no_trip'.tr(),
             style: AppFonts.heading(
               fontSize: 22,
               fontWeight: FontWeight.w900,
@@ -453,22 +518,9 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                   Icon(Icons.calendar_month, size: 14, color: textMuted),
                   const SizedBox(width: 4),
                   Text(
-                    '3-Day Weekend Trip',
-                    style: AppFonts.body(fontSize: 13, color: textMuted),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.thermostat_outlined,
-                    size: 14,
-                    color: Colors.amber[400],
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '18°C',
+                    _selectedParams.isEmpty
+                        ? 'ai.plan_no_filter'.tr()
+                        : _selectedParams.first,
                     style: AppFonts.body(fontSize: 13, color: textMuted),
                   ),
                 ],
@@ -481,7 +533,7 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
           _buildVibeSlider(
             'Deep Chill',
             'High Energy',
-            0.25,
+            _selectedParams.contains('High Energy') ? 0.75 : 0.25,
             primaryColor,
             textMuted,
           ),
@@ -489,46 +541,12 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
           _buildVibeSlider(
             'Nature Focus',
             'City Exploration',
-            0.7,
+            _selectedParams.contains('City Exploration') ? 0.75 : 0.25,
             secondaryColor,
             textMuted,
           ),
 
           const SizedBox(height: 14),
-
-          // Crew match badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.green, width: 2),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.favorite, color: Colors.green, size: 14),
-                const SizedBox(width: 6),
-                Text(
-                  'Crew vibe check:',
-                  style: AppFonts.body(
-                    fontSize: 12,
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '92% Match',
-                  style: AppFonts.heading(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -635,7 +653,7 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item['title'] as String,
+                  item['location'] as String,
                   style: AppFonts.heading(
                     fontSize: 17,
                     fontWeight: FontWeight.w800,
@@ -644,7 +662,7 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  item['desc'] as String,
+                  item['reason'] as String,
                   style: AppFonts.body(
                     fontSize: 13,
                     color: textMuted,
@@ -654,55 +672,30 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.08)
-                            : Colors.black.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        item['tag'] as String,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: textMuted,
+                    // Flexible + ellipsis: tieu de ngay do AI dat la ca mot cau
+                    // dai, chip cu tran ngang 84px ra khoi man.
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green, width: 2),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.group,
-                            size: 11,
-                            color: Colors.green,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.black.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          item['dayTitle'] as String,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: textMuted,
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            item['match'] as String,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ],
@@ -782,72 +775,55 @@ class _AIPlanningMateyScreenState extends State<AIPlanningMateyScreen>
     Color secondaryColor,
   ) {
     return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 36),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
-            border: Border(
-              top: BorderSide(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.black.withValues(alpha: 0.05),
-              ),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 36),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
+          border: Border(
+            top: BorderSide(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.05),
             ),
           ),
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _isGenerating = !_isGenerating;
-                if (!_isGenerating) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Generation stopped. You can now edit the itinerary. ✏️',
-                      ),
-                      behavior: SnackBarBehavior.floating,
+        ),
+        child: GestureDetector(
+          onTap: _isGenerating ? null : _generate,
+          child: AnimatedBuilder(
+            animation: _pulseController,
+            builder: (_, child) => Container(
+              height: 56,
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withValues(
+                      alpha: 0.3 + 0.1 * _pulseController.value,
                     ),
-                  );
-                }
-              });
-            },
-            child: AnimatedBuilder(
-              animation: _pulseController,
-              builder: (_, child) => Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withValues(
-                        alpha: 0.3 + 0.1 * _pulseController.value,
-                      ),
-                      blurRadius: 0,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.stop_circle,
+                    blurRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.stop_circle, color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    _isGenerating
+                        ? 'ai.plan_working'.tr()
+                        : _suggestions.isEmpty
+                        ? 'ai.plan_cta'.tr()
+                        : 'ai.plan_cta_again'.tr(),
+                    style: AppFonts.heading(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
-                      size: 20,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Stop Generation & Edit',
-                      style: AppFonts.heading(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

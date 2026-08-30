@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'dart:ui';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -127,6 +127,13 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     }
   }
 
+  /// 0 o -> 1, tick het -> 5.
+  int _chaosLevel() {
+    final done = _bingoTiles.where((x) => x['state'] == 'completed').length;
+    if (_bingoTiles.isEmpty) return 1;
+    return 1 + ((done / _bingoTiles.length) * 4).round();
+  }
+
   void _checkBingoWin({bool celebrate = true}) {
     bool newBingoAchieved = false;
 
@@ -203,9 +210,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        '🎉 BINGO! 🎉',
-                        style: TextStyle(
+                      Text(
+                        'games.bingo_win'.tr(),
+                        style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w900,
                           color: GenZTokens.orange,
@@ -307,10 +314,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     color: primary.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                    child: Container(color: Colors.transparent),
-                  ),
+                  child: Container(color: Colors.transparent),
                 ),
               ),
               Positioned(
@@ -323,10 +327,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     color: secondary.withValues(alpha: 0.08),
                     shape: BoxShape.circle,
                   ),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                    child: Container(color: Colors.transparent),
-                  ),
+                  child: Container(color: Colors.transparent),
                 ),
               ),
             ],
@@ -448,7 +449,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
       child: Column(
         children: [
           Text(
-            'Trip Bingo 🎲',
+            'games.bingo_title'.tr(),
             style: AppFonts.heading(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -458,7 +459,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            'Complete chaos challenges to win.',
+            'games.bingo_sub'.tr(),
             style: AppFonts.body(
               fontSize: 14,
               color: textMuted,
@@ -499,7 +500,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Squad Chaos Level',
+                'games.chaos_level'.tr(),
                 style: AppFonts.heading(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -507,7 +508,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 ),
               ),
               Text(
-                'Level 3: Unhinged 🤪',
+                // Muc do suy ra tu so o da tick THAT — truoc day luon la
+                // "Level 3: Unhinged" du chua tick o nao.
+                'games.chaos_level_n'.tr(args: ['${_chaosLevel()}']),
                 style: AppFonts.heading(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -709,64 +712,58 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: secondary, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: secondary.withValues(alpha: 0.05),
-                blurRadius: 0,
+      child: Container(
+        decoration: BoxDecoration(
+          color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: secondary, width: 2),
+          boxShadow: [
+            BoxShadow(color: secondary.withValues(alpha: 0.05), blurRadius: 0),
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: secondary.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
               ),
-            ],
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: secondary.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.workspace_premium_rounded,
-                  color: secondary,
-                  size: 24,
-                ),
+              child: Icon(
+                Icons.workspace_premium_rounded,
+                color: secondary,
+                size: 24,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      lines > 0
-                          ? 'Bingo! $lines line${lines > 1 ? 's' : ''} completed 🎉'
-                          : 'No bingo line yet 🎯',
-                      style: AppFonts.heading(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: textPrimary,
-                      ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    lines > 0
+                        ? 'Bingo! $lines line${lines > 1 ? 's' : ''} completed 🎉'
+                        : 'No bingo line yet 🎯',
+                    style: AppFonts.heading(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: textPrimary,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$done/${_bingoTiles.length} tiles checked.',
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: textMuted,
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '$done/${_bingoTiles.length} tiles checked.',
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: textMuted,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -175,7 +175,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '🔥 CHAOS PAYER 🔥',
+                  tr('games.chaos_payer'),
                   style: AppFonts.heading(
                     color: const Color(0xFFD8422B),
                     fontSize: 22,
@@ -363,7 +363,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
 
                   // Title Text
                   Text(
-                    'Who Pays?',
+                    tr('games.who_pays_title'),
                     style: AppFonts.heading(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
@@ -535,7 +535,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'SPIN TO DECIDE',
+                            tr('games.spin_cta'),
                             style: AppFonts.heading(
                               color: Colors.white,
                               fontSize: 16,
@@ -715,7 +715,7 @@ class _FlashingPillState extends State<FlashingPill>
               ),
               const SizedBox(width: 8),
               Text(
-                'Chaos Mode Active ⚠️',
+                tr('games.chaos_mode'),
                 style: AppFonts.heading(
                   color: const Color(0xFFD8422B),
                   fontSize: 13,

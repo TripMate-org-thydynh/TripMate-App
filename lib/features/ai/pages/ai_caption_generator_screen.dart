@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +126,7 @@ class _AICaptionGeneratorScreenState
             const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
             const SizedBox(width: 8),
             Text(
-              'Copied to clipboard!',
+              'common.copied'.tr(),
               style: AppFonts.body(fontWeight: FontWeight.bold),
             ),
           ],
@@ -224,7 +223,7 @@ class _AICaptionGeneratorScreenState
                             child: Column(
                               children: [
                                 Text(
-                                  'turning chaos into poetry ✨',
+                                  'ai.caption_tagline'.tr(),
                                   textAlign: TextAlign.center,
                                   style: AppFonts.heading(
                                     fontSize: 22,
@@ -234,7 +233,7 @@ class _AICaptionGeneratorScreenState
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'generating emotional damage in 3... 2...',
+                                  'ai.caption_loading'.tr(),
                                   textAlign: TextAlign.center,
                                   style: AppFonts.body(
                                     fontSize: 14,
@@ -250,7 +249,7 @@ class _AICaptionGeneratorScreenState
 
                           // ── Vibe Selectors (Horizontal list) ───────────────
                           Text(
-                            'VIBE CHECK',
+                            'ai.vibe_check'.tr(),
                             style: AppFonts.heading(
                               fontSize: 11,
                               fontWeight: FontWeight.w800,
@@ -568,33 +567,30 @@ class _AICaptionGeneratorScreenState
               left: 12,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    color: Colors.black54,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.auto_awesome_rounded,
-                          color: secondary,
-                          size: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  color: Colors.black54,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.auto_awesome_rounded,
+                        color: secondary,
+                        size: 12,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'ai.analyzing'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'ai.analyzing'.tr(),
-                          style: AppFonts.body(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -675,88 +671,77 @@ class _AICaptionGeneratorScreenState
   ) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: (isDark ? Colors.white : Colors.black),
-              width: 2,
+      child: Container(
+        decoration: BoxDecoration(
+          color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 0,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
-                blurRadius: 0,
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Audio Suggestion row
-              const SizedBox(height: 14),
-              const Divider(color: Colors.white10),
-              const SizedBox(height: 14),
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Audio Suggestion row
+            const SizedBox(height: 14),
+            const Divider(color: Colors.white10),
+            const SizedBox(height: 14),
 
-              // Textarea Editor
-              Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  TextField(
-                    controller: _editorController,
-                    maxLines: 3,
-                    style: AppFonts.body(
-                      fontSize: 15,
-                      color: textPrimary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Edit your caption...',
-                      hintStyle: AppFonts.body(
-                        color: textMuted.withValues(alpha: 0.5),
-                      ),
+            // Textarea Editor
+            Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                TextField(
+                  controller: _editorController,
+                  maxLines: 3,
+                  style: AppFonts.body(
+                    fontSize: 15,
+                    color: textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'ai.caption_edit_hint'.tr(),
+                    hintStyle: AppFonts.body(
+                      color: textMuted.withValues(alpha: 0.5),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      // Trigger mock generation
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Vibes re-analyzed! Fresh poetry cooked up. 🍳',
-                          ),
-                          behavior: SnackBarBehavior.floating,
+                ),
+                GestureDetector(
+                  // Truoc day nut nay chi hien thong bao "da nghi caption moi"
+                  // ma khong he goi AI. Nay chay dung ham sinh caption that.
+                  onTap: _isGenerating ? null : _generate,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: primary,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: primary.withValues(alpha: 0.3),
+                          blurRadius: 0,
                         ),
-                      );
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: primary,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: primary.withValues(alpha: 0.3),
-                            blurRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.refresh_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.refresh_rounded,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

@@ -128,7 +128,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
 
             // Schema terminal-like code block
             Text(
-              'TripMate MCP Protocol Schema (JSON):',
+              'profile.mcp_schema'.tr(),
               style: GoogleFonts.spaceGrotesk(
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
@@ -172,8 +172,8 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: jsonString));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Copied schema to clipboard! 📋'),
+                          SnackBar(
+                            content: Text('common.copied_schema'.tr()),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -218,7 +218,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                         side: BorderSide(color: _ink, width: 2.5),
                       ),
                       title: Text(
-                        'MCP Integration Docs 📚',
+                        'profile.mcp_docs'.tr(),
                         style: GoogleFonts.spaceGrotesk(
                           fontWeight: FontWeight.bold,
                           color: _ink,

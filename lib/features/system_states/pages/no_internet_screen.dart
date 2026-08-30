@@ -1,5 +1,6 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart' show tr;
 import 'package:flutter/material.dart';
 
 class NoInternetScreen extends StatefulWidget {
@@ -55,7 +56,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
             const Text('🦖', style: TextStyle(fontSize: 28)),
             const SizedBox(width: 8),
             Text(
-              'Chrome Dino Game',
+              tr('errors.dino_game'),
               style: AppFonts.heading(fontWeight: FontWeight.bold),
             ),
           ],
@@ -202,7 +203,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'NO SIGNAL',
+                                  tr('errors.no_signal'),
                                   style: AppFonts.heading(
                                     fontSize: 9,
                                     fontWeight: FontWeight.bold,
@@ -231,7 +232,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'wifi left the squad. still emotionally connected though.',
+                    tr('errors.offline_joke'),
                     style: AppFonts.body(
                       fontSize: 14,
                       color: textSecondary,
@@ -264,7 +265,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               ),
                               const Spacer(),
                               Text(
-                                'Squad Offline Status',
+                                tr('errors.offline_status'),
                                 style: AppFonts.heading(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12.5,
@@ -273,7 +274,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Offline',
+                                tr('errors.offline'),
                                 style: AppFonts.body(
                                   fontSize: 10.5,
                                   color: textSecondary,
@@ -305,7 +306,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               ),
                               const Spacer(),
                               Text(
-                                'Cached Memories Safe',
+                                tr('errors.cache_safe'),
                                 style: AppFonts.heading(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12.5,

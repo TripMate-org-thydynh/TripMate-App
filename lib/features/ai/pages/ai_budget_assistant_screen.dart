@@ -1,11 +1,16 @@
 import 'dart:math' as math;
-import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/gen_z_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../gamification/data/games_repository.dart';
+import '../data/ai_repository.dart';
 import '../../moments/data/trip_recap_repository.dart';
+import '../../expense_tracker/application/expenses_providers.dart';
+import '../../expense_tracker/domain/expense.dart';
 import '../../trips/application/trips_providers.dart';
 
 /// Trợ lý ngân sách.
@@ -68,7 +73,7 @@ class _AiBudgetAssistantScreenState
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final bg = isDark ? const Color(0xFF1A1712) : const Color(0xFFF1EDE6);
+    final bg = Theme.of(context).scaffoldBackgroundColor;
     final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
     final surfaceHigh = isDark
         ? const Color(0xFF222A3D)
@@ -110,7 +115,7 @@ class _AiBudgetAssistantScreenState
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
                     child: Column(
                       children: [
                         const SizedBox(height: 32),
@@ -125,8 +130,10 @@ class _AiBudgetAssistantScreenState
                         ),
                         const SizedBox(height: 24),
                         // Marquee ticker
-                        _buildMarquee(secondary, textMuted, surface, isDark),
-                        const SizedBox(height: 24),
+                        if (_roast != null) ...[
+                          _buildMarquee(secondary, textMuted, surface, isDark),
+                          const SizedBox(height: 24),
+                        ],
                         // Insights grid
                         _buildInsightsGrid(
                           primary,
@@ -146,12 +153,99 @@ class _AiBudgetAssistantScreenState
               ],
             ),
           ),
-
-          // Floating bottom nav
-          _buildBottomNav(surface, primary, secondary, textMuted, isDark),
         ],
       ),
     );
+  }
+
+  /// Roast do AI viết cho chuyến này — provider tự cache theo chuyến.
+  String? get _roast {
+    final id = ref.watch(activeTripIdProvider);
+    if (id == null) return null;
+    return ref
+        .watch(expenseRoastProvider(id))
+        .maybeWhen(data: (r) => r?.$1, orElse: () => null);
+  }
+
+  /// Chuyến đã đặt ngân sách chưa — chưa đặt thì đừng hiện "0% đã dùng"
+  /// như thể đã có ngân sách.
+  bool get _hasBudget {
+    final id = ref.watch(activeTripIdProvider);
+    if (id == null) return false;
+    return ref
+        .watch(tripsProvider)
+        .maybeWhen(
+          data: (trips) {
+            for (final t in trips) {
+              if (t.id == id) return (t.budget ?? 0) > 0;
+            }
+            return false;
+          },
+          orElse: () => false,
+        );
+  }
+
+  /// % ngân sách đã dùng — 0 khi chuyến chưa đặt ngân sách.
+  ///
+  /// Trước đây vòng tròn này luôn đứng ở 75% "Chaos Incurred" bất kể chi bao nhiêu.
+  int get _budgetUsedPct {
+    final id = ref.watch(activeTripIdProvider);
+    if (id == null) return 0;
+    final budget = ref
+        .watch(tripsProvider)
+        .maybeWhen(
+          data: (trips) {
+            for (final t in trips) {
+              if (t.id == id) return t.budget ?? 0;
+            }
+            return 0.0;
+          },
+          orElse: () => 0.0,
+        );
+    if (budget <= 0) return 0;
+    final pct = (_totalSpent / budget * 100).round();
+    return pct.clamp(0, 100);
+  }
+
+  /// Nhịp chi suy từ % ngân sách đã dùng, thay vì luôn ghi "Nhanh".
+  String _paceLabel() {
+    if (!_hasBudget) return 'ai.budget_pace_na'.tr();
+    final p = _budgetUsedPct;
+    if (p >= 75) return 'ai.budget_pace_fast'.tr();
+    if (p >= 40) return 'ai.budget_pace_ok'.tr();
+    return 'ai.budget_pace_slow'.tr();
+  }
+
+
+  /// Hạng mục chi nhiều nhất của chuyến: (tên, số tiền, % trên tổng).
+  ///
+  /// Trước đây thẻ "CRITICAL INSIGHT" in cứng "you spent 62% of your budget on
+  /// cafes" cho mọi tài khoản, kể cả người chưa ghi khoản chi nào.
+  (String, double, int)? get _topCategory {
+    final id = ref.watch(activeTripIdProvider);
+    if (id == null) return null;
+    final list = ref
+        .watch(tripExpensesProvider(id))
+        .maybeWhen(data: (e) => e, orElse: () => const <Expense>[]);
+    if (list.isEmpty) return null;
+
+    final byCat = <String, double>{};
+    var total = 0.0;
+    for (final e in list) {
+      byCat[e.category] = (byCat[e.category] ?? 0) + e.amount;
+      total += e.amount;
+    }
+    if (total <= 0) return null;
+
+    var topName = byCat.keys.first;
+    var topAmount = byCat[topName]!;
+    byCat.forEach((k, v) {
+      if (v > topAmount) {
+        topName = k;
+        topAmount = v;
+      }
+    });
+    return (topName, topAmount, ((topAmount / total) * 100).round());
   }
 
   /// Tổng đã chi của chuyến đang mở — 0 khi chưa có chuyến/khoản chi nào.
@@ -188,6 +282,21 @@ class _AiBudgetAssistantScreenState
     return ref
         .watch(tripRecapProvider(id))
         .maybeWhen(data: (r) => r.currency, orElse: () => 'VND');
+  }
+
+  /// FOOD -> "Ăn uống". Khóa lạ thì trả về nguyên khóa.
+  String _categoryLabel(String key) {
+    const map = {
+      'ACCOMMODATION': 'expense.cat_stay',
+      'FOOD': 'expense.cat_food',
+      'TRANSPORT': 'expense.cat_transport',
+      'ACTIVITIES': 'expense.cat_activities',
+      'SHOPPING': 'expense.cat_shopping',
+      'ENTERTAINMENT': 'expense.cat_entertainment',
+      'OTHER': 'expense.cat_other',
+    };
+    final k = map[key.toUpperCase()];
+    return k == null ? key : k.tr();
   }
 
   /// 6020000 -> "6.020.000" (VND) hoặc "6,020.00" cho ngoại tệ.
@@ -319,7 +428,7 @@ class _AiBudgetAssistantScreenState
                       border: Border.all(color: errorColor, width: 2),
                     ),
                     child: Text(
-                      'judging u',
+                      'ai.judging_you'.tr(),
                       style: AppFonts.body(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -336,7 +445,7 @@ class _AiBudgetAssistantScreenState
         const SizedBox(height: 20),
 
         Text(
-          'Total Financial Damage',
+          'ai.budget_total'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -363,7 +472,8 @@ class _AiBudgetAssistantScreenState
                 fontSize: 52,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -2,
-                color: Colors.white,
+                // Truoc day chu trang tren nen sang -> gan nhu khong doc duoc.
+                color: textPrimary,
                 shadows: [
                   Shadow(color: primary.withValues(alpha: 0.6), blurRadius: 0),
                 ],
@@ -381,80 +491,78 @@ class _AiBudgetAssistantScreenState
     Color surface,
     bool isDark,
   ) {
-    const tickerText =
-        'maybe skip the 4th coffee today ☕  •  squad dinner was literally 40% of the budget 😭  •  someone stop sarah from buying more souvenirs 🛍️  •  ';
+    // Chữ chạy = roast THẬT do AI viết cho chuyến này. Trước đây là 3 câu in
+    // cứng, nhắc cả một người tên "sarah" vốn không tồn tại trong app.
+    final tickerText = '${_roast!}  •  ';
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          height: 52,
-          decoration: BoxDecoration(
-            color: isDark
-                ? const Color(0xFF1FA85C).withValues(alpha: 0.05)
-                : secondary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: secondary, width: 2),
-          ),
-          child: Row(
-            children: [
-              // Label
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      isDark ? const Color(0xFF1A1712) : Colors.white,
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.campaign_rounded, color: secondary, size: 16),
-                    const SizedBox(width: 6),
-                    Text(
-                      'MATEY SAYS',
-                      style: AppFonts.body(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.5,
-                        color: secondary,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
+      child: Container(
+        height: 52,
+        decoration: BoxDecoration(
+          color: isDark
+              ? const Color(0xFF1FA85C).withValues(alpha: 0.05)
+              : secondary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: secondary, width: 2),
+        ),
+        child: Row(
+          children: [
+            // Label
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    isDark ? const Color(0xFF1A1712) : Colors.white,
+                    Colors.transparent,
                   ],
                 ),
               ),
-              Expanded(
-                child: AnimatedBuilder(
-                  animation: _marqueeController,
-                  builder: (ctx, child) {
-                    return ClipRect(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: FractionalTranslation(
-                          translation: Offset(
-                            1.0 - _marqueeController.value * 2.0,
-                            0,
-                          ),
-                          child: Text(
-                            tickerText + tickerText,
-                            maxLines: 1,
-                            style: AppFonts.body(
-                              fontSize: 13,
-                              color: textMuted,
-                              fontWeight: FontWeight.w500,
-                            ),
+              child: Row(
+                children: [
+                  Icon(Icons.campaign_rounded, color: secondary, size: 16),
+                  const SizedBox(width: 6),
+                  Text(
+                    'ai.matey_says'.tr(),
+                    style: AppFonts.body(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                      color: secondary,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
+            ),
+            Expanded(
+              child: AnimatedBuilder(
+                animation: _marqueeController,
+                builder: (ctx, child) {
+                  return ClipRect(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: FractionalTranslation(
+                        translation: Offset(
+                          1.0 - _marqueeController.value * 2.0,
+                          0,
+                        ),
+                        child: Text(
+                          tickerText + tickerText,
+                          maxLines: 1,
+                          style: AppFonts.body(
+                            fontSize: 13,
+                            color: textMuted,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -490,7 +598,7 @@ class _AiBudgetAssistantScreenState
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        'CRITICAL INSIGHT',
+                        'ai.critical_insight'.tr(),
                         style: AppFonts.body(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
@@ -502,62 +610,46 @@ class _AiBudgetAssistantScreenState
                   ],
                 ),
                 const SizedBox(height: 16),
-                RichText(
-                  text: TextSpan(
-                    style: AppFonts.heading(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
-                      height: 1.4,
-                    ),
-                    children: [
-                      const TextSpan(text: 'you spent '),
-                      TextSpan(
-                        text: '62%',
+                Builder(
+                  builder: (_) {
+                    final top = _topCategory;
+                    if (top == null) {
+                      return Text(
+                        'ai.budget_no_expense'.tr(),
                         style: AppFonts.heading(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: errorColor,
-                        ),
-                      ),
-                      const TextSpan(
-                        text:
-                            ' of your budget on cafes 😭 financial damage accelerating.',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Divider(color: Colors.white10),
-                const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF222A3D)
-                        : Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'View Cafe Receipts',
-                        style: AppFonts.body(
-                          fontSize: 12,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: textMuted,
+                          height: 1.4,
                         ),
+                      );
+                    }
+                    return RichText(
+                      text: TextSpan(
+                        style: AppFonts.heading(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: textPrimary,
+                          height: 1.4,
+                        ),
+                        children: [
+                          TextSpan(text: '${'ai.budget_top_pre'.tr()} '),
+                          TextSpan(
+                            text: '${top.$3}%',
+                            style: AppFonts.heading(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: errorColor,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                ' ${'ai.budget_top_post'.tr(args: [_categoryLabel(top.$1), _money(top.$2)])}',
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_forward_rounded,
-                        size: 14,
-                        color: textMuted,
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -576,7 +668,7 @@ class _AiBudgetAssistantScreenState
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'VIBE CHECK',
+                    'ai.vibe_check'.tr(),
                     style: AppFonts.body(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -595,7 +687,9 @@ class _AiBudgetAssistantScreenState
                     builder: (ctx, child) {
                       return CustomPaint(
                         painter: _CircularProgressPainter(
-                          progress: _progressController.value * 0.75,
+                          progress:
+                              _progressController.value *
+                              (_budgetUsedPct / 100),
                           trackColor: isDark
                               ? const Color(0xFF2D3449)
                               : Colors.grey.shade200,
@@ -606,15 +700,17 @@ class _AiBudgetAssistantScreenState
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '75%',
+                                _hasBudget ? '$_budgetUsedPct%' : '—',
                                 style: AppFonts.heading(
                                   fontSize: 26,
                                   fontWeight: FontWeight.w800,
-                                  color: Colors.white,
+                                  color: textPrimary,
                                 ),
                               ),
                               Text(
-                                'Chaos Incurred',
+                                _hasBudget
+                                    ? 'ai.budget_used'.tr()
+                                    : 'ai.budget_unset'.tr(),
                                 style: AppFonts.body(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
@@ -635,16 +731,16 @@ class _AiBudgetAssistantScreenState
                     Column(
                       children: [
                         Text(
-                          'Remaining',
+                          'ai.remaining'.tr(),
                           style: AppFonts.body(fontSize: 10, color: textMuted),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _money(_remaining),
+                          _hasBudget ? _money(_remaining) : '—',
                           style: AppFonts.body(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: textPrimary,
                           ),
                         ),
                       ],
@@ -652,7 +748,7 @@ class _AiBudgetAssistantScreenState
                     Column(
                       children: [
                         Text(
-                          'Pace',
+                          'ai.budget_pace'.tr(),
                           style: AppFonts.body(fontSize: 10, color: textMuted),
                         ),
                         const SizedBox(height: 2),
@@ -665,7 +761,7 @@ class _AiBudgetAssistantScreenState
                             ),
                             const SizedBox(width: 2),
                             Text(
-                              'Fast',
+                              _paceLabel(),
                               style: AppFonts.body(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -686,120 +782,31 @@ class _AiBudgetAssistantScreenState
     );
   }
 
+  /// The thong tin — dung dung style the cua app (nen surface + vien day)
+  /// thay vi "glass" nua voi: ban glass cu ghep BackdropFilter blur sigma 0,
+  /// vien 4 canh khac mau va nen trang alpha 0.7 nen tren may noi dung khong
+  /// he duoc ve ra, chi con lai mot o trong.
   Widget _glassCard({
     required bool isDark,
     required Widget child,
     Color? glowColor,
   }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.03)
-                : Colors.white.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(20),
-            border: Border(
-              top: BorderSide(
-                color: Colors.white.withValues(alpha: 0.15),
-                width: 1,
-              ),
-              left: BorderSide(
-                color: Colors.white.withValues(alpha: 0.15),
-                width: 1,
-              ),
-              right: BorderSide(
-                color: Colors.white.withValues(alpha: 0.04),
-                width: 1,
-              ),
-              bottom: BorderSide(
-                color: Colors.white.withValues(alpha: 0.04),
-                width: 1,
-              ),
-            ),
-            boxShadow: glowColor != null
-                ? [
-                    BoxShadow(
-                      color: glowColor.withValues(alpha: 0.15),
-                      blurRadius: 0,
-                    ),
-                  ]
-                : [],
-          ),
-          child: child,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNav(
-    Color surface,
-    Color primary,
-    Color secondary,
-    Color textMuted,
-    bool isDark,
-  ) {
-    return Positioned(
-      bottom: 24,
-      left: 20,
-      right: 20,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(999),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(
-              color: surface.withValues(alpha: isDark ? 0.8 : 0.9),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: Colors.white, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.4),
-                  blurRadius: 0,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _navIcon(Icons.explore_outlined, false, textMuted, secondary),
-                _navIcon(Icons.group_outlined, false, textMuted, secondary),
-                _navIcon(Icons.add_circle_rounded, false, textMuted, secondary),
-                _navIcon(Icons.map_rounded, true, textMuted, secondary),
-                _navIcon(
-                  Icons.account_circle_outlined,
-                  false,
-                  textMuted,
-                  secondary,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _navIcon(
-    IconData icon,
-    bool active,
-    Color textMuted,
-    Color secondary,
-  ) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: active
-          ? BoxDecoration(
-              color: secondary.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            )
-          : null,
-      child: Icon(icon, color: active ? secondary : textMuted, size: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        boxShadow: [
+          BoxShadow(
+            color: (glowColor ?? ink).withValues(alpha: 0.18),
+            blurRadius: 0,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 }

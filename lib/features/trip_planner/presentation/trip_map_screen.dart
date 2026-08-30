@@ -339,7 +339,7 @@ class TripMapScreen extends ConsumerWidget {
             const Icon(Icons.camera_alt, size: 13, color: Color(0xFFD6248C)),
             const SizedBox(width: 5),
             Text(
-              'Check-in',
+              'checkins.title_short'.tr(),
               style: GoogleFonts.outfit(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -462,7 +462,7 @@ class TripMapScreen extends ConsumerWidget {
                   ),
                   const Spacer(),
                   Text(
-                    'Check-in Moment 📸',
+                    'checkins.moment_title'.tr(),
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -596,43 +596,6 @@ class TripMapScreen extends ConsumerWidget {
                 ),
               ),
               style: GoogleFonts.outfit(color: _textPri),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Gợi ý link test nhanh:',
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: _textPri,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ActionChip(
-                  label: const Text('Bãi Sao (Google Maps)'),
-                  onPressed: () {
-                    textController.text =
-                        'https://maps.google.com/?q=phu_quoc_bai_sao';
-                  },
-                ),
-                ActionChip(
-                  label: const Text('Resort (TripAdvisor)'),
-                  onPressed: () {
-                    textController.text =
-                        'https://www.tripadvisor.com/hotel_phu_quoc_intercontinental';
-                  },
-                ),
-                ActionChip(
-                  label: const Text('Bistro Cafe (TripAdvisor)'),
-                  onPressed: () {
-                    textController.text =
-                        'https://www.tripadvisor.com/restaurant_chuon_chuon_bistro';
-                  },
-                ),
-              ],
             ),
             const SizedBox(height: 20),
             SizedBox(

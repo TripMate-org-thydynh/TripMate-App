@@ -225,6 +225,59 @@ class MateyChatService {
     return fallback == null ? const [] : [fallback];
   }
 
+  /// Roast chi tiêu — `EXPENSE_ROAST`. Trả `(roastText, progressPercent)`.
+  Future<(String, int)?> expenseRoast({required String tripId}) async {
+    final data = await _client.postData('/ai/request', {
+      'type': 'EXPENSE_ROAST',
+      'prompt': 'Roast cách tiêu tiền của nhóm trong chuyến này.',
+      'tripId': tripId,
+    });
+    final res = (data is Map) ? data['response'] : null;
+    if (res is! Map) return null;
+    final text = res['roastText'] as String?;
+    if (text == null || text.trim().isEmpty) return null;
+    final pct = res['progressPercent'];
+    return (text.trim(), pct is num ? pct.round() : 0);
+  }
+
+  /// Xin AI lên lịch trình — `ITINERARY_PLAN`.
+  ///
+  /// Trả về danh sách hoạt động đã phẳng hoá: mỗi phần tử là
+  /// `{day, dayTitle, time, location, reason}`.
+  Future<List<Map<String, dynamic>>> itineraryPlan({
+    required String prompt,
+    String? tripId,
+  }) async {
+    final data = await _client.postData('/ai/request', {
+      'type': 'ITINERARY_PLAN',
+      'prompt': prompt,
+      'tripId': ?tripId,
+    });
+    final res = (data is Map) ? data['response'] : null;
+    final days = (res is Map) ? res['days'] : null;
+    if (days is! List) return const [];
+
+    final out = <Map<String, dynamic>>[];
+    for (final d in days) {
+      if (d is! Map) continue;
+      final dayNo = d['day'];
+      final dayTitle = d['title'] as String? ?? '';
+      final acts = d['activities'];
+      if (acts is! List) continue;
+      for (final a in acts) {
+        if (a is! Map) continue;
+        out.add({
+          'day': dayNo is int ? dayNo : 1,
+          'dayTitle': dayTitle,
+          'time': a['time'] as String? ?? '',
+          'location': a['location'] as String? ?? '',
+          'reason': a['reason'] as String? ?? '',
+        });
+      }
+    }
+    return out;
+  }
+
   /// Một caption duy nhất (câu đầu tiên AI gợi ý).
   Future<String> caption({required String prompt, String? tripId}) async {
     final list = await captions(prompt: prompt, tripId: tripId);
@@ -319,3 +372,15 @@ class VibeMatchService {
 final vibeMatchServiceProvider = Provider<VibeMatchService>(
   (ref) => VibeMatchService(ref.watch(apiClientProvider)),
 );
+
+/// Roast chi tiêu của một chuyến.
+///
+/// Là provider (không autoDispose) nên mỗi chuyến chỉ gọi Gemini MỘT lần cho
+/// cả phiên — trước đây mở lại màn Trợ lý ngân sách là bắn thêm một request
+/// EXPENSE_ROAST mới, hàng chờ AI đầy các dòng trùng nhau.
+final expenseRoastProvider = FutureProvider.family<(String, int)?, String>((
+  ref,
+  tripId,
+) {
+  return ref.watch(mateyChatProvider).expenseRoast(tripId: tripId);
+});

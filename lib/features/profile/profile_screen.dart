@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 
@@ -84,29 +83,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(32),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210),
-              width: 2.5,
-            ),
-            // Hard shadow brutalist (đặc, không blur).
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.6)
-                    : const Color(0xFF141210),
-                blurRadius: 0,
-                offset: const Offset(0, 6),
-              ),
-            ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(
+            color: isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210),
+            width: 2.5,
           ),
-          child: child,
+          // Hard shadow brutalist (đặc, không blur).
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.6)
+                  : const Color(0xFF141210),
+              blurRadius: 0,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
+        child: child,
       ),
     );
   }
@@ -161,7 +157,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Global Nomad',
+                    'profile.nomad_tag'.tr(),
                     style: AppFonts.body(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -475,179 +471,172 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: isDark ? surfaceColor : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black,
-              width: 2,
-            ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: isDark ? surfaceColor : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+            width: 2,
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isDark
-                      ? const Color(0xFF1A1712)
-                      : Colors.black.withValues(alpha: 0.03),
-                  border: Border.all(color: accentColor, width: 1.5),
-                  boxShadow: isDark
-                      ? [
-                          BoxShadow(
-                            color: accentColor.withValues(alpha: 0.3),
-                            blurRadius: 0,
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Icon(icon, color: accentColor, size: 20),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        style: AppFonts.body(
-                          fontSize: 13.5,
-                          color: textPrimaryColor,
-                          height: 1.4,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark
+                    ? const Color(0xFF1A1712)
+                    : Colors.black.withValues(alpha: 0.03),
+                border: Border.all(color: accentColor, width: 1.5),
+                boxShadow: isDark
+                    ? [
+                        BoxShadow(
+                          color: accentColor.withValues(alpha: 0.3),
+                          blurRadius: 0,
                         ),
-                        children: [
-                          const TextSpan(
-                            text: 'Booked a chaotic weekend trip to ',
-                          ),
-                          TextSpan(
-                            text: 'Taipei',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: primaryColor,
-                            ),
-                          ),
-                          const TextSpan(text: ' with 4 others.'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      time.toUpperCase(),
+                      ]
+                    : null,
+              ),
+              child: Icon(icon, color: accentColor, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
                       style: AppFonts.body(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: primaryColor.withValues(alpha: 0.6),
-                        letterSpacing: 1.0,
+                        fontSize: 13.5,
+                        color: textPrimaryColor,
+                        height: 1.4,
                       ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Overlapping Avatar Stack of Friends
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FriendsListScreen(),
+                      children: [
+                        const TextSpan(
+                          text: 'Booked a chaotic weekend trip to ',
+                        ),
+                        TextSpan(
+                          text: 'Taipei',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
                           ),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            height: 32,
-                            width:
-                                32.0 * friendAvatars.length -
-                                12.0 * (friendAvatars.length - 1),
-                            child: Stack(
-                              children: List.generate(friendAvatars.length, (
-                                idx,
-                              ) {
-                                return Positioned(
-                                  left: idx * 20.0,
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(0xFF262019),
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(99),
-                                      child:
-                                          friendAvatars[idx].startsWith(
-                                            'assets/',
-                                          )
-                                          ? Image.asset(
-                                              friendAvatars[idx],
-                                              fit: BoxFit.cover,
-                                            )
-                                          : CachedNetworkImage(
-                                              imageUrl: friendAvatars[idx],
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                    color: Colors.black
-                                                        .withValues(alpha: 0.1),
-                                                  ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(
-                                                        Icons.person,
-                                                        size: 16,
-                                                      ),
-                                            ),
+                        ),
+                        const TextSpan(text: ' with 4 others.'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    time.toUpperCase(),
+                    style: AppFonts.body(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: primaryColor.withValues(alpha: 0.6),
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Overlapping Avatar Stack of Friends
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FriendsListScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 32,
+                          width:
+                              32.0 * friendAvatars.length -
+                              12.0 * (friendAvatars.length - 1),
+                          child: Stack(
+                            children: List.generate(friendAvatars.length, (
+                              idx,
+                            ) {
+                              return Positioned(
+                                left: idx * 20.0,
+                                child: Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xFF262019),
+                                      width: 2.0,
                                     ),
                                   ),
-                                );
-                              }),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(99),
+                                    child:
+                                        friendAvatars[idx].startsWith('assets/')
+                                        ? Image.asset(
+                                            friendAvatars[idx],
+                                            fit: BoxFit.cover,
+                                          )
+                                        : CachedNetworkImage(
+                                            imageUrl: friendAvatars[idx],
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Container(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.1),
+                                                ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(
+                                                      Icons.person,
+                                                      size: 16,
+                                                    ),
+                                          ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1A1712)
+                                : Colors.black.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color(0xFF1FA85C),
+                              width: 2,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF1A1712)
-                                  : Colors.black.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: const Color(0xFF1FA85C),
-                                width: 2,
-                              ),
-                            ),
-                            child: Text(
-                              '+$extraFriends',
-                              style: AppFonts.body(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1FA85C),
-                              ),
+                          child: Text(
+                            '+$extraFriends',
+                            style: AppFonts.body(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1FA85C),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -664,67 +653,62 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: isDark ? surfaceColor : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black,
-              width: 2,
-            ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: isDark ? surfaceColor : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+            width: 2,
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isDark
-                      ? const Color(0xFF1A1712)
-                      : Colors.black.withValues(alpha: 0.03),
-                  border: Border.all(color: accentColor, width: 2.0),
-                  boxShadow: isDark
-                      ? [
-                          BoxShadow(
-                            color: accentColor.withValues(alpha: 0.3),
-                            blurRadius: 0,
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Icon(icon, color: accentColor, size: 24),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    style: AppFonts.body(
-                      fontSize: 13.5,
-                      color: textPrimaryColor,
-                      height: 1.4,
-                    ),
-                    children: [
-                      const TextSpan(text: 'Settled up '),
-                      TextSpan(
-                        text: '\$420',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: accentColor,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark
+                    ? const Color(0xFF1A1712)
+                    : Colors.black.withValues(alpha: 0.03),
+                border: Border.all(color: accentColor, width: 2.0),
+                boxShadow: isDark
+                    ? [
+                        BoxShadow(
+                          color: accentColor.withValues(alpha: 0.3),
+                          blurRadius: 0,
                         ),
-                      ),
-                      const TextSpan(text: ' for the Tokyo bender.'),
-                    ],
+                      ]
+                    : null,
+              ),
+              child: Icon(icon, color: accentColor, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: RichText(
+                text: TextSpan(
+                  style: AppFonts.body(
+                    fontSize: 13.5,
+                    color: textPrimaryColor,
+                    height: 1.4,
                   ),
+                  children: [
+                    const TextSpan(text: 'Settled up '),
+                    TextSpan(
+                      text: '\$420',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                    ),
+                    const TextSpan(text: ' for the Tokyo bender.'),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -866,11 +850,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
           // Blur overlay
           Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-              child: Container(
-                color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
-              ),
+            child: Container(
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
             ),
           ),
 
@@ -1828,100 +1809,95 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           const SizedBox(height: 16),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(20),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-                              child: Container(
-                                padding: const EdgeInsets.all(18),
-                                decoration: BoxDecoration(
-                                  color: isDark ? surfaceColor : Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: isDark
-                                        ? Colors.white.withValues(alpha: 0.08)
-                                        : Colors.black,
-                                    width: 2,
-                                  ),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
                                 ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: isDark
-                                            ? const Color(0xFF1A1712)
-                                            : Colors.black.withValues(
-                                                alpha: 0.03,
-                                              ),
-                                        border: Border.all(
-                                          color: primaryColor,
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        Icons.language_rounded,
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
                                         color: primaryColor,
-                                        size: 20,
+                                        width: 1.5,
                                       ),
                                     ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'profile.lang_label'.tr(),
-                                            style: AppFonts.heading(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: textPrimaryColor,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            'profile.lang_sub'.tr(),
-                                            style: AppFonts.body(
-                                              fontSize: 11,
-                                              color: textSecondaryColor,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                    child: Icon(
+                                      Icons.language_rounded,
+                                      color: primaryColor,
+                                      size: 20,
                                     ),
-                                    // Toggle option buttons
-                                    Row(
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        _buildLangOption(
-                                          label: 'Tiếng Việt',
-                                          isSelected:
-                                              context.locale.languageCode ==
-                                              'vi',
-                                          onTap: () => context.setLocale(
-                                            const Locale('vi'),
+                                        Text(
+                                          'profile.lang_label'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
                                           ),
-                                          isDark: isDark,
-                                          primaryColor: primaryColor,
-                                          surfaceColor: surfaceColor,
                                         ),
-                                        const SizedBox(width: 8),
-                                        _buildLangOption(
-                                          label: 'English',
-                                          isSelected:
-                                              context.locale.languageCode ==
-                                              'en',
-                                          onTap: () => context.setLocale(
-                                            const Locale('en'),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'profile.lang_sub'.tr(),
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
                                           ),
-                                          isDark: isDark,
-                                          primaryColor: primaryColor,
-                                          surfaceColor: surfaceColor,
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  // Toggle option buttons
+                                  Row(
+                                    children: [
+                                      _buildLangOption(
+                                        label: 'Tiếng Việt',
+                                        isSelected:
+                                            context.locale.languageCode == 'vi',
+                                        onTap: () => context.setLocale(
+                                          const Locale('vi'),
+                                        ),
+                                        isDark: isDark,
+                                        primaryColor: primaryColor,
+                                        surfaceColor: surfaceColor,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _buildLangOption(
+                                        label: 'English',
+                                        isSelected:
+                                            context.locale.languageCode == 'en',
+                                        onTap: () => context.setLocale(
+                                          const Locale('en'),
+                                        ),
+                                        isDark: isDark,
+                                        primaryColor: primaryColor,
+                                        surfaceColor: surfaceColor,
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -2067,7 +2043,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
-                                          'Offline JSON Backup & Restore',
+                                          'profile.backup_title'.tr(),
                                           style: AppFonts.body(
                                             fontSize: 11,
                                             color: textSecondaryColor,
@@ -2147,7 +2123,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
-                                          'Model Context Protocol Config',
+                                          'profile.mcp_title'.tr(),
                                           style: AppFonts.body(
                                             fontSize: 11,
                                             color: textSecondaryColor,
@@ -2190,420 +2166,410 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final currentFont = ref.watch(fontProvider);
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: ink, width: GenZTokens.borderWidth),
-            boxShadow: GenZTokens.hardShadow(ink),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header row
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isDark
-                          ? const Color(0xFF1A1712)
-                          : Colors.black.withValues(alpha: 0.03),
-                      border: Border.all(color: primaryColor, width: 1.5),
-                    ),
-                    child: Icon(
-                      Icons.palette_outlined,
-                      color: primaryColor,
-                      size: 20,
-                    ),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: ink, width: GenZTokens.borderWidth),
+          boxShadow: GenZTokens.hardShadow(ink),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? const Color(0xFF1A1712)
+                        : Colors.black.withValues(alpha: 0.03),
+                    border: Border.all(color: primaryColor, width: 1.5),
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'profile.app_interface'.tr(),
-                          style: AppFonts.heading(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimaryColor,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'profile.theme_and_color'.tr(),
-                          style: AppFonts.body(
-                            fontSize: 11,
-                            color: textSecondaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: Icon(
+                    Icons.palette_outlined,
+                    color: primaryColor,
+                    size: 20,
                   ),
-                  // Sáng / Tối toggle
-                  Container(
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.06),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    padding: const EdgeInsets.all(2),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildModeBtn(
-                          icon: Icons.light_mode_outlined,
-                          label: 'profile.theme_light_short'.tr(),
-                          selected: currentMode == ThemeMode.light,
-                          primaryColor: primaryColor,
-                          isDark: isDark,
-                          textPrimaryColor: textPrimaryColor,
-                          onTap: (position) {
-                            if (currentMode != ThemeMode.light) {
-                              if (widget.onThemeToggleWithPosition != null) {
-                                widget.onThemeToggleWithPosition!(position);
-                              } else {
-                                ref
-                                    .read(themeProvider.notifier)
-                                    .setThemeMode(ThemeMode.light);
-                              }
-                            }
-                          },
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'profile.app_interface'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimaryColor,
                         ),
-                        _buildModeBtn(
-                          icon: Icons.dark_mode_outlined,
-                          label: 'profile.theme_dark_short'.tr(),
-                          selected: currentMode == ThemeMode.dark,
-                          primaryColor: primaryColor,
-                          isDark: isDark,
-                          textPrimaryColor: textPrimaryColor,
-                          onTap: (position) {
-                            if (currentMode != ThemeMode.dark) {
-                              if (widget.onThemeToggleWithPosition != null) {
-                                widget.onThemeToggleWithPosition!(position);
-                              } else {
-                                ref
-                                    .read(themeProvider.notifier)
-                                    .setThemeMode(ThemeMode.dark);
-                              }
-                            }
-                          },
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'profile.theme_and_color'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 11,
+                          color: textSecondaryColor,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Bảng màu: 4 accent miễn phí + 3 accent đổi bằng XP.
-              //
-              // Accent premium chưa mua thì KHÓA — bấm vào mở thẳng chợ thay vì
-              // đổi màu, để không ai dùng được thứ chưa trả XP.
-              Builder(
-                builder: (context) {
-                  final ownedThemeIds = ref
-                      .watch(themeStoreProvider)
-                      .maybeWhen(
-                        data: (items) => items
-                            .where((t) => t.owned)
-                            .map((t) => t.id)
-                            .toSet(),
-                        orElse: () => <String>{},
-                      );
-                  bool unlocked(AppAccent a) =>
-                      !kPremiumAccents.contains(a) ||
-                      ownedThemeIds.contains(kAccentThemeId[a]);
-
-                  return Row(
-                    children: AppAccent.values.map((accent) {
-                      final selected = accent == currentAccent;
-                      final isUnlocked = unlocked(accent);
-                      return Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (!isUnlocked) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ThemeMarketplaceScreen(
-                                    isDarkMode: isDark,
-                                  ),
-                                ),
-                              );
-                              return;
+                ),
+                // Sáng / Tối toggle
+                Container(
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  padding: const EdgeInsets.all(2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildModeBtn(
+                        icon: Icons.light_mode_outlined,
+                        label: 'profile.theme_light_short'.tr(),
+                        selected: currentMode == ThemeMode.light,
+                        primaryColor: primaryColor,
+                        isDark: isDark,
+                        textPrimaryColor: textPrimaryColor,
+                        onTap: (position) {
+                          if (currentMode != ThemeMode.light) {
+                            if (widget.onThemeToggleWithPosition != null) {
+                              widget.onThemeToggleWithPosition!(position);
+                            } else {
+                              ref
+                                  .read(themeProvider.notifier)
+                                  .setThemeMode(ThemeMode.light);
                             }
-                            ref.read(accentProvider.notifier).setAccent(accent);
-                          },
-                          child: Column(
-                            children: [
-                              // Swatch cặp màu preset (accent trên, pair dưới),
-                              // viền ink + hard shadow khi được chọn
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                height: 44,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 4,
+                          }
+                        },
+                      ),
+                      _buildModeBtn(
+                        icon: Icons.dark_mode_outlined,
+                        label: 'profile.theme_dark_short'.tr(),
+                        selected: currentMode == ThemeMode.dark,
+                        primaryColor: primaryColor,
+                        isDark: isDark,
+                        textPrimaryColor: textPrimaryColor,
+                        onTap: (position) {
+                          if (currentMode != ThemeMode.dark) {
+                            if (widget.onThemeToggleWithPosition != null) {
+                              widget.onThemeToggleWithPosition!(position);
+                            } else {
+                              ref
+                                  .read(themeProvider.notifier)
+                                  .setThemeMode(ThemeMode.dark);
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Bảng màu: 4 accent miễn phí + 3 accent đổi bằng XP.
+            //
+            // Accent premium chưa mua thì KHÓA — bấm vào mở thẳng chợ thay vì
+            // đổi màu, để không ai dùng được thứ chưa trả XP.
+            Builder(
+              builder: (context) {
+                final ownedThemeIds = ref
+                    .watch(themeStoreProvider)
+                    .maybeWhen(
+                      data: (items) =>
+                          items.where((t) => t.owned).map((t) => t.id).toSet(),
+                      orElse: () => <String>{},
+                    );
+                bool unlocked(AppAccent a) =>
+                    !kPremiumAccents.contains(a) ||
+                    ownedThemeIds.contains(kAccentThemeId[a]);
+
+                return Row(
+                  children: AppAccent.values.map((accent) {
+                    final selected = accent == currentAccent;
+                    final isUnlocked = unlocked(accent);
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!isUnlocked) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ThemeMarketplaceScreen(isDarkMode: isDark),
+                              ),
+                            );
+                            return;
+                          }
+                          ref.read(accentProvider.notifier).setAccent(accent);
+                        },
+                        child: Column(
+                          children: [
+                            // Swatch cặp màu preset (accent trên, pair dưới),
+                            // viền ink + hard shadow khi được chọn
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              height: 44,
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: ink,
+                                  width: selected
+                                      ? GenZTokens.borderWidth
+                                      : 1.5,
                                 ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: ink,
-                                    width: selected
-                                        ? GenZTokens.borderWidth
-                                        : 1.5,
-                                  ),
-                                  boxShadow: selected
-                                      ? [
-                                          BoxShadow(
-                                            color: ink,
-                                            offset: const Offset(0, 3),
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Stack(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Expanded(
-                                            child: Container(
-                                              color: accent.accent,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Container(
-                                              color: accent.pair,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      if (selected)
-                                        Center(
+                                boxShadow: selected
+                                    ? [
+                                        BoxShadow(
+                                          color: ink,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Stack(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Expanded(
                                           child: Container(
-                                            padding: const EdgeInsets.all(2),
-                                            decoration: BoxDecoration(
-                                              color: GenZTokens.paper,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: GenZTokens.ink,
-                                                width: 1.5,
-                                              ),
-                                            ),
-                                            child: const Icon(
-                                              Icons.check_rounded,
-                                              color: GenZTokens.ink,
-                                              size: 16,
-                                            ),
+                                            color: accent.accent,
                                           ),
                                         ),
-                                    ],
-                                  ),
+                                        Expanded(
+                                          child: Container(color: accent.pair),
+                                        ),
+                                      ],
+                                    ),
+                                    if (selected)
+                                      Center(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: GenZTokens.paper,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: GenZTokens.ink,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.check_rounded,
+                                            color: GenZTokens.ink,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 5),
-                              Text(
-                                accent.label,
-                                style: AppFonts.body(
-                                  fontSize: 10,
-                                  fontWeight: selected
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                  color: selected
-                                      ? primaryColor
-                                      : textSecondaryColor,
-                                ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              accent.label,
+                              style: AppFonts.body(
+                                fontSize: 10,
+                                fontWeight: selected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                                color: selected
+                                    ? primaryColor
+                                    : textSecondaryColor,
                               ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+
+            const SizedBox(height: 16),
+            Divider(color: ink, thickness: 1.5),
+            const SizedBox(height: 16),
+
+            Text(
+              'Kiểu chữ (Font Style)',
+              style: AppFonts.heading(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: textPrimaryColor,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            Column(
+              children: AppFontOption.values.map((fontOpt) {
+                final isSelected = fontOpt == currentFont;
+
+                final textColor = isSelected
+                    ? currentAccent.onAccent
+                    : textPrimaryColor;
+                final textSecColor = isSelected
+                    ? currentAccent.onAccent.withValues(alpha: 0.7)
+                    : textSecondaryColor;
+
+                // Preview styles for each font option
+                TextStyle previewHeading;
+                TextStyle previewBody;
+
+                switch (fontOpt) {
+                  case AppFontOption.playful:
+                    previewHeading = GoogleFonts.baloo2(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.nunito(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.curly:
+                    previewHeading = GoogleFonts.grandstander(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.comfortaa(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.handwriting:
+                    previewHeading = GoogleFonts.sriracha(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.patrickHand(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.modern:
+                    previewHeading = GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.dmSans(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.brutalist:
+                    previewHeading = GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.outfit(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.clean:
+                    previewHeading = GoogleFonts.quicksand(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                }
+
+                return GestureDetector(
+                  onTap: () =>
+                      ref.read(fontProvider.notifier).setFontOption(fontOpt),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? primaryColor
+                          : isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isSelected
+                            ? primaryColor
+                            : ink.withValues(alpha: 0.2),
+                        width: isSelected ? 2.5 : 1.5,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: ink,
+                                offset: const Offset(0, 3),
+                                blurRadius: 0,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(fontOpt.label, style: previewHeading),
+                              const SizedBox(height: 2),
+                              Text(fontOpt.description, style: previewBody),
                             ],
                           ),
                         ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 16),
-              Divider(color: ink, thickness: 1.5),
-              const SizedBox(height: 16),
-
-              Text(
-                'Kiểu chữ (Font Style)',
-                style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimaryColor,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              Column(
-                children: AppFontOption.values.map((fontOpt) {
-                  final isSelected = fontOpt == currentFont;
-
-                  final textColor = isSelected
-                      ? currentAccent.onAccent
-                      : textPrimaryColor;
-                  final textSecColor = isSelected
-                      ? currentAccent.onAccent.withValues(alpha: 0.7)
-                      : textSecondaryColor;
-
-                  // Preview styles for each font option
-                  TextStyle previewHeading;
-                  TextStyle previewBody;
-
-                  switch (fontOpt) {
-                    case AppFontOption.playful:
-                      previewHeading = GoogleFonts.baloo2(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: textColor,
-                      );
-                      previewBody = GoogleFonts.nunito(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: textSecColor,
-                      );
-                      break;
-                    case AppFontOption.curly:
-                      previewHeading = GoogleFonts.grandstander(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: textColor,
-                      );
-                      previewBody = GoogleFonts.comfortaa(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: textSecColor,
-                      );
-                      break;
-                    case AppFontOption.handwriting:
-                      previewHeading = GoogleFonts.sriracha(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: textColor,
-                      );
-                      previewBody = GoogleFonts.patrickHand(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: textSecColor,
-                      );
-                      break;
-                    case AppFontOption.modern:
-                      previewHeading = GoogleFonts.plusJakartaSans(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: textColor,
-                      );
-                      previewBody = GoogleFonts.dmSans(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: textSecColor,
-                      );
-                      break;
-                    case AppFontOption.brutalist:
-                      previewHeading = GoogleFonts.spaceGrotesk(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: textColor,
-                      );
-                      previewBody = GoogleFonts.outfit(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: textSecColor,
-                      );
-                      break;
-                    case AppFontOption.clean:
-                      previewHeading = GoogleFonts.quicksand(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: textColor,
-                      );
-                      previewBody = GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: textSecColor,
-                      );
-                      break;
-                  }
-
-                  return GestureDetector(
-                    onTap: () =>
-                        ref.read(fontProvider.notifier).setFontOption(fontOpt),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? primaryColor
-                            : isDark
-                            ? Colors.white.withValues(alpha: 0.05)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: isSelected
-                              ? primaryColor
-                              : ink.withValues(alpha: 0.2),
-                          width: isSelected ? 2.5 : 1.5,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: ink,
-                                  offset: const Offset(0, 3),
-                                  blurRadius: 0,
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(fontOpt.label, style: previewHeading),
-                                const SizedBox(height: 2),
-                                Text(fontOpt.description, style: previewBody),
-                              ],
+                        const SizedBox(width: 8),
+                        if (isSelected)
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: ink,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check_rounded,
+                              color: primaryColor,
+                              size: 14,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          if (isSelected)
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: ink,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.check_rounded,
-                                color: primaryColor,
-                                size: 14,
-                              ),
-                            ),
-                        ],
-                      ),
+                      ],
                     ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );

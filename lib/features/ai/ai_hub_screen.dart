@@ -55,7 +55,7 @@ class AiHubScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                'Matey AI Space',
+                'ai.hub_title'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,

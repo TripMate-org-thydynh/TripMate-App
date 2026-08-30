@@ -26,8 +26,12 @@ class _MateyAiEmotionalChaosScreenState
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  bool _isDarkMode =
-      true; // State of theme, will default to system or manual switch
+  /// Theo đúng chế độ sáng/tối của app.
+  ///
+  /// Trước đây màn này giữ cờ riêng `_isDarkMode = true` cùng một nút bật/tắt
+  /// chỉ đổi màu trong màn này, nên chữ luôn vẽ màu kem — đặt trên nền sáng
+  /// của theme thì gần như không đọc được.
+  bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
 
   /// Hội thoại bắt đầu rỗng.
   ///
@@ -117,11 +121,8 @@ class _MateyAiEmotionalChaosScreenState
     // Token Gen Z Neo-Brutalist — nền cream phẳng, viền/chữ ink
     const primaryColor = GenZTokens.purple;
     const secondaryColor = GenZTokens.green;
-    const tertiaryColor = GenZTokens.orange;
 
-    final backgroundColor = _isDarkMode
-        ? GenZTokens.creamDark
-        : GenZTokens.cream;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final textPrimary = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = _isDarkMode
         ? GenZTokens.inkSoftDark
@@ -192,31 +193,8 @@ class _MateyAiEmotionalChaosScreenState
                                   textPrimary,
                                   textSecondary,
                                 );
-                              case 'alert_broke':
-                                return _buildBrokeAlert(
-                                  msg,
-                                  glassBg,
-                                  textPrimary,
-                                );
-                              case 'alert_weather':
-                                return _buildWeatherSavior(
-                                  msg,
-                                  glassBg,
-                                  secondaryColor,
-                                  textPrimary,
-                                );
                               case 'user':
                                 return _buildUserBubble(msg, primaryColor);
-                              case 'vibe_match':
-                                return _buildVibeMatchCard(
-                                  msg,
-                                  glassBg,
-                                  glassBorder,
-                                  primaryColor,
-                                  tertiaryColor,
-                                  textPrimary,
-                                  textSecondary,
-                                );
                               default:
                                 return const SizedBox.shrink();
                             }
@@ -253,19 +231,6 @@ class _MateyAiEmotionalChaosScreenState
               textPrimary,
             ),
           ),
-
-          // 4. Breathtaking Floating Bottom Nav Bar
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: _buildBottomNav(
-              glassBg,
-              glassBorder,
-              secondaryColor,
-              primaryColor,
-            ),
-          ),
         ],
       ),
     );
@@ -300,17 +265,6 @@ class _MateyAiEmotionalChaosScreenState
               color: textPrimary,
               letterSpacing: -1.5,
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              _isDarkMode ? Icons.wb_sunny_outlined : Icons.mode_night_outlined,
-              color: primaryColor,
-            ),
-            onPressed: () {
-              setState(() {
-                _isDarkMode = !_isDarkMode;
-              });
-            },
           ),
         ],
       ),
@@ -368,11 +322,6 @@ class _MateyAiEmotionalChaosScreenState
             letterSpacing: -0.5,
             height: 1.05,
           ),
-        ),
-        const SizedBox(height: 8),
-        const PillTag(
-          text: 'Squad Energy: Chaotic Good 85%',
-          color: GenZTokens.lilac,
         ),
         const SizedBox(height: 24),
       ],
@@ -442,190 +391,8 @@ class _MateyAiEmotionalChaosScreenState
   }
 
   // Broke Alert Card — khối đỏ sticker, viền ink, hard shadow
-  Widget _buildBrokeAlert(
-    Map<String, dynamic> msg,
-    Color glassBg,
-    Color textPrimary,
-  ) {
-    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: GenZTokens.red,
-        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidth),
-        boxShadow: GenZTokens.hardShadow(ink),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: GenZTokens.paper,
-              border: Border.all(
-                color: GenZTokens.ink,
-                width: GenZTokens.borderWidthThin,
-              ),
-            ),
-            child: const Icon(Icons.warning, color: GenZTokens.ink, size: 20),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  (msg['title'] as String).toUpperCase(),
-                  style: AppFonts.mono(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                    color: GenZTokens.paper,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  msg['text'],
-                  style: AppFonts.body(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                    color: GenZTokens.paper,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // Weather Savior Card
-  Widget _buildWeatherSavior(
-    Map<String, dynamic> msg,
-    Color glassBg,
-    Color secondaryColor,
-    Color textPrimary,
-  ) {
-    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: GenZTokens.green,
-        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidth),
-        boxShadow: GenZTokens.hardShadow(ink),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: GenZTokens.paper,
-              border: Border.all(
-                color: GenZTokens.ink,
-                width: GenZTokens.borderWidthThin,
-              ),
-            ),
-            child: const Icon(
-              Icons.thunderstorm,
-              color: GenZTokens.ink,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  (msg['title'] as String).toUpperCase(),
-                  style: AppFonts.mono(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                    color: GenZTokens.ink,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  msg['text'],
-                  style: AppFonts.body(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                    color: GenZTokens.ink,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ChunkyButton(
-                        color: GenZTokens.yellow,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Rerouting squad itinerary to dry aesthetic spots...',
-                              ),
-                            ),
-                          );
-                        },
-                        child: const Text('reroute itinerary'),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      width: 44,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          GenZTokens.radiusInput,
-                        ),
-                        color: GenZTokens.paper,
-                        border: Border.all(
-                          color: GenZTokens.ink,
-                          width: GenZTokens.borderWidthThin,
-                        ),
-                      ),
-                      child: InkWell(
-                        onTap: () => showGlobalSnack(
-                          'Tính năng đang được hoàn thiện 🚧',
-                        ),
-                        borderRadius: BorderRadius.circular(
-                          GenZTokens.radiusInput,
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.close,
-                            color: GenZTokens.ink,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // User message bubble
   Widget _buildUserBubble(Map<String, dynamic> msg, Color primaryColor) {
@@ -686,160 +453,6 @@ class _MateyAiEmotionalChaosScreenState
   }
 
   // Custom Vibe Match Cafe Card
-  Widget _buildVibeMatchCard(
-    Map<String, dynamic> msg,
-    Color glassBg,
-    Color glassBorder,
-    Color primaryColor,
-    Color tertiaryColor,
-    Color textPrimary,
-    Color textSecondary,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: surfaceColorBorderGuard(),
-        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: glassBorder, width: GenZTokens.borderWidth),
-        boxShadow: GenZTokens.hardShadow(glassBorder),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              PillTag(
-                text: msg['title'] as String,
-                icon: Icons.group,
-                color: GenZTokens.orange,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: SizedBox(
-                  width: 90,
-                  height: 90,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(msg['imageUrl'], fit: BoxFit.cover),
-                      Container(color: Colors.black.withValues(alpha: 0.2)),
-                      Positioned(
-                        bottom: 6,
-                        right: 6,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: GenZTokens.yellow,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: GenZTokens.ink,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Text(
-                            (msg['match'] as String).toUpperCase(),
-                            style: AppFonts.mono(
-                              color: GenZTokens.ink,
-                              fontSize: 8,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      msg['placeName'],
-                      style: AppFonts.heading(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.3,
-                        color: textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      msg['text'],
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        color: textSecondary,
-                        fontStyle: FontStyle.italic,
-                        height: 1.3,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    InkWell(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Added ${msg['placeName']} to Dalat trip!',
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: GenZTokens.lilac,
-                          borderRadius: BorderRadius.circular(
-                            GenZTokens.radiusPill,
-                          ),
-                          border: Border.all(
-                            color: GenZTokens.ink,
-                            width: GenZTokens.borderWidthThin,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'ADD TO ITINERARY',
-                              style: AppFonts.mono(
-                                color: GenZTokens.ink,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 9,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.add,
-                              color: GenZTokens.ink,
-                              size: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   // Typing indicator dots
   Widget _buildTypingIndicator(
@@ -922,7 +535,7 @@ class _MateyAiEmotionalChaosScreenState
                 color: textPrimary,
               ),
               decoration: InputDecoration(
-                hintText: 'ask matey anything...',
+                hintText: 'ai.matey_hint'.tr(),
                 hintStyle: AppFonts.body(
                   fontWeight: FontWeight.w600,
                   color: textPrimary.withValues(alpha: 0.4),
@@ -956,62 +569,6 @@ class _MateyAiEmotionalChaosScreenState
   }
 
   // Floating Glass bottom navigation bar
-  Widget _buildBottomNav(
-    Color glassBg,
-    Color glassBorder,
-    Color secondaryColor,
-    Color primaryColor,
-  ) {
-    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    return Container(
-      height: 64,
-      decoration: BoxDecoration(
-        color: _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: ink, width: GenZTokens.borderWidth),
-        boxShadow: GenZTokens.hardShadow(ink),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavButton(Icons.map_outlined, false, secondaryColor),
-          _buildNavButton(Icons.search_outlined, false, secondaryColor),
-          _buildNavButton(Icons.add_circle_outline, false, secondaryColor),
-
-          // Tab Assistant active — viên vàng viền ink
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: GenZTokens.yellow,
-              border: Border.all(
-                color: GenZTokens.ink,
-                width: GenZTokens.borderWidthThin,
-              ),
-            ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: GenZTokens.ink,
-              size: 24,
-            ),
-          ),
-
-          _buildNavButton(Icons.person_outline, false, secondaryColor),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavButton(IconData icon, bool isActive, Color activeColor) {
-    final ink = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    return Icon(
-      icon,
-      color: isActive ? activeColor : ink.withValues(alpha: 0.55),
-      size: 24,
-    );
-  }
 
   Color surfaceColorBorderGuard() {
     return _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
