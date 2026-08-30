@@ -76,8 +76,10 @@ class TripBalancesScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            tooltip: 'Bình chọn nhóm',
-            icon: Icon(PhosphorIcons.chartBar(), color: _textPri),
+            // Icon phieu bau chu khong phai bieu do: nut nay mo man Binh chon
+            // nhom, icon bieu do lam nguoi dung tuong la thong ke chi tieu.
+            tooltip: 'polls.title'.tr(),
+            icon: Icon(PhosphorIcons.listChecks(), color: _textPri),
             onPressed: () {
               HapticFeedback.selectionClick();
               Navigator.push(

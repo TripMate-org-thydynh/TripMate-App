@@ -640,7 +640,8 @@
   },
   "polls": {
     "create": "Tạo",
-    "create_poll": "Tạo poll"
+    "create_poll": "Tạo poll",
+    "title": "Bình chọn nhóm"
   },
   "premium": {
     "benefits": "Quyền lợi",

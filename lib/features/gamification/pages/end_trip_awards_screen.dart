@@ -1,5 +1,7 @@
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/gen_z_tokens.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/widgets/state_views.dart';
 import '../data/games_repository.dart';
@@ -229,10 +231,10 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
         ),
       );
     }
-    final bg = isDark ? const Color(0xFF0A0A1A) : const Color(0xFFF0F0FF);
-    final surface = isDark
-        ? Colors.white.withValues(alpha: 0.05)
-        : Colors.white.withValues(alpha: 0.7);
+    final bg = Theme.of(context).scaffoldBackgroundColor;
+    // Nen the mo (trang alpha 0.7) tung lam noi dung the khong duoc ve ra
+    // tren may — dung mau surface dac cua design token.
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A2E);
     final textSecondary = isDark
         ? Colors.white.withValues(alpha: 0.6)

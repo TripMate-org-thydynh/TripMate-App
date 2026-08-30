@@ -640,7 +640,8 @@
   },
   "polls": {
     "create": "Create",
-    "create_poll": "New poll"
+    "create_poll": "New poll",
+    "title": "Group polls"
   },
   "premium": {
     "benefits": "Benefits",
