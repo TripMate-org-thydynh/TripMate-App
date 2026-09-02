@@ -25,7 +25,8 @@ class ReferralCampaignScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ReferralCampaignScreen> createState() => _ReferralCampaignScreenState();
+  ConsumerState<ReferralCampaignScreen> createState() =>
+      _ReferralCampaignScreenState();
 }
 
 class _ReferralCampaignScreenState
@@ -60,7 +61,7 @@ class _ReferralCampaignScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Chia sẻ liên kết giới thiệu 🔗',
+              'premium.share_referral'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -108,16 +109,12 @@ class _ReferralCampaignScreenState
                   IconButton(
                     icon: const Icon(Icons.copy),
                     onPressed: () async {
-                      await Clipboard.setData(
-                        ClipboardData(text: _inviteLink),
-                      );
+                      await Clipboard.setData(ClipboardData(text: _inviteLink));
                       if (!context.mounted) return;
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            '📋 Đã sao chép liên kết vào khay nhớ tạm!',
-                          ),
+                        SnackBar(
+                          content: Text('premium.link_copied'.tr()),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -159,7 +156,7 @@ class _ReferralCampaignScreenState
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Đã Hiểu',
+              'common.got_it'.tr(),
               style: AppFonts.heading(fontWeight: FontWeight.bold),
             ),
           ),

@@ -116,7 +116,7 @@ class TripWishlistScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Wishlist nhóm',
+          'wishlist.title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -175,7 +175,7 @@ class TripWishlistScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được wishlist',
+              'wishlist.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -215,7 +215,7 @@ class TripWishlistScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Wishlist trống',
+              'wishlist.empty'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
@@ -224,7 +224,7 @@ class TripWishlistScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Thả địa điểm cả nhóm muốn đi vào đây!',
+              'wishlist.empty_sub'.tr(),
               style: AppFonts.body(fontSize: 14, color: _textSec),
             ),
           ],

@@ -69,7 +69,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Thêm ngày nghỉ 🗓️',
+                  'vacay.add_title'.tr(),
                   style: AppFonts.heading(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -198,7 +198,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                           );
                     },
                     child: Text(
-                      'Thêm ngày',
+                      'vacay.add_short'.tr(),
                       style: AppFonts.heading(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
@@ -265,7 +265,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
-          'Nghỉ phép thông minh 🏖️',
+          'vacay.title'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -306,7 +306,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
         ),
         error: (e, _) => Center(
           child: Text(
-            'Lỗi tải ngày nghỉ',
+            'vacay.load_failed'.tr(),
             style: AppFonts.heading(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -369,7 +369,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Ngày đã đăng ký',
+                    'vacay.registered'.tr(),
                     style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -491,7 +491,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
               const SizedBox(height: 24),
               // Holiday suggestions
               Text(
-                'Gợi ý nghỉ bắc cầu (VN 2026) 💡',
+                'vacay.bridge_title'.tr(),
                 style: AppFonts.heading(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -515,7 +515,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       child: Text(
-                        'Không có gợi ý nghỉ cầu nào sắp tới.',
+                        'vacay.bridge_empty'.tr(),
                         style: AppFonts.body(fontSize: 13, color: _textSec),
                       ),
                     );

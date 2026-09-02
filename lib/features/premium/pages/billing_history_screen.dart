@@ -83,7 +83,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Lịch Sử Hóa Đơn 🧾',
+          'premium.billing_history'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,

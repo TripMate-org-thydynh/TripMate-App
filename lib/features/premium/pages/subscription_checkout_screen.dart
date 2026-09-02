@@ -1,5 +1,6 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../core/api_service.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -127,7 +128,7 @@ class _SubscriptionCheckoutScreenState
             ),
             const SizedBox(height: 20),
             Text(
-              'Gia Nhập Elite Squad Thành Công! 💸👑',
+              'premium.joined_elite'.tr(),
               textAlign: TextAlign.center,
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
@@ -162,7 +163,7 @@ class _SubscriptionCheckoutScreenState
                   Navigator.pop(context); // back to previous screen
                 },
                 child: Text(
-                  'Bắt Đầu Trải Nghiệm Luxury ✨',
+                  'premium.start_luxury'.tr(),
                   style: AppFonts.heading(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -205,7 +206,7 @@ class _SubscriptionCheckoutScreenState
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Nâng Cấp Elite Squad 👑',
+          'premium.upgrade_elite'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -261,7 +262,7 @@ class _SubscriptionCheckoutScreenState
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    '99.000đ / tháng',
+                    'premium.price_month'.tr(),
                     style: AppFonts.heading(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
@@ -270,7 +271,7 @@ class _SubscriptionCheckoutScreenState
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Tận hưởng phong cách du lịch đẳng cấp cùng hội bạn với sức mạnh AI bứt tốc.',
+                    'premium.upgrade_sub'.tr(),
                     style: AppFonts.heading(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 13,
@@ -285,7 +286,7 @@ class _SubscriptionCheckoutScreenState
 
             // Comparison Table
             Text(
-              'Đặc Quyền Của Cưng 📊',
+              'premium.your_perks'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -345,7 +346,7 @@ class _SubscriptionCheckoutScreenState
 
             // Select Payment Method
             Text(
-              'Phương Thức Thanh Toán 💳',
+              'premium.payment_method'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -402,7 +403,7 @@ class _SubscriptionCheckoutScreenState
                         ),
                       )
                     : Text(
-                        'Kích Hoạt Ngay 👑',
+                        'premium.activate'.tr(),
                         style: AppFonts.heading(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

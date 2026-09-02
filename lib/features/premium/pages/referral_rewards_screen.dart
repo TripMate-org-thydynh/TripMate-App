@@ -1,17 +1,33 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../profile/data/profile_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../core/api_service.dart';
 
-class ReferralRewardsScreen extends StatefulWidget {
+/// Man gioi thieu ban be.
+///
+/// Truoc day ma gioi thieu in cung la 'MATEYCHILL' cho MOI tai khoan, va
+/// nut sao chep chi hien thong bao chu khong ghi gi vao clipboard.
+class ReferralRewardsScreen extends ConsumerStatefulWidget {
   const ReferralRewardsScreen({super.key});
 
   @override
-  State<ReferralRewardsScreen> createState() => _ReferralRewardsScreenState();
+  ConsumerState<ReferralRewardsScreen> createState() =>
+      _ReferralRewardsScreenState();
 }
 
-class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
+class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
+  /// Ma gioi thieu = username THAT cua nguoi dung.
+  String get _code {
+    final u =
+        ref.watch(profileDataProvider).profile?['username'] as String? ?? '';
+    return u.isEmpty ? '—' : u.toUpperCase();
+  }
+
   final _codeController = TextEditingController();
   bool _isSubmitting = false;
 
@@ -55,7 +71,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
               ? const Color(0xFF262019)
               : Colors.white,
           title: Text(
-            'Thành công! 🎉',
+            'common.success'.tr(),
             style: AppFonts.heading(fontWeight: FontWeight.bold),
           ),
           content: Text(msg, style: AppFonts.heading(fontSize: 13.5)),
@@ -63,7 +79,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                'Tuyệt vời!',
+                'common.awesome'.tr(),
                 style: AppFonts.heading(fontWeight: FontWeight.bold),
               ),
             ),
@@ -72,10 +88,8 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            '❌ Không thể tự giới thiệu bản thân hoặc mã không hợp lệ!',
-          ),
+        SnackBar(
+          content: Text('premium.self_referral'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -117,7 +131,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Giới Thiệu Bạn Bè 🎁',
+          'premium.refer_friends'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -147,7 +161,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
               child: Column(
                 children: [
                   Text(
-                    'MÃ GIỚI THIỆU CỦA CƯNG 🎒',
+                    'premium.your_code'.tr(),
                     style: AppFonts.heading(
                       color: Colors.white70,
                       fontWeight: FontWeight.bold,
@@ -157,7 +171,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                   ),
                   const SizedBox(height: 12),
                   SelectableText(
-                    'MATEYCHILL',
+                    _code,
                     style: AppFonts.heading(
                       color: Colors.white,
                       fontSize: 32,
@@ -177,11 +191,13 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: _code));
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            '📋 Đã sao chép mã "MATEYCHILL" vào khay nhớ tạm!',
+                            'premium.code_copied'.tr(args: [_code]),
                           ),
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -195,7 +211,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                       ),
                     ),
                     child: Text(
-                      'Sao Chép Mã ⚡',
+                      'premium.copy_code'.tr(),
                       style: AppFonts.heading(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -207,7 +223,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
 
             // Submit friend's code block
             Text(
-              'Nhập mã từ bạn bè 🎫',
+              'premium.enter_code'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
@@ -256,7 +272,7 @@ class _ReferralRewardsScreenState extends State<ReferralRewardsScreen> {
                       : TextButton(
                           onPressed: _submitReferralCode,
                           child: Text(
-                            'Gửi Mã',
+                            'premium.submit_code'.tr(),
                             style: AppFonts.heading(
                               color: primaryColor,
                               fontWeight: FontWeight.bold,

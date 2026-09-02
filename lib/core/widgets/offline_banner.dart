@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +41,7 @@ class OfflineBanner extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'ĐANG XEM OFFLINE 📶🚫',
+                  'errors.viewing_offline'.tr(),
                   style: AppFonts.heading(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -49,7 +50,7 @@ class OfflineBanner extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  'Thiết bị mất mạng. Dữ liệu đang hiển thị từ bộ nhớ tạm.',
+                  'errors.offline_cache'.tr(),
                   style: AppFonts.body(
                     color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 10,

@@ -902,7 +902,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Xem & chia sẻ tổng kết chuyến đi',
+                                'moments.recap_entry'.tr(),
                                 style: AppFonts.body(
                                   fontSize: 12.5,
                                   color: Colors.white.withValues(alpha: 0.9),

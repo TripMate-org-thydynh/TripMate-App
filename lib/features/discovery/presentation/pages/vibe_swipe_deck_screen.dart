@@ -242,7 +242,11 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 right: 28,
                 child: Opacity(
                   opacity: nopeOpacity,
-                  child: _stamp('BỎ QUA', const Color(0xFFD8422B), 0.3),
+                  child: _stamp(
+                    'common.skip_caps'.tr(),
+                    const Color(0xFFD8422B),
+                    0.3,
+                  ),
                 ),
               ),
             ],
@@ -583,7 +587,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 ),
               ),
               child: Text(
-                'Vuốt lại',
+                'discovery.swipe_again'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   fontSize: 15,

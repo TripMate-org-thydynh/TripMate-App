@@ -87,7 +87,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _error = 'Không đọc được ảnh. Thử ảnh khác nhé.';
+        _error = 'reservations.photo_failed'.tr();
       });
     }
   }
@@ -110,7 +110,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
         title: Text(
-          'Ảnh này ở đâu? 📍',
+          'photo.where_title'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             fontSize: 20,
@@ -167,7 +167,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                           CircularProgressIndicator(color: _ink),
                           const SizedBox(height: 14),
                           Text(
-                            'Đang soi ảnh...',
+                            'photo.scanning'.tr(),
                             style: AppFonts.body(
                               color: _ink,
                               fontWeight: FontWeight.w700,
@@ -221,7 +221,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 14),
                     child: Text(
-                      'Chọn 1 tấm ảnh, mình đoán nó chụp ở đâu và ghim lên bản đồ 🗺️',
+                      'photo.where_sub'.tr(),
                       style: AppFonts.body(color: _sub, fontSize: 14),
                     ),
                   ),
@@ -267,7 +267,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
     }
     final r = _result;
     if (r == null) {
-      return Text('Đang phân tích...', style: AppFonts.body(color: _sub));
+      return Text('common.analyzing'.tr(), style: AppFonts.body(color: _sub));
     }
     final isExif = r['source'] == 'exif';
     return Column(

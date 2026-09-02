@@ -42,7 +42,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Thêm điều muốn làm',
+          'atlas.add_bucket'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             color: _ink,
@@ -327,7 +327,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                         ),
                       ),
                       Text(
-                        'Duy trì ngọn lửa xê dịch này nhé!',
+                        'atlas.keep_going'.tr(),
                         style: AppFonts.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -360,7 +360,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                         ),
                       ),
                       Text(
-                        'Chuyến Đi',
+                        'atlas.trips'.tr(),
                         style: AppFonts.heading(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -441,7 +441,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                 ),
               ),
               child: Text(
-                'Chưa có huy hiệu nào. Đi chuyến đầu tiên để mở khoá nhé!',
+                'atlas.badges_empty'.tr(),
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
                   fontSize: 13,
@@ -628,7 +628,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
       const Icon(Icons.checklist_rtl, size: 60, color: GenZTokens.green),
       const SizedBox(height: 16),
       Text(
-        'Bucket list còn trống',
+        'atlas.bucket_empty'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.heading(
           fontWeight: FontWeight.w800,
@@ -638,7 +638,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
       ),
       const SizedBox(height: 6),
       Text(
-        'Thêm những điều bạn muốn làm trên đường đi — rồi tick khi hoàn thành!',
+        'atlas.bucket_empty_sub'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.body(
           fontSize: 14,
@@ -663,7 +663,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được bucket list',
+              'atlas.bucket_failed'.tr(),
               style: AppFonts.heading(fontWeight: FontWeight.w800, color: _ink),
             ),
           ],

@@ -32,7 +32,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '⚡ Đã nối mạng thành công! Squad items đã cập nhật.',
+            tr('errors.back_online'),
             style: AppFonts.heading(fontWeight: FontWeight.bold),
           ),
           backgroundColor: TripMateTheme.darkSecondary,
@@ -65,7 +65,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Nhảy qua các bụi xương rồng để ghi điểm trong khi đợi mạng hồi sinh!',
+              tr('errors.dino_sub'),
               style: AppFonts.body(fontSize: 13, height: 1.4),
             ),
             const SizedBox(height: 24),
@@ -97,7 +97,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Đóng',
+              tr('common.close'),
               style: AppFonts.heading(fontWeight: FontWeight.bold),
             ),
           ),

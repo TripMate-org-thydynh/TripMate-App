@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'helpers/localized.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -79,12 +81,15 @@ Widget _wrap(TripsRepository repo) {
       notificationsRepositoryProvider.overrideWithValue(_FakeNotifRepo()),
       authProvider.overrideWith((ref) => _FakeAuth()),
     ],
-    child: const MaterialApp(home: MyTripsScreen(isDarkMode: true)),
+    child: localized(const MyTripsScreen(isDarkMode: true)),
   );
 }
 
 void main() {
-  setUpAll(() => GoogleFonts.config.allowRuntimeFetching = false);
+  setUpAll(() async {
+    GoogleFonts.config.allowRuntimeFetching = false;
+    await initLocalization();
+  });
 
   testWidgets('empty state khi chưa có chuyến', (tester) async {
     await tester.pumpWidget(_wrap(_FakeTripsRepo([])));

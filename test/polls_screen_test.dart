@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'helpers/localized.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -31,14 +33,17 @@ class _FakePollsRepo implements PollsRepository {
 Widget _wrap(PollsRepository repo) {
   return ProviderScope(
     overrides: [pollsRepositoryProvider.overrideWithValue(repo)],
-    child: const MaterialApp(
-      home: TripPollsScreen(tripId: 't1', isDarkMode: true),
+    child: localized(
+      const TripPollsScreen(tripId: 't1', isDarkMode: true),
     ),
   );
 }
 
 void main() {
-  setUpAll(() => GoogleFonts.config.allowRuntimeFetching = false);
+  setUpAll(() async {
+    GoogleFonts.config.allowRuntimeFetching = false;
+    await initLocalization();
+  });
 
   testWidgets('empty state khi chưa có poll', (tester) async {
     await tester.pumpWidget(_wrap(_FakePollsRepo([])));

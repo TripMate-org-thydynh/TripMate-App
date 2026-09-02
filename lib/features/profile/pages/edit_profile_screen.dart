@@ -55,8 +55,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_nameController.text.trim().isEmpty ||
         _usernameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('⚠️ Tên và Username không được để trống!'),
+        SnackBar(
+          content: Text('profile.name_required'.tr()),
           backgroundColor: Colors.orangeAccent,
         ),
       );
@@ -83,8 +83,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (response != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('🎉 Cập nhật thông tin profile thành công!'),
+          SnackBar(
+            content: Text('profile.updated'.tr()),
             backgroundColor: Color(0xFF1FA85C),
           ),
         );
@@ -94,8 +94,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ); // Return true to indicate profile was updated
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Lỗi cập nhật profile hoặc trùng lặp Username!'),
+          SnackBar(
+            content: Text('profile.update_failed'.tr()),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -131,7 +131,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Chỉnh Sửa Profile ✏️',
+          'profile.edit_title'.tr(),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -184,10 +184,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     'https://api.dicebear.com/7.x/fun-emoji/png?seed=$randomSeed';
                               });
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    '🎨 Đổi avatar ngẫu nhiên mới thành công!',
-                                  ),
+                                SnackBar(
+                                  content: Text('profile.avatar_changed'.tr()),
                                   duration: Duration(seconds: 1),
                                 ),
                               );
@@ -360,8 +358,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text(
-                          'Lưu thông tin cá nhân',
+                        child: Text(
+                          'profile.save'.tr(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF141210),

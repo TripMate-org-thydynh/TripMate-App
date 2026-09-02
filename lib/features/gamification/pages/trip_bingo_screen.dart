@@ -221,7 +221,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'BẢNG BINGO HOÀN THÀNH!',
+                        'games.bingo_full'.tr(),
                         style: AppFonts.heading(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
@@ -259,7 +259,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                             ],
                           ),
                           child: Text(
-                            'Quá xịn luôn! 🚀',
+                            'games.awesome'.tr(),
                             style: AppFonts.heading(
                               fontSize: 15,
                               fontWeight: FontWeight.w900,

@@ -347,7 +347,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được tin nhắn',
+              'chat.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -377,7 +377,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
             ),
             const SizedBox(height: 14),
             Text(
-              'Chưa có tin nhắn',
+              'chat.empty'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -385,7 +385,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Bắt đầu trò chuyện với squad nào!',
+              'chat.empty_sub'.tr(),
               style: AppFonts.body(fontSize: 13, color: _textSec),
             ),
           ],

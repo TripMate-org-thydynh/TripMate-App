@@ -43,7 +43,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Khoảnh khắc',
+          'moments.title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -99,7 +99,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được khoảnh khắc',
+              'moments.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -139,7 +139,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Chưa có khoảnh khắc nào',
+              'moments.empty'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
@@ -148,7 +148,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Chụp gì đó để lưu kỷ niệm chuyến đi!',
+              'moments.empty_sub'.tr(),
               style: AppFonts.body(fontSize: 14, color: _textSec),
             ),
           ],

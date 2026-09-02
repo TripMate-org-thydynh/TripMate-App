@@ -108,7 +108,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Đã thêm khoản chi, chia đều cho cả nhóm'),
+            content: Text('expense.added_split'.tr()),
             backgroundColor: _primary,
             behavior: SnackBarBehavior.floating,
           ),
@@ -157,7 +157,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
               ),
               const SizedBox(height: 18),
               Text(
-                'Thêm khoản chi',
+                'expense.add_title'.tr(),
                 style: AppFonts.heading(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
@@ -290,7 +290,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
 
               // Category chips
               Text(
-                'Hạng mục',
+                'expense.category_label'.tr(),
                 style: AppFonts.body(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,

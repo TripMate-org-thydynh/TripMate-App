@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../core/api_service.dart';
 
@@ -63,18 +64,16 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
 
       if (response != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('🎉 Lưu liên kết mạng xã hội thành công!'),
+          SnackBar(
+            content: Text('profile.social_saved'.tr()),
             backgroundColor: Colors.purple,
           ),
         );
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              '❌ Không thể kết nối tới server. Vui lòng kiểm tra lại!',
-            ),
+          SnackBar(
+            content: Text('errors.server_unreachable'.tr()),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -110,7 +109,7 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Liên Kết Mạng Xã Hội 🔗',
+          'profile.social_title'.tr(),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -232,8 +231,8 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: const Text(
-                        'Lưu Liên Kết',
+                      child: Text(
+                        'profile.social_save'.tr(),
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),

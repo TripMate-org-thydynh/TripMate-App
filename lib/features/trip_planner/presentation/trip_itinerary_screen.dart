@@ -49,7 +49,7 @@ class TripItineraryScreen extends ConsumerWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
-            'Thêm điểm dừng',
+            'itinerary.add_stop'.tr(),
             style: AppFonts.heading(
               fontWeight: FontWeight.w800,
               color: _textPri,
@@ -201,7 +201,7 @@ class TripItineraryScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Lịch trình',
+          'itinerary.title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -285,7 +285,7 @@ class TripItineraryScreen extends ConsumerWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Đường đi',
+                'itinerary.directions'.tr(),
                 style: AppFonts.heading(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -327,8 +327,8 @@ class TripItineraryScreen extends ConsumerWidget {
         .toList();
     if (stops.length < 2) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Cần ít nhất 2 điểm dừng để tạo lộ trình'),
+        SnackBar(
+          content: Text('itinerary.need_two_stops'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -340,15 +340,15 @@ class TripItineraryScreen extends ConsumerWidget {
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Không mở được Google Maps'),
+        SnackBar(
+          content: Text('itinerary.maps_failed'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
     } else if (optimized) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Đã tối ưu thứ tự điểm dừng theo vị trí 🧭'),
+        SnackBar(
+          content: Text('itinerary.optimized'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -505,7 +505,7 @@ class TripItineraryScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được lịch trình',
+              'itinerary.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -545,7 +545,7 @@ class TripItineraryScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Chưa có lịch trình',
+              'itinerary.empty'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
@@ -554,7 +554,7 @@ class TripItineraryScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Lên kế hoạch cho từng ngày nào!',
+              'itinerary.empty_sub'.tr(),
               style: AppFonts.body(fontSize: 14, color: _textSec),
             ),
           ],

@@ -96,7 +96,7 @@ class TripCheckinsScreen extends ConsumerWidget {
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
-          'Điểm danh',
+          'checkins.title'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -117,7 +117,7 @@ class TripCheckinsScreen extends ConsumerWidget {
         ),
         error: (e, _) => Center(
           child: Text(
-            'Lỗi tải điểm danh',
+            'checkins.load_failed'.tr(),
             style: AppFonts.heading(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -198,7 +198,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                     if (dayCheckins.isEmpty) ...[
                       const SizedBox(height: 12),
                       Text(
-                        'Chưa ai điểm danh ngày này',
+                        'checkins.empty'.tr(),
                         style: AppFonts.body(fontSize: 13, color: _textSec),
                       ),
                     ] else ...[
@@ -245,7 +245,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     // My checkin buttons
                     Text(
-                      'Trạng thái của tôi:',
+                      'checkins.my_status'.tr(),
                       style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,

@@ -216,7 +216,6 @@ class _AiBudgetAssistantScreenState
     return 'ai.budget_pace_slow'.tr();
   }
 
-
   /// Hạng mục chi nhiều nhất của chuyến: (tên, số tiền, % trên tổng).
   ///
   /// Trước đây thẻ "CRITICAL INSIGHT" in cứng "you spent 62% of your budget on

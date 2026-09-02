@@ -54,7 +54,7 @@ class NotificationsScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Thông báo',
+          'notifications.title'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -212,7 +212,7 @@ class NotificationsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được thông báo',
+              'notifications.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -254,7 +254,7 @@ class NotificationsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Chưa có thông báo',
+              'notifications.empty'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
@@ -263,7 +263,7 @@ class NotificationsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Mọi cập nhật của squad sẽ hiện ở đây',
+              'notifications.empty_sub'.tr(),
               style: AppFonts.body(fontSize: 14, color: _textSec),
             ),
           ],

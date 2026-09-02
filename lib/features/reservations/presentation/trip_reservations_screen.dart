@@ -414,7 +414,7 @@ class TripReservationsScreen extends ConsumerWidget {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Dán vé để AI tách',
+                'reservations.paste_title'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   color: _textPri,
@@ -429,7 +429,7 @@ class TripReservationsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Dán nội dung email/xác nhận vé máy bay, khách sạn... AI sẽ tự nhận diện loại, giờ, mã.',
+              'reservations.paste_sub'.tr(),
               style: AppFonts.body(fontSize: 12.5, color: _textSec),
             ),
             const SizedBox(height: 12),
@@ -472,8 +472,8 @@ class TripReservationsScreen extends ConsumerWidget {
 
     HapticFeedback.mediumImpact();
     messenger.showSnackBar(
-      const SnackBar(
-        content: Text('AI đang tách vé... ✨'),
+      SnackBar(
+        content: Text('reservations.parsing'.tr()),
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 8),
       ),
@@ -515,7 +515,7 @@ class TripReservationsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Chọn ảnh vé cho AI phân tích',
+              'reservations.pick_photo'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 fontSize: 16,
@@ -524,7 +524,7 @@ class TripReservationsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'AI sẽ nhận diện loại, giờ, mã và giá vé từ ảnh.',
+              'reservations.pick_photo_sub'.tr(),
               style: AppFonts.body(fontSize: 12.5, color: _textSec),
             ),
             const SizedBox(height: 16),
@@ -565,8 +565,8 @@ class TripReservationsScreen extends ConsumerWidget {
 
     HapticFeedback.mediumImpact();
     messenger.showSnackBar(
-      const SnackBar(
-        content: Text('AI đang đọc ảnh vé... 📸✨'),
+      SnackBar(
+        content: Text('reservations.reading_photo'.tr()),
         behavior: SnackBarBehavior.floating,
         duration: Duration(seconds: 12),
       ),
@@ -600,8 +600,8 @@ class TripReservationsScreen extends ConsumerWidget {
     } catch (_) {
       messenger.hideCurrentSnackBar();
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Không đọc được ảnh. Thử ảnh khác nhé.'),
+        SnackBar(
+          content: Text('reservations.photo_failed'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -870,8 +870,8 @@ class TripReservationsScreen extends ConsumerWidget {
       ref.invalidate(tripReservationsProvider(tripId));
       if (!editing && price != null && price > 0) {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Đã lưu vé & tự tạo chi phí chia đều cho nhóm 💰'),
+          SnackBar(
+            content: Text('reservations.saved_with_expense'.tr()),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -912,7 +912,7 @@ class TripReservationsScreen extends ConsumerWidget {
       Icon(PhosphorIconsFill.ticket, size: 60, color: _primary),
       const SizedBox(height: 16),
       Text(
-        'Chưa có đặt chỗ nào',
+        'reservations.empty'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.heading(
           fontWeight: FontWeight.w800,
@@ -922,7 +922,7 @@ class TripReservationsScreen extends ConsumerWidget {
       ),
       const SizedBox(height: 6),
       Text(
-        'Lưu vé máy bay, khách sạn, nhà hàng... để cả squad nắm lịch và mã xác nhận.',
+        'reservations.empty_sub'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.body(fontSize: 14, color: _textSec),
       ),
@@ -959,7 +959,7 @@ class TripReservationsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được đặt chỗ',
+              'reservations.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,

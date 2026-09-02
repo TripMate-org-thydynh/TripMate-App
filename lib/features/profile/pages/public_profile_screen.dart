@@ -30,8 +30,8 @@ class PublicProfileScreen extends StatelessWidget {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Xem Profile Bạn Bè 👀',
+        title: Text(
+          'profile.public_title'.tr(),
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -55,94 +55,21 @@ class PublicProfileScreen extends StatelessWidget {
                 fontSize: 13,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+
+            // Chua co endpoint public profile: app chi biet ten va avatar cua
+            // nguoi nay (lay tu danh sach ban dong hanh). Truoc day cho nay in
+            // cung mot doan bio va "12 chuyen / 3.2k XP / 98% uy tin" cho BAT
+            // KY ai mo ra — so lieu bia ve mot nguoi that.
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                'Là cạ cứng du lịch thích chinh phục các cung đường dài, cực kỳ uy tín và thân thiện! 🏕️',
+                'profile.public_no_stats'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
                   fontSize: 13,
                   height: 1.4,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // Statistics row
-            Card(
-              color: isDark ? const Color(0xFF262019) : Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          '12',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Chuyến đi',
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          '3.2k',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'profile.xp_points'.tr(),
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          '98%',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Độ uy tín',
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
               ),
             ),

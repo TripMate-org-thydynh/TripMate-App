@@ -43,7 +43,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Xoá tài khoản?',
+          'settings.delete_confirm'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
         ),
         content: Text(
@@ -62,7 +62,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Xoá vĩnh viễn'),
+            child: Text('settings.delete_forever'.tr()),
           ),
         ],
       ),
@@ -91,7 +91,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Quyền riêng tư & Tài khoản',
+          'settings.privacy_title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -117,7 +117,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
 
           // Danger zone
           Text(
-            'Vùng nguy hiểm',
+            'settings.danger_zone'.tr(),
             style: AppFonts.body(
               fontSize: 12,
               fontWeight: FontWeight.w700,
@@ -138,7 +138,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Xoá tài khoản',
+                  'settings.delete_account'.tr(),
                   style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
@@ -147,7 +147,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Xoá vĩnh viễn tài khoản và toàn bộ dữ liệu liên quan.',
+                  'settings.delete_sub'.tr(),
                   style: AppFonts.body(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,

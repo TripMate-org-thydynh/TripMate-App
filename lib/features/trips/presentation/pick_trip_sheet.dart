@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
@@ -188,7 +189,7 @@ class PickTripSheet extends ConsumerWidget {
               Navigator.pop(context);
               CreateTripSheet.show(context, isDarkMode);
             },
-            child: const Text('Tạo chuyến mới'),
+            child: Text('trips.create_new'.tr()),
           ),
         ],
       ),

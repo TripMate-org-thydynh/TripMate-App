@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -150,7 +151,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
           },
         ),
         title: Text(
-          'Tham gia chuyến',
+          'trips.join'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -183,7 +184,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                     ),
                     const SizedBox(height: GenZTokens.space3),
                     Text(
-                      'Có mã mời từ hội bạn?',
+                      'trips.join_title'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFonts.heading(
                         fontSize: 20,
@@ -193,7 +194,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                     ),
                     const SizedBox(height: GenZTokens.space2),
                     Text(
-                      'Dán mã hoặc link chia sẻ vào ô bên dưới để vào chuyến.',
+                      'trips.join_sub'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFonts.body(
                         fontSize: 13,

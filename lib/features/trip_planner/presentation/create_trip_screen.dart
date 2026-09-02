@@ -159,8 +159,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nhập tên chuyến nhé ✏️'),
+        SnackBar(
+          content: Text('trips.name_required'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -168,8 +168,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     }
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Chọn ngày đi và ngày về nhé 📅'),
+        SnackBar(
+          content: Text('trips.dates_required'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -859,7 +859,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
 
               // ── Điểm đến ──
               Text(
-                'Điểm đến',
+                'trips.destination'.tr(),
                 style: AppFonts.heading(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -878,7 +878,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
 
               // ── Vibe chuyến đi ──
               Text(
-                'Vibe chuyến đi',
+                'trips.vibe'.tr(),
                 style: AppFonts.heading(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -934,7 +934,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
 
               // ── Ngân sách dự kiến ──
               Text(
-                'Ngân sách dự kiến / người',
+                'trips.budget_per_head'.tr(),
                 style: AppFonts.heading(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

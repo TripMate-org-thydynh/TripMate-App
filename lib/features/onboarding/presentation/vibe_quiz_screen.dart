@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
@@ -128,7 +129,7 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                   GestureDetector(
                     onTap: _finish,
                     child: Text(
-                      'BỎ QUA',
+                      'common.skip_caps'.tr(),
                       style: AppFonts.mono(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,

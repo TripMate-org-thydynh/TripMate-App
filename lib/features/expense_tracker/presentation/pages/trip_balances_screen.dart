@@ -64,7 +64,7 @@ class TripBalancesScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Chia tiền',
+              'expense.split_title'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
@@ -142,7 +142,7 @@ class TripBalancesScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được số dư',
+              'expense.balances_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -193,7 +193,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Chưa có khoản chi nào',
+                  'expense.empty'.tr(),
                   style: AppFonts.heading(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
@@ -202,7 +202,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Thêm khoản chi để bắt đầu chia tiền',
+                  'expense.empty_sub'.tr(),
                   style: AppFonts.body(fontSize: 14, color: _textSec),
                 ),
               ],
@@ -218,7 +218,7 @@ class TripBalancesScreen extends ConsumerWidget {
         // Settlements (ai trả ai)
         if (result.settlements.isNotEmpty) ...[
           Text(
-            'Quyết toán tối giản',
+            'expense.settle_minimal'.tr(),
             style: AppFonts.heading(
               fontSize: 16,
               fontWeight: FontWeight.w800,
@@ -237,7 +237,7 @@ class TripBalancesScreen extends ConsumerWidget {
 
         // Balances per member
         Text(
-          'Số dư từng người',
+          'expense.per_person'.tr(),
           style: AppFonts.heading(
             fontSize: 16,
             fontWeight: FontWeight.w800,
@@ -324,7 +324,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Trả ngay',
+                'expense.pay_now'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   color: Colors.white,

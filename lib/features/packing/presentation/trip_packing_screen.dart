@@ -157,7 +157,7 @@ class TripPackingScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Thêm đồ cần mang',
+                'packing.add_title'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
@@ -238,7 +238,7 @@ class TripPackingScreen extends ConsumerWidget {
               Row(
                 children: [
                   Text(
-                    'Số lượng',
+                    'common.quantity'.tr(),
                     style: AppFonts.body(
                       fontWeight: FontWeight.w700,
                       color: _textSec,
@@ -336,7 +336,7 @@ class TripPackingScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Đồ cần mang',
+          'packing.title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -600,7 +600,7 @@ class TripPackingScreen extends ConsumerWidget {
       Icon(PhosphorIconsFill.suitcaseRolling, size: 64, color: _primary),
       const SizedBox(height: 16),
       Text(
-        'Chưa có gì trong balo',
+        'packing.empty'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.heading(
           fontWeight: FontWeight.w800,
@@ -610,7 +610,7 @@ class TripPackingScreen extends ConsumerWidget {
       ),
       const SizedBox(height: 6),
       Text(
-        'Chọn 1 template để bắt đầu nhanh, rồi cả squad cùng chia nhau mang.',
+        'packing.empty_sub'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.body(fontSize: 14, color: _textSec),
       ),
@@ -685,7 +685,7 @@ class TripPackingScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được danh sách',
+              'common.list_load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,

@@ -162,7 +162,7 @@ class AiHubScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Chào mừng cưng đến với Matey AI!',
+                          'ai.hub_welcome'.tr(),
                           style: AppFonts.heading(
                             fontWeight: FontWeight.w800,
                             fontSize: 18,

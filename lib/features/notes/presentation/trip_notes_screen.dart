@@ -159,7 +159,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                   const SizedBox(height: 16),
                   // Color picker
                   Text(
-                    'Màu note',
+                    'notes.color'.tr(),
                     style: AppFonts.heading(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -281,7 +281,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
-          'Ghi chú nhóm',
+          'notes.title'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -305,7 +305,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
         foregroundColor: Colors.white,
         icon: Icon(PhosphorIcons.note(PhosphorIconsStyle.fill)),
         label: Text(
-          'Thêm note',
+          'notes.add'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
@@ -347,7 +347,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Chưa có ghi chú nào',
+                    'notes.empty'.tr(),
                     style: AppFonts.heading(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -356,7 +356,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Nhấn + để thêm ghi chú cho squad',
+                    'notes.empty_sub'.tr(),
                     style: AppFonts.body(fontSize: 14, color: _textSec),
                   ),
                 ],

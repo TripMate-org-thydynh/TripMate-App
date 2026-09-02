@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class ProfileStatisticsScreen extends StatelessWidget {
@@ -22,8 +23,8 @@ class ProfileStatisticsScreen extends StatelessWidget {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Thống Kê Thẻ Phượt Thủ 📊',
+        title: Text(
+          'profile.stats_title'.tr(),
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),

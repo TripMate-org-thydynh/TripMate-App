@@ -165,7 +165,7 @@ class _PaymentSheet extends StatelessWidget {
 
               // Amount + recipient
               Text(
-                'Chuyển cho',
+                'payment.transfer_to'.tr(),
                 style: AppFonts.body(fontSize: 13, color: _textSec),
               ),
               const SizedBox(height: 4),
@@ -241,7 +241,7 @@ class _PaymentSheet extends StatelessWidget {
                     SnackBar(
                       behavior: SnackBarBehavior.floating,
                       backgroundColor: _primary,
-                      content: const Text('Đã copy thông tin chuyển khoản'),
+                      content: Text('payment.copied'.tr()),
                     ),
                   );
                 },

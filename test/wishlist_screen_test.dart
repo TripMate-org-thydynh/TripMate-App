@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'helpers/localized.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -33,16 +35,15 @@ class _FakeWishlistRepo implements WishlistRepository {
 Widget _wrap(WishlistRepository repo) {
   return ProviderScope(
     overrides: [wishlistRepositoryProvider.overrideWithValue(repo)],
-    child: const MaterialApp(
-      home: TripWishlistScreen(tripId: 't1', isDarkMode: true),
-    ),
+    child: localized(const TripWishlistScreen(tripId: 't1', isDarkMode: true)),
   );
 }
 
 void main() {
-  setUpAll(() {
+  setUpAll(() async {
     // Tránh tải font qua mạng trong test.
     GoogleFonts.config.allowRuntimeFetching = false;
+    await initLocalization();
   });
 
   testWidgets('hiện empty state khi không có item', (tester) async {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -140,7 +141,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Quét Hóa Đơn AI 📸',
+          'expense.scan_title'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             fontSize: 18,
@@ -198,7 +199,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Chọn hóa đơn từ máy ảnh hoặc bộ sưu tập để AI tự động phân tích chi phí nhóm!',
+                    'expense.scan_sub'.tr(),
                     style: AppFonts.body(
                       color: GenZTokens.ink,
                       fontWeight: FontWeight.bold,
@@ -211,7 +212,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           ),
           const SizedBox(height: 32),
           Text(
-            'CHỌN ẢNH HÓA ĐƠN',
+            'expense.scan_pick'.tr(),
             style: AppFonts.heading(
               fontWeight: FontWeight.w900,
               fontSize: 13,
@@ -393,7 +394,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             ),
             const SizedBox(height: 36),
             Text(
-              'AI ĐANG PHÂN TÍCH HÓA ĐƠN...',
+              'expense.scan_working'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w900,
                 fontSize: 16,
@@ -402,7 +403,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Hệ thống trích xuất tên món và giá tiền từ ảnh chụp.',
+              'expense.scan_working_sub'.tr(),
               textAlign: TextAlign.center,
               style: AppFonts.body(color: textSecondary, fontSize: 12),
             ),
@@ -440,7 +441,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Đã quét thành công! Chọn các món bạn tiêu dùng để tính toán số tiền.',
+                    'expense.scan_done'.tr(),
                     style: AppFonts.body(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -512,7 +513,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Tổng phần của bạn:',
+                      'expense.your_share'.tr(),
                       style: AppFonts.heading(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -555,7 +556,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Áp dụng số tiền chi tiêu',
+                      'expense.apply_amount'.tr(),
                       style: AppFonts.heading(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

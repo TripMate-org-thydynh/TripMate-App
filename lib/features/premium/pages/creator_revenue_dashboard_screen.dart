@@ -1,5 +1,6 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../core/api_service.dart';
 
@@ -87,10 +88,8 @@ class _CreatorRevenueDashboardScreenState
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          '💸 Yêu cầu rút tiền thành công! Payout đã được gửi duyệt! Chờ ngân hàng xử lý nhé!',
-        ),
+      SnackBar(
+        content: Text('premium.payout_ok'.tr()),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.green,
       ),
@@ -126,7 +125,7 @@ class _CreatorRevenueDashboardScreenState
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Thu Nhập Sáng Tạo 🎨',
+          'premium.creator_revenue'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
@@ -167,7 +166,7 @@ class _CreatorRevenueDashboardScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'SỐ DƯ KHẢ DỤNG RÚT 💸',
+                          'premium.available_balance'.tr(),
                           style: AppFonts.heading(
                             color: Colors.white70,
                             fontWeight: FontWeight.bold,
@@ -208,7 +207,7 @@ class _CreatorRevenueDashboardScreenState
                                       ),
                                     )
                                   : Text(
-                                      'Yêu Cầu Rút ⚡',
+                                      'premium.request_payout'.tr(),
                                       style: AppFonts.heading(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -238,7 +237,7 @@ class _CreatorRevenueDashboardScreenState
 
                   // Visual Chart
                   Text(
-                    'Xu Hướng Bán Hàng 📈',
+                    'premium.sales_trend'.tr(),
                     style: AppFonts.heading(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
@@ -269,7 +268,7 @@ class _CreatorRevenueDashboardScreenState
 
                   // Recent sales lists
                   Text(
-                    'Giao Dịch Gần Đây 🛒',
+                    'premium.recent_txn'.tr(),
                     style: AppFonts.heading(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,

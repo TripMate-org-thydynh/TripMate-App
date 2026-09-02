@@ -112,7 +112,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Viết nhật ký ✍️',
+                      'journal.write_title'.tr(),
                       style: AppFonts.heading(
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
@@ -225,7 +225,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                     const SizedBox(height: 16),
                     // Mood picker
                     Text(
-                      'Mood hôm nay',
+                      'journal.mood_today'.tr(),
                       style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -313,7 +313,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               );
                         },
                         child: Text(
-                          'Lưu nhật ký',
+                          'journal.save'.tr(),
                           style: AppFonts.heading(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
@@ -367,7 +367,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
         foregroundColor: Colors.white,
         icon: Icon(PhosphorIcons.pencil()),
         label: Text(
-          'Viết nhật ký',
+          'journal.write_short'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
@@ -381,7 +381,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
         ),
         error: (e, _) => Center(
           child: Text(
-            'Lỗi tải nhật ký',
+            'journal.load_failed'.tr(),
             style: AppFonts.heading(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -402,7 +402,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Nhật ký trống',
+                    'journal.empty'.tr(),
                     style: AppFonts.heading(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -411,7 +411,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Ghi lại những khoảnh khắc đáng nhớ nhé!',
+                    'journal.empty_sub'.tr(),
                     style: AppFonts.body(fontSize: 14, color: _textSec),
                   ),
                 ],
@@ -507,7 +507,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                     builder: (ctx) => AlertDialog(
                                       backgroundColor: _bgOf(context),
                                       title: Text(
-                                        'Xóa nhật ký?',
+                                        'journal.delete_confirm'.tr(),
                                         style: AppFonts.heading(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,

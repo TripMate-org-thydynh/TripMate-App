@@ -172,7 +172,7 @@ class _RandomDareGeneratorScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                'Bốc thử thách ngẫu nhiên dành cho bạn hoặc đồng đội',
+                'games.dare_sub'.tr(),
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
                   fontSize: 13,

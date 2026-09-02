@@ -58,7 +58,7 @@ class MyTripsScreen extends ConsumerWidget {
           },
           icon: const Icon(Icons.add),
           label: Text(
-            'Chuyến mới',
+            'trips.new'.tr(),
             style: AppFonts.heading(fontWeight: FontWeight.w800),
           ),
         ),
@@ -67,7 +67,7 @@ class MyTripsScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Chuyến của tôi',
+          'trips.mine'.tr(),
           style: AppFonts.heading(
             fontSize: 20,
             fontWeight: FontWeight.w900,
@@ -137,7 +137,7 @@ class MyTripsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Không tải được chuyến đi',
+                'trips.load_failed'.tr(),
                 style: AppFonts.heading(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
@@ -197,7 +197,7 @@ class MyTripsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 18),
               Text(
-                'Chưa có chuyến nào',
+                'trips.empty'.tr(),
                 style: AppFonts.heading(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
@@ -206,7 +206,7 @@ class MyTripsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Tạo chuyến đầu tiên và rủ squad nào!',
+                'trips.empty_sub'.tr(),
                 style: AppFonts.body(fontSize: 14, color: _textSec),
               ),
             ],

@@ -240,7 +240,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                     elevation: 0,
                   ),
                   child: Text(
-                    'Chấp nhận số phận 💸',
+                    tr('games.accept_fate'),
                     style: AppFonts.heading(
                       fontWeight: FontWeight.w800,
                       fontSize: 15,
@@ -373,7 +373,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Chế độ tăng cực mạnh chỉ số hỗn loạn của cả Squad!',
+                    tr('games.chaos_mode_sub'),
                     style: AppFonts.body(fontSize: 14, color: textSecondary),
                   ),
                   const SizedBox(height: 48),

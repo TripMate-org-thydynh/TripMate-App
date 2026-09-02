@@ -70,7 +70,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Tạo link mời 🔗',
+                  'invites.create_title'.tr(),
                   style: AppFonts.heading(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -79,13 +79,13 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Tạo link mời có thời hạn hoặc giới hạn số lượt.',
+                  'invites.create_sub'.tr(),
                   style: AppFonts.body(fontSize: 13, color: _textSec),
                 ),
                 const SizedBox(height: 20),
                 // Expiry options
                 Text(
-                  'Thời hạn',
+                  'invites.expiry'.tr(),
                   style: AppFonts.heading(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -97,7 +97,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                   spacing: 8,
                   children: [
                     _optionChip(
-                      'Không giới hạn',
+                      'common.unlimited'.tr(),
                       null == selectedExpiry,
                       () => setModalState(() => selectedExpiry = null),
                     ),
@@ -121,7 +121,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 const SizedBox(height: 16),
                 // Max uses options
                 Text(
-                  'Số lượt dùng',
+                  'invites.uses'.tr(),
                   style: AppFonts.heading(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -133,7 +133,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                   spacing: 8,
                   children: [
                     _optionChip(
-                      'Không giới hạn',
+                      'common.unlimited'.tr(),
                       null == selectedMaxUses,
                       () => setModalState(() => selectedMaxUses = null),
                     ),
@@ -201,7 +201,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                       }
                     },
                     child: Text(
-                      'Tạo & Chia sẻ Link',
+                      'invites.create_share'.tr(),
                       style: AppFonts.heading(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
@@ -269,7 +269,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
-          'Link mời squad',
+          'invites.title'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -293,7 +293,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
         foregroundColor: Colors.white,
         icon: Icon(PhosphorIcons.link()),
         label: Text(
-          'Tạo link mời',
+          'invites.create_short'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
@@ -307,7 +307,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
         ),
         error: (e, _) => Center(
           child: Text(
-            'Lỗi tải link mời',
+            'invites.load_failed'.tr(),
             style: AppFonts.heading(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -328,7 +328,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Chưa có link mời',
+                    'invites.empty'.tr(),
                     style: AppFonts.heading(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -337,7 +337,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tạo link có hạn để mời bạn bè vào chuyến',
+                    'invites.empty_sub'.tr(),
                     style: AppFonts.body(fontSize: 14, color: _textSec),
                   ),
                 ],
@@ -441,7 +441,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                         ],
                         if (invite.expiresAt == null && invite.maxUses == null)
                           Text(
-                            'Không giới hạn',
+                            'common.unlimited'.tr(),
                             style: AppFonts.body(fontSize: 12, color: _textSec),
                           ),
                       ],

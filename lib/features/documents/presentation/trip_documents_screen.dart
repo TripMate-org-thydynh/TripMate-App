@@ -92,7 +92,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Upload file lên Supabase Storage trước, sau đó dán URL vào đây.',
+                'docs.paste_url_hint'.tr(),
                 style: AppFonts.body(fontSize: 13, color: _textSec),
               ),
               const SizedBox(height: 16),
@@ -261,7 +261,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Kho tài liệu trống',
+                    'docs.empty'.tr(),
                     style: AppFonts.heading(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -270,7 +270,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Upload vé, booking, hộ chiếu...',
+                    'docs.empty_sub'.tr(),
                     style: AppFonts.body(fontSize: 14, color: _textSec),
                   ),
                 ],

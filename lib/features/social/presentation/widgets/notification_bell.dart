@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +22,9 @@ class NotificationBell extends ConsumerWidget {
 
     return Semantics(
       button: true,
-      label: unread > 0 ? 'Thông báo, $unread chưa đọc' : 'Thông báo',
+      label: unread > 0
+          ? 'Thông báo, $unread chưa đọc'
+          : 'notifications.title'.tr(),
       child: Stack(
         clipBehavior: Clip.none,
         children: [

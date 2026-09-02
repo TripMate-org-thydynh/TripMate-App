@@ -120,7 +120,7 @@ class TripTodosScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Thêm việc cần làm',
+                'todos.add'.tr(),
                 style: GoogleFonts.spaceGrotesk(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
@@ -145,7 +145,7 @@ class TripTodosScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 14),
               Text(
-                'Ưu tiên',
+                'todos.priority'.tr(),
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.w700,
                   color: _textSec,
@@ -276,7 +276,7 @@ class TripTodosScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Việc cần làm',
+          'todos.title'.tr(),
           style: GoogleFonts.spaceGrotesk(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -515,7 +515,7 @@ class TripTodosScreen extends ConsumerWidget {
       Icon(PhosphorIconsFill.listChecks, size: 60, color: _primary),
       const SizedBox(height: 16),
       Text(
-        'Chưa có việc nào',
+        'todos.empty'.tr(),
         textAlign: TextAlign.center,
         style: GoogleFonts.spaceGrotesk(
           fontWeight: FontWeight.w800,
@@ -525,7 +525,7 @@ class TripTodosScreen extends ConsumerWidget {
       ),
       const SizedBox(height: 6),
       Text(
-        'Thêm việc cần chuẩn bị, chia nhau làm để không sót gì.',
+        'todos.empty_sub'.tr(),
         textAlign: TextAlign.center,
         style: GoogleFonts.outfit(fontSize: 14, color: _textSec),
       ),
@@ -562,7 +562,7 @@ class TripTodosScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được danh sách',
+              'common.list_load_failed'.tr(),
               style: GoogleFonts.spaceGrotesk(
                 fontWeight: FontWeight.w800,
                 color: _textPri,

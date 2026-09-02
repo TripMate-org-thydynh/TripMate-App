@@ -186,7 +186,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Chỉnh sửa chuyến',
+                'trips.edit'.tr(),
                 style: AppFonts.heading(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -249,7 +249,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
         _label('Tên chuyến'),
         _field(_name, 'Tên chuyến', PhosphorIcons.airplaneTilt()),
         const SizedBox(height: 14),
-        _label('Điểm đến'),
+        _label('trips.destination'.tr()),
         _field(_destination, 'vd: Đà Lạt, Lâm Đồng', PhosphorIcons.mapPin()),
         const SizedBox(height: 14),
         _label('Thời gian'),
@@ -275,7 +275,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
           ),
         ),
         const SizedBox(height: 16),
-        _label('Vibe chuyến đi'),
+        _label('trips.vibe'.tr()),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -313,7 +313,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
           }).toList(),
         ),
         const SizedBox(height: 16),
-        _label('Ngân sách dự kiến / người'),
+        _label('trips.budget_per_head'.tr()),
         Row(
           children: [
             Expanded(

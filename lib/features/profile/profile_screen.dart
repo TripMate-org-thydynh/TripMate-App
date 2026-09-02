@@ -2405,7 +2405,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             const SizedBox(height: 16),
 
             Text(
-              'Kiểu chữ (Font Style)',
+              'profile.font_style'.tr(),
               style: AppFonts.heading(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,

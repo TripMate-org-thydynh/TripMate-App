@@ -353,7 +353,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Chọn vibe để mình gợi ý chuyến đi phù hợp nhé!',
+                'auth.pick_vibe_sub'.tr(),
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
                   color: widget.isDarkMode
@@ -669,7 +669,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'quên mật khẩu rồi?',
+            'auth.forgot_title'.tr(),
             style: AppFonts.heading(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -679,7 +679,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            'Không sao! Nhập email của bạn để nhận mã OTP đặt lại mật khẩu.',
+            'auth.forgot_sub'.tr(),
             style: AppFonts.body(color: fSub, fontSize: 14),
           ),
           const SizedBox(height: 32),
@@ -723,10 +723,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   } else {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Gửi mã OTP thất bại. Vui lòng thử lại.',
-                          ),
+                        SnackBar(
+                          content: Text('auth.otp_send_failed'.tr()),
                           backgroundColor: Colors.redAccent,
                         ),
                       );
@@ -763,7 +761,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 });
               },
               child: Text(
-                'Quay lại đăng nhập',
+                'auth.back_to_login'.tr(),
                 style: AppFonts.heading(
                   color: primaryColor,
                   fontWeight: FontWeight.bold,
@@ -798,7 +796,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          'chào mừng vào squad.',
+          'auth.welcome'.tr(),
           style: AppFonts.heading(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -896,10 +894,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                     } else {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Gửi mã OTP thất bại. Vui lòng thử lại.',
-                            ),
+                          SnackBar(
+                            content: Text('auth.otp_send_failed'.tr()),
                             backgroundColor: Colors.redAccent,
                           ),
                         );
@@ -956,7 +952,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 });
               },
               child: Text(
-                'Quên mật khẩu?',
+                'auth.forgot_link'.tr(),
                 style: AppFonts.heading(
                   color: primaryColor,
                   fontWeight: FontWeight.bold,
@@ -974,7 +970,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'hoặc đăng nhập bằng',
+                'auth.or_sign_in_with'.tr(),
                 style: AppFonts.body(color: dividerTextColor, fontSize: 12),
               ),
             ),
@@ -1050,7 +1046,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'xác minh mã. 🛡️',
+          'auth.verify_title'.tr(),
           style: AppFonts.heading(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -1155,7 +1151,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           child: Column(
             children: [
               Text(
-                'Chưa nhận được mã?',
+                'auth.no_code'.tr(),
                 style: AppFonts.body(color: sub, fontSize: 13),
               ),
               const SizedBox(height: 4),
@@ -1230,10 +1226,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 } else {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Xác minh mã OTP thất bại. Mã không đúng hoặc đã hết hạn.',
-                        ),
+                      SnackBar(
+                        content: Text('auth.otp_invalid'.tr()),
                         backgroundColor: Colors.redAccent,
                       ),
                     );
@@ -1252,7 +1246,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               ),
             ),
             child: Text(
-              'Xác minh & Tiếp tục',
+              'auth.verify_continue'.tr(),
               style: AppFonts.heading(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -1280,7 +1274,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'nhân vật chính thôi!',
+            'auth.main_character'.tr(),
             style: AppFonts.heading(
               fontSize: 28,
               fontWeight: FontWeight.w800,
@@ -1290,7 +1284,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            'Chọn username và tên hiển thị của bạn nhé.',
+            'auth.pick_username'.tr(),
             style: AppFonts.body(color: sub, fontSize: 14),
           ),
           const SizedBox(height: 32),
@@ -1394,10 +1388,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 } else {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Đăng ký thất bại. Thử username khác nhé.',
-                        ),
+                      SnackBar(
+                        content: Text('auth.signup_failed'.tr()),
                         backgroundColor: Colors.redAccent,
                       ),
                     );
@@ -1446,7 +1438,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         const Text('😭', style: TextStyle(fontSize: 84)),
         const SizedBox(height: 24),
         Text(
-          'đừng lạc mất squad nhé.',
+          'auth.location_title'.tr(),
           style: AppFonts.heading(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -1457,7 +1449,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         ),
         const SizedBox(height: 12),
         Text(
-          'Bật quyền vị trí để squad có thể theo dõi nhau trên bản đồ realtime trong chuyến đi.',
+          'auth.location_sub'.tr(),
           style: AppFonts.body(color: sub, fontSize: 14, height: 1.5),
           textAlign: TextAlign.center,
         ),
@@ -1466,7 +1458,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           onPressed: _nextStep,
           icon: Icon(Icons.location_on, color: GenZTokens.ink),
           label: Text(
-            'Cho phép vị trí',
+            'auth.allow_location'.tr(),
             style: AppFonts.heading(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -1526,7 +1518,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         ),
         const SizedBox(height: 24),
         Text(
-          'bạn đã vào squad rồi!',
+          'auth.done_title'.tr(),
           style: AppFonts.heading(
             fontSize: 32,
             fontWeight: FontWeight.w800,
@@ -1537,7 +1529,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         ),
         const SizedBox(height: 12),
         Text(
-          'Xong rồi! Hồ sơ của bạn đã được đăng ký. Hãy bắt đầu lên kế hoạch du lịch nhóm thôi!',
+          'auth.done_sub'.tr(),
           style: AppFonts.body(color: sub, fontSize: 14, height: 1.5),
           textAlign: TextAlign.center,
         ),
@@ -1670,8 +1662,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
 
       if (idToken == null) {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Không lấy được Google ID token.'),
+          SnackBar(
+            content: Text('auth.google_no_token'.tr()),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -1711,8 +1703,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         }
       } else {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Đăng nhập Google thất bại. Vui lòng thử lại.'),
+          SnackBar(
+            content: Text('auth.google_failed'.tr()),
             backgroundColor: Colors.redAccent,
           ),
         );

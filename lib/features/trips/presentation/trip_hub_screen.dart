@@ -66,7 +66,7 @@ class TripHubScreen extends StatelessWidget {
             iconTheme: IconThemeData(color: _textPri),
             actions: [
               IconButton(
-                tooltip: 'Chỉnh sửa chuyến',
+                tooltip: 'trips.edit'.tr(),
                 icon: Icon(PhosphorIcons.pencilSimple(), color: _textPri),
                 onPressed: () async {
                   final ok = await EditTripSheet.show(
@@ -76,8 +76,8 @@ class TripHubScreen extends StatelessWidget {
                   );
                   if (ok == true && context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Đã cập nhật chuyến đi 🎉'),
+                      SnackBar(
+                        content: Text('trips.updated'.tr()),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -247,7 +247,7 @@ class TripHubScreen extends StatelessWidget {
                   ],
                   const SizedBox(height: 24),
                   Text(
-                    'Quản lý chuyến',
+                    'trips.manage'.tr(),
                     style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -266,7 +266,7 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.scales(PhosphorIconsStyle.fill),
-                        'Chia tiền',
+                        'expense.split_title'.tr(),
                         'Số dư & quyết toán',
                         const Color(0xFFF5822B),
                         () => TripBalancesScreen(
@@ -300,7 +300,7 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
-                        'Lịch trình',
+                        'itinerary.title'.tr(),
                         'Kế hoạch từng ngày',
                         const Color(0xFF3D8BFF),
                         () => TripItineraryScreen(
@@ -322,7 +322,7 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.camera(PhosphorIconsStyle.fill),
-                        'Khoảnh khắc',
+                        'moments.title'.tr(),
                         'Ảnh & kỷ niệm',
                         const Color(0xFFD6248C),
                         () => TripMomentsFeedScreen(
@@ -344,7 +344,7 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.suitcaseRolling(PhosphorIconsStyle.fill),
-                        'Đồ cần mang',
+                        'packing.title'.tr(),
                         'Packing list nhóm',
                         const Color(0xFF06B6D4),
                         () => TripPackingScreen(
@@ -388,7 +388,7 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.checkSquare(PhosphorIconsStyle.fill),
-                        'Điểm danh',
+                        'checkins.title'.tr(),
                         'Điểm danh theo ngày',
                         const Color(0xFF1FA85C),
                         () => TripCheckinsScreen(

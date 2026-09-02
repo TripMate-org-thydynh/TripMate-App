@@ -46,7 +46,7 @@ class TripPollsScreen extends ConsumerWidget {
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Tạo bình chọn',
+          'polls.create'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
         ),
         content: Column(
@@ -101,8 +101,8 @@ class TripPollsScreen extends ConsumerWidget {
     if (question.isEmpty || options.length < 2) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Cần câu hỏi và ít nhất 2 lựa chọn'),
+          SnackBar(
+            content: Text('polls.need_options'.tr()),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -135,7 +135,7 @@ class TripPollsScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Bình chọn nhóm',
+          'polls.title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -186,7 +186,7 @@ class TripPollsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Không tải được bình chọn',
+              'polls.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 color: _textPri,
@@ -226,7 +226,7 @@ class TripPollsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Chưa có bình chọn nào',
+              'polls.empty'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
@@ -235,7 +235,7 @@ class TripPollsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Tạo poll để cả nhóm quyết định nhanh!',
+              'polls.empty_sub'.tr(),
               style: AppFonts.body(fontSize: 14, color: _textSec),
             ),
           ],

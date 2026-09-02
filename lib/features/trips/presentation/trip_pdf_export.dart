@@ -108,7 +108,7 @@ class TripPdfExporter {
           margin: const pw.EdgeInsets.all(32),
           build: (ctx) => [
             pw.Text(
-              '📅 Lịch trình chi tiết',
+              'trips.pdf_itinerary'.tr(),
               style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 16),
@@ -184,7 +184,7 @@ class TripPdfExporter {
           margin: const pw.EdgeInsets.all(32),
           build: (ctx) => [
             pw.Text(
-              '🧳 Đồ cần mang',
+              'trips.pdf_packing'.tr(),
               style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
             ),
             pw.SizedBox(height: 8),

@@ -54,7 +54,7 @@ class TripMapScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Bản đồ chuyến',
+          'trips.map_title'.tr(),
           style: GoogleFonts.spaceGrotesk(
             fontSize: 17,
             fontWeight: FontWeight.w800,
@@ -72,7 +72,7 @@ class TripMapScreen extends ConsumerWidget {
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => _msg('Không tải được lịch trình'),
+        error: (e, _) => _msg('itinerary.load_failed'.tr()),
         data: (grouped) {
           // Gom mọi item có toạ độ, giữ thông tin ngày.
           final points = <({ItineraryItem item, int day})>[];
