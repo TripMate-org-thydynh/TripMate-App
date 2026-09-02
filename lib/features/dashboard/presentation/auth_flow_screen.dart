@@ -81,7 +81,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
   final List<Map<String, dynamic>> _vibeOptions = [
     {
       'name': 'Chill',
-      'desc': 'Resorts, spas, and slow mornings in Hội An.',
+      'desc': 'auth.vibe_chill',
       'icon1': PhosphorIcons.leaf(PhosphorIconsStyle.fill),
       'icon2': PhosphorIcons.coffee(PhosphorIconsStyle.fill),
       'image':
@@ -89,7 +89,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     },
     {
       'name': 'Party',
-      'desc': 'Bùi Viện nights and rooftop bars in Saigon.',
+      'desc': 'auth.vibe_party',
       'icon1': PhosphorIcons.confetti(PhosphorIconsStyle.fill),
       'icon2': PhosphorIcons.martini(PhosphorIconsStyle.fill),
       'image':
@@ -97,7 +97,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     },
     {
       'name': 'Foodie',
-      'desc': 'Street food tours and hidden Pho spots in Hanoi.',
+      'desc': 'auth.vibe_foodie',
       'icon1': PhosphorIcons.forkKnife(PhosphorIconsStyle.fill),
       'icon2': PhosphorIcons.flame(PhosphorIconsStyle.fill),
       'image':
@@ -105,7 +105,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     },
     {
       'name': 'Nature',
-      'desc': 'Ha Long Bay cruises and Sapa rice terraces.',
+      'desc': 'auth.vibe_nature',
       'icon1': PhosphorIcons.mountains(PhosphorIconsStyle.fill),
       'icon2': PhosphorIcons.tree(PhosphorIconsStyle.fill),
       'image':
@@ -267,9 +267,16 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               ),
             ),
 
+          // Cuon duoc khi ban phim bat len.
+          //
+          // Truoc day cac buoc dang nhap la Column dat thang trong SafeArea:
+          // mo ban phim la khung nhin thap di, man tran "BOTTOM OVERFLOWED BY
+          // 286 PIXELS" ngay tren may that (emulator man cao nen khong lo ra).
+          // ConstrainedBox + IntrinsicHeight giu nguyen hanh vi cua Spacer/
+          // Expanded ben trong khi van cho cuon.
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 400),
                 child: Padding(
@@ -368,7 +375,12 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         const SizedBox(height: 24),
 
         // Carousel snapping slider PageView
-        Expanded(
+        //
+        // Chieu cao co dinh theo man hinh thay vi Expanded: buoc nay nam trong
+        // SingleChildScrollView (de ban phim khong lam tran man), ma Expanded
+        // trong Column khong co chieu cao thi Flutter nem loi.
+        SizedBox(
+          height: MediaQuery.sizeOf(context).height * 0.52,
           child: PageView.builder(
             controller: _pageController,
             physics: const BouncingScrollPhysics(),
@@ -376,7 +388,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             itemBuilder: (context, index) {
               final item = _vibeOptions[index];
               final vibeName = item['name'] as String;
-              final vibeDesc = item['desc'] as String;
+              // `desc` la KHOA i18n, dich o day de doi ngon ngu an ngay.
+              final vibeDesc = (item['desc'] as String).tr();
               final vibeIcon1 = item['icon1'] as IconData;
               final vibeIcon2 = item['icon2'] as IconData;
               final vibeImage = item['image'] as String;
@@ -1176,7 +1189,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             ],
           ),
         ),
-        const Spacer(),
+        const SizedBox(height: 28),
         DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),

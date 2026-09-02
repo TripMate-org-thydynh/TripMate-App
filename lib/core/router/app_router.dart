@@ -8,6 +8,7 @@ import '../../features/dashboard/presentation/auth_flow_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
 import '../../features/onboarding/presentation/vibe_quiz_screen.dart';
 import '../../features/trips/presentation/join_trip_screen.dart';
+import '../../features/moments/presentation/pages/trip_recap_reel_screen.dart';
 
 /// Mã mời đến từ deep link khi người dùng CHƯA đăng nhập.
 ///
@@ -68,15 +69,65 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+      // Trip Wrapped / TikTok/Spotify style story recap reel
+      GoRoute(
+        path: '/recap/:tripId',
+        builder: (context, state) {
+          final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+          final tripId = state.pathParameters['tripId'] ?? 'demo';
+          return TripRecapReelScreen(
+            isDarkMode: isDark,
+            tripId: tripId,
+          );
+        },
+      ),
+      // Custom scheme tripmate://join/<code> nơi 'join' là host còn path là '/<code>'
+      GoRoute(
+        path: '/:code([A-Za-z0-9_-]{3,16})',
+        builder: (context, state) {
+          final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+          return JoinTripScreen(
+            isDarkMode: isDark,
+            initialCode: state.pathParameters['code'],
+          );
+        },
+      ),
     ],
+    errorBuilder: (context, state) {
+      final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+      final uri = state.uri;
+      final code = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
+      if (code != null &&
+          code.isNotEmpty &&
+          code != 'dashboard' &&
+          code != 'auth' &&
+          code != 'splash' &&
+          code != 'onboarding') {
+        return JoinTripScreen(isDarkMode: isDark, initialCode: code);
+      }
+      return const DashboardScreen();
+    },
     redirect: (context, state) {
       // If auth state is still loading from storage, stay on splash or wait
       if (authState.isLoading) return null;
 
+      final uri = state.uri;
+      final isRecapUri = (uri.scheme == 'tripmate' && uri.host == 'recap') ||
+          state.matchedLocation.startsWith('/recap/');
+      if (isRecapUri) {
+        final id = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'demo';
+        if (!state.matchedLocation.startsWith('/recap/')) {
+          return '/recap/$id';
+        }
+        return null;
+      }
+
       final isLoggingIn = state.matchedLocation == '/auth';
       final isSplash = state.matchedLocation == '/splash';
       final isOnboarding = state.matchedLocation == '/onboarding';
-      final isJoining = state.matchedLocation.startsWith('/join/');
+      final isJoining = state.matchedLocation.startsWith('/join/') ||
+          (uri.scheme == 'tripmate' && uri.host == 'join') ||
+          (state.pathParameters['code'] != null);
       final isAuthenticated = authState.isAuthenticated;
 
       if (isAuthenticated) {

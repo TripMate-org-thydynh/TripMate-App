@@ -199,8 +199,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           duration: const Duration(milliseconds: 180),
                           curve: Curves.easeOutBack,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: GenZTokens.space4,
-                            vertical: 6,
+                            horizontal: 10,
+                            vertical: 4,
                           ),
                           decoration: BoxDecoration(
                             color: selected ? accent : Colors.transparent,

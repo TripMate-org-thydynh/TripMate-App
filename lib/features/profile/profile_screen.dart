@@ -337,7 +337,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       child: Container(
         width: 140,
         margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           color: surface,
           borderRadius: BorderRadius.circular(16),
@@ -866,8 +866,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       expandedHeight: 88.0,
                       floating: false,
                       pinned: true,
-                      backgroundColor: backgroundColor.withValues(alpha: 0.5),
+                      backgroundColor: backgroundColor,
                       elevation: 0,
+                      centerTitle: false,
+                      titleSpacing: 4,
                       flexibleSpace: FlexibleSpaceBar(
                         background: Container(color: Colors.transparent),
                       ),
@@ -926,13 +928,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       ),
                       title: Padding(
                         padding: const EdgeInsets.only(top: 12.0),
-                        child: Center(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
                           child: Text(
                             'trip.mate',
                             style: AppFonts.heading(
                               fontWeight: FontWeight.w800,
-                              fontSize: 26,
-                              letterSpacing: -1.5,
+                              fontSize: 20,
+                              letterSpacing: -1.0,
                               color: textPrimaryColor,
                             ),
                           ),
@@ -950,21 +954,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                               context.setLocale(newLocale);
                             },
                             child: Container(
-                              width: 36,
-                              height: 36,
+                              width: 34,
+                              height: 34,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: surfaceColor,
                                 border: Border.all(
                                   color: textPrimaryColor,
-                                  width: 2.5,
+                                  width: 2.0,
                                 ),
                               ),
                               child: Center(
                                 child: Text(
                                   context.locale.languageCode.toUpperCase(),
                                   style: AppFonts.body(
-                                    fontSize: 11,
+                                    fontSize: 10,
                                     fontWeight: FontWeight.w900,
                                     color: textPrimaryColor,
                                   ),
@@ -973,7 +977,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 4),
                         if (widget.onThemeToggleWithPosition != null)
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
@@ -984,24 +988,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                 );
                               },
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(6.0),
                                 child: Icon(
                                   isDark
                                       ? Icons.light_mode_outlined
                                       : Icons.dark_mode_outlined,
                                   color: textPrimaryColor,
+                                  size: 22,
                                 ),
                               ),
                             ),
                           ),
                         Padding(
-                          padding: const EdgeInsets.only(right: 8.0, top: 12.0),
+                          padding: const EdgeInsets.only(right: 2.0, top: 12.0),
                           child: Center(
                             child: IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 34,
+                                minHeight: 34,
+                              ),
                               icon: Icon(
                                 Icons.palette_outlined,
                                 color: textPrimaryColor,
-                                size: 26,
+                                size: 22,
                               ),
                               onPressed: () {
                                 Navigator.push(
@@ -1017,15 +1027,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                            right: 16.0,
+                            right: 12.0,
                             top: 12.0,
                           ),
                           child: Center(
                             child: IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 34,
+                                minHeight: 34,
+                              ),
                               icon: Icon(
                                 Icons.add_reaction_outlined,
                                 color: textPrimaryColor,
-                                size: 26,
+                                size: 22,
                               ),
                               onPressed: () {
                                 Navigator.push(
@@ -1159,9 +1174,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         const SizedBox(height: 20),
 
                                         // Badges row
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          alignment: WrapAlignment.center,
                                           children: [
                                             _buildActiveBadgeChip(
                                               totalTrips == '0'
@@ -1171,7 +1187,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               isDark,
                                               surfaceColor,
                                             ),
-                                            const SizedBox(width: 12),
                                             _buildActiveBadgeChip(
                                               reputationScore == 'Legendary'
                                                   ? 'MVP Payer 💸'
@@ -1507,7 +1522,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
                           // Horizontal Scrolling Achievement Badges list
                           SizedBox(
-                            height: 116,
+                            height: 136,
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               physics: const BouncingScrollPhysics(),
@@ -1624,24 +1639,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.auto_awesome,
-                                    color: primaryColor,
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'profile.memories'.tr(),
-                                    style: AppFonts.heading(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: textPrimaryColor,
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.auto_awesome,
+                                      color: primaryColor,
+                                      size: 24,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'profile.memories'.tr(),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppFonts.heading(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: textPrimaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -1658,7 +1680,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: secondaryColor,
-                                    letterSpacing: 1.0,
+                                    letterSpacing: 0.5,
                                   ),
                                 ),
                               ),

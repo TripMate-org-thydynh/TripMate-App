@@ -1001,14 +1001,21 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     bool pop = true,
   }) {
     final container = ProviderScope.containerOf(context, listen: false);
-    final tripId = container.read(activeTripIdProvider);
-    if (pop) Navigator.pop(context);
+    final activeId = container.read(activeTripIdProvider);
+    final trips = container.read(tripsProvider).maybeWhen(
+      data: (list) => list,
+      orElse: () => const [],
+    );
+    final tripId = activeId ?? (trips.isNotEmpty ? trips.first.id : null);
     if (tripId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('games.need_trip_body'.tr())));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Chưa có dữ liệu chuyến đi. Vui lòng tạo hoặc tham gia chuyến đi!'),
+        ),
+      );
       return;
     }
+    if (pop) Navigator.pop(context);
     Navigator.push(context, MaterialPageRoute(builder: (_) => builder(tripId)));
   }
 

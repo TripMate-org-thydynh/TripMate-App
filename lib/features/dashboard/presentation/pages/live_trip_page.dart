@@ -129,34 +129,34 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ShaderMask(
-                            shaderCallback: (bounds) => LinearGradient(
-                              colors: [textPrimary, textPrimary],
-                            ).createShader(bounds),
-                            child: Text(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
                               _tripName(),
-                              style: AppFonts.body(
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppFonts.heading(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
-                                color: Colors.white,
+                                color: textPrimary,
                                 letterSpacing: -1.0,
                               ),
                             ),
-                          ),
-                          Text(
-                            'live_trip.member_count'.tr(
-                              namedArgs: {'count': '${_memberCount()}'},
+                            const SizedBox(height: 4),
+                            Text(
+                              'live_trip.member_count'.tr(
+                                namedArgs: {'count': '${_memberCount()}'},
+                              ),
+                              style: AppFonts.body(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? secondaryColor : const Color(0xFF1B8A4C),
+                              ),
                             ),
-                            style: AppFonts.body(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: secondaryColor,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       // Đã gỡ nút "LIVE MAP": màn đích vẽ vị trí cứng của các
                       // thành viên bịa, mà app không thu thập vị trí thật (đã bỏ

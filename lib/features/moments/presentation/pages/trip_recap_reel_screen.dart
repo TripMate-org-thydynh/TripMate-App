@@ -487,11 +487,11 @@ class _StatSlide extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 24),
-        _Enter(order: 3, child: _BigNumber(value: slide.title, fontSize: 118)),
+        _Enter(order: 3, child: _BigNumber(value: slide.title, fontSize: 110)),
         _Enter(order: 4, child: _UnitText(slide.unit ?? '')),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         _Enter(order: 5, child: _CaptionText(slide.caption)),
-        const SizedBox(height: 34),
+        const Spacer(),
         _Enter(order: 6, child: _MetricRibbon(recap: recap)),
       ],
     );
@@ -578,11 +578,11 @@ class _MoneySlide extends StatelessWidget {
             icon: PhosphorIcons.wallet(PhosphorIconsStyle.fill),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 18),
         _Enter(order: 2, child: _DisplayTitle(slide.title, maxLines: 2)),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _Enter(order: 3, child: _Pill(label: slide.unit ?? '')),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         _Enter(order: 4, child: _CaptionText(slide.caption)),
         const Spacer(),
         _Enter(order: 5, child: _MetricRibbon(recap: recap)),
@@ -1003,8 +1003,7 @@ class _MetricRibbon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 78,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(22),
@@ -1015,9 +1014,11 @@ class _MetricRibbon extends StatelessWidget {
           Expanded(
             child: _MiniStat(value: '${recap.memberCount}', label: 'crew'),
           ),
+          const SizedBox(width: 8),
           Expanded(
             child: _MiniStat(value: '${recap.placeCount}', label: 'stops'),
           ),
+          const SizedBox(width: 8),
           Expanded(
             child: _MiniStat(value: '${recap.expenseCount}', label: 'bills'),
           ),
@@ -1041,34 +1042,36 @@ class _MiniStat extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FittedBox(
-              child: Text(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
                 value,
                 style: AppFonts.heading(
                   color: Colors.white,
-                  fontSize: 25,
-                  height: 0.95,
+                  fontSize: 22,
+                  height: 1.0,
                   fontWeight: FontWeight.w900,
                 ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label.toUpperCase(),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppFonts.body(
-                color: Colors.white.withValues(alpha: 0.72),
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.2,
+              const SizedBox(height: 3),
+              Text(
+                label.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppFonts.body(
+                  color: Colors.white.withValues(alpha: 0.72),
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.1,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

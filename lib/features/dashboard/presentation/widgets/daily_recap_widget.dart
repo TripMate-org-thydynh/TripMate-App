@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
+import '../../../moments/presentation/pages/trip_recap_reel_screen.dart';
+import '../../../trips/application/trips_providers.dart';
+import '../../../gamification/data/games_repository.dart';
 
 /// Recap hoạt động trong ngày của squad.
 ///
@@ -105,14 +108,92 @@ class DailyRecapWidget extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Text(
-            'dashboard.recap_title'.tr(),
-            style: AppFonts.heading(
-              fontWeight: FontWeight.w800,
-              fontSize: 18,
-              letterSpacing: -0.5,
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  'dashboard.recap_title'.tr(),
+                  style: AppFonts.heading(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    letterSpacing: -0.5,
+                    color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  final container = ProviderScope.containerOf(
+                    context,
+                    listen: false,
+                  );
+                  final activeId = container.read(activeTripIdProvider);
+                  final trips = container.read(tripsProvider).maybeWhen(
+                    data: (list) => list,
+                    orElse: () => const [],
+                  );
+                  final tripId =
+                      activeId ?? (trips.isNotEmpty ? trips.first.id : null);
+                  if (tripId == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Chưa có dữ liệu chuyến đi. Vui lòng tạo hoặc tham gia chuyến đi!',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TripRecapReelScreen(
+                        isDarkMode: isDark,
+                        tripId: tripId,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: GenZTokens.yellow,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: ink,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                    boxShadow: [
+                      BoxShadow(color: ink, offset: const Offset(1, 2)),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.auto_awesome,
+                        size: 14,
+                        color: GenZTokens.ink,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Wrapped Reel 🔥',
+                        style: AppFonts.body(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          color: GenZTokens.ink,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 12),

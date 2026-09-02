@@ -77,6 +77,18 @@ class MyApp extends ConsumerWidget {
       theme: TripMateTheme.buildLight(accent),
       darkTheme: TripMateTheme.buildDark(accent),
       themeMode: themeMode,
+      // Kep co chu trong khoang 1.0–1.3.
+      //
+      // Tren may that de co chu he thong lon (Samsung), giao dien vo ra: the
+      // "Chua co chuyen nao" tran 54px, nhan "Chia tien" bi cat con "Chia
+      // ti...", va nhan thanh dieu huong duoi chong len nhau. Van ton trong
+      // nguoi dung tang co chu (den 1.3x), nhung khong de mot muc phong bat ky
+      // pha vo bo cuc.
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        minScaleFactor: 1.0,
+        maxScaleFactor: 1.3,
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
   }
 }

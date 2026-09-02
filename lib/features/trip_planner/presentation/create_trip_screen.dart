@@ -322,8 +322,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
           children: [
             _buildCustomAppBar(primaryColor, isDark),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -1313,7 +1314,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
                 fontStyle: FontStyle.italic,
-                color: primaryColor,
+                color: ink,
                 letterSpacing: -1.5,
               ),
             ),

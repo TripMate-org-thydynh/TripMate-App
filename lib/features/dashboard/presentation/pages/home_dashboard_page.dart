@@ -751,7 +751,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         borderRadius: BorderRadius.circular(
           GenZTokens.radiusCard - GenZTokens.borderWidth,
         ),
-        child: SizedBox(height: 280, child: child),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 280),
+          child: child,
+        ),
       ),
     );
   }
@@ -770,113 +773,113 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
         ),
       ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Ảnh bìa có thể là asset path (người dùng chọn lúc tạo chuyến) hoặc
-          // URL — TripCoverImage chọn đúng loại. Trước đây luôn dùng
-          // CachedNetworkImage nên ảnh asset không bao giờ hiện.
-          TripCoverImage(source: t.coverImage),
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.3),
-                    Colors.black.withValues(alpha: 0.75),
-                  ],
-                  stops: const [0.3, 0.6, 1.0],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 16,
-            left: 16,
-            child: PillTag(
-              text: 'dashboard.member_count'.tr(
-                namedArgs: {'count': '${t.memberCount}'},
-              ),
-              icon: Icons.group,
-              color: GenZTokens.yellow,
-            ),
-          ),
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    PillTag(
-                      text: daysLabel,
-                      icon: Icons.schedule_rounded,
-                      color: GenZTokens.lilac,
-                    ),
-                    const SizedBox(width: 8),
-                    PillTag(
-                      text: t.inviteCode,
-                      icon: Icons.tag,
-                      color: GenZTokens.pink,
-                    ),
-                    if (TripVibe.of(t.vibe) != null) ...[
-                      const SizedBox(width: 8),
-                      PillTag(
-                        text: TripVibe.of(t.vibe)!.label,
-                        icon: TripVibe.of(t.vibe)!.icon,
-                        color: GenZTokens.green,
-                      ),
+      child: SizedBox(
+        height: 280,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            TripCoverImage(source: t.coverImage),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.3),
+                      Colors.black.withValues(alpha: 0.75),
                     ],
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  t.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppFonts.heading(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800,
-                    color: GenZTokens.paper,
-                    letterSpacing: -0.8,
-                    height: 1.05,
+                    stops: const [0.3, 0.6, 1.0],
                   ),
                 ),
-                if (t.destination != null && t.destination!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              left: 16,
+              child: PillTag(
+                text: 'dashboard.member_count'.tr(
+                  namedArgs: {'count': '${t.memberCount}'},
+                ),
+                icon: Icons.group,
+                color: GenZTokens.yellow,
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Row(
                     children: [
-                      const Icon(
-                        Icons.place,
-                        size: 15,
-                        color: GenZTokens.paper,
+                      PillTag(
+                        text: daysLabel,
+                        icon: Icons.schedule_rounded,
+                        color: GenZTokens.lilac,
                       ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          t.destination!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppFonts.body(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: GenZTokens.paper,
-                          ),
+                      const SizedBox(width: 8),
+                      PillTag(
+                        text: t.inviteCode,
+                        icon: Icons.tag,
+                        color: GenZTokens.pink,
+                      ),
+                      if (TripVibe.of(t.vibe) != null) ...[
+                        const SizedBox(width: 8),
+                        PillTag(
+                          text: TripVibe.of(t.vibe)!.label,
+                          icon: TripVibe.of(t.vibe)!.icon,
+                          color: GenZTokens.green,
                         ),
-                      ),
+                      ],
                     ],
                   ),
+                  const SizedBox(height: 10),
+                  Text(
+                    t.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppFonts.heading(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                      color: GenZTokens.paper,
+                      letterSpacing: -0.8,
+                      height: 1.05,
+                    ),
+                  ),
+                  if (t.destination != null && t.destination!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.place,
+                          size: 15,
+                          color: GenZTokens.paper,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            t.destination!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFonts.body(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: GenZTokens.paper,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -887,32 +890,33 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       onTap: () => CreateTripSheet.show(context, isDarkMode),
       child: Container(
         color: Theme.of(context).primaryColor,
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.airplane_ticket, size: 40, color: GenZTokens.ink),
-            const SizedBox(height: 12),
+            const Icon(Icons.airplane_ticket, size: 36, color: GenZTokens.ink),
+            const SizedBox(height: 8),
             Text(
               'dashboard.no_trips_title'.tr(),
               style: AppFonts.heading(
-                fontSize: 26,
+                fontSize: 24,
                 fontWeight: FontWeight.w800,
                 color: GenZTokens.ink,
                 letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
               'dashboard.no_trips_subtitle'.tr(),
               style: AppFonts.body(
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: GenZTokens.ink,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             PillTag(
               text: 'dashboard.create_trip'.tr(),
               icon: Icons.add,
