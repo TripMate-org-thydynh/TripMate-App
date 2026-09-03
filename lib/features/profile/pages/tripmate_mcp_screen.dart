@@ -22,7 +22,12 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
       widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _ink =>
       widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
-  Color get _primary => const Color(0xFFF5822B);
+
+  /// Accent lay tu theme dang chon.
+  ///
+  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*.
+  /// Day la State nen doc thang `context` duoc.
+  Color get _primary => Theme.of(context).colorScheme.primary;
   Color get _textSec =>
       widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
 

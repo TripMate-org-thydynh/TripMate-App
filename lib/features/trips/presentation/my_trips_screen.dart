@@ -26,7 +26,13 @@ class MyTripsScreen extends ConsumerWidget {
 
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
-  Color get _primary => const Color(0xFFF5822B);
+
+  /// Accent lay tu theme dang chon.
+  ///
+  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*,
+  /// nen doi theme khong an o man nay.
+  Color _primaryOf(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
   Color get _ink =>
       isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textPri => _ink;
@@ -81,7 +87,7 @@ class MyTripsScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        color: _primary,
+        color: _primaryOf(context),
         onRefresh: () => ref.read(tripsProvider.notifier).refresh(),
         child: tripsAsync.when(
           loading: () => _buildSkeleton(),
@@ -155,7 +161,9 @@ class MyTripsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 18),
               FilledButton.icon(
-                style: FilledButton.styleFrom(backgroundColor: _primary),
+                style: FilledButton.styleFrom(
+                  backgroundColor: _primaryOf(context),
+                ),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
                   ref.read(tripsProvider.notifier).refresh();
@@ -236,6 +244,7 @@ class MyTripsScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
               children: [
                 _filterChip(
+                  context,
                   ref,
                   null,
                   'trips.filter_all'.tr(),
@@ -247,6 +256,7 @@ class MyTripsScreen extends ConsumerWidget {
                     builder: (_) {
                       final v = TripVibe.of(code)!;
                       return _filterChip(
+                        context,
                         ref,
                         code,
                         v.label,
@@ -263,6 +273,7 @@ class MyTripsScreen extends ConsumerWidget {
   }
 
   Widget _filterChip(
+    BuildContext context,
     WidgetRef ref,
     String? code,
     String label,
@@ -281,7 +292,7 @@ class MyTripsScreen extends ConsumerWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected
-                ? _primary
+                ? _primaryOf(context)
                 : (isDarkMode
                       ? const Color(0xFF262019)
                       : const Color(0xFFFFFDF5)),
@@ -359,7 +370,7 @@ class MyTripsScreen extends ConsumerWidget {
                   height: 48,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
-                    color: _primary,
+                    color: _primaryOf(context),
                     border: Border.all(
                       color: const Color(0xFF141210),
                       width: 2,

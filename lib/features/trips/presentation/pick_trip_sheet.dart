@@ -14,14 +14,11 @@ import 'create_trip_sheet.dart';
 /// Dùng chung cho mọi entry-point cần tripId. Trả về [Trip] đã chọn (null nếu huỷ).
 class PickTripSheet extends ConsumerWidget {
   final bool isDarkMode;
+
   /// Bo trong thi dung tieu de mac dinh (chi doc duoc o runtime).
   final String? title;
 
-  const PickTripSheet({
-    super.key,
-    required this.isDarkMode,
-    this.title,
-  });
+  const PickTripSheet({super.key, required this.isDarkMode, this.title});
 
   static Future<Trip?> show(
     BuildContext context,

@@ -20,7 +20,13 @@ class NotificationsScreen extends ConsumerWidget {
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary => const Color(0xFFF5822B);
+
+  /// Accent lay tu theme dang chon.
+  ///
+  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*,
+  /// nen doi theme khong an o man nay.
+  Color _primaryOf(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
   Color get _ink =>
       isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textPri => _ink;
@@ -76,7 +82,7 @@ class NotificationsScreen extends ConsumerWidget {
             child: Text(
               'general.mark_all_read'.tr(),
               style: AppFonts.body(
-                color: _primary,
+                color: _primaryOf(context),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -84,7 +90,7 @@ class NotificationsScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        color: _primary,
+        color: _primaryOf(context),
         onRefresh: () async => ref.invalidate(notificationsProvider),
         child: async.when(
           loading: () => _skeleton(),
@@ -94,14 +100,14 @@ class NotificationsScreen extends ConsumerWidget {
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: list.length,
-                  itemBuilder: (context, i) => _tile(ref, list[i]),
+                  itemBuilder: (context, i) => _tile(context, ref, list[i]),
                 ),
         ),
       ),
     );
   }
 
-  Widget _tile(WidgetRef ref, AppNotification n) {
+  Widget _tile(BuildContext context, WidgetRef ref, AppNotification n) {
     return GestureDetector(
       onTap: () {
         if (!n.isRead) {
@@ -127,7 +133,7 @@ class NotificationsScreen extends ConsumerWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: _primary,
+                color: _primaryOf(context),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFF141210), width: 2),
               ),
@@ -220,7 +226,9 @@ class NotificationsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: _primary),
+              style: FilledButton.styleFrom(
+                backgroundColor: _primaryOf(context),
+              ),
               onPressed: () => ref.invalidate(notificationsProvider),
               icon: const Icon(Icons.refresh),
               label: Text('general.retry'.tr()),
@@ -323,6 +331,7 @@ class NotificationsScreen extends ConsumerWidget {
 
                   // Push Notif Switch
                   _buildSwitchTile(
+                    context: context,
                     title: 'system_phases.push_notif'.tr(),
                     value: pushEnabled,
                     onChanged: (val) {
@@ -338,6 +347,7 @@ class NotificationsScreen extends ConsumerWidget {
 
                   // SMS Notif Switch
                   _buildSwitchTile(
+                    context: context,
                     title: 'system_phases.sms_notif'.tr(),
                     value: smsEnabled,
                     onChanged: (val) {
@@ -352,6 +362,7 @@ class NotificationsScreen extends ConsumerWidget {
 
                   // Email Notif Switch
                   _buildSwitchTile(
+                    context: context,
                     title: 'system_phases.email_notif'.tr(),
                     value: emailEnabled,
                     onChanged: (val) {
@@ -374,6 +385,7 @@ class NotificationsScreen extends ConsumerWidget {
   }
 
   Widget _buildSwitchTile({
+    required BuildContext context,
     required String title,
     required bool value,
     required ValueChanged<bool> onChanged,
@@ -403,7 +415,7 @@ class NotificationsScreen extends ConsumerWidget {
             value: value,
             onChanged: onChanged,
             activeThumbColor: const Color(0xFFFFD84D),
-            activeTrackColor: _primary.withValues(alpha: 0.3),
+            activeTrackColor: _primaryOf(context).withValues(alpha: 0.3),
             inactiveThumbColor: _textSec,
             inactiveTrackColor: Colors.transparent,
           ),

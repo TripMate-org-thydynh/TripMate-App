@@ -92,9 +92,7 @@ class TripPdfExporter {
                 ),
                 _infoRow(
                   'trips.members_label'.tr(),
-                  'trips.n_people'.tr(
-                    namedArgs: {'n': '${trip.memberCount}'},
-                  ),
+                  'trips.n_people'.tr(namedArgs: {'n': '${trip.memberCount}'}),
                 ),
                 if (trip.budget != null)
                   _infoRow(

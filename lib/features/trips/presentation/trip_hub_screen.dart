@@ -36,7 +36,13 @@ class TripHubScreen extends StatelessWidget {
 
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
-  Color get _primary => const Color(0xFFF5822B);
+
+  /// Accent lay tu theme dang chon.
+  ///
+  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*,
+  /// nen doi theme khong an o man nay.
+  Color _primaryOf(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
   Color get _ink =>
       isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textPri => _ink;
@@ -115,7 +121,7 @@ class TripHubScreen extends StatelessWidget {
                   children: [
                     TripCoverImage(
                       source: trip.coverImage,
-                      fallbackColor: _primary,
+                      fallbackColor: _primaryOf(context),
                     ),
                     if (trip.coverImage == null || trip.coverImage!.isEmpty)
                       Align(
@@ -154,11 +160,20 @@ class TripHubScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      _stat('${trip.durationDays}', 'common.day_unit'.tr()),
-                      const SizedBox(width: 12),
-                      _stat('${trip.memberCount}', 'trips.members_unit'.tr()),
+                      _stat(
+                        context,
+                        '${trip.durationDays}',
+                        'common.day_unit'.tr(),
+                      ),
                       const SizedBox(width: 12),
                       _stat(
+                        context,
+                        '${trip.memberCount}',
+                        'trips.members_unit'.tr(),
+                      ),
+                      const SizedBox(width: 12),
+                      _stat(
+                        context,
                         trip.inviteCode,
                         'trips.invite_code_lower'.tr(),
                         mono: true,
@@ -443,7 +458,9 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.shareNetwork(PhosphorIconsStyle.fill),
                         'trips.hub_invite_squad'.tr(),
-                        'trips.code_label'.tr(namedArgs: {'code': trip.inviteCode}),
+                        'trips.code_label'.tr(
+                          namedArgs: {'code': trip.inviteCode},
+                        ),
                         const Color(0xFFFFD84D),
                         null,
                       ),
@@ -462,7 +479,12 @@ class TripHubScreen extends StatelessWidget {
     );
   }
 
-  Widget _stat(String value, String label, {bool mono = false}) {
+  Widget _stat(
+    BuildContext context,
+    String value,
+    String label, {
+    bool mono = false,
+  }) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -482,7 +504,7 @@ class TripHubScreen extends StatelessWidget {
                   ? AppFonts.mono(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: _primary,
+                      color: _primaryOf(context),
                     )
                   : AppFonts.heading(
                       fontSize: 20,
@@ -513,9 +535,7 @@ class TripHubScreen extends StatelessWidget {
             'trips.share_body'.tr(
               namedArgs: {'name': trip.name, 'code': trip.inviteCode},
             ),
-            subject: 'invites.share_subject'.tr(
-              namedArgs: {'trip': trip.name},
-            ),
+            subject: 'invites.share_subject'.tr(namedArgs: {'trip': trip.name}),
           );
           return;
         }

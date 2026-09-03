@@ -83,7 +83,12 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary => const Color(0xFFF5822B);
+
+  /// Accent lay tu theme dang chon.
+  ///
+  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*.
+  /// Day la State nen doc thang `context` duoc.
+  Color get _primary => Theme.of(context).colorScheme.primary;
   Color get _ink => _dark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
   Color get _textPri => _ink;
   Color get _textSec =>
@@ -149,9 +154,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
           'trips.share_body'.tr(
             namedArgs: {'name': trip.name, 'code': trip.inviteCode},
           ),
-          subject: 'invites.share_subject'.tr(
-            namedArgs: {'trip': trip.name},
-          ),
+          subject: 'invites.share_subject'.tr(namedArgs: {'trip': trip.name}),
         );
       } else {
         if (_code.text.trim().isEmpty) {
@@ -317,7 +320,11 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         const SizedBox(height: 14),
 
         _label('trips.destination'.tr()),
-        _field(_destination, 'trips.destination_hint'.tr(), PhosphorIcons.mapPin()),
+        _field(
+          _destination,
+          'trips.destination_hint'.tr(),
+          PhosphorIcons.mapPin(),
+        ),
         const SizedBox(height: 14),
 
         _label('trips.dates_label'.tr()),

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+
 /// Model Trip — khớp response BE (`trips` module).
 class Trip {
   final String id;
