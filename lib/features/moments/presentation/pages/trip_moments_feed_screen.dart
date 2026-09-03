@@ -23,8 +23,14 @@ class TripMomentsFeedScreen extends ConsumerWidget {
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary =>
-      isDarkMode ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+  /// Accent lấy từ theme đang chọn.
+  ///
+  /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
+  /// nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
+  /// Nguoi dung o mint (vang) van thay man nay mau cam, va doi theme khong
+  /// an. Doc tu `colorScheme` de mau di theo lua chon that.
+  Color _primaryOf(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
   Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
   Color get _textSec =>
       isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
@@ -52,13 +58,13 @@ class TripMomentsFeedScreen extends ConsumerWidget {
         ),
       ),
       body: RefreshIndicator(
-        color: _primary,
+        color: _primaryOf(context),
         onRefresh: () async => ref.invalidate(momentsProvider(tripId)),
         child: async.when(
           loading: () => _skeleton(),
           error: (e, _) => _error(context, ref, e),
           data: (moments) => moments.isEmpty
-              ? _empty()
+              ? _empty(context)
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: moments.length,
@@ -107,7 +113,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: _primary),
+              style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
               onPressed: () => ref.invalidate(momentsProvider(tripId)),
               icon: const Icon(Icons.refresh),
               label: Text('general.retry'.tr()),
@@ -118,7 +124,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
     ],
   );
 
-  Widget _empty() => ListView(
+  Widget _empty(BuildContext context) => ListView(
     children: [
       const SizedBox(height: 130),
       Center(
@@ -129,11 +135,11 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _primary.withValues(alpha: 0.12),
+                color: _primaryOf(context).withValues(alpha: 0.12),
               ),
               child: Icon(
                 PhosphorIcons.camera(PhosphorIconsStyle.fill),
-                color: _primary,
+                color: _primaryOf(context),
                 size: 38,
               ),
             ),
@@ -180,7 +186,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundColor: _primary.withValues(alpha: 0.15),
+                  backgroundColor: _primaryOf(context).withValues(alpha: 0.15),
                   backgroundImage: m.authorAvatar != null
                       ? NetworkImage(m.authorAvatar!)
                       : null,
@@ -188,7 +194,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                       ? Text(
                           m.authorName.characters.first,
                           style: AppFonts.heading(
-                            color: _primary,
+                            color: _primaryOf(context),
                             fontWeight: FontWeight.w800,
                           ),
                         )
@@ -217,10 +223,10 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               imageUrl: m.mediaUrl,
               fit: BoxFit.cover,
               placeholder: (c, url) =>
-                  Container(color: _primary.withValues(alpha: 0.08)),
+                  Container(color: _primaryOf(context).withValues(alpha: 0.08)),
               errorWidget: (c, url, err) => Container(
-                color: _primary.withValues(alpha: 0.08),
-                child: Icon(PhosphorIcons.image(), color: _primary, size: 40),
+                color: _primaryOf(context).withValues(alpha: 0.08),
+                child: Icon(PhosphorIcons.image(), color: _primaryOf(context), size: 40),
               ),
             ),
           ),
@@ -235,7 +241,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                     children: [
                       Icon(
                         PhosphorIcons.heart(PhosphorIconsStyle.fill),
-                        color: _primary,
+                        color: _primaryOf(context),
                         size: 20,
                       ),
                       const SizedBox(width: 5),

@@ -58,9 +58,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
     final primaryColor = isDark
         ? const Color(0xFFC9B8FF)
         : const Color(0xFFF5822B);
-    final secondaryColor = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFF1FA85C);
+    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
+    // va viet cung accent cua preset *grape*, nen doi theme khong an.
+    final secondaryColor = Theme.of(context).colorScheme.primary;
     final tertiaryColor = isDark
         ? const Color(0xFFFFB783)
         : const Color(0xFFF5822B);

@@ -27,8 +27,14 @@ class TripItineraryScreen extends ConsumerWidget {
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
       isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary =>
-      isDarkMode ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+  /// Accent lấy từ theme đang chọn.
+  ///
+  /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
+  /// nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
+  /// Nguoi dung o mint (vang) van thay man nay mau cam, va doi theme khong
+  /// an. Doc tu `colorScheme` de mau di theo lua chon that.
+  Color _primaryOf(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
   Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
   Color get _textSec =>
       isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
@@ -156,7 +162,7 @@ class TripItineraryScreen extends ConsumerWidget {
               ),
             ),
             FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: _primary),
+              style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
               onPressed: () => Navigator.pop(ctx, true),
               child: Text('packing.add'.tr()),
             ),
@@ -188,7 +194,7 @@ class TripItineraryScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: _primary,
+        backgroundColor: _primaryOf(context),
         foregroundColor: Colors.white,
         onPressed: () => _addItem(context, ref),
         icon: const Icon(Icons.add),
@@ -214,14 +220,14 @@ class TripItineraryScreen extends ConsumerWidget {
           const OfflineBanner(),
           Expanded(
             child: RefreshIndicator(
-              color: _primary,
+              color: _primaryOf(context),
               onRefresh: () async =>
                   ref.invalidate(tripItineraryProvider(tripId)),
               child: async.when(
                 loading: () => _skeleton(),
                 error: (e, _) => _error(context, ref, e),
                 data: (grouped) {
-                  if (grouped.isEmpty) return _empty();
+                  if (grouped.isEmpty) return _empty(context);
                   final days = grouped.keys.toList()..sort();
                   return ListView(
                     // Chừa chỗ cho FAB "Thêm điểm" (BUG-006).
@@ -232,7 +238,7 @@ class TripItineraryScreen extends ConsumerWidget {
                       for (final day in days) ...[
                         _dayHeader(context, day, grouped[day]!),
                         const SizedBox(height: 12),
-                        ...grouped[day]!.map(_itemCard),
+                        ...grouped[day]!.map((it) => _itemCard(context, it)),
                         const SizedBox(height: 20),
                       ],
                     ],
@@ -255,7 +261,7 @@ class TripItineraryScreen extends ConsumerWidget {
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: _primary,
+          color: _primaryOf(context),
           borderRadius: BorderRadius.circular(99),
         ),
         child: Text(
@@ -284,7 +290,7 @@ class TripItineraryScreen extends ConsumerWidget {
               Icon(
                 PhosphorIcons.navigationArrow(PhosphorIconsStyle.fill),
                 size: 13,
-                color: _primary,
+                color: _primaryOf(context),
               ),
               const SizedBox(width: 6),
               Text(
@@ -398,7 +404,7 @@ class TripItineraryScreen extends ConsumerWidget {
     return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
   }
 
-  Widget _itemCard(ItineraryItem it) {
+  Widget _itemCard(BuildContext context, ItineraryItem it) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -422,7 +428,7 @@ class TripItineraryScreen extends ConsumerWidget {
                 style: AppFonts.mono(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: _primary,
+                  color: _primaryOf(context),
                 ),
               ),
             ],
@@ -431,7 +437,7 @@ class TripItineraryScreen extends ConsumerWidget {
           Container(
             width: 2,
             height: 40,
-            color: _primary.withValues(alpha: 0.2),
+            color: _primaryOf(context).withValues(alpha: 0.2),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -518,7 +524,7 @@ class TripItineraryScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: _primary),
+              style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
               onPressed: () => ref.invalidate(tripItineraryProvider(tripId)),
               icon: const Icon(Icons.refresh),
               label: Text('general.retry'.tr()),
@@ -529,7 +535,7 @@ class TripItineraryScreen extends ConsumerWidget {
     ],
   );
 
-  Widget _empty() => ListView(
+  Widget _empty(BuildContext context) => ListView(
     children: [
       const SizedBox(height: 130),
       Center(
@@ -540,11 +546,11 @@ class TripItineraryScreen extends ConsumerWidget {
               height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _primary.withValues(alpha: 0.12),
+                color: _primaryOf(context).withValues(alpha: 0.12),
               ),
               child: Icon(
                 PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
-                color: _primary,
+                color: _primaryOf(context),
                 size: 38,
               ),
             ),

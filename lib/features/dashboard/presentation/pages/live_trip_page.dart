@@ -89,9 +89,9 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primaryColor = isDark
-        ? const Color(0xFFF5822B)
-        : const Color(0xFFF5822B);
+    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
+    // va viet cung accent cua preset *grape*, nen doi theme khong an.
+    final primaryColor = Theme.of(context).colorScheme.primary;
     final secondaryColor = isDark
         ? const Color(0xFF1FA85C)
         : const Color(0xFFFFD84D);

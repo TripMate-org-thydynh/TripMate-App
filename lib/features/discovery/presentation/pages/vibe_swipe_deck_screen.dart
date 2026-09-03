@@ -149,8 +149,12 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   Offset _drag = Offset.zero;
   final List<_Place> _liked = [];
 
-  Color get _primary =>
-      widget.isDarkMode ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+  /// Accent lay tu theme dang chon.
+  ///
+  /// Truoc day la `widget.isDarkMode ? Color(0xFFF5822B) : Color(0xFFF5822B)` —
+  /// hai nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
+  /// Day la State nen doc thang `context` duoc.
+  Color get _primary => Theme.of(context).colorScheme.primary;
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _textPri =>

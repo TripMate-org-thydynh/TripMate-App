@@ -59,7 +59,9 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
 
     // TripMate color tokens
     final bgGradStart = Theme.of(context).scaffoldBackgroundColor;
-    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
+    // va viet cung accent cua preset *grape*, nen doi theme khong an.
+    final primary = Theme.of(context).colorScheme.primary;
     final textPrimary = isDark
         ? const Color(0xFFFDF6D3)
         : const Color(0xFF141210);
@@ -671,9 +673,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                                   .expectedTotalBytes!
                                         : null,
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      isDark
-                                          ? const Color(0xFFF5822B)
-                                          : const Color(0xFFF5822B),
+                                      Theme.of(context).colorScheme.primary,
                                     ),
                                   ),
                                 ),

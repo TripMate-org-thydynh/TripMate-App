@@ -301,9 +301,9 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     final Color bgColor = isDark
         ? const Color(0xFF1A1712)
         : const Color(0xFFFDF6D3);
-    final Color primaryColor = isDark
-        ? const Color(0xFFF5822B)
-        : const Color(0xFFF5822B);
+    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau va
+    // viet cung accent cua preset *grape*, nen doi theme khong an.
+    final Color primaryColor = Theme.of(context).colorScheme.primary;
     final Color surfaceColor = isDark
         ? const Color(0xFF262019)
         : const Color(0xFFFFFDF5);
@@ -421,9 +421,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                             boxShadow: [
                               BoxShadow(
                                 color:
-                                    (isDark
-                                            ? const Color(0xFFF5822B)
-                                            : const Color(0xFFF5822B))
+                                    (Theme.of(context).colorScheme.primary)
                                         .withValues(alpha: 0.15),
                                 blurRadius: 0,
                               ),
@@ -461,17 +459,13 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                                   ? const Color(0xFF262019)
                                   : Colors.white,
                               border: Border.all(
-                                color: isDark
-                                    ? const Color(0xFFF5822B)
-                                    : const Color(0xFFF5822B),
+                                color: Theme.of(context).colorScheme.primary,
                                 width: 3,
                               ),
                               boxShadow: [
                                 BoxShadow(
                                   color:
-                                      (isDark
-                                              ? const Color(0xFFF5822B)
-                                              : const Color(0xFFF5822B))
+                                      (Theme.of(context).colorScheme.primary)
                                           .withValues(alpha: 0.4),
                                   blurRadius: 0,
                                 ),
@@ -480,9 +474,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                             child: Center(
                               child: Icon(
                                 Icons.casino,
-                                color: isDark
-                                    ? const Color(0xFFF5822B)
-                                    : const Color(0xFFF5822B),
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 28,
                               ),
                             ),
@@ -496,9 +488,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                             alignment: Alignment.topCenter,
                             child: Icon(
                               Icons.arrow_drop_down_sharp,
-                              color: isDark
-                                  ? const Color(0xFFF5822B)
-                                  : const Color(0xFFF5822B),
+                              color: Theme.of(context).colorScheme.primary,
                               size: 42,
                             ),
                           ),

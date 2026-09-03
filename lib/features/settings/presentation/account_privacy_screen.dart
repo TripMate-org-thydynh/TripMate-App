@@ -29,8 +29,12 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
       widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
   Color get _ink =>
       widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
-  Color get _primary =>
-      widget.isDarkMode ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+  /// Accent lay tu theme dang chon.
+  ///
+  /// Truoc day la `widget.isDarkMode ? Color(0xFFF5822B) : Color(0xFFF5822B)` —
+  /// hai nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
+  /// Day la State nen doc thang `context` duoc.
+  Color get _primary => Theme.of(context).colorScheme.primary;
   Color get _textPri => _ink;
   Color get _textSec =>
       widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);

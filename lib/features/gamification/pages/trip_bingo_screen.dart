@@ -286,7 +286,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     // Design System colors
     final bgStart = Theme.of(context).scaffoldBackgroundColor;
     final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final primary = isDark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
+    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
+    // va viet cung accent cua preset *grape*, nen doi theme khong an.
+    final primary = Theme.of(context).colorScheme.primary;
     final secondary = isDark
         ? const Color(0xFF1FA85C)
         : const Color(0xFFFFD84D);
