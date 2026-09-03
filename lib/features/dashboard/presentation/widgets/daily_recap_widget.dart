@@ -138,9 +138,9 @@ class DailyRecapWidget extends ConsumerWidget {
                       activeId ?? (trips.isNotEmpty ? trips.first.id : null);
                   if (tripId == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
-                          'Chưa có dữ liệu chuyến đi. Vui lòng tạo hoặc tham gia chuyến đi!',
+                          'trips.none_yet_cta2'.tr(),
                         ),
                       ),
                     );

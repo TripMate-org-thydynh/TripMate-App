@@ -1,3 +1,4 @@
+import '../../../core/format/money.dart';
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -57,10 +58,10 @@ class _CreatorRevenueDashboardScreenState
           _recentSales = salesList
               .map(
                 (item) => {
-                  'item': item['item'] ?? 'Sản phẩm sáng tạo',
-                  'buyer': item['buyer'] ?? 'Bạn bè',
+                  'item': item['item'] ?? 'premium.creative_product'.tr(),
+                  'buyer': item['buyer'] ?? 'common.friends'.tr(),
                   'price': (item['price'] as int?) ?? 0,
-                  'date': item['date'] ?? 'Vừa qua',
+                  'date': item['date'] ?? 'premium.recent'.tr(),
                 },
               )
               .toList();
@@ -178,7 +179,7 @@ class _CreatorRevenueDashboardScreenState
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${_payoutPending.toString()}đ',
+                              formatMoney(_payoutPending, locale: context.locale.languageCode),
                               style: AppFonts.heading(
                                 color: Colors.white,
                                 fontSize: 32,
@@ -221,11 +222,11 @@ class _CreatorRevenueDashboardScreenState
                           children: [
                             _buildMiniStat(
                               'Doanh Thu Shop',
-                              '${_totalSales.toString()}đ',
+                              formatMoney(_totalSales, locale: context.locale.languageCode),
                             ),
                             _buildMiniStat(
-                              'Phần Chia Sáng Tạo (70%)',
-                              '${_creatorShare.toString()}đ',
+                              'premium.creator_share'.tr(),
+                              formatMoney(_creatorShare, locale: context.locale.languageCode),
                             ),
                           ],
                         ),
@@ -300,14 +301,19 @@ class _CreatorRevenueDashboardScreenState
                                 ),
                               ),
                               subtitle: Text(
-                                'Mua bởi: ${sale['buyer']}  •  ${sale['date']}',
+                                'premium.bought_by_on'.tr(
+                                  namedArgs: {
+                                    'buyer': '${sale['buyer']}',
+                                    'date': '${sale['date']}',
+                                  },
+                                ),
                                 style: AppFonts.heading(
                                   fontSize: 11,
                                   color: Colors.grey,
                                 ),
                               ),
                               trailing: Text(
-                                '+${sale['price']}đ',
+                                '+${formatMoney((sale['price'] as num?) ?? 0, locale: context.locale.languageCode)}',
                                 style: AppFonts.heading(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,

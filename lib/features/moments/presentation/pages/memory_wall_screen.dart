@@ -367,7 +367,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    "Hub Hub 🔮",
+                                    'moments.hub_menu'.tr(),
                                     style: AppFonts.body(
                                       color: primary,
                                       fontSize: 10,
@@ -577,7 +577,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
           children: [
             Container(
               width: 172,
-              padding: const EdgeInsets.all(8).copyWith(bottom: 24),
+              // Chừa chỗ cho FAB "Squad Cam" và nút Hub (BUG-006).
+              padding: const EdgeInsets.all(8).copyWith(bottom: 110),
               decoration: BoxDecoration(
                 color: frameColor,
                 borderRadius: BorderRadius.circular(6),
@@ -1009,8 +1010,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     final tripId = activeId ?? (trips.isNotEmpty ? trips.first.id : null);
     if (tripId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Chưa có dữ liệu chuyến đi. Vui lòng tạo hoặc tham gia chuyến đi!'),
+        SnackBar(
+          content: Text('trips.none_yet_cta'.tr()),
         ),
       );
       return;

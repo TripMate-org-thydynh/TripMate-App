@@ -524,7 +524,7 @@ class _MateyAiEmotionalChaosScreenState
           IconButton(
             icon: Icon(Icons.add, color: textPrimary),
             onPressed: () =>
-                showGlobalSnack('Tính năng đang được hoàn thiện 🚧'),
+                showGlobalSnack('common.feature_wip'.tr()),
           ),
           Expanded(
             child: TextField(

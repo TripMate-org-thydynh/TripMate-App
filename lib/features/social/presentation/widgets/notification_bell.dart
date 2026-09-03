@@ -23,7 +23,7 @@ class NotificationBell extends ConsumerWidget {
     return Semantics(
       button: true,
       label: unread > 0
-          ? 'Thông báo, $unread chưa đọc'
+          ? 'notifications.unread_label'.tr(namedArgs: {'n': '$unread'})
           : 'notifications.title'.tr(),
       child: Stack(
         clipBehavior: Clip.none,

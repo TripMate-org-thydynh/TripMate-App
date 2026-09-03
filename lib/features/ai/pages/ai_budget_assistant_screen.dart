@@ -1,3 +1,4 @@
+import '../../../core/format/money.dart';
 import 'dart:math' as math;
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -298,16 +299,14 @@ class _AiBudgetAssistantScreenState
     return k == null ? key : k.tr();
   }
 
-  /// 6020000 -> "6.020.000" (VND) hoặc "6,020.00" cho ngoại tệ.
+  /// 6020000 -> "6.020.000 đ" (VND) hoặc "6,020.00" cho ngoại tệ.
+  ///
+  /// Trước đây hàm này tự chèn dấu chấm bằng vòng lặp `StringBuffer`. Nay dùng
+  /// `formatMoney` chung để mọi nơi hiển thị tiền theo cùng một quy tắc và
+  /// đúng locale đang chọn.
   String _money(double v) {
     if (_currency != 'VND') return v.toStringAsFixed(2);
-    final n = v.round().toString();
-    final b = StringBuffer();
-    for (var i = 0; i < n.length; i++) {
-      if (i > 0 && (n.length - i) % 3 == 0) b.write('.');
-      b.write(n[i]);
-    }
-    return '${b.toString()}đ';
+    return formatMoney(v, locale: context.locale.languageCode);
   }
 
   Widget _buildTopBar(

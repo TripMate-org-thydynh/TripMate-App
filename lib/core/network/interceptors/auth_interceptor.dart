@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
@@ -28,7 +29,7 @@ class AuthInterceptor extends Interceptor {
       final wasAuthed = _ref.read(authProvider).isAuthenticated;
       if (wasAuthed) {
         showGlobalSnack(
-          'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.',
+          'errors.session_expired_long'.tr(),
           isError: true,
         );
       }

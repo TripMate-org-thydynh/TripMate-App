@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../format/money.dart';
+
 /// Mở các ứng dụng thanh toán Việt Nam (Momo / ZaloPay) bằng deep-link thật.
 ///
 /// Lưu ý: việc tự động điền sẵn SỐ TIỀN vào màn chuyển khoản của Momo/ZaloPay
@@ -21,9 +23,12 @@ class PaymentLauncher {
     required String recipientName,
     required String recipientPhone,
     required double amount,
-    String note = 'TripMate chia tiền',
+    // Khong dat mac dinh `.tr()`: tham so mac dinh phai la hang so, ma ban
+    // dich chi co o runtime.
+    String? note,
     bool? isDarkMode,
   }) {
+    final transferNote = note ?? 'payment.transfer_note'.tr();
     final isDark =
         isDarkMode ?? Theme.of(context).brightness == Brightness.dark;
     return showModalBottomSheet(
@@ -34,7 +39,7 @@ class PaymentLauncher {
         recipientName: recipientName,
         recipientPhone: recipientPhone,
         amount: amount,
-        note: note,
+        note: transferNote,
         isDark: isDark,
       ),
     );
@@ -124,8 +129,8 @@ class _PaymentSheet extends StatelessWidget {
         backgroundColor: ok ? _primary : Colors.blueGrey,
         content: Text(
           ok
-              ? 'Đã mở app — thông tin chuyển khoản đã được copy sẵn'
-              : 'Chưa tìm thấy app — đã copy thông tin để bạn chuyển tay',
+              ? 'payment.opened_copied'.tr()
+              : 'payment.not_found_copied'.tr(),
         ),
       ),
     );
@@ -185,7 +190,7 @@ class _PaymentSheet extends StatelessWidget {
               ),
               const SizedBox(height: 14),
               Text(
-                '${amount.toStringAsFixed(0)} đ',
+                formatMoney(amount, locale: context.locale.languageCode),
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 34,
                   fontWeight: FontWeight.w900,
@@ -222,8 +227,8 @@ class _PaymentSheet extends StatelessWidget {
               const SizedBox(height: 10),
               _PayOption(
                 icon: PhosphorIcons.copy(),
-                label: 'Sao chép thông tin',
-                sublabel: 'SĐT • số tiền • ghi chú',
+                label: 'payment.copy_info'.tr(),
+                sublabel: 'payment.copy_info_sub'.tr(),
                 bg: _textSec,
                 surface: _surface,
                 textPri: _textPri,

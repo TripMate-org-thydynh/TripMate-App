@@ -172,7 +172,7 @@ class AiHubScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Hệ thống AI phân tích tính cách, đo lường sự hỗn loạn và hỗ trợ tính toán ngân sách du lịch đang hoạt động hết công suất. Hãy chạm để khám phá!',
+                          'ai.hub_intro'.tr(),
                           style: AppFonts.body(
                             color: isDark
                                 ? GenZTokens.inkSoftDark
@@ -188,13 +188,13 @@ class AiHubScreen extends StatelessWidget {
                 ),
 
                 // SECTION 1: TRẢI NGHIỆM TƯƠNG TÁC
-                _buildSectionHeader('Tương Tác Companion', isDark),
+                _buildSectionHeader('ai.section_companion'.tr(), isDark),
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
                   title: 'Matey AI — Emotional Chaos',
                   subtitle:
-                      'Trò chuyện cực kỳ hỗn loạn và đầy tính giải trí với Matey AI',
+                      'ai.chat_sub'.tr(),
                   icon: Icons.chat_bubble_outline,
                   color: primaryColor,
                   isDark: isDark,
@@ -210,7 +210,7 @@ class AiHubScreen extends StatelessWidget {
                   context: context,
                   title: 'AI Vibe Matcher — Squad Energy',
                   subtitle:
-                      'Đo lường mức độ hợp cạ và rung động tâm hồn của cả hội bạn',
+                      'ai.vibe_match_sub'.tr(),
                   icon: Icons.favorite_border,
                   color: GenZTokens.magenta,
                   isDark: isDark,
@@ -229,7 +229,7 @@ class AiHubScreen extends StatelessWidget {
                   context: context,
                   title: 'AI Itinerary Planner — Matey Plans',
                   subtitle:
-                      'Tạo và tối ưu hóa lịch trình Kyoto / Dalat siêu tốc bằng AI',
+                      'ai.planner_sub'.tr(),
                   icon: Icons.auto_awesome_motion,
                   color: secondaryColor,
                   isDark: isDark,
@@ -248,13 +248,13 @@ class AiHubScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // SECTION 2: HỖ TRỢ CHUYẾN ĐI
-                _buildSectionHeader('Hỗ Trợ & Phân Tích Squad', isDark),
+                _buildSectionHeader('ai.section_analysis'.tr(), isDark),
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
                   title: 'AI Budget Assistant',
                   subtitle:
-                      'Trợ lý tối ưu hóa ngân sách và roast chi tiêu cực phũ',
+                      'ai.budget_sub'.tr(),
                   icon: Icons.monetization_on_outlined,
                   color: GenZTokens.green,
                   isDark: isDark,
@@ -270,7 +270,7 @@ class AiHubScreen extends StatelessWidget {
                   context: context,
                   title: 'AI Personality Analysis',
                   subtitle:
-                      'Roast và xếp hạng tính cách lười biếng / ham chơi của từng đứa',
+                      'ai.personality_sub'.tr(),
                   icon: Icons.psychology_outlined,
                   color: GenZTokens.orange,
                   isDark: isDark,
@@ -286,7 +286,7 @@ class AiHubScreen extends StatelessWidget {
                   context: context,
                   title: 'AI Mood Detection',
                   subtitle:
-                      'Đo lường chỉ số căng thẳng và drama trong squad thời gian thực',
+                      'ai.drama_sub'.tr(),
                   icon: Icons.mood_bad_outlined,
                   color: GenZTokens.red,
                   isDark: isDark,
@@ -301,7 +301,7 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'AI Recommendation Timeline',
-                  subtitle: 'Lộ trình gợi ý hoạt động độc lạ theo múi giờ',
+                  subtitle: 'ai.hub_route_sub'.tr(),
                   icon: Icons.timeline_outlined,
                   color: GenZTokens.blue,
                   isDark: isDark,
@@ -321,7 +321,7 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'Trip Wrapped',
-                  subtitle: 'Tổng kết chuyến theo số liệu thật của squad',
+                  subtitle: 'ai.hub_recap_sub'.tr(),
                   icon: Icons.auto_awesome,
                   color: secondaryColor,
                   isDark: isDark,
@@ -352,13 +352,13 @@ class AiHubScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // SECTION 3: QUẢN LÝ TÁC VỤ
-                _buildSectionHeader('Không Gian Làm Việc AI', isDark),
+                _buildSectionHeader('ai.section_workspace'.tr(), isDark),
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
                   title: 'AI Generation Queue',
                   subtitle:
-                      'Hàng đợi render video recap & bóc tách hóa đơn nền',
+                      'ai.workspace_sub'.tr(),
                   icon: Icons.queue_play_next,
                   color: GenZTokens.magenta,
                   isDark: isDark,
@@ -373,7 +373,7 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'AI Saved Prompts',
-                  subtitle: 'Danh sách các câu lệnh mẫu siêu tốc cực kỳ xịn sò',
+                  subtitle: 'ai.hub_prompts_sub'.tr(),
                   icon: Icons.bookmark_outline,
                   color: GenZTokens.green,
                   isDark: isDark,
@@ -388,7 +388,7 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'AI Chat History',
-                  subtitle: 'Lịch sử tra cứu các thông tin cũ từ Matey AI',
+                  subtitle: 'ai.hub_history_sub'.tr(),
                   icon: Icons.history_edu,
                   color: primaryColor,
                   isDark: isDark,

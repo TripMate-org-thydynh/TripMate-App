@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../profile/data/bucket_list_repository.dart';
+import '../../../trip_planner/application/wishlist_providers.dart';
+import '../../../trips/application/trips_providers.dart';
 import '../../../../core/network/api_exception.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,48 +27,17 @@ class VibeSwipeDeckScreen extends ConsumerStatefulWidget {
 }
 
 class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
-  final List<_Place> _places = [
-    _Place(
-      'Hidden Terraces',
-      'Pù Luông',
-      'Trekking · Nature',
-      98,
-      const [Color(0xFF1FA85C), Color(0xFF0F766E)],
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
-    ),
-    _Place(
-      'Night Market Chaos',
-      'Shilin, Taipei',
-      'Foodie · Nightlife',
-      92,
-      const [Color(0xFFF5822B), Color(0xFFB23A1E)],
-      'https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=800',
-    ),
-    _Place(
-      'Misty Pine Forest',
-      'Măng Đen',
-      'Chill · Aesthetic',
-      89,
-      const [Color(0xFF8B4DE8), Color(0xFFF5822B)],
-      'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800',
-    ),
-    _Place(
-      'Secret Beach',
-      'Phú Quốc',
-      'Beach · Sunset',
-      85,
-      const [Color(0xFFFFD84D), Color(0xFFEA580C)],
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
-    ),
-    _Place(
-      'Rooftop Bar',
-      'Sài Gòn',
-      'Party · City View',
-      81,
-      const [Color(0xFFD6248C), Color(0xFF8B4DE8)],
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800',
-    ),
-  ];
+  // Deck dựng từ **wishlist thật** của chuyến gần nhất.
+  //
+  // Trước đây đây là 5 thẻ hardcode ngay trong widget (Hidden Terraces, Night
+  // Market Chaos, ...) kèm % khớp bịa sẵn 98/92/89/85/81 — màn hình trông như
+  // đã chạy nhưng không đọc dữ liệu nào (BUG-011). Thậm chí thẻ "Pù Luông ·
+  // Trekking" lại dùng đúng ảnh bãi biển của thẻ "Phú Quốc".
+  List<_Place> _places = [];
+  bool _loading = true;
+  String? _loadError;
+  String? _tripId;
+
 
   bool _saving = false;
   bool _saved = false;
@@ -110,6 +81,70 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDeck());
+  }
+
+  /// Nạp wishlist của chuyến gần nhất và đổi thành các thẻ vuốt.
+  ///
+  /// `% khớp` là tỉ lệ thành viên đã vote cho địa điểm đó — số thật, tính từ
+  /// `voteCount / memberCount`, chứ không phải hằng số viết sẵn.
+  Future<void> _loadDeck() async {
+    try {
+      final trips = await ref.read(tripsProvider.future);
+      if (trips.isEmpty) {
+        if (mounted) setState(() => _loading = false);
+        return;
+      }
+      final trip = trips.first;
+      final items = await ref.read(wishlistProvider(trip.id).future);
+      final memberCount = trip.memberCount <= 0 ? 1 : trip.memberCount;
+      if (!mounted) return;
+      setState(() {
+        _tripId = trip.id;
+        _places = items
+            .map(
+              (i) => _Place(
+                i.name,
+                i.address ?? trip.destination ?? trip.name,
+                i.type == 'FOOD'
+                    ? 'vibe_deck.type_food'.tr()
+                    : 'vibe_deck.type_place'.tr(),
+                ((i.voteCount / memberCount) * 100).clamp(0, 100).round(),
+                _gradientFor(i.id),
+                '',
+                id: i.id,
+              ),
+            )
+            .toList();
+        _loading = false;
+      });
+    } on ApiException catch (e) {
+      if (mounted) setState(() { _loadError = e.message; _loading = false; });
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loadError = 'vibe_deck.load_failed'.tr();
+          _loading = false;
+        });
+      }
+    }
+  }
+
+  /// Màu thẻ suy từ id để mỗi địa điểm có một màu ổn định giữa các lần mở.
+  static List<Color> _gradientFor(String id) {
+    const palettes = [
+      [Color(0xFF1FA85C), Color(0xFF0F766E)],
+      [Color(0xFFF5822B), Color(0xFFB23A1E)],
+      [Color(0xFF8B4DE8), Color(0xFFF5822B)],
+      [Color(0xFFFFD84D), Color(0xFFEA580C)],
+      [Color(0xFFD6248C), Color(0xFF8B4DE8)],
+    ];
+    return palettes[id.hashCode.abs() % palettes.length];
+  }
+
   int _index = 0;
   Offset _drag = Offset.zero;
   final List<_Place> _liked = [];
@@ -125,7 +160,17 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
 
   void _swipe(bool liked) {
     HapticFeedback.mediumImpact();
-    if (liked) _liked.add(_places[_index]);
+    final place = _places[_index];
+    if (liked) {
+      _liked.add(place);
+      // Vuốt phải là một lá phiếu thật cho wishlist của chuyến, không chỉ là
+      // hiệu ứng trên máy.
+      final tripId = _tripId;
+      final itemId = place.id;
+      if (tripId != null && itemId != null) {
+        ref.read(wishlistProvider(tripId).notifier).toggleVote(itemId);
+      }
+    }
     setState(() {
       _index++;
       _drag = Offset.zero;
@@ -134,6 +179,19 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loading || _loadError != null || _places.isEmpty) {
+      return Scaffold(
+        backgroundColor: _bgOf(context),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(child: Center(child: _buildDeckPlaceholder())),
+            ],
+          ),
+        ),
+      );
+    }
     final done = _index >= _places.length;
     return Scaffold(
       backgroundColor: _bgOf(context),
@@ -173,7 +231,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 Text(
                   _index < _places.length
                       ? '${_index + 1} / ${_places.length}'
-                      : 'Xong rồi!',
+                      : 'common.done_excl'.tr(),
                   style: AppFonts.body(fontSize: 12, color: _textSec),
                 ),
               ],
@@ -233,7 +291,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 left: 28,
                 child: Opacity(
                   opacity: likeOpacity,
-                  child: _stamp('THÍCH', const Color(0xFF1FA85C), -0.3),
+                  child: _stamp('vibe_deck.like'.tr(), const Color(0xFF1FA85C), -0.3),
                 ),
               ),
               // NOPE stamp
@@ -509,7 +567,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            _liked.isEmpty ? 'Khó tính ghê!' : 'Squad đã chọn xong!',
+            _liked.isEmpty ? 'vibe_deck.picky'.tr() : 'vibe_deck.squad_done'.tr(),
             style: AppFonts.heading(
               fontSize: 28,
               fontWeight: FontWeight.w900,
@@ -520,8 +578,10 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
           const SizedBox(height: 6),
           Text(
             _liked.isEmpty
-                ? 'Bạn chưa thích chỗ nào. Thử lại với gu khác nha.'
-                : 'Đây là ${_liked.length} nơi bạn muốn đi — thêm vào lịch trình thôi!',
+                ? 'vibe_deck.none_liked'.tr()
+                : 'vibe_deck.liked_summary'.tr(
+                    namedArgs: {'n': '${_liked.length}'},
+                  ),
             style: AppFonts.body(fontSize: 14, color: _textSec, height: 1.4),
           ),
           const SizedBox(height: 20),
@@ -675,8 +735,47 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
       ),
     );
   }
-}
 
+  /// Trạng thái nạp / lỗi / chưa có dữ liệu — thay cho việc luôn có sẵn 5 thẻ
+  /// giả để màn hình "trông như đang chạy".
+  Widget _buildDeckPlaceholder() {
+    if (_loading) return const CircularProgressIndicator();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _loadError != null
+                ? PhosphorIcons.cloudSlash()
+                : PhosphorIcons.heartBreak(),
+            size: 40,
+            color: _textSec,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _loadError ?? 'vibe_deck.empty'.tr(),
+            textAlign: TextAlign.center,
+            style: AppFonts.body(fontSize: 14, color: _textSec),
+          ),
+          if (_loadError != null) ...[
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _loading = true;
+                  _loadError = null;
+                });
+                _loadDeck();
+              },
+              child: Text('common.tap_to_retry'.tr()),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
 class _Place {
   final String name;
   final String location;
@@ -685,12 +784,16 @@ class _Place {
   final List<Color> gradient;
   final String image;
 
+  /// Id của wishlist item — dùng để gửi vote thật khi vuốt phải.
+  final String? id;
+
   const _Place(
     this.name,
     this.location,
     this.tags,
     this.match,
     this.gradient,
-    this.image,
-  );
+    this.image, {
+    this.id,
+  });
 }

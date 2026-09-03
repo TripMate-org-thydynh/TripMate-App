@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 // Model Moment — khớp BE `moments` module.
 class Moment {
   final String id;
@@ -40,8 +41,8 @@ class Moment {
       isGhost: j['isGhost'] as bool? ?? false,
       caption: j['caption'] as String?,
       authorName: user is Map
-          ? (user['name'] as String? ?? 'Ẩn danh')
-          : 'Ẩn danh',
+          ? (user['name'] as String? ?? 'common.anonymous'.tr())
+          : 'common.anonymous'.tr(),
       authorAvatar: user is Map ? user['avatarUrl'] as String? : null,
       commentCount: count is Map ? (count['comments'] as int? ?? 0) : 0,
       reactionCount: count is Map ? (count['reactions'] as int? ?? 0) : 0,

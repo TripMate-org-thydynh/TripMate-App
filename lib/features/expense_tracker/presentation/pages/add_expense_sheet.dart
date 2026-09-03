@@ -82,7 +82,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
       _amount.text.trim().replaceAll('.', '').replaceAll(',', ''),
     );
     if (amount == null || amount <= 0) {
-      _snack('Nhập số tiền hợp lệ', error: true);
+      _snack('expense.invalid_amount'.tr(), error: true);
       return;
     }
     final paidById = ref.read(authProvider).user?['id'] as String?;
@@ -250,7 +250,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                     prefixIcon: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 8),
                       child: Text(
-                        'đ',
+                        'common.currency_suffix'.tr(),
                         style: AppFonts.heading(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,

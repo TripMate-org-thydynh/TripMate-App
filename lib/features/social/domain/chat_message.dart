@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 // Model ChatMessage — khớp BE `chat` module.
 class ChatMessage {
   final String id;
@@ -31,8 +32,8 @@ class ChatMessage {
           j['senderId'] as String? ??
           (sender is Map ? sender['id'] as String? ?? '' : ''),
       senderName: sender is Map
-          ? (sender['name'] as String? ?? 'Ẩn danh')
-          : 'Ẩn danh',
+          ? (sender['name'] as String? ?? 'common.anonymous'.tr())
+          : 'common.anonymous'.tr(),
       senderAvatar: sender is Map ? sender['avatarUrl'] as String? : null,
       createdAt:
           DateTime.tryParse(j['createdAt']?.toString() ?? '') ?? DateTime.now(),

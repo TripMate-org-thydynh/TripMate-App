@@ -95,7 +95,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Xoá "${item.title}"?',
+          'common.delete_confirm'.tr(namedArgs: {'name': item.title}),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             color: _ink,
@@ -176,9 +176,9 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             fontWeight: FontWeight.w800,
             fontSize: 14,
           ),
-          tabs: const [
-            Tab(text: 'Bản Đồ 🗺️'),
-            Tab(text: 'Thành Tích 🏆'),
+          tabs: [
+            Tab(text: 'profile.tab_map'.tr()),
+            Tab(text: 'profile.tab_achievements'.tr()),
             Tab(text: 'Bucket List 📝'),
           ],
         ),
@@ -266,8 +266,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                 Expanded(
                   child: Text(
                     markers.isEmpty
-                        ? 'Chưa có địa điểm nào — thêm lịch trình hoặc đăng moment có vị trí để ghim lên bản đồ!'
-                        : 'Bạn đã ghim ${markers.length} địa điểm trong hành trình của mình!',
+                        ? 'atlas.empty'.tr()
+                        : 'atlas.pinned_count'.tr(
+                            namedArgs: {'n': '${markers.length}'},
+                          ),
                     style: AppFonts.body(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
@@ -318,8 +320,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                       const SizedBox(height: 4),
                       Text(
                         atlas.streakMonths > 0
-                            ? '${atlas.streakMonths} tháng liên tục!'
-                            : 'Bắt đầu chuỗi ngay!',
+                            ? 'atlas.streak_months'.tr(
+                                namedArgs: {'n': '${atlas.streakMonths}'},
+                              )
+                            : 'profile.start_streak'.tr(),
                         style: AppFonts.heading(
                           fontSize: 22,
                           fontWeight: FontWeight.w900,

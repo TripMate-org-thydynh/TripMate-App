@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'theme/gen_z_tokens.dart';
@@ -18,8 +19,11 @@ void showGlobalSnack(
   String message, {
   bool isError = false,
   VoidCallback? onRetry,
-  String retryLabel = 'Thử lại',
+  // Không đặt mặc định `.tr()` ở đây: tham số mặc định phải là hằng số,
+  // mà bản dịch chỉ có ở runtime.
+  String? retryLabel,
 }) {
+  final label = retryLabel ?? 'common.retry'.tr();
   rootMessengerKey.currentState
     ?..clearSnackBars()
     ..showSnackBar(
@@ -44,7 +48,7 @@ void showGlobalSnack(
         action: onRetry == null
             ? null
             : SnackBarAction(
-                label: retryLabel,
+                label: label,
                 textColor: Colors.white,
                 onPressed: onRetry,
               ),

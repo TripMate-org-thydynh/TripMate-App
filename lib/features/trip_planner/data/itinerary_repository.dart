@@ -59,6 +59,10 @@ class ItineraryRepository {
     int durationMinutes = 60,
     String? notes,
     String? category,
+    // Toa do la tuy chon, nhung khi co thi phai gui len: diem khong co toa do
+    // se khong hien tren man Ban do chuyen va khong tinh vao quang duong.
+    double? latitude,
+    double? longitude,
   }) async {
     final data = await _client.postData(_base(tripId), {
       'day': day,
@@ -68,6 +72,8 @@ class ItineraryRepository {
       'durationMinutes': durationMinutes,
       'notes': notes,
       'category': category,
+      'latitude': ?latitude,
+      'longitude': ?longitude,
     });
     return ItineraryItem.fromJson((data as Map).cast<String, dynamic>());
   }

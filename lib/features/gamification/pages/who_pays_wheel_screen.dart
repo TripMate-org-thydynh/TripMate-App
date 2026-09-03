@@ -217,7 +217,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Thần tài hỗn loạn đã gõ đầu cưng! Ngoài việc phải bao trọn hóa đơn này, cưng còn phải thực hiện một thử thách Dare ngẫu nhiên tiếp theo! 💀💸',
+                  tr('games.wheel_loser'),
                   textAlign: TextAlign.center,
                   style: AppFonts.body(
                     fontSize: 13,

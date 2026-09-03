@@ -225,7 +225,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                         ),
                       ),
                       content: Text(
-                        'Model Context Protocol (MCP) cho phép cưng kết nối TripMate trực tiếp tới các AI assistant chạy local hoặc cloud thông qua standard JSON-RPC. AI có thể thay mặt cưng đề xuất thay đổi lịch trình hoặc đồng bộ checklist balo.',
+                        'settings.mcp_intro'.tr(),
                         style: GoogleFonts.outfit(color: _ink),
                       ),
                       actions: [

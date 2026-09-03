@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'core/theme/responsive.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/theme.dart';
@@ -84,11 +86,29 @@ class MyApp extends ConsumerWidget {
       // ti...", va nhan thanh dieu huong duoi chong len nhau. Van ton trong
       // nguoi dung tang co chu (den 1.3x), nhung khong de mot muc phong bat ky
       // pha vo bo cuc.
-      builder: (context, child) => MediaQuery.withClampedTextScaling(
-        minScaleFactor: 1.0,
-        maxScaleFactor: 1.3,
-        child: child ?? const SizedBox.shrink(),
-      ),
+      builder: (context, child) {
+        // Co giãn chữ theo khung nhìn thật của máy.
+        //
+        // Mọi cỡ chữ trong app được chọn trên khung thiết kế 411x914dp. Trên
+        // máy có khung chật hơn (SM-A920F thật: 360x740dp vì người dùng bật
+        // chế độ hiển thị phóng to), chữ giữ nguyên cỡ sẽ ngốn hết chiều cao
+        // và bố cục vỡ tỉ lệ — dù không tràn.
+        //
+        // Nhân hệ số này vào `textScaler` là điểm sửa tập trung duy nhất, thay
+        // vì đi sửa cỡ chữ ở hàng trăm chỗ gọi.
+        final media = MediaQuery.of(context);
+        final scale = uiScaleOf(media.size);
+        return MediaQuery(
+          data: media.copyWith(
+            // Vẫn tôn trọng người dùng phóng chữ (tới 1.3x), nhưng trần
+            // được hạ theo khung máy để không phá bố cục.
+            textScaler: TextScaler.linear(
+              media.textScaler.scale(1).clamp(1.0, 1.3) * scale,
+            ),
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

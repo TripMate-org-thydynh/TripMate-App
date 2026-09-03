@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 // Models cho feature Expenses — khớp response BE (`expenses` module).
 
 class ExpenseUser {
@@ -8,7 +9,7 @@ class ExpenseUser {
 
   factory ExpenseUser.fromJson(Map<String, dynamic> j) => ExpenseUser(
     id: j['id'] as String? ?? '',
-    name: j['name'] as String? ?? 'Ẩn danh',
+    name: j['name'] as String? ?? 'common.anonymous'.tr(),
     avatarUrl: j['avatarUrl'] as String?,
   );
 }

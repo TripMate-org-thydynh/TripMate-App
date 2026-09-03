@@ -237,7 +237,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               color: isDark ? Colors.white : Colors.black87,
                             ),
                             decoration: InputDecoration(
-                              labelText: 'Họ và tên',
+                              labelText: 'profile.full_name'.tr(),
                               labelStyle: TextStyle(
                                 color: isDark ? Colors.white60 : Colors.black54,
                               ),

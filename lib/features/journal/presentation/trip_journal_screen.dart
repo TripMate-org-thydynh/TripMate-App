@@ -181,7 +181,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                         color: _ink,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Tiêu đề hôm nay (tuỳ chọn)',
+                        hintText: 'journal.title_hint'.tr(),
                         hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -206,7 +206,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       style: AppFonts.body(fontSize: 14, color: _ink),
                       decoration: InputDecoration(
                         hintText:
-                            'Hôm nay bạn trải qua điều gì? Kể cho squad nghe...',
+                            'journal.body_hint'.tr(),
                         hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),

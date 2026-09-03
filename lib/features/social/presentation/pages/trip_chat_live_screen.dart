@@ -316,7 +316,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
             ),
             const SizedBox(width: 5),
             Text(
-              _connected ? 'live' : 'đang kết nối...',
+              _connected ? 'live' : 'common.connecting'.tr(),
               style: AppFonts.body(fontSize: 11, color: _textSec),
             ),
           ],
@@ -518,7 +518,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 style: AppFonts.body(color: _textPri),
                 onSubmitted: (_) => _send(),
                 decoration: InputDecoration(
-                  hintText: 'Nhắn gì đó...',
+                  hintText: 'chat.input_hint'.tr(),
                   hintStyle: AppFonts.body(color: _textSec),
                   filled: true,
                   fillColor: _surface,

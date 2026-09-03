@@ -86,11 +86,19 @@ class TripPdfExporter {
                   'trips.pdf_return'.tr(),
                   '${trip.endDate.day}/${trip.endDate.month}/${trip.endDate.year}',
                 ),
-                _infoRow('Số ngày', '${trip.durationDays} ngày'),
-                _infoRow('Thành viên', '${trip.memberCount} người'),
+                _infoRow(
+                  'trips.days_label'.tr(),
+                  'trips.n_days'.tr(namedArgs: {'n': '${trip.durationDays}'}),
+                ),
+                _infoRow(
+                  'trips.members_label'.tr(),
+                  'trips.n_people'.tr(
+                    namedArgs: {'n': '${trip.memberCount}'},
+                  ),
+                ),
                 if (trip.budget != null)
                   _infoRow(
-                    'Ngân sách',
+                    'trips.budget_label'.tr(),
                     '${trip.budget!.toStringAsFixed(0)} ${trip.currency}',
                   ),
               ],
@@ -129,7 +137,7 @@ class TripPdfExporter {
                     ),
                   ),
                   child: pw.Text(
-                    'Ngày $day',
+                    'common.day_n'.tr(namedArgs: {'n': '$day'}),
                     style: pw.TextStyle(
                       color: PdfColors.white,
                       fontWeight: pw.FontWeight.bold,
@@ -189,7 +197,12 @@ class TripPdfExporter {
             ),
             pw.SizedBox(height: 8),
             pw.Text(
-              '${packing.packed}/${packing.total} đã chuẩn bị',
+              'packing.prepared_count'.tr(
+                namedArgs: {
+                  'packed': '${packing.packed}',
+                  'total': '${packing.total}',
+                },
+              ),
               style: const pw.TextStyle(
                 fontSize: 14,
                 color: PdfColor.fromInt(0xFF888888),
@@ -284,7 +297,9 @@ class TripPdfExporter {
                       ),
                     if (r.confirmationNumber != null)
                       pw.Text(
-                        '🔖 Mã: ${r.confirmationNumber}',
+                        'trips.code_label'.tr(
+                          namedArgs: {'code': r.confirmationNumber ?? ''},
+                        ),
                         style: const pw.TextStyle(fontSize: 11),
                       ),
                   ],
@@ -372,7 +387,11 @@ class ExportPdfButton extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Không xuất được PDF. ${friendlyError(e)}'),
+                content: Text(
+                  'trips.pdf_export_failed'.tr(
+                    namedArgs: {'err': friendlyError(e)},
+                  ),
+                ),
                 behavior: SnackBarBehavior.floating,
                 backgroundColor: Colors.red,
               ),

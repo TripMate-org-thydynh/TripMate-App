@@ -77,9 +77,9 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
     _particlesController.forward(from: 0.0);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('VIBE BOOST ACTIVE! Squad energy is skyrocketing! 🚀⚡'),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text('live.vibe_boost_toast'.tr()),
+        duration: const Duration(seconds: 1),
         behavior: SnackBarBehavior.floating,
       ),
     );

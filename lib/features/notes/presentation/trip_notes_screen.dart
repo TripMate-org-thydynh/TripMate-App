@@ -93,7 +93,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    editing == null ? 'notes.new'.tr() : 'Chỉnh sửa ghi chú',
+                    editing == null ? 'notes.new'.tr() : 'notes.edit_title'.tr(),
                     style: AppFonts.heading(
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
@@ -110,7 +110,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                       color: _ink,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Tiêu đề (tuỳ chọn)',
+                      hintText: 'notes.title_hint'.tr(),
                       hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -137,7 +137,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                     maxLines: 7,
                     style: AppFonts.body(fontSize: 14, color: _ink),
                     decoration: InputDecoration(
-                      hintText: 'Nội dung ghi chú...',
+                      hintText: 'notes.body_hint'.tr(),
                       hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -252,7 +252,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                         setState(() => _selectedColorIndex = colorIndex);
                       },
                       child: Text(
-                        editing == null ? 'notes.save'.tr() : 'Cập nhật',
+                        editing == null ? 'notes.save'.tr() : 'common.update'.tr(),
                         style: AppFonts.heading(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,

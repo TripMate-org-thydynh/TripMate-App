@@ -47,8 +47,8 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
           style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
         ),
         content: Text(
-          'Toàn bộ dữ liệu của bạn sẽ bị xoá và không thể khôi phục. '
-          'Bạn sẽ bị đăng xuất ngay sau đó.',
+          'settings.delete_warn_1'.tr() +
+          'settings.delete_warn_2'.tr(),
           style: AppFonts.body(color: _textSec, height: 1.4),
         ),
         actions: [
@@ -104,15 +104,15 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
         children: [
           _card(
             icon: PhosphorIcons.shieldCheck(PhosphorIconsStyle.fill),
-            title: 'Dữ liệu của bạn được bảo vệ',
+            title: 'privacy.protected_title'.tr(),
             body:
-                'TripMate chỉ thu thập dữ liệu cần thiết để chạy ứng dụng (hồ sơ, '
-                'chuyến đi, chi tiêu, ảnh kỷ niệm). Dữ liệu vị trí & camera chỉ dùng '
-                'khi bạn cho phép. Chúng tôi không bán dữ liệu cho bên thứ ba.',
+                'privacy.body_1'.tr() +
+                'privacy.body_2'.tr() +
+                'privacy.body_3'.tr(),
           ),
-          _linkTile(Icons.description_outlined, 'Chính sách quyền riêng tư'),
-          _linkTile(Icons.gavel_outlined, 'Điều khoản sử dụng'),
-          _linkTile(Icons.download_outlined, 'Yêu cầu bản sao dữ liệu của tôi'),
+          _linkTile(Icons.description_outlined, 'privacy.policy'.tr()),
+          _linkTile(Icons.gavel_outlined, 'privacy.terms'.tr()),
+          _linkTile(Icons.download_outlined, 'privacy.request_copy'.tr()),
           const SizedBox(height: 28),
 
           // Danger zone
@@ -138,7 +138,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'settings.delete_account'.tr(),
+                  'settings.delete_account_cta'.tr(),
                   style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
@@ -183,7 +183,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                           )
                         : const Icon(Icons.delete_forever),
                     label: Text(
-                      _deleting ? 'Đang xoá...' : 'Xoá tài khoản của tôi',
+                      _deleting ? 'common.deleting'.tr() : 'settings.delete_account_cta'.tr(),
                     ),
                   ),
                 ),
@@ -249,7 +249,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
       onTap: () {
         HapticFeedback.selectionClick();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$label — sẽ mở trang web chính thức')),
+          SnackBar(content: Text('privacy.opens_website'.tr(namedArgs: {'label': label}))),
         );
       },
       child: Container(

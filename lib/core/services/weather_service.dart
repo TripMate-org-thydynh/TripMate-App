@@ -124,7 +124,7 @@ class WeatherService {
   _WmoMapping _mapWmoCode(int code) {
     if (code == 0) {
       return _WmoMapping(
-        'Trời quang',
+        'weather.clear'.tr(),
         Icons.wb_sunny_outlined,
         GenZTokens.yellow,
       );
@@ -136,13 +136,13 @@ class WeatherService {
       );
     } else if ([45, 48].contains(code)) {
       return _WmoMapping(
-        'Sương mù',
+        'weather.fog'.tr(),
         Icons.filter_drama_outlined,
         GenZTokens.lilac,
       );
     } else if ([51, 53, 55].contains(code)) {
       return _WmoMapping(
-        'Mưa phùn',
+        'weather.drizzle'.tr(),
         Icons.water_drop_outlined,
         GenZTokens.blue,
       );
@@ -165,9 +165,9 @@ class WeatherService {
         GenZTokens.blue,
       );
     } else if ([95, 96, 99].contains(code)) {
-      return _WmoMapping('Giông bão', Icons.thunderstorm, GenZTokens.red);
+      return _WmoMapping('weather.thunderstorm'.tr(), Icons.thunderstorm, GenZTokens.red);
     }
-    return _WmoMapping('Không xác định', Icons.help_outline, GenZTokens.lilac);
+    return _WmoMapping('common.unknown'.tr(), Icons.help_outline, GenZTokens.lilac);
   }
 }
 

@@ -102,7 +102,7 @@ class TripMapScreen extends ConsumerWidget {
 
           if (points.isEmpty && moments.isEmpty) {
             return _msg(
-              'Chưa có điểm nào có toạ độ.\nThêm địa điểm từ Khám phá / Ảnh→Map, hoặc đăng moment có vị trí để ghim lên đây.',
+              'itinerary.map_empty'.tr(),
             );
           }
 
@@ -244,7 +244,7 @@ class TripMapScreen extends ConsumerWidget {
   ) {
     final categories = [
       (key: null, label: 'trips.filter_all'.tr(), emoji: '📍'),
-      (key: 'FOOD', label: 'Ăn uống', emoji: '🍔'),
+      (key: 'FOOD', label: 'itinerary.cat_food_plain'.tr(), emoji: '🍔'),
       (key: 'ACTIVITIES', label: 'itinerary.map_fun'.tr(), emoji: '🎭'),
       (key: 'ACCOMMODATION', label: 'expense.cat_stay'.tr(), emoji: '🏨'),
       (key: 'COFFEE', label: 'itinerary.map_coffee'.tr(), emoji: '☕'),
@@ -326,7 +326,7 @@ class TripMapScreen extends ConsumerWidget {
             ),
             const SizedBox(width: 5),
             Text(
-              'Ngày $d',
+              'common.day_n'.tr(namedArgs: {'n': '$d'}),
               style: GoogleFonts.outfit(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -380,7 +380,7 @@ class TripMapScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(99),
                     ),
                     child: Text(
-                      'Ngày $day · ${it.startTime}',
+                      'itinerary.day_time'.tr(namedArgs: {'n': '$day', 'time': it.startTime}),
                       style: GoogleFonts.spaceMono(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -627,8 +627,12 @@ class TripMapScreen extends ConsumerWidget {
                             startTime: '10:00',
                             placeName: place.name,
                             placeAddress: place.address,
-                            notes: 'Nhập tự động từ link bản đồ.',
+                            notes: 'itinerary.imported_from_link'.tr(),
                             category: place.category,
+                            // Toa do doc duoc tu chinh URL — nho no diem moi
+                            // ghim duoc len ban do.
+                            latitude: place.latitude,
+                            longitude: place.longitude,
                           );
 
                       // Refresh provider to fetch updated database items
@@ -655,7 +659,9 @@ class TripMapScreen extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Lỗi lưu địa điểm: ${friendlyError(e)}',
+                              'itinerary.save_place_failed'.tr(
+                                namedArgs: {'err': friendlyError(e)},
+                              ),
                             ),
                             backgroundColor: Colors.red,
                           ),
@@ -665,7 +671,9 @@ class TripMapScreen extends ConsumerWidget {
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('system_phases.import_error'.tr()),
+                        // Noi ro phai lam gi, thay vi mot cau bao loi chung.
+                        content: Text('itinerary.import_no_coords'.tr()),
+                        duration: const Duration(seconds: 6),
                         backgroundColor: Colors.red,
                       ),
                     );

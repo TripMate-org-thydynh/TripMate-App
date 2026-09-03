@@ -41,10 +41,16 @@ class UpcomingReservationsWidget extends ConsumerWidget {
   static const _months = 'Th1 Th2 Th3 Th4 Th5 Th6 Th7 Th8 Th9 Th10 Th11 Th12';
   String _countdown(DateTime d) {
     final diff = d.difference(DateTime.now());
-    if (diff.inDays >= 1) return 'còn ${diff.inDays} ngày';
-    if (diff.inHours >= 1) return 'còn ${diff.inHours} giờ';
-    if (diff.inMinutes >= 1) return 'còn ${diff.inMinutes} phút';
-    return 'sắp diễn ra';
+    if (diff.inDays >= 1) {
+      return 'reservations.in_days'.tr(namedArgs: {'n': '${diff.inDays}'});
+    }
+    if (diff.inHours >= 1) {
+      return 'reservations.in_hours'.tr(namedArgs: {'n': '${diff.inHours}'});
+    }
+    if (diff.inMinutes >= 1) {
+      return 'reservations.in_minutes'.tr(namedArgs: {'n': '${diff.inMinutes}'});
+    }
+    return 'reservations.upcoming'.tr();
   }
 
   String _fmt(DateTime d) {

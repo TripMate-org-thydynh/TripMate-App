@@ -1,3 +1,4 @@
+import '../../../core/format/money.dart';
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
@@ -38,11 +39,14 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
             .map(
               (item) => {
                 'id': item['id'] ?? 'GD-${item.hashCode.abs()}',
-                'date': item['date'] ?? 'Vừa qua',
-                'title': item['description'] ?? 'Giao dịch nâng cấp',
-                'amount': '${(item['amount'] as int?) ?? 0}đ',
-                'method': item['method'] ?? 'Nguồn đã lưu',
-                'status': item['status'] ?? 'Thành công',
+                'date': item['date'] ?? 'premium.recent'.tr(),
+                'title': item['description'] ?? 'premium.upgrade_tx'.tr(),
+                'amount': formatMoney(
+                  (item['amount'] as int?) ?? 0,
+                  locale: context.locale.languageCode,
+                ),
+                'method': item['method'] ?? 'premium.saved_source'.tr(),
+                'status': item['status'] ?? 'common.success_plain'.tr(),
               },
             )
             .toList();
@@ -176,7 +180,12 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                       children: [
                         const SizedBox(height: 6),
                         Text(
-                          'Mã GD: ${inv['id']}  •  Ngày: ${inv['date']}',
+                          'premium.tx_id_date'.tr(
+                            namedArgs: {
+                              'id': '${inv['id']}',
+                              'date': '${inv['date']}',
+                            },
+                          ),
                           style: AppFonts.heading(
                             fontSize: 11.5,
                             color: Colors.grey,
@@ -184,7 +193,9 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Nguồn thanh toán: ${inv['method']}',
+                          'premium.paid_with'.tr(
+                            namedArgs: {'method': '${inv['method']}'},
+                          ),
                           style: AppFonts.heading(
                             fontSize: 11.5,
                             color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -201,7 +212,9 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                              '📥 Đang tải hóa đơn ${inv['id']} dạng PDF...',
+                              'premium.downloading_invoice'.tr(
+                                namedArgs: {'id': '${inv['id']}'},
+                              ),
                             ),
                             behavior: SnackBarBehavior.floating,
                           ),

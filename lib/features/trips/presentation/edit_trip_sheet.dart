@@ -107,7 +107,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
 
   Future<void> _save() async {
     if (_name.text.trim().isEmpty) {
-      _snack('Tên chuyến không được trống', error: true);
+      _snack('trips.name_empty'.tr(), error: true);
       return;
     }
     HapticFeedback.mediumImpact();
@@ -137,7 +137,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
       _snack(e.message, error: true);
       setState(() => _busy = false);
     } catch (_) {
-      _snack('Không lưu được, thử lại sau', error: true);
+      _snack('common.save_failed'.tr(), error: true);
       setState(() => _busy = false);
     }
   }
@@ -246,13 +246,13 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Tên chuyến'),
-        _field(_name, 'Tên chuyến', PhosphorIcons.airplaneTilt()),
+        _label('trips.name_label'.tr()),
+        _field(_name, 'trips.name_label'.tr(), PhosphorIcons.airplaneTilt()),
         const SizedBox(height: 14),
         _label('trips.destination'.tr()),
-        _field(_destination, 'vd: Đà Lạt, Lâm Đồng', PhosphorIcons.mapPin()),
+        _field(_destination, 'trips.destination_hint'.tr(), PhosphorIcons.mapPin()),
         const SizedBox(height: 14),
-        _label('Thời gian'),
+        _label('trips.dates_label'.tr()),
         GestureDetector(
           onTap: _pickDates,
           child: Container(
@@ -263,7 +263,14 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                 Icon(PhosphorIcons.calendarBlank(), color: _textSec, size: 20),
                 const SizedBox(width: 10),
                 Text(
-                  '${_fmt(_range.start)} → ${_fmt(_range.end)}  ·  ${_range.end.difference(_range.start).inDays + 1} ngày',
+                  'trips.range_days'.tr(
+                    namedArgs: {
+                      'from': _fmt(_range.start),
+                      'to': _fmt(_range.end),
+                      'days':
+                          '${_range.end.difference(_range.start).inDays + 1}',
+                    },
+                  ),
                   style: AppFonts.body(
                     fontSize: 13.5,
                     color: _textPri,
@@ -370,7 +377,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
             maxLines: 2,
             style: AppFonts.body(color: _textPri, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Kế hoạch, lưu ý cho cả nhóm...',
+              hintText: 'trips.description_hint'.tr(),
               hintStyle: AppFonts.body(color: _textSec),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
@@ -397,8 +404,8 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                 Expanded(
                   child: Text(
                     _isPublic
-                        ? 'Công khai · ai có link cũng xem được'
-                        : 'Riêng tư · chỉ thành viên squad',
+                        ? 'trips.public_desc'.tr()
+                        : 'trips.private_desc'.tr(),
                     style: AppFonts.body(
                       fontSize: 13,
                       color: _textPri,

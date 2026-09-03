@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:dio/dio.dart';
 import 'api_exception.dart';
 
@@ -9,5 +10,5 @@ String friendlyError(Object e) {
   if (e is ApiException) return e.message;
   if (e is DioException) return ApiException.fromDio(e).message;
   // Fallback chung — không trả e.toString()
-  return 'Có lỗi xảy ra. Vui lòng thử lại.';
+  return 'errors.generic_retry'.tr();
 }

@@ -176,7 +176,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                             ),
                           ),
                           child: Text(
-                            'Ngày $day',
+                            'common.day_n'.tr(namedArgs: {'n': '$day'}),
                             style: AppFonts.heading(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
@@ -187,7 +187,12 @@ class TripCheckinsScreen extends ConsumerWidget {
                         const SizedBox(width: 10),
                         // Going count
                         Text(
-                          '${dayCheckins.where((c) => c.status == 'GOING').length} đi',
+                          'checkins.going_count'.tr(
+                            namedArgs: {
+                              'n':
+                                  '${dayCheckins.where((c) => c.status == 'GOING').length}',
+                            },
+                          ),
                           style: AppFonts.body(
                             fontSize: 12,
                             color: const Color(0xFF1FA85C),

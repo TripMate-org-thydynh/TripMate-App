@@ -230,7 +230,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Squad của bạn đã hoàn thành một đường thẳng trên bảng thử thách! Bạn nhận được:\n⚡ +500 XP Chuyến đi\n🎁 Unlocked Sticker mới!',
+                        'games.bingo_line_win'.tr(),
                         textAlign: TextAlign.center,
                         style: AppFonts.body(
                           fontSize: 13,
@@ -623,7 +623,11 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             if (tile['state'] == 'completed') {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Tile "${tile['title']}" checked! 🎯🔥'),
+                  content: Text(
+                    'games.bingo_tile_checked'.tr(
+                      namedArgs: {'tile': '${tile['title']}'},
+                    ),
+                  ),
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: secondary,
                 ),

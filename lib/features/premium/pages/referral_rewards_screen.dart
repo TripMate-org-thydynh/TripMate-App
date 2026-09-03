@@ -58,7 +58,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
     if (response != null) {
       final String msg =
           (response is Map ? response['message'] : null) as String? ??
-          'Mã giới thiệu hợp lệ! ⚡🏆';
+          'referral.code_valid'.tr();
       _codeController.clear();
 
       showDialog(
@@ -181,7 +181,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Chia sẻ mã này! Mỗi khi một đứa bạn nhập mã và đăng ký thành công, cả hai sẽ nhận ngay 500 XP bứt tốc cấp độ!',
+                    'referral.code_intro'.tr(),
                     textAlign: TextAlign.center,
                     style: AppFonts.heading(
                       color: Colors.white.withValues(alpha: 0.9),
@@ -251,7 +251,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Mã của bạn bè (Ví dụ: SELF)',
+                        hintText: 'referral.friend_code_hint'.tr(),
                         hintStyle: AppFonts.heading(
                           color: Colors.grey,
                           fontSize: 13,
@@ -286,7 +286,9 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
             const SizedBox(height: 28),
 
             Text(
-              'Danh sách đã giới thiệu (${_referrals.length})',
+              'referral.list_title'.tr(
+                namedArgs: {'n': '${_referrals.length}'},
+              ),
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,

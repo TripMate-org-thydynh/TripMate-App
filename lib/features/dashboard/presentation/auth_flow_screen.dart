@@ -4,6 +4,8 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/responsive.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -424,8 +426,11 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                           });
                         },
                         child: Container(
-                          width: 280,
-                          height: 400,
+                          // Co theo khung máy: 280x400 là kích thước chọn trên
+                          // khung thiết kế 411x914dp. Trên máy chật (360x740dp)
+                          // thẻ cao 400 đẩy nút "Đi thôi!" xuống dưới nếp gấp.
+                          width: context.rs(280),
+                          height: context.rs(400),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFFFDF5),
                             borderRadius: BorderRadius.circular(24),
@@ -698,7 +703,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           const SizedBox(height: 32),
           _buildGlassField(
             _emailController,
-            'Nhập email của bạn',
+            'auth.email_hint'.tr(),
             Icons.mail_outline,
           ),
           const SizedBox(height: 24),
@@ -724,7 +729,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Mã OTP đã được gửi đến email $email!'),
+                          content: Text('auth.otp_sent_email'.tr(namedArgs: {'email': email})),
                           backgroundColor: secondaryColor,
                         ),
                       );
@@ -866,7 +871,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   keyboardType: TextInputType.emailAddress,
                   style: AppFonts.heading(color: textColor, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: _isEmailInput ? 'Email của bạn' : 'Số điện thoại',
+                    hintText: _isEmailInput ? 'auth.your_email'.tr() : 'auth.phone_number'.tr(),
                     hintStyle: TextStyle(
                       color: isDark ? Colors.white24 : Colors.black26,
                       fontSize: 14,
@@ -896,8 +901,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                           SnackBar(
                             content: Text(
                               _isEmailInput
-                                  ? 'Mã OTP đã được gửi đến email $target!'
-                                  : 'Mã OTP đã được gửi đến số điện thoại $target!',
+                                  ? 'auth.otp_sent_email'.tr(namedArgs: {'email': target})
+                                  : 'auth.otp_sent_phone'.tr(namedArgs: {'phone': target}),
                             ),
                             backgroundColor: secondaryColor,
                           ),
@@ -950,7 +955,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 });
               },
               child: Text(
-                _isEmailInput ? 'Đăng nhập bằng SĐT' : 'Đăng nhập bằng Email',
+                _isEmailInput ? 'auth.use_phone'.tr() : 'auth.use_email'.tr(),
                 style: AppFonts.heading(
                   color: primaryColor,
                   fontWeight: FontWeight.bold,
@@ -1003,7 +1008,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         const SizedBox(height: 12),
         // Đăng nhập / đăng ký bằng username + mật khẩu
         _buildSocialBtn(
-          'Dùng tài khoản & mật khẩu',
+          'auth.use_password'.tr(),
           Icons.password_rounded,
           () => Navigator.push(
             context,
@@ -1017,19 +1022,19 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         // Footer
         Text.rich(
           TextSpan(
-            text: 'Khi tiếp tục bạn đồng ý với ',
+            text: 'auth.agree_prefix'.tr(),
             style: AppFonts.body(color: subTextColor, fontSize: 11.5),
             children: [
               TextSpan(
-                text: 'điều khoản',
+                text: 'auth.terms'.tr(),
                 style: TextStyle(
                   color: primaryColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const TextSpan(text: ' và '),
+              TextSpan(text: 'auth.and_sep'.tr()),
               TextSpan(
-                text: 'chính sách bảo mật',
+                text: 'auth.privacy'.tr(),
                 style: TextStyle(
                   color: primaryColor,
                   fontWeight: FontWeight.w600,
@@ -1069,7 +1074,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         ),
         const SizedBox(height: 6),
         Text(
-          'Nhập mã 4 chữ số vừa gửi tới ${_isEmailInput ? _emailController.text.trim() : _formatVnPhone(_emailController.text.trim())}.',
+          'auth.enter_otp_sent_to'.tr(
+            namedArgs: {
+              'target': _isEmailInput
+                  ? _emailController.text.trim()
+                  : _formatVnPhone(_emailController.text.trim()),
+            },
+          ),
           style: AppFonts.body(color: sub, fontSize: 14),
         ),
         const SizedBox(height: 36),
@@ -1170,7 +1181,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               const SizedBox(height: 4),
               _otpTimer > 0
                   ? Text(
-                      'Gửi lại sau ${_otpTimer}s',
+                      'auth.otp_resend_in'.tr(namedArgs: {'s': '$_otpTimer'}),
                       style: AppFonts.heading(
                         color: secondaryColor,
                         fontWeight: FontWeight.bold,
@@ -1222,7 +1233,11 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'Chào mừng trở lại, ${_tempUser?['name'] ?? ''}!',
+                            'auth.welcome_back'.tr(
+                              namedArgs: {
+                                'name': '${_tempUser?['name'] ?? ''}',
+                              },
+                            ),
                           ),
                           backgroundColor: secondaryColor,
                         ),
@@ -1303,13 +1318,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           const SizedBox(height: 32),
           _buildGlassField(
             _nameController,
-            'Tên hiển thị (vd: Minh)',
+            'auth.display_name_hint'.tr(),
             Icons.face_outlined,
           ),
           const SizedBox(height: 16),
           _buildGlassField(
             _usernameController,
-            'Username độc nhất',
+            'auth.username_hint'.tr(),
             Icons.alternate_email,
           ),
           const SizedBox(height: 32),
@@ -1700,7 +1715,11 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           _tempUser = (data['user'] as Map?)?.cast<String, dynamic>();
           messenger.showSnackBar(
             SnackBar(
-              content: Text('Chào mừng trở lại, ${account.displayName}!'),
+              content: Text(
+                'auth.welcome_back'.tr(
+                  namedArgs: {'name': account.displayName ?? ''},
+                ),
+              ),
               backgroundColor: secondaryColor,
             ),
           );
@@ -1725,7 +1744,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     } catch (e) {
       messenger.showSnackBar(
         SnackBar(
-          content: Text('Lỗi Google Sign-In: ${friendlyError(e)}'),
+          content: Text('auth.google_signin_failed'.tr(namedArgs: {'err': friendlyError(e)})),
           backgroundColor: Colors.redAccent,
         ),
       );

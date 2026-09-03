@@ -102,7 +102,7 @@ class QuickActionsPanel extends StatelessWidget {
           final trip = await PickTripSheet.show(
             context,
             isDarkMode,
-            title: 'Chia tiền cho chuyến nào?',
+            title: 'expense.pick_trip_title'.tr(),
           );
           if (trip != null && context.mounted) {
             Navigator.push(

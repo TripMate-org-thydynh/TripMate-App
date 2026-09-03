@@ -53,7 +53,7 @@ class TripWishlistScreen extends ConsumerWidget {
               autofocus: true,
               style: AppFonts.body(color: _textPri),
               decoration: InputDecoration(
-                hintText: 'Tên địa điểm',
+                hintText: 'itinerary.place_name'.tr(),
                 hintStyle: AppFonts.body(color: _textSec),
               ),
             ),
@@ -62,7 +62,7 @@ class TripWishlistScreen extends ConsumerWidget {
               controller: addrCtrl,
               style: AppFonts.body(color: _textPri),
               decoration: InputDecoration(
-                hintText: 'Địa chỉ (tuỳ chọn)',
+                hintText: 'itinerary.place_address'.tr(),
                 hintStyle: AppFonts.body(color: _textSec),
               ),
             ),

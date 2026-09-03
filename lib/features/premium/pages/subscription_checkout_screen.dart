@@ -18,10 +18,10 @@ class _SubscriptionCheckoutScreenState
   String _selectedMethod = 'VISA'; // VISA, MOMO, TECHCOM
   bool _isProcessing = false;
   List<String> _benefits = [
-    'Không giới hạn AI Recap Exports 🎬',
-    'Bộ nhãn dán Social Chaos độc quyền 🕹️',
-    'Tải lên tệp phương tiện độ phân giải gốc 📂',
-    'Quyền truy cập sớm các mini-game nâng cao 🎭',
+    'premium.perk_recap'.tr(),
+    'premium.perk_stickers'.tr(),
+    'premium.perk_fullres'.tr(),
+    'premium.perk_early'.tr(),
   ];
 
   @override
@@ -52,8 +52,8 @@ class _SubscriptionCheckoutScreenState
       final bool isAvailable = await iap.isAvailable();
       if (!isAvailable) {
         failureMessage =
-            'Google Play Billing chưa sẵn sàng trên máy này. '
-            'Thử cập nhật ứng dụng CH Play rồi quay lại nhé.';
+            'premium.billing_unavailable'.tr() +
+            'premium.billing_update_hint'.tr();
       } else {
         const Set<String> kIds = <String>{'elite_squad_monthly'};
         final ProductDetailsResponse res = await iap.queryProductDetails(kIds);
@@ -63,15 +63,15 @@ class _SubscriptionCheckoutScreenState
           // vừa thất thoát doanh thu, vừa vi phạm chính sách thanh toán của
           // Google Play (hàng hoá số bắt buộc đi qua Play Billing).
           failureMessage =
-              'Gói Premium chưa mở bán. Bọn mình đang hoàn tất thủ tục '
-              'thanh toán, quay lại sau ít hôm nha! 🙏';
+              'premium.not_on_sale'.tr() +
+              'premium.not_on_sale_2'.tr();
         } else {
           final ProductDetails productDetails = res.productDetails.first;
           final bool started = await iap.buyNonConsumable(
             purchaseParam: PurchaseParam(productDetails: productDetails),
           );
           if (!started) {
-            failureMessage = 'Không mở được cửa sổ thanh toán. Thử lại nhé.';
+            failureMessage = 'premium.checkout_failed'.tr();
           } else {
             // Biên lai thật do Play trả về qua purchaseStream; backend sẽ xác
             // thực với Google trước khi kích hoạt Premium.
@@ -83,7 +83,7 @@ class _SubscriptionCheckoutScreenState
       }
     } catch (e) {
       debugPrint('IAP Error: $e');
-      failureMessage = 'Thanh toán không thành công. Thử lại sau nhé.';
+      failureMessage = 'premium.payment_failed'.tr();
     }
 
     if (!mounted) return;
@@ -103,7 +103,7 @@ class _SubscriptionCheckoutScreenState
 
     final String message = response != null && response['message'] != null
         ? response['message'] as String
-        : 'Kích hoạt Premium thành công! Chúc cưng chuyến đi ngập tràn vibe luxury! 💸✨';
+        : 'premium.activated'.tr();
 
     if (!mounted) return;
 

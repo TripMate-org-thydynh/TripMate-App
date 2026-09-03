@@ -14,18 +14,19 @@ import 'create_trip_sheet.dart';
 /// Dùng chung cho mọi entry-point cần tripId. Trả về [Trip] đã chọn (null nếu huỷ).
 class PickTripSheet extends ConsumerWidget {
   final bool isDarkMode;
-  final String title;
+  /// Bo trong thi dung tieu de mac dinh (chi doc duoc o runtime).
+  final String? title;
 
   const PickTripSheet({
     super.key,
     required this.isDarkMode,
-    this.title = 'Chọn chuyến đi',
+    this.title,
   });
 
   static Future<Trip?> show(
     BuildContext context,
     bool isDarkMode, {
-    String title = 'Chọn chuyến đi',
+    String? title,
   }) {
     return showModalBottomSheet<Trip>(
       context: context,
@@ -77,7 +78,7 @@ class PickTripSheet extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                title,
+                title ?? 'trips.pick_trip'.tr(),
                 style: AppFonts.heading(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -93,9 +94,9 @@ class PickTripSheet extends ConsumerWidget {
                     child: Center(child: CircularProgressIndicator()),
                   ),
                   error: (e, _) =>
-                      _empty(context, 'Không tải được danh sách chuyến.'),
+                      _empty(context, 'trips.load_list_failed'.tr()),
                   data: (trips) => trips.isEmpty
-                      ? _empty(context, 'Bạn chưa có chuyến nào.')
+                      ? _empty(context, 'trips.empty_pick'.tr())
                       : ListView.separated(
                           shrinkWrap: true,
                           itemCount: trips.length,
@@ -156,7 +157,12 @@ class PickTripSheet extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  '${t.durationDays} ngày · ${t.memberCount} thành viên',
+                  'trips.days_members'.tr(
+                    namedArgs: {
+                      'days': '${t.durationDays}',
+                      'members': '${t.memberCount}',
+                    },
+                  ),
                   style: AppFonts.body(fontSize: 12, color: _sub),
                 ),
               ],

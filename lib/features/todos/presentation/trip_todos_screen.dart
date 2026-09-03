@@ -65,7 +65,7 @@ class TripTodosScreen extends ConsumerWidget {
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Xoá "${it.title}"?',
+          'common.delete_confirm'.tr(namedArgs: {'name': it.title}),
           style: GoogleFonts.spaceGrotesk(
             fontWeight: FontWeight.w800,
             color: _textPri,
@@ -133,7 +133,7 @@ class TripTodosScreen extends ConsumerWidget {
                 autofocus: true,
                 style: GoogleFonts.outfit(color: _textPri),
                 decoration: InputDecoration(
-                  hintText: 'VD: Đặt vé tàu, đổi tiền, sạc dự phòng...',
+                  hintText: 'todos.item_hint'.tr(),
                   hintStyle: GoogleFonts.outfit(color: _textSec),
                   filled: true,
                   fillColor: _bgOf(context),
@@ -213,7 +213,7 @@ class TripTodosScreen extends ConsumerWidget {
                       const SizedBox(width: 10),
                       Text(
                         due == null
-                            ? 'Hạn chót (tuỳ chọn)'
+                            ? 'todos.due_hint'.tr()
                             : '${due!.day}/${due!.month}/${due!.year}',
                         style: GoogleFonts.outfit(
                           fontWeight: FontWeight.w600,
@@ -330,8 +330,10 @@ class TripTodosScreen extends ConsumerWidget {
               Expanded(
                 child: Text(
                   done
-                      ? 'Squad xong hết việc rồi! 🎉'
-                      : 'Đã xong ${list.done}/${list.total} việc',
+                      ? 'todos.all_done'.tr()
+                      : 'todos.done_count'.tr(
+            namedArgs: {'done': '${list.done}', 'total': '${list.total}'},
+          ),
                   style: GoogleFonts.spaceGrotesk(
                     fontWeight: FontWeight.w800,
                     fontSize: 15,

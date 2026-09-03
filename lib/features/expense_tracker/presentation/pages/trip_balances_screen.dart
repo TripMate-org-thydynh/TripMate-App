@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../core/format/money.dart';
 import '../../../../core/network/error_message.dart';
 
 import '../../../../core/services/payment_launcher.dart';
@@ -213,7 +214,9 @@ class TripBalancesScreen extends ConsumerWidget {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(20),
+      // Chừa chỗ cho FAB: trước đây nút nổi đè lên mục cuối danh sách
+      // (BUG-006) — nội dung và cả control khác bị che, không bấm được.
+      padding: const EdgeInsets.all(20).copyWith(bottom: 96),
       children: [
         // Settlements (ai trả ai)
         if (result.settlements.isNotEmpty) ...[
@@ -227,7 +230,9 @@ class TripBalancesScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${result.settlements.length} giao dịch là xong nợ',
+            'expense.settle_count'.tr(
+              namedArgs: {'n': '${result.settlements.length}'},
+            ),
             style: AppFonts.body(fontSize: 13, color: _textSec),
           ),
           const SizedBox(height: 14),
@@ -245,7 +250,7 @@ class TripBalancesScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 14),
-        ...result.balances.map(_balanceRow),
+        ...result.balances.map((b) => _balanceRow(context, b)),
       ],
     );
   }
@@ -296,7 +301,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${s.amount.toStringAsFixed(0)} đ',
+                  formatMoney(s.amount, locale: context.locale.languageCode),
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w900,
                     color: _primary,
@@ -338,7 +343,7 @@ class TripBalancesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _balanceRow(MemberBalance b) {
+  Widget _balanceRow(BuildContext context, MemberBalance b) {
     final positive = b.balance >= 0;
     final color = positive ? const Color(0xFF1FA85C) : Colors.redAccent;
     return Container(
@@ -382,11 +387,13 @@ class TripBalancesScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                positive ? 'được nhận' : 'phải trả',
+                positive
+                    ? 'expense.is_owed'.tr()
+                    : 'expense.owes'.tr(),
                 style: AppFonts.body(fontSize: 11, color: _textSec),
               ),
               Text(
-                '${b.balance.abs().toStringAsFixed(0)} đ',
+                formatMoney(b.balance.abs(), locale: context.locale.languageCode),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w900,
                   color: color,

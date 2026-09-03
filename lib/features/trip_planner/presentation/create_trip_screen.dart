@@ -160,7 +160,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('trips.name_required'.tr()),
+          content: Text('trips.name_empty'.tr()),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -202,7 +202,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đã tạo chuyến “$name” 🚀'),
+          content: Text('trips.created_ok'.tr(namedArgs: {'name': name})),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -870,7 +870,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               const SizedBox(height: 12),
               _extraField(
                 _destinationController,
-                'vd: Đà Lạt, Lâm Đồng',
+                'trips.destination_hint'.tr(),
                 Icons.place_outlined,
                 textPrimary,
                 isDark,
@@ -1334,7 +1334,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                 const SizedBox(width: 8),
                 // Lối vào luồng tham gia chuyến bằng mã mời / link chia sẻ.
                 IconButton(
-                  tooltip: 'Tham gia bằng mã mời',
+                  tooltip: 'trips.join_by_code'.tr(),
                   icon: Icon(
                     Icons.confirmation_number_outlined,
                     color: ink,
@@ -1380,14 +1380,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(Icons.map, 'map', false, isDark, primaryColor),
-                _buildNavItem(
-                  Icons.search,
-                  'search',
-                  false,
-                  isDark,
-                  primaryColor,
-                ),
+                // Ba mục "map" / "search" / "person" đã được gỡ: chúng không
+                // điều hướng đi đâu, chỉ bắn snackbar debug "Switched to bottom
+                // item: ..." ra cho người dùng. Đây là thanh chuyển giữa hai
+                // chế độ của màn tạo chuyến nên chỉ giữ hai mục có thật.
                 _buildNavItem(
                   Icons.add_circle,
                   'add_circle',
@@ -1412,13 +1408,6 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                     });
                   },
                 ),
-                _buildNavItem(
-                  Icons.person,
-                  'person',
-                  false,
-                  isDark,
-                  primaryColor,
-                ),
               ],
             ),
           ),
@@ -1436,17 +1425,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     VoidCallback? onTap,
   }) {
     return GestureDetector(
-      onTap:
-          onTap ??
-          () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Switched to bottom item: $label'),
-                duration: const Duration(seconds: 1),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
+      // Không còn nhánh dự phòng bắn snackbar debug: mục nào không có hành vi
+      // thật thì không nên tồn tại trên thanh này.
+      onTap: onTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

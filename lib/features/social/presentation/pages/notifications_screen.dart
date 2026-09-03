@@ -64,7 +64,7 @@ class NotificationsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.tune, color: _textPri),
-            tooltip: 'Cấu hình thông báo',
+            tooltip: 'notifications.settings_title'.tr(),
             onPressed: () => _showNotificationSettingsModal(context, ref),
           ),
           TextButton(

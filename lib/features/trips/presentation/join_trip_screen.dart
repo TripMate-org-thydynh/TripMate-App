@@ -72,7 +72,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
   Future<void> _submit() async {
     final code = _extractCode(_controller.text);
     if (code.isEmpty) {
-      setState(() => _error = 'Nhập mã mời hoặc dán link được chia sẻ nhé.');
+      setState(() => _error = 'trips.join_hint'.tr());
       return;
     }
 
@@ -99,7 +99,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
       );
       messenger.showSnackBar(
         SnackBar(
-          content: Text('Đã tham gia "${trip.name}"! 🎉'),
+          content: Text('trips.joined_ok'.tr(namedArgs: {'name': trip.name})),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -108,7 +108,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
       setState(() => _error = _friendly(e));
     } catch (_) {
       if (!mounted) return;
-      setState(() => _error = 'Có lỗi xảy ra. Thử lại giúp mình nhé.');
+      setState(() => _error = 'errors.generic_soft'.tr());
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -116,17 +116,17 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
 
   /// Đổi lỗi kỹ thuật từ BE sang câu người dùng hiểu được.
   String _friendly(ApiException e) {
-    if (e.isNetwork) return 'Mất mạng rồi. Kiểm tra kết nối rồi thử lại nhé.';
+    if (e.isNetwork) return 'errors.offline_long'.tr();
     if (e.statusCode == 404) {
-      return 'Mã này không tồn tại. Kiểm tra lại xem có gõ nhầm không nhé.';
+      return 'trips.code_not_found'.tr();
     }
     final msg = e.message.toLowerCase();
     if (msg.contains('already') || msg.contains('alreadymember')) {
-      return 'Bạn đã là thành viên của chuyến này rồi!';
+      return 'trips.already_member'.tr();
     }
-    if (msg.contains('expired')) return 'Link mời đã hết hạn.';
-    if (msg.contains('max uses')) return 'Link mời đã hết lượt sử dụng.';
-    if (e.isServer) return 'Server đang trục trặc. Thử lại sau ít phút nhé.';
+    if (msg.contains('expired')) return 'trips.invite_expired'.tr();
+    if (msg.contains('max uses')) return 'trips.invite_used_up'.tr();
+    if (e.isServer) return 'errors.server'.tr();
     return e.message;
   }
 
@@ -222,7 +222,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                   letterSpacing: 2,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'VD: ABC123 hoặc dán link',
+                  hintText: 'trips.join_code_hint'.tr(),
                   hintStyle: AppFonts.body(
                     fontSize: 14,
                     color: _ink.withValues(alpha: 0.4),
@@ -234,7 +234,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                     vertical: GenZTokens.space4,
                   ),
                   suffixIcon: IconButton(
-                    tooltip: 'Dán từ clipboard',
+                    tooltip: 'common.paste_clipboard'.tr(),
                     onPressed: _submitting ? null : _pasteFromClipboard,
                     icon: Icon(PhosphorIcons.clipboardText(), color: _ink),
                   ),

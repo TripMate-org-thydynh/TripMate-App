@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/app_messenger.dart';
+import '../../../../core/format/money.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/expenses_repository.dart';
@@ -77,13 +78,13 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
       if (mounted) {
         setState(() {
           _isScanning = false;
-          _merchantName = result['merchant'] ?? 'Hóa đơn chi tiêu';
+          _merchantName = result['merchant'] ?? 'expense.receipt'.tr();
           _detectedItems.clear();
           final items = result['items'] as List?;
           if (items != null) {
             for (var item in items) {
               _detectedItems.add({
-                'name': item['name'] ?? 'Món ăn',
+                'name': item['name'] ?? 'expense.dish'.tr(),
                 'price': (item['price'] as num?)?.toDouble() ?? 0.0,
                 'checked': item['selected'] ?? true,
               });
@@ -91,7 +92,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           } else {
             // Fallback nếu không có list items
             _detectedItems.add({
-              'name': 'Tổng hóa đơn',
+              'name': 'expense.receipt_total'.tr(),
               'price': (result['total'] as num?)?.toDouble() ?? 0.0,
               'checked': true,
             });
@@ -105,7 +106,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         showGlobalSnack(
           e is ApiException
               ? e.message
-              : 'Không thể quét hóa đơn. Thử lại nhé!',
+              : 'expense.scan_failed'.tr(),
           isError: true,
         );
         setState(() {
@@ -225,8 +226,8 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           // nên "quét hoá đơn" không bao giờ đọc được hoá đơn của người dùng.
           _sourceTile(
             icon: Icons.photo_camera_outlined,
-            title: 'Chụp hoá đơn',
-            subtitle: 'Mở máy ảnh và chụp trực tiếp',
+            title: 'expense.scan_camera'.tr(),
+            subtitle: 'expense.scan_camera_sub'.tr(),
             source: ImageSource.camera,
             cardBg: cardBg,
             textPrimary: textPrimary,
@@ -235,8 +236,8 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           const SizedBox(height: 16),
           _sourceTile(
             icon: Icons.photo_library_outlined,
-            title: 'Chọn từ thư viện',
-            subtitle: 'Lấy ảnh hoá đơn đã lưu trong máy',
+            title: 'expense.scan_gallery'.tr(),
+            subtitle: 'expense.scan_gallery_sub'.tr(),
             source: ImageSource.gallery,
             cardBg: cardBg,
             textPrimary: textPrimary,
@@ -263,7 +264,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
     final bytes = await file.readAsBytes();
     if (!mounted) return;
     _startScanning(
-      'Hoá đơn vừa chụp',
+      'expense.receipt_just_taken'.tr(),
       'data:image/jpeg;base64,${base64Encode(bytes)}',
     );
   }
@@ -454,7 +455,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           ),
           const SizedBox(height: 24),
           Text(
-            _merchantName ?? 'Thông tin hóa đơn',
+            _merchantName ?? 'expense.receipt_info'.tr(),
             style: AppFonts.heading(
               fontSize: 22,
               fontWeight: FontWeight.w900,
@@ -492,7 +493,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                         ),
                       ),
                       subtitle: Text(
-                        '${(item['price'] as double).toStringAsFixed(0)} đ',
+                        formatMoney(item['price'] as double, locale: context.locale.languageCode),
                         style: AppFonts.body(
                           color: primaryColor,
                           fontWeight: FontWeight.bold,
@@ -521,7 +522,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                       ),
                     ),
                     Text(
-                      '${_calculateTotalSelected().toStringAsFixed(0)} đ',
+                      formatMoney(_calculateTotalSelected(), locale: context.locale.languageCode),
                       style: AppFonts.body(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
@@ -539,7 +540,11 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
               final total = _calculateTotalSelected();
               Navigator.pop(context, {
                 'amount': total,
-                'description': 'Quét hóa đơn: ${_merchantName ?? "Không tên"}',
+                'description': 'expense.scan_description'.tr(
+                  namedArgs: {
+                    'merchant': _merchantName ?? 'common.unnamed'.tr(),
+                  },
+                ),
               });
             },
             child: Container(

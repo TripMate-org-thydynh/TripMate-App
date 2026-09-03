@@ -80,7 +80,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
           _loading = false;
           _error =
               (res is Map ? res['message'] as String? : null) ??
-              'Không xác định được vị trí từ ảnh này.';
+              'photo.no_location'.tr();
         });
       }
     } catch (e) {
@@ -230,7 +230,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                     Expanded(
                       child: _pickBtn(
                         icon: Icons.photo_library_rounded,
-                        label: 'Thư viện',
+                        label: 'common.gallery'.tr(),
                         color: GenZTokens.yellow,
                         onTap: () => _pick(ImageSource.gallery),
                       ),
@@ -293,7 +293,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
             border: Border.all(color: _ink, width: 1.5),
           ),
           child: Text(
-            isExif ? 'GPS trong ảnh · chính xác' : 'AI đoán từ hình ảnh',
+            isExif ? 'photo.src_gps'.tr() : 'photo.src_ai'.tr(),
             style: AppFonts.mono(
               fontSize: 10,
               fontWeight: FontWeight.w700,

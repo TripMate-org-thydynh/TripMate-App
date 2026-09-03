@@ -112,7 +112,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                       () => setModalState(() => selectedExpiry = '24h'),
                     ),
                     _optionChip(
-                      '7 ngày',
+                      'invites.days_7'.tr(),
                       selectedExpiry == '7d',
                       () => setModalState(() => selectedExpiry = '7d'),
                     ),
@@ -138,17 +138,17 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                       () => setModalState(() => selectedMaxUses = null),
                     ),
                     _optionChip(
-                      '1 lần',
+                      'invites.uses_1'.tr(),
                       selectedMaxUses == 1,
                       () => setModalState(() => selectedMaxUses = 1),
                     ),
                     _optionChip(
-                      '5 lần',
+                      'invites.uses_5'.tr(),
                       selectedMaxUses == 5,
                       () => setModalState(() => selectedMaxUses = 5),
                     ),
                     _optionChip(
-                      '10 lần',
+                      'invites.uses_10'.tr(),
                       selectedMaxUses == 10,
                       () => setModalState(() => selectedMaxUses = 10),
                     ),
@@ -251,10 +251,10 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
   void _shareInvite(TripInvite invite) {
     final code = invite.code;
     Share.share(
-      'Tham gia chuyến "${widget.tripName}" trên TripMate!\n'
-      'Dùng mã: $code\n\n'
-      'Hoặc link: https://tripmate.app/join/$code',
-      subject: 'TripMate — Mời tham gia ${widget.tripName}',
+      'invites.share_body'.tr(
+        namedArgs: {'name': widget.tripName, 'code': code},
+      ),
+      subject: 'invites.share_subject'.tr(namedArgs: {'trip': widget.tripName}),
     );
   }
 
@@ -422,7 +422,13 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Hết hạn: ${DateFormat('dd/MM HH:mm').format(invite.expiresAt!)}',
+                            'invites.expires_at'.tr(
+                              namedArgs: {
+                                'at': DateFormat(
+                                  'dd/MM HH:mm',
+                                ).format(invite.expiresAt!),
+                              },
+                            ),
                             style: AppFonts.body(fontSize: 12, color: _textSec),
                           ),
                           const SizedBox(width: 12),
@@ -435,7 +441,12 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${invite.useCount}/${invite.maxUses} lượt',
+                            'invites.uses_count'.tr(
+                              namedArgs: {
+                                'used': '${invite.useCount}',
+                                'max': '${invite.maxUses}',
+                              },
+                            ),
                             style: AppFonts.body(fontSize: 12, color: _textSec),
                           ),
                         ],

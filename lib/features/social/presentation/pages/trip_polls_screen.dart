@@ -57,7 +57,7 @@ class TripPollsScreen extends ConsumerWidget {
               autofocus: true,
               style: AppFonts.body(color: _textPri),
               decoration: InputDecoration(
-                hintText: 'Câu hỏi (vd: Ăn gì tối nay?)',
+                hintText: 'polls.question_hint'.tr(),
                 hintStyle: AppFonts.body(color: _textSec),
               ),
             ),
@@ -68,7 +68,7 @@ class TripPollsScreen extends ConsumerWidget {
               maxLines: 5,
               style: AppFonts.body(color: _textPri),
               decoration: InputDecoration(
-                hintText: 'Mỗi lựa chọn 1 dòng\nLẩu\nNướng\nPizza',
+                hintText: 'polls.options_hint'.tr(),
                 hintStyle: AppFonts.body(color: _textSec),
               ),
             ),
@@ -353,7 +353,7 @@ class TripPollsScreen extends ConsumerWidget {
           }),
           const SizedBox(height: 4),
           Text(
-            '$total lượt vote',
+            'polls.vote_count'.tr(namedArgs: {'n': '$total'}),
             style: AppFonts.body(fontSize: 12, color: _textSec),
           ),
         ],

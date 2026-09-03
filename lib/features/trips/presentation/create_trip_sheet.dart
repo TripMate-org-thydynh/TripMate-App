@@ -116,7 +116,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
     try {
       if (_tab == 0) {
         if (_name.text.trim().isEmpty || _range == null) {
-          _snack('Nhập tên chuyến và chọn ngày nhé', error: true);
+          _snack('trips.need_name_dates'.tr(), error: true);
           setState(() => _busy = false);
           return;
         }
@@ -146,13 +146,16 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         if (mounted) Navigator.pop(context);
         // Mời squad ngay: chia sẻ mã mời chuyến vừa tạo.
         await Share.share(
-          'Tham gia chuyến "${trip.name}" của tụi mình trên TripMate nha! '
-          'Mã mời: ${trip.inviteCode} ✈️',
-          subject: 'TripMate — Mời tham gia ${trip.name}',
+          'trips.share_body'.tr(
+            namedArgs: {'name': trip.name, 'code': trip.inviteCode},
+          ),
+          subject: 'invites.share_subject'.tr(
+            namedArgs: {'trip': trip.name},
+          ),
         );
       } else {
         if (_code.text.trim().isEmpty) {
-          _snack('Nhập mã mời nhé', error: true);
+          _snack('trips.need_code'.tr(), error: true);
           setState(() => _busy = false);
           return;
         }
@@ -215,7 +218,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
               // Tabs
               Row(
                 children: [
-                  _tabBtn('Tạo chuyến', 0),
+                  _tabBtn('trips.create'.tr(), 0),
                   const SizedBox(width: 10),
                   _tabBtn('Tham gia', 1),
                 ],
@@ -259,7 +262,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                             ),
                           )
                         : Text(
-                            _tab == 0 ? 'Tạo chuyến' : 'Tham gia',
+                            _tab == 0 ? 'trips.create'.tr() : 'Tham gia',
                             style: AppFonts.heading(
                               fontWeight: FontWeight.w800,
                               fontSize: 15,
@@ -277,10 +280,17 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
 
   // ── Số đêm giữa 2 mốc, hiển thị "X ngày Y đêm" ──
   String get _durationLabel {
-    if (_range == null) return 'Chọn ngày đi & về';
+    if (_range == null) return 'trips.pick_dates'.tr();
     final nights = _range!.end.difference(_range!.start).inDays;
     final days = nights + 1;
-    return '${_fmt(_range!.start)} → ${_fmt(_range!.end)}  ·  $days ngày $nights đêm';
+    return 'trips.range_days_nights'.tr(
+      namedArgs: {
+        'from': _fmt(_range!.start),
+        'to': _fmt(_range!.end),
+        'days': '$days',
+        'nights': '$nights',
+      },
+    );
   }
 
   Widget _buildJoinForm() {
@@ -302,15 +312,15 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _label('Tên chuyến'),
+        _label('trips.name_label'.tr()),
         _field(_name, 'trips.name_hint'.tr(), PhosphorIcons.airplaneTilt()),
         const SizedBox(height: 14),
 
         _label('trips.destination'.tr()),
-        _field(_destination, 'vd: Đà Lạt, Lâm Đồng', PhosphorIcons.mapPin()),
+        _field(_destination, 'trips.destination_hint'.tr(), PhosphorIcons.mapPin()),
         const SizedBox(height: 14),
 
-        _label('Thời gian'),
+        _label('trips.dates_label'.tr()),
         GestureDetector(
           onTap: _pickDates,
           child: Container(
@@ -336,7 +346,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         ),
         const SizedBox(height: 16),
 
-        _label('Ảnh bìa (mood)'),
+        _label('trips.cover_label'.tr()),
         SizedBox(
           height: 96,
           child: ListView.separated(
@@ -487,7 +497,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
             maxLines: 2,
             style: AppFonts.body(color: _textPri, fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Kế hoạch, lưu ý cho cả nhóm...',
+              hintText: 'trips.description_hint'.tr(),
               hintStyle: AppFonts.body(color: _textSec),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
@@ -516,8 +526,8 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                 Expanded(
                   child: Text(
                     _isPublic
-                        ? 'Công khai · ai có link cũng xem được'
-                        : 'Riêng tư · chỉ thành viên squad',
+                        ? 'trips.public_desc'.tr()
+                        : 'trips.private_desc'.tr(),
                     style: AppFonts.body(
                       fontSize: 13,
                       color: _textPri,

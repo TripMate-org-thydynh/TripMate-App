@@ -100,7 +100,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                 controller: nameCtrl,
                 style: AppFonts.body(fontSize: 14, color: _ink),
                 decoration: InputDecoration(
-                  hintText: 'Tên tài liệu (vé máy bay, passport...)',
+                  hintText: 'documents.name_hint'.tr(),
                   hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),

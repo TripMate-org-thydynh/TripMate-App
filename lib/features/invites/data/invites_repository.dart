@@ -48,9 +48,9 @@ class TripInvite {
 
   String get statusLabel {
     if (!isActive) return 'invites.status_disabled'.tr();
-    if (isExpired) return 'Hết hạn';
+    if (isExpired) return 'invites.expired'.tr();
     if (isExhausted) return 'invites.status_exhausted'.tr();
-    return 'Còn hiệu lực';
+    return 'invites.active'.tr();
   }
 }
 

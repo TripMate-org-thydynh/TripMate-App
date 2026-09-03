@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 /// Model Trip — khớp response BE (`trips` module).
 class Trip {
   final String id;
@@ -89,7 +90,7 @@ class TripMemberLite {
     final u = user is Map ? user.cast<String, dynamic>() : json;
     return TripMemberLite(
       id: u['id'] as String? ?? '',
-      name: u['name'] as String? ?? 'Ẩn danh',
+      name: u['name'] as String? ?? 'common.anonymous'.tr(),
       avatarUrl: u['avatarUrl'] as String?,
       role: json['role'] as String? ?? 'MEMBER',
     );

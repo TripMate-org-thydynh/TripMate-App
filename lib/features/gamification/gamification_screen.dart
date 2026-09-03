@@ -112,7 +112,7 @@ class GamificationScreen extends StatelessWidget {
                   context,
                   'Random Dare',
                   'gamification.random_challenge'.tr(),
-                  const RandomDareGeneratorScreen(),
+                  RandomDareGeneratorScreen(),
                   isDark,
                   GenZTokens.orange,
                 ),

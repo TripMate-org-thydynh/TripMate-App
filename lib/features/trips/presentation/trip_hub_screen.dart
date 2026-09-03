@@ -154,9 +154,9 @@ class TripHubScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      _stat('${trip.durationDays}', 'ngày'),
+                      _stat('${trip.durationDays}', 'common.day_unit'.tr()),
                       const SizedBox(width: 12),
-                      _stat('${trip.memberCount}', 'thành viên'),
+                      _stat('${trip.memberCount}', 'trips.members_unit'.tr()),
                       const SizedBox(width: 12),
                       _stat(
                         trip.inviteCode,
@@ -267,7 +267,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.scales(PhosphorIconsStyle.fill),
                         'expense.split_title'.tr(),
-                        'Số dư & quyết toán',
+                        'hub.balances'.tr(),
                         const Color(0xFFF5822B),
                         () => TripBalancesScreen(
                           tripId: trip.id,
@@ -278,8 +278,8 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
-                        'Bình chọn',
-                        'Quyết định nhóm',
+                        'hub.polls'.tr(),
+                        'hub.polls_sub'.tr(),
                         const Color(0xFF8B4DE8),
                         () => TripPollsScreen(
                           tripId: trip.id,
@@ -290,7 +290,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.heart(PhosphorIconsStyle.fill),
                         'Wishlist',
-                        'Nơi muốn đi',
+                        'hub.wishlist_sub'.tr(),
                         const Color(0xFF1FA85C),
                         () => TripWishlistScreen(
                           tripId: trip.id,
@@ -301,7 +301,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
                         'itinerary.title'.tr(),
-                        'Kế hoạch từng ngày',
+                        'hub.itinerary_sub'.tr(),
                         const Color(0xFF3D8BFF),
                         () => TripItineraryScreen(
                           tripId: trip.id,
@@ -311,8 +311,8 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
-                        'Bản đồ',
-                        'Điểm dừng trên map',
+                        'hub.map'.tr(),
+                        'hub.map_sub'.tr(),
                         const Color(0xFF1FA85C),
                         () => TripMapScreen(
                           tripId: trip.id,
@@ -323,7 +323,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.camera(PhosphorIconsStyle.fill),
                         'moments.title'.tr(),
-                        'Ảnh & kỷ niệm',
+                        'hub.moments'.tr(),
                         const Color(0xFFD6248C),
                         () => TripMomentsFeedScreen(
                           tripId: trip.id,
@@ -334,7 +334,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.chatCircle(PhosphorIconsStyle.fill),
                         'Squad Chat',
-                        'Trò chuyện realtime',
+                        'hub.chat_sub'.tr(),
                         const Color(0xFF6366F1),
                         () => TripChatLiveScreen(
                           tripId: trip.id,
@@ -345,7 +345,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.suitcaseRolling(PhosphorIconsStyle.fill),
                         'packing.title'.tr(),
-                        'Packing list nhóm',
+                        'hub.packing_sub'.tr(),
                         const Color(0xFF06B6D4),
                         () => TripPackingScreen(
                           tripId: trip.id,
@@ -355,8 +355,8 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.listChecks(PhosphorIconsStyle.fill),
-                        'Việc cần làm',
-                        'To-do nhóm',
+                        'hub.todos'.tr(),
+                        'hub.todos_sub'.tr(),
                         const Color(0xFF8B4DE8),
                         () => TripTodosScreen(
                           tripId: trip.id,
@@ -367,7 +367,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.ticket(PhosphorIconsStyle.fill),
                         'reservations.title'.tr(),
-                        'Máy bay, khách sạn...',
+                        'hub.reservations_sub'.tr(),
                         const Color(0xFF8B4DE8),
                         () => TripReservationsScreen(
                           tripId: trip.id,
@@ -377,8 +377,8 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.note(PhosphorIconsStyle.fill),
-                        'Ghi chú chung',
-                        'Sticky notes nhóm',
+                        'hub.notes'.tr(),
+                        'hub.notes_sub'.tr(),
                         const Color(0xFFFFD84D),
                         () => TripNotesScreen(
                           tripId: trip.id,
@@ -389,7 +389,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.checkSquare(PhosphorIconsStyle.fill),
                         'checkins.title'.tr(),
-                        'Điểm danh theo ngày',
+                        'hub.checkins_sub'.tr(),
                         const Color(0xFF1FA85C),
                         () => TripCheckinsScreen(
                           tripId: trip.id,
@@ -401,7 +401,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.file(PhosphorIconsStyle.fill),
                         'trips.hub_documents'.tr(),
-                        'Kho vé & Booking',
+                        'hub.reservations'.tr(),
                         const Color(0xFF3D8BFF),
                         () => TripDocumentsScreen(
                           tripId: trip.id,
@@ -412,7 +412,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
                         'trips.hub_journal'.tr(),
-                        'Ảnh & Kỷ niệm nhóm',
+                        'hub.moments_sub'.tr(),
                         const Color(0xFFCF9FFF),
                         () => TripJournalScreen(
                           tripId: trip.id,
@@ -423,15 +423,15 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.calendar(PhosphorIconsStyle.fill),
                         'trips.hub_leave_days'.tr(),
-                        'Nghỉ phép thông minh',
+                        'hub.vacay'.tr(),
                         const Color(0xFFF5822B),
                         () => VacayScreen(isDarkMode: isDarkMode),
                       ),
                       _tile(
                         context,
                         PhosphorIcons.link(PhosphorIconsStyle.fill),
-                        'Mã mời có hạn',
-                        'Quản lý link mời',
+                        'invites.limited_code'.tr(),
+                        'invites.manage'.tr(),
                         const Color(0xFFFF7E7E),
                         () => TripInvitesScreen(
                           tripId: trip.id,
@@ -443,7 +443,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.shareNetwork(PhosphorIconsStyle.fill),
                         'trips.hub_invite_squad'.tr(),
-                        'Mã: ${trip.inviteCode}',
+                        'trips.code_label'.tr(namedArgs: {'code': trip.inviteCode}),
                         const Color(0xFFFFD84D),
                         null,
                       ),
@@ -510,9 +510,12 @@ class TripHubScreen extends StatelessWidget {
         HapticFeedback.selectionClick();
         if (builder == null) {
           Share.share(
-            'Tham gia chuyến "${trip.name}" của tụi mình trên TripMate nha! '
-            'Mã mời: ${trip.inviteCode} ✈️',
-            subject: 'TripMate — Mời tham gia ${trip.name}',
+            'trips.share_body'.tr(
+              namedArgs: {'name': trip.name, 'code': trip.inviteCode},
+            ),
+            subject: 'invites.share_subject'.tr(
+              namedArgs: {'trip': trip.name},
+            ),
           );
           return;
         }

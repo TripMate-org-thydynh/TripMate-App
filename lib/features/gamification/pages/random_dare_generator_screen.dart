@@ -17,32 +17,37 @@ class RandomDareGeneratorScreen extends ConsumerStatefulWidget {
 
 class _RandomDareGeneratorScreenState
     extends ConsumerState<RandomDareGeneratorScreen> {
-  static const Map<String, List<String>> _daresByLevel = {
+  /// Danh sách thử thách theo mức độ.
+  ///
+  /// Phải là **getter**, không phải `static` field: một field tĩnh chỉ khởi tạo
+  /// một lần nên sẽ giữ nguyên bản dịch của ngôn ngữ lúc mở app đầu tiên —
+  /// người dùng đổi VI/EN thì danh sách vẫn kẹt ở ngôn ngữ cũ.
+  Map<String, List<String>> get _daresByLevel => {
     'Chill 🥤': [
-      'Uống hết ly nước này trong 5 giây! 🍺',
-      'Hát một bài hát thiếu nhi bằng giọng em bé! 🎤',
-      'Kể một trò đùa dở nhất mà bạn biết! 🤡',
-      'Bắt chước âm thanh của 3 con vật khác nhau! 🐶🐱🐔',
-      'Kể một sự thật đáng xấu hổ về bản thân! 🙈',
+      'dares.d1'.tr(),
+      'dares.d2'.tr(),
+      'dares.d3'.tr(),
+      'dares.d4'.tr(),
+      'dares.d5'.tr(),
     ],
     'Chaos ⚡': [
-      'Chụp ảnh dìm hàng {friend} và đăng lên Realtime Feed! 📸',
-      'Nắm tay {friend} trong vòng 1 phút! 🤝',
-      'Để cả nhóm vẽ bậy lên mặt bằng son! 💄',
-      'Nói "Anh yêu em" hoặc "Em yêu anh" với {friend} cực sến súa! 💖',
-      'Cho {friend} mượn điện thoại lướt lịch sử tìm kiếm 2 phút! 📱🔍',
+      'dares.d6'.tr(),
+      'dares.d7'.tr(),
+      'dares.d8'.tr(),
+      'dares.d9'.tr(),
+      'dares.d10'.tr(),
     ],
     'Extreme 💀': [
-      'Gọi điện cho crush (hoặc người yêu cũ) hát bài "Happy Birthday"! 📞🎂',
-      'Để {friend} đăng status hài hước lên Facebook của bạn! 📝💬',
-      'Đồng ý làm mọi yêu cầu của {friend} trong 5 phút! 🫡',
-      'Uống cốc nước trộn 3 loại gia vị do nhóm tự chọn! 🤢',
-      'Mặc ngược áo hoặc đội mũ bảo hiểm ngược đi quanh phòng 1 vòng! 👕🪖',
+      'dares.d11'.tr(),
+      'dares.d12'.tr(),
+      'dares.d13'.tr(),
+      'dares.d14'.tr(),
+      'dares.d15'.tr(),
     ],
   };
 
   String _selectedLevel = 'Chill 🥤';
-  String _currentDare = 'Nhấn nút đỏ bên dưới để bốc thử thách!';
+  late String _currentDare = 'games.dare_press_red'.tr();
   bool _isGenerating = false;
   double _shakeX = 0.0;
   double _shakeY = 0.0;
@@ -200,7 +205,7 @@ class _RandomDareGeneratorScreenState
                               setState(() {
                                 _selectedLevel = level;
                                 _currentDare =
-                                    'Nhấn nút bên dưới để bốc thử thách!';
+                                    'games.dare_press'.tr();
                               });
                             },
                       child: Container(
@@ -262,10 +267,10 @@ class _RandomDareGeneratorScreenState
                     const SizedBox(width: 8),
                     Text(
                       _selectedLevel == 'Chill 🥤'
-                          ? 'Chế độ nhẹ nhàng vui vẻ'
+                          ? 'games.mode_light'.tr()
                           : _selectedLevel == 'Chaos ⚡'
-                          ? 'Chế độ bắt đầu hỗn loạn'
-                          : 'Chế độ cực kỳ nguy hiểm!',
+                          ? 'games.mode_chaos'.tr()
+                          : 'games.mode_extreme'.tr(),
                       style: AppFonts.heading(
                         color: activeColor,
                         fontSize: 12,
@@ -358,7 +363,7 @@ class _RandomDareGeneratorScreenState
                         Icon(Icons.casino, color: GenZTokens.ink, size: 24),
                       const SizedBox(width: 10),
                       Text(
-                        _isGenerating ? 'ĐANG BỐC...' : 'BỐC DARE NGAY!',
+                        _isGenerating ? 'games.dare_drawing'.tr() : 'games.dare_draw_now'.tr(),
                         style: AppFonts.heading(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,

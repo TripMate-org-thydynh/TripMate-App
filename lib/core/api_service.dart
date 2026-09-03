@@ -111,15 +111,22 @@ class ApiService {
         e.type == DioExceptionType.connectionError ||
         e.error is SocketException;
     if (isNetwork) return;
-    // 401 đã được _handleUnauthorized() thông báo — tránh hiện 2 snackbar.
-    if (e.response?.statusCode == 401) return;
+    // 401 khi ĐANG có phiên = phiên hết hạn, `_handleUnauthorized()` đã báo rồi
+    // nên bỏ qua để không hiện hai snackbar.
+    //
+    // Nhưng 401 khi CHƯA có phiên là "sai thông tin đăng nhập" — và
+    // `_handleUnauthorized()` không chạy nhánh đó (nó yêu cầu `authToken != null`).
+    // Trước đây chỗ này bỏ qua mọi 401, nên đăng nhập sai mật khẩu thì cả hai
+    // nhánh cùng im lặng: người dùng bấm "Đăng nhập" và không thấy gì xảy ra
+    // (BUG-001). Phải để lỗi này đi tiếp xuống snackbar.
+    if (e.response?.statusCode == 401 && authToken != null) return;
     String? msg;
     final data = e.response?.data;
     if (data is Map && data['message'] != null) {
       final m = data['message'];
       msg = m is List ? m.join(', ') : m.toString();
     }
-    showGlobalSnack(msg ?? 'Có lỗi xảy ra. Vui lòng thử lại.', isError: true);
+    showGlobalSnack(msg ?? 'errors.generic'.tr(), isError: true);
   }
 
   static Future<dynamic> get(String path) async {

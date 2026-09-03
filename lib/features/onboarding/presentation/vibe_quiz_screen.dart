@@ -35,50 +35,50 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
   ];
 
   final List<_Question> _questions = [
-    _Question('Chuyến đi lý tưởng là?', [
-      _Choice('Chill & thư giãn', PhosphorIcons.leaf(PhosphorIconsStyle.fill)),
+    _Question('onboarding.q_trip'.tr(), [
+      _Choice('onboarding.a_chill'.tr(), PhosphorIcons.leaf(PhosphorIconsStyle.fill)),
       _Choice(
-        'Chaos & quẩy hết mình',
+        'onboarding.a_chaos'.tr(),
         PhosphorIcons.flame(PhosphorIconsStyle.fill),
       ),
     ]),
-    _Question('Buổi tối bạn chọn?', [
+    _Question('onboarding.q_night'.tr(), [
       _Choice(
-        'Cafe acoustic yên tĩnh',
+        'onboarding.a_cafe'.tr(),
         PhosphorIcons.coffee(PhosphorIconsStyle.fill),
       ),
       _Choice(
-        'Bar rooftop sôi động',
+        'onboarding.a_bar'.tr(),
         PhosphorIcons.martini(PhosphorIconsStyle.fill),
       ),
     ]),
-    _Question('Ăn uống thì?', [
+    _Question('onboarding.q_food'.tr(), [
       _Choice(
-        'Street food bản địa',
+        'onboarding.a_street'.tr(),
         PhosphorIcons.forkKnife(PhosphorIconsStyle.fill),
       ),
       _Choice(
-        'Nhà hàng aesthetic',
+        'onboarding.a_restaurant'.tr(),
         PhosphorIcons.cookingPot(PhosphorIconsStyle.fill),
       ),
     ]),
-    _Question('Ngân sách của bạn?', [
+    _Question('onboarding.q_budget'.tr(), [
       _Choice(
-        'Tiết kiệm hết mức',
+        'onboarding.vibe_budget_max'.tr(),
         PhosphorIcons.piggyBank(PhosphorIconsStyle.fill),
       ),
       _Choice(
-        'Chịu chơi chút cũng được',
+        'onboarding.a_splurge'.tr(),
         PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
       ),
     ]),
-    _Question('Bạn lưu kỷ niệm kiểu?', [
+    _Question('onboarding.q_memories'.tr(), [
       _Choice(
-        'Chụp choẹt sống ảo',
+        'onboarding.a_photos'.tr(),
         PhosphorIcons.camera(PhosphorIconsStyle.fill),
       ),
       _Choice(
-        'Sống trọn khoảnh khắc',
+        'onboarding.a_present'.tr(),
         PhosphorIcons.heart(PhosphorIconsStyle.fill),
       ),
     ]),
@@ -143,7 +143,12 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
               const SizedBox(height: 40),
 
               PillTag(
-                text: 'Câu ${_step + 1}/${_questions.length}',
+                text: 'onboarding.question_n'.tr(
+                  namedArgs: {
+                    'i': '${_step + 1}',
+                    'total': '${_questions.length}',
+                  },
+                ),
                 color: GenZTokens.paper,
               ),
               const SizedBox(height: GenZTokens.space3),

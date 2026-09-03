@@ -130,13 +130,13 @@ class TripReservationsScreen extends ConsumerWidget {
         actions: [
           // Booking-import: dán email vé → AI tự tách.
           IconButton(
-            tooltip: 'Dán vé cho AI tách',
+            tooltip: 'reservations.paste_ticket'.tr(),
             onPressed: () => _importBooking(context, ref),
             icon: Icon(PhosphorIconsFill.sparkle, color: _primary),
           ),
           // Booking-import từ ảnh (Gemini vision).
           IconButton(
-            tooltip: 'Chụp / chọn ảnh vé',
+            tooltip: 'reservations.ticket_photo'.tr(),
             onPressed: () => _importFromImage(context, ref),
             icon: Icon(PhosphorIconsFill.camera, color: _primary),
           ),
@@ -298,7 +298,7 @@ class TripReservationsScreen extends ConsumerWidget {
             _actionTile(
               ctx,
               cancelled ? Icons.check_circle_outline : Icons.cancel_outlined,
-              cancelled ? 'Khôi phục (đã xác nhận)' : 'Đánh dấu đã huỷ',
+              cancelled ? 'reservations.restore_confirmed'.tr() : 'reservations.mark_cancelled'.tr(),
               'toggle',
             ),
             _actionTile(
@@ -368,7 +368,7 @@ class TripReservationsScreen extends ConsumerWidget {
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Xoá "${r.title}"?',
+          'common.delete_confirm'.tr(namedArgs: {'name': r.title}),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             color: _textPri,
@@ -440,7 +440,7 @@ class TripReservationsScreen extends ConsumerWidget {
               style: AppFonts.body(color: _textPri, fontSize: 13),
               decoration: InputDecoration(
                 hintText:
-                    'VD: Vé VN213 SGN 08:15 → HAN 10:20 ngày 20/07, mã ABCDEF...',
+                    'reservations.paste_hint'.tr(),
                 hintStyle: AppFonts.body(color: _textSec, fontSize: 12),
                 filled: true,
                 fillColor: _bgOf(context),
@@ -487,11 +487,11 @@ class TripReservationsScreen extends ConsumerWidget {
     final exps = result['expensesCreated'] ?? 0;
     String msg;
     if (created == 0) {
-      msg = 'AI chưa nhận ra đặt chổ nào — thử dán rõ hơn';
+      msg = 'reservations.ai_none_text'.tr();
     } else if (exps > 0) {
-      msg = 'Đã thêm $created đặt chỗ và tự tạo $exps chi phí 💰';
+      msg = 'reservations.added_with_expenses'.tr(namedArgs: {'n': '\$created', 'e': '\$exps'});
     } else {
-      msg = 'Đã thêm $created đặt chỗ từ vé 🎫';
+      msg = 'reservations.added_from_ticket'.tr(namedArgs: {'n': '\$created'});
     }
     messenger.showSnackBar(
       SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
@@ -534,7 +534,7 @@ class TripReservationsScreen extends ConsumerWidget {
                   child: _sourceBtn(
                     ctx,
                     icon: PhosphorIconsFill.images,
-                    label: 'Thư viện',
+                    label: 'common.gallery'.tr(),
                     source: ImageSource.gallery,
                   ),
                 ),
@@ -543,7 +543,7 @@ class TripReservationsScreen extends ConsumerWidget {
                   child: _sourceBtn(
                     ctx,
                     icon: PhosphorIconsFill.camera,
-                    label: 'Chụp ảnh',
+                    label: 'common.take_photo'.tr(),
                     source: ImageSource.camera,
                   ),
                 ),
@@ -588,11 +588,13 @@ class TripReservationsScreen extends ConsumerWidget {
       final exps = result['expensesCreated'] ?? 0;
       String msg;
       if (created == 0) {
-        msg = 'AI chưa nhận ra vé trong ảnh này — thử ảnh khác';
+        msg = 'reservations.ai_none_image'.tr();
       } else if (exps > 0) {
-        msg = 'Đã thêm $created đặt chỗ và tự tạo $exps chi phí 💰';
+        msg = 'reservations.added_with_expenses'.tr(namedArgs: {'n': '\$created', 'e': '\$exps'});
       } else {
-        msg = 'Đã nhận dạng $created đặt chỗ từ ảnh 🎫';
+        msg = 'reservations.detected_from_image'.tr(
+          namedArgs: {'n': '$created'},
+        );
       }
       messenger.showSnackBar(
         SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
@@ -739,16 +741,16 @@ class TripReservationsScreen extends ConsumerWidget {
                   autofocus: true,
                 ),
                 const SizedBox(height: 10),
-                _field(context, locCtrl, 'Địa điểm / nhà ga (tuỳ chọn)'),
+                _field(context, locCtrl, 'reservations.place_hint'.tr()),
                 const SizedBox(height: 10),
-                _field(context, confCtrl, 'Mã xác nhận (tuỳ chọn)'),
+                _field(context, confCtrl, 'reservations.ref_hint'.tr()),
                 const SizedBox(height: 10),
-                _field(context, urlCtrl, 'Link vé (tuỳ chọn)'),
+                _field(context, urlCtrl, 'reservations.link_hint'.tr()),
                 const SizedBox(height: 10),
                 _field(
                   context,
                   priceCtrl,
-                  'Giá tiền (tuỳ chọn — tự chia cho nhóm)',
+                  'reservations.price_hint'.tr(),
                   number: true,
                 ),
                 const SizedBox(height: 12),
@@ -794,7 +796,7 @@ class TripReservationsScreen extends ConsumerWidget {
                         const SizedBox(width: 10),
                         Text(
                           when == null
-                              ? 'Chọn ngày & giờ (tuỳ chọn)'
+                              ? 'reservations.datetime_hint'.tr()
                               : _fmtDate(when!),
                           style: AppFonts.body(
                             fontWeight: FontWeight.w600,

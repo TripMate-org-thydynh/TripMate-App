@@ -273,10 +273,17 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                             Expanded(
                               child: Text(
                                 _isLoadingAddress
-                                    ? 'Đang lấy địa chỉ...'
+                                    ? 'photo.resolving'.tr()
                                     : (_selectedAddress ??
                                           _selectedMoment!.placeName ??
-                                          'Tọa độ: ${_selectedMoment!.latitude!.toStringAsFixed(4)}, ${_selectedMoment!.longitude!.toStringAsFixed(4)}'),
+                                          'photo.coords'.tr(
+                                            namedArgs: {
+                                              'lat': _selectedMoment!.latitude!
+                                                  .toStringAsFixed(4),
+                                              'lng': _selectedMoment!.longitude!
+                                                  .toStringAsFixed(4),
+                                            },
+                                          )),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppFonts.mono(

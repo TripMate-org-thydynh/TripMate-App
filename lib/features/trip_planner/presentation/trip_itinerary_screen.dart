@@ -93,7 +93,7 @@ class TripItineraryScreen extends ConsumerWidget {
                   controller: placeCtrl,
                   style: AppFonts.body(color: _textPri),
                   decoration: InputDecoration(
-                    hintText: 'Tên địa điểm',
+                    hintText: 'itinerary.place_name'.tr(),
                     hintStyle: AppFonts.body(color: _textSec),
                   ),
                 ),
@@ -101,7 +101,7 @@ class TripItineraryScreen extends ConsumerWidget {
                   controller: addrCtrl,
                   style: AppFonts.body(color: _textPri),
                   decoration: InputDecoration(
-                    hintText: 'Địa chỉ (tuỳ chọn)',
+                    hintText: 'itinerary.place_address'.tr(),
                     hintStyle: AppFonts.body(color: _textSec),
                   ),
                 ),
@@ -224,7 +224,10 @@ class TripItineraryScreen extends ConsumerWidget {
                   if (grouped.isEmpty) return _empty();
                   final days = grouped.keys.toList()..sort();
                   return ListView(
-                    padding: const EdgeInsets.all(20),
+                    // Chừa chỗ cho FAB "Thêm điểm" (BUG-006).
+                    padding: const EdgeInsets.all(
+                      20,
+                    ).copyWith(bottom: 96),
                     children: [
                       for (final day in days) ...[
                         _dayHeader(context, day, grouped[day]!),
@@ -256,7 +259,7 @@ class TripItineraryScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(99),
         ),
         child: Text(
-          'Ngày $day',
+          'common.day_n'.tr(namedArgs: {'n': '$day'}),
           style: AppFonts.heading(
             fontSize: 13,
             fontWeight: FontWeight.w800,
@@ -449,7 +452,9 @@ class TripItineraryScreen extends ConsumerWidget {
                     style: AppFonts.body(fontSize: 12, color: _textSec),
                   ),
                 Text(
-                  '${it.durationMinutes} phút',
+                  'itinerary.minutes'.tr(
+                    namedArgs: {'n': '${it.durationMinutes}'},
+                  ),
                   style: AppFonts.body(fontSize: 11, color: _textSec),
                 ),
               ],

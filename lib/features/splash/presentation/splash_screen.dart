@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:math' as math;
@@ -141,15 +142,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             right: 0,
             child: FadeTransition(
               opacity: _fadeAnimation,
-              child: const Center(
+              child: Center(
                 child: Wrap(
                   alignment: WrapAlignment.center,
                   spacing: GenZTokens.space2,
                   runSpacing: GenZTokens.space2,
                   children: [
                     PillTag(text: 'plan chill', color: GenZTokens.paper),
-                    PillTag(text: 'chia tiền ez', color: GenZTokens.lilac),
-                    PillTag(text: 'lưu moment', color: GenZTokens.pink),
+                    PillTag(text: 'splash.tag_split'.tr(), color: GenZTokens.lilac),
+                    PillTag(text: 'splash.tag_moments'.tr(), color: GenZTokens.pink),
                   ],
                 ),
               ),

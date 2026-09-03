@@ -70,7 +70,7 @@ class _ReferralCampaignScreenState
             ),
             const SizedBox(height: 8),
             Text(
-              'Gửi link này cho bạn thân của cưng. Khi họ tải ứng dụng và tham gia squad, cưng sẽ nhận ngay 1 dấu mốc Elite!',
+              'referral.share_intro'.tr(),
               style: AppFonts.body(
                 fontSize: 12.5,
                 color: Colors.grey,
@@ -149,7 +149,7 @@ class _ReferralCampaignScreenState
           style: AppFonts.heading(fontWeight: FontWeight.bold),
         ),
         content: Text(
-          '1. Chia sẻ link giới thiệu độc quyền của cưng cho 3 đứa bạn.\n\n2. Họ tải app và kết nối tài khoản.\n\n3. Mở khóa TRỌN ĐỜI gói TripMate Elite cực VIP, miễn phí hoàn toàn!',
+          'referral.steps'.tr(),
           style: AppFonts.body(fontSize: 13, height: 1.5),
         ),
         actions: [
@@ -267,7 +267,7 @@ class _ReferralCampaignScreenState
                                   color: textPrimary,
                                 ),
                                 onPressed: () => showGlobalSnack(
-                                  'Tính năng đang được hoàn thiện 🚧',
+                                  'common.feature_wip2'.tr(),
                                 ),
                               ),
                             ),

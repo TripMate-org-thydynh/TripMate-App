@@ -391,7 +391,12 @@ class MyTripsScreen extends ConsumerWidget {
                           if (t.destination != null &&
                               t.destination!.isNotEmpty)
                             t.destination!,
-                          '${t.durationDays} ngày · ${t.memberCount} thành viên',
+                          'trips.days_members'.tr(
+                            namedArgs: {
+                              'days': '${t.durationDays}',
+                              'members': '${t.memberCount}',
+                            },
+                          ),
                         ].join(' · '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

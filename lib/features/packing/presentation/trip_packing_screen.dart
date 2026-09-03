@@ -102,7 +102,7 @@ class TripPackingScreen extends ConsumerWidget {
         backgroundColor: _surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Xoá "${item.name}"?',
+          'common.delete_confirm'.tr(namedArgs: {'name': item.name}),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             color: _textPri,
@@ -170,7 +170,7 @@ class TripPackingScreen extends ConsumerWidget {
                 autofocus: true,
                 style: AppFonts.body(color: _textPri),
                 decoration: InputDecoration(
-                  hintText: 'Tên món đồ',
+                  hintText: 'packing.item_name'.tr(),
                   hintStyle: AppFonts.body(color: _textSec),
                   filled: true,
                   fillColor: _bgOf(context),
@@ -409,8 +409,13 @@ class TripPackingScreen extends ConsumerWidget {
               Expanded(
                 child: Text(
                   done
-                      ? 'Squad sẵn sàng lên đường! 🎒'
-                      : 'Đã xếp ${list.packed}/${list.total} món',
+                      ? 'packing.all_ready'.tr()
+                      : 'packing.packed_count'.tr(
+                          namedArgs: {
+                            'packed': '${list.packed}',
+                            'total': '${list.total}',
+                          },
+                        ),
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w800,
                     fontSize: 15,

@@ -149,7 +149,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                   controller: noteCtrl,
                   style: AppFonts.body(fontSize: 14, color: _ink),
                   decoration: InputDecoration(
-                    hintText: 'Ghi chú (đi Đà Lạt, nghỉ ốm...)',
+                    hintText: 'vacay.note_hint'.tr(),
                     hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -351,12 +351,12 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _summaryCol('Đã nghỉ', '${summary.totalLeave}', 'ngày'),
-                        _summaryCol('Còn lại', '${summary.remaining}', 'ngày'),
+                        _summaryCol('vacay.taken'.tr(), '${summary.totalLeave}', 'common.day_unit'.tr()),
+                        _summaryCol('vacay.remaining'.tr(), '${summary.remaining}', 'common.day_unit'.tr()),
                         _summaryCol(
                           'vacay.holiday_vn'.tr(),
                           '${summary.totalHoliday}',
-                          'ngày',
+                          'common.day_unit'.tr(),
                         ),
                       ],
                     ),
@@ -402,7 +402,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 32),
                   alignment: Alignment.center,
                   child: Text(
-                    'Chưa đăng ký ngày nghỉ nào trong năm $_selectedYear',
+                    'vacay.none_in_year'.tr(namedArgs: {'year': '$_selectedYear'}),
                     style: AppFonts.body(fontSize: 14, color: _textSec),
                   ),
                 )
@@ -507,7 +507,9 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                   ),
                 ),
                 error: (e, _) => Text(
-                  'Lỗi tải gợi ý: ${friendlyError(e)}',
+                  'vacay.load_suggestions_failed'.tr(
+                    namedArgs: {'err': friendlyError(e)},
+                  ),
                   style: AppFonts.body(fontSize: 13, color: Colors.red),
                 ),
                 data: (suggestions) {
@@ -549,7 +551,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Nghỉ bắc cầu: Xin nghỉ ${s.days} ngày',
+                                    'vacay.bridge_days'.tr(namedArgs: {'n': '${s.days}'}),
                                     style: AppFonts.heading(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
@@ -558,7 +560,9 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Từ ${s.from} đến ${s.to} để có kỳ nghỉ dài!',
+                                    'vacay.from_to'.tr(
+                                      namedArgs: {'from': s.from, 'to': s.to},
+                                    ),
                                     style: AppFonts.body(
                                       fontSize: 12,
                                       color: _textSec,

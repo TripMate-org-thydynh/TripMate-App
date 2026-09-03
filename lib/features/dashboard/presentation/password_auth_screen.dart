@@ -47,7 +47,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
     final password = _password.text;
 
     if (username.length < 3) {
-      showGlobalSnack('Username tối thiểu 3 ký tự', isError: true);
+      showGlobalSnack('auth.username_min'.tr(), isError: true);
       return;
     }
     if (password.length < 6) {
@@ -55,7 +55,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
       return;
     }
     if (_isRegister && password != _confirm.text) {
-      showGlobalSnack('Mật khẩu xác nhận không khớp', isError: true);
+      showGlobalSnack('auth.password_mismatch'.tr(), isError: true);
       return;
     }
 
@@ -102,7 +102,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _isRegister ? 'tạo tài khoản.' : 'đăng nhập.',
+                _isRegister ? 'auth.register_title'.tr() : 'auth.login_title'.tr(),
                 style: AppFonts.heading(
                   fontSize: 30,
                   fontWeight: FontWeight.w800,
@@ -113,8 +113,8 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
               const SizedBox(height: 6),
               Text(
                 _isRegister
-                    ? 'Chỉ cần username và mật khẩu là xong.'
-                    : 'Nhập username và mật khẩu của bạn.',
+                    ? 'auth.register_sub'.tr()
+                    : 'auth.login_sub'.tr(),
                 style: AppFonts.body(color: _sub, fontSize: 14),
               ),
               const SizedBox(height: 32),
@@ -139,7 +139,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                 const SizedBox(height: 14),
                 _field(
                   _confirm,
-                  'Xác nhận mật khẩu',
+                  'auth.confirm_password'.tr(),
                   Icons.lock_outline,
                   obscure: _obscure,
                 ),
@@ -180,7 +180,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                           ),
                         )
                       : Text(
-                          _isRegister ? 'Đăng ký & vào app' : 'Đăng nhập',
+                          _isRegister ? 'auth.register_cta'.tr() : 'auth.sign_in'.tr(),
                           style: AppFonts.heading(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -199,12 +199,12 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                   child: Text.rich(
                     TextSpan(
                       text: _isRegister
-                          ? 'Đã có tài khoản? '
-                          : 'Chưa có tài khoản? ',
+                          ? 'auth.have_account'.tr()
+                          : 'auth.no_account_prefix'.tr(),
                       style: AppFonts.body(color: _sub, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: _isRegister ? 'Đăng nhập' : 'Đăng ký',
+                          text: _isRegister ? 'auth.sign_in'.tr() : 'auth.sign_up'.tr(),
                           style: AppFonts.heading(
                             color: _ink,
                             fontWeight: FontWeight.w800,

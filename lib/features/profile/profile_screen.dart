@@ -238,7 +238,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       color: textSecondaryColor,
                     ),
                     children: [
-                      const TextSpan(text: 'Squad Rep: '),
+                      TextSpan(text: '${'profile.squad_rep'.tr()}: '),
                       TextSpan(
                         text: reputation,
                         style: TextStyle(
@@ -764,18 +764,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         ? rawAvatar
         : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}'
               '&background=FFD84D&color=141210&bold=true&size=256';
-    final bio = _userProfile?['bio'] ?? 'Sẵn sàng lên đường ✈️';
+    final bio = _userProfile?['bio'] ?? 'profile.default_bio'.tr();
 
     // Hiển thị số liệu THẬT (mặc định 0 khi backend chưa có), không dùng số giả.
     final totalTrips = _userStats?['totalTrips']?.toString() ?? '0';
-    final totalDistance = _userStats?['totalDistanceKm'] != null
-        ? '${(_userStats!['totalDistanceKm'] as num).toInt()} km'
-        : '0 km';
+    final distanceKm = (_userStats?['totalDistanceKm'] as num?)?.toInt() ?? 0;
+    final totalDistance = '$distanceKm km';
     final repScore = _userStats?['squadReputationScore'] as num?;
     final reputationScore = repScore == null || repScore < 30
         ? 'New'
         : (repScore >= 90 ? 'Legendary' : 'Reliable');
-    final countriesCount = _userStats?['chaosScore']?.toString() ?? '0';
+    // Ô thứ ba từng lấy `chaosScore` rồi gắn nhãn "Countries" — nhãn không hề
+    // khớp dữ liệu (BUG-005): backend chưa bao giờ trả số quốc gia. Nay dùng
+    // `totalPlaces` thật (số điểm lịch trình có toạ độ) và đổi nhãn cho đúng.
+    final placesCount = (_userStats?['totalPlaces'] as num?)?.toInt() ?? 0;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -1181,19 +1183,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                           children: [
                                             _buildActiveBadgeChip(
                                               totalTrips == '0'
-                                                  ? 'Tân binh ✨'
-                                                  : 'Chaos Planner 🔥',
+                                                  ? 'profile.badge_rookie'.tr()
+                                                  : 'profile.badge_planner'
+                                                        .tr(),
                                               const Color(0xFFFF9E80),
                                               isDark,
                                               surfaceColor,
                                             ),
                                             _buildActiveBadgeChip(
                                               reputationScore == 'Legendary'
-                                                  ? 'MVP Payer 💸'
+                                                  ? 'profile.badge_mvp_payer'
+                                                        .tr()
                                                   : (reputationScore ==
                                                             'Reliable'
-                                                        ? 'Đáng tin 🤝'
-                                                        : 'Thành viên mới 🎒'),
+                                                        ? 'profile.badge_reliable'
+                                                              .tr()
+                                                        : 'profile.badge_new_member'
+                                                              .tr()),
                                               secondaryColor,
                                               isDark,
                                               surfaceColor,
@@ -1279,21 +1285,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                             children: [
                                               _buildStatItem(
                                                 totalTrips,
-                                                'Trips',
+                                                'profile.stat_trips'.tr(),
                                                 isDark,
                                                 textPrimaryColor,
                                                 primaryColor,
                                               ),
                                               _buildStatItem(
                                                 totalDistance,
-                                                'Distance',
+                                                'profile.stat_distance'.tr(),
                                                 isDark,
                                                 textPrimaryColor,
                                                 primaryColor,
                                               ),
                                               _buildStatItem(
-                                                countriesCount,
-                                                'Countries',
+                                                '$placesCount',
+                                                'profile.stat_places'.tr(),
                                                 isDark,
                                                 textPrimaryColor,
                                                 primaryColor,
@@ -1577,7 +1583,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         isRare: false,
                                         isLocked: true,
                                         onTap: () => showGlobalSnack(
-                                          'Tính năng đang được hoàn thiện 🚧',
+                                          'common.feature_wip2'.tr(),
                                         ),
                                         primaryColor: primaryColor,
                                       ),
@@ -1586,7 +1592,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                       final isLocked =
                                           badge['unlockedAt'] == null;
                                       final title =
-                                          badge['title'] ?? 'Danh hiệu';
+                                          badge['title'] ?? 'profile.titles'.tr();
 
                                       String emoji = '🏆';
                                       String cleanTitle = title;
