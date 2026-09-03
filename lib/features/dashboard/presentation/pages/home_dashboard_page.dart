@@ -731,7 +731,12 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             loading: () => _tripCoverShell(
               child: const Center(child: CircularProgressIndicator()),
             ),
-            error: (e, _) => _tripCoverEmpty(context),
+            // Loi tai du lieu KHONG duoc ve thanh trang thai rong.
+            //
+            // Truoc day nhanh `error` dung chung widget voi nhanh rong, nen khi
+            // API hong app van bao "Chua co chuyen nao" — che mat loi that va
+            // lam nguoi dung tuong minh chua tao chuyen (BUG-003).
+            error: (e, _) => _tripCoverError(context, ref),
             data: (trips) => trips.isEmpty
                 ? _tripCoverEmpty(context)
                 : _tripCoverReal(context, trips.first),
@@ -876,6 +881,48 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     ),
                   ],
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Tai chuyen that bai → noi ro va cho thu lai.
+  Widget _tripCoverError(BuildContext context, WidgetRef ref) {
+    return _tripCoverShell(
+      onTap: () => ref.invalidate(tripsProvider),
+      child: Container(
+        color: GenZTokens.red,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              size: 36,
+              color: GenZTokens.paper,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'trips.load_failed'.tr(),
+              style: AppFonts.heading(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: GenZTokens.paper,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'common.tap_to_retry'.tr(),
+              style: AppFonts.body(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: GenZTokens.paper,
               ),
             ),
           ],
