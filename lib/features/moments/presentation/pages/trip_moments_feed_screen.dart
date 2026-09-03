@@ -194,7 +194,8 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                       ? Text(
                           m.authorName.characters.first,
                           style: AppFonts.heading(
-                            color: _primaryOf(context),
+                            // Accent chi hop lam nen; lam mau chu tren nen sang thi khong doc ra.
+                            color: _textPri,
                             fontWeight: FontWeight.w800,
                           ),
                         )

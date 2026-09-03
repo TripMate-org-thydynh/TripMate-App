@@ -644,7 +644,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _primary,
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -732,7 +732,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             style: AppFonts.heading(
               fontSize: 16,
               fontWeight: FontWeight.w900,
-              color: _primary,
+              // Accent chi hop lam nen; lam mau chu tren nen sang thi khong doc ra.
+              color: _textPri,
             ),
           ),
         ],

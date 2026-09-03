@@ -933,7 +933,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   child: Text(
                     'auth.send_code'.tr(),
                     style: AppFonts.heading(
-                      color: Colors.white,
+                      // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+                      // vi accent mint la vang thi chu trang chim han.
+                      color: Theme.of(context).colorScheme.onPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),

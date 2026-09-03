@@ -53,7 +53,7 @@ class TripBalancesScreen extends ConsumerWidget {
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primaryOf(context),
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () {
           HapticFeedback.mediumImpact();
           AddExpenseSheet.show(context, tripId, isDarkMode);
@@ -310,7 +310,9 @@ class TripBalancesScreen extends ConsumerWidget {
                   formatMoney(s.amount, locale: context.locale.languageCode),
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w900,
-                    color: _primaryOf(context),
+                    // So tien la thong tin quan trong nhat man nay — phai doc
+                    // duoc. Accent mint la vang, dat tren nen trang thi khong.
+                    color: _textPri,
                     fontSize: 16,
                   ),
                 ),
@@ -338,7 +340,9 @@ class TripBalancesScreen extends ConsumerWidget {
                 'expense.pay_now'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+                  // vi accent mint la vang thi chu trang chim han.
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 13,
                 ),
               ),
@@ -374,7 +378,8 @@ class TripBalancesScreen extends ConsumerWidget {
               b.user.name.isNotEmpty ? b.user.name.characters.first : '?',
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
-                color: _primaryOf(context),
+                // Chu vang tren nen vang nhat (alpha 0.15) gan nhu vo hinh.
+                color: _textPri,
               ),
             ),
           ),

@@ -108,7 +108,7 @@ class TripReservationsScreen extends ConsumerWidget {
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () => _addReservation(context, ref),
         icon: const Icon(Icons.add),
         label: Text(

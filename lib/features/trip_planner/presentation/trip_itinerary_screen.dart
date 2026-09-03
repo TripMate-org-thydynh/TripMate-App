@@ -195,7 +195,7 @@ class TripItineraryScreen extends ConsumerWidget {
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primaryOf(context),
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () => _addItem(context, ref),
         icon: const Icon(Icons.add),
         label: Text(
@@ -269,7 +269,9 @@ class TripItineraryScreen extends ConsumerWidget {
           style: AppFonts.heading(
             fontSize: 13,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+            // vi accent mint la vang thi chu trang chim han.
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
       ),
@@ -428,7 +430,10 @@ class TripItineraryScreen extends ConsumerWidget {
                 style: AppFonts.mono(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: _primaryOf(context),
+                  // Khong dung accent lam mau chu tren nen sang: accent mint la
+                  // vang, doc gan nhu khong ra. Diem nhan mau da nam o vach doc
+                  // ben canh (accent alpha 0.2).
+                  color: _textPri,
                 ),
               ),
             ],

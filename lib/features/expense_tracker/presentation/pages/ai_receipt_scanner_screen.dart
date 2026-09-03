@@ -350,10 +350,12 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.receipt_long,
                           size: 80,
-                          color: Colors.white,
+                          // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+                          // vi accent mint la vang thi chu trang chim han.
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -563,7 +565,9 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                     Text(
                       'expense.apply_amount'.tr(),
                       style: AppFonts.heading(
-                        color: Colors.white,
+                        // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+                        // vi accent mint la vang thi chu trang chim han.
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),

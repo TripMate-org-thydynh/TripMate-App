@@ -129,7 +129,7 @@ class TripPollsScreen extends ConsumerWidget {
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primaryOf(context),
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () => _createPoll(context, ref),
         icon: const Icon(Icons.add),
         label: Text(
@@ -346,7 +346,8 @@ class TripPollsScreen extends ConsumerWidget {
                             style: AppFonts.heading(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
-                              color: _primaryOf(context),
+                              // Accent chi hop lam nen; lam mau chu tren nen sang thi khong doc ra.
+                              color: _textPri,
                             ),
                           ),
                         ],

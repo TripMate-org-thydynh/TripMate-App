@@ -545,7 +545,9 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 ),
                 child: Icon(
                   PhosphorIcons.paperPlaneRight(PhosphorIconsStyle.fill),
-                  color: Colors.white,
+                  // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+                  // vi accent mint la vang thi chu trang chim han.
+                  color: Theme.of(context).colorScheme.onPrimary,
                   size: 22,
                 ),
               ),

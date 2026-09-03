@@ -264,7 +264,7 @@ class TripTodosScreen extends ConsumerWidget {
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
-        foregroundColor: Colors.white,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () => _addTodo(context, ref),
         icon: const Icon(Icons.add),
         label: Text(
