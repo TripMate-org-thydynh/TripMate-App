@@ -437,7 +437,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 size: 20,
               ),
               onPressed: widget.onThemeToggle,
-              tooltip: 'Toggle Theme',
+              tooltip: 'theme.toggle'.tr(),
             )
           else
             const SizedBox(width: 48),

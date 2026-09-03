@@ -36,6 +36,7 @@
     "budget_pace_ok": "Steady",
     "budget_pace_slow": "Slow",
     "budget_sub": "Budget helper that roasts your spending",
+    "budget_title": "AI budget assistant",
     "budget_top_post": "on {} ({})",
     "budget_top_pre": "Biggest share:",
     "budget_total": "Total spent",
@@ -47,6 +48,7 @@
     "caption_redone": "Fresh captions cooked up! 🍳",
     "caption_tagline": "turning chaos into poetry ✨",
     "chat_sub": "Delightfully chaotic chats with Matey AI",
+    "companion_mode": "Companion mode",
     "critical_insight": "CRITICAL INSIGHT",
     "drama_sub": "Track squad tension and drama in real time",
     "generate_captions": "Generate captions with AI",
@@ -100,7 +102,8 @@
     "vibe_match_sub": "Measure how well your squad clicks",
     "vibe_placeholder": "e.g. hillside coffee shop in Da Lat",
     "vibe_title": "Vibe Match ✨",
-    "workspace_sub": "Recap renders and receipt parsing running in the background"
+    "workspace_sub": "Recap renders and receipt parsing running in the background",
+    "wrapped_title": "Trip Wrapped"
   },
   "ai_hub": {
     "boost": "Boost ⚡",
@@ -865,20 +868,25 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "auto_sorter": "AI auto-sorter",
     "cam_hint": "Tap to snap · Hold to record",
     "cam_none": "No camera found on this device.",
     "cam_title": "Squad Cam",
     "caption_hint": "Say something about this one...",
     "caption_saved": "Caption saved 🪄",
     "caption_short": "Add a line...",
+    "caption_studio": "AI caption studio",
+    "caption_studio_sub": "Witty caption roasts",
     "empty": "No moments yet",
     "empty_sub": "Snap something to remember the trip by!",
     "from_gallery": "Gallery",
     "hub_menu": "Collections",
     "load_failed": "Couldn't load moments",
     "no_caption": "This photo has no caption yet.",
+    "photo_map": "Photo map",
     "photo_map_empty_body": "Post a moment with a location so the squad can see the route on the map.",
     "photo_map_empty_title": "No geotagged photos yet",
+    "photo_map_sub": "Moments on the map",
     "pick_hint": "Pick a photo to post",
     "post": "Post",
     "post_title": "Post a moment 📸",
@@ -1090,10 +1098,13 @@
     "atlas_streak": "TRAVEL STREAK",
     "avatar_changed": "🎨 New random avatar applied!",
     "backup_title": "Offline JSON backup & restore",
+    "badge_chaos_king": "Chaos king",
     "badge_condition": "Requirement",
     "badge_locked": "Not unlocked yet",
+    "badge_locked_name": "Locked badge",
     "badge_mvp_payer": "MVP payer",
     "badge_new_member": "New member",
+    "badge_paparazzi": "Pro paparazzi",
     "badge_planner": "Planner",
     "badge_reliable": "Reliable",
     "badge_remaining": {
@@ -1101,6 +1112,7 @@
       "other": "{} to go"
     },
     "badge_rookie": "Rookie",
+    "badge_street_food": "Street food legend",
     "badge_unlocked": "Unlocked 🎉",
     "bio": "Bio",
     "buddies_empty_body": "Invite friends with your trip code — they show up here after the trip.",
@@ -1201,10 +1213,12 @@
     "mvp_caption": "Contributed the most: posted, planned and paid first.",
     "mvp_title": "Trip MVP",
     "per_head": "~{} / person",
+    "replay_tagline": "That trip deserves a replay.",
     "share_text": "Our {} trip: {} places, {} moments, {} days. Come travel with TripMate! ✈️",
     "unit_days": "days",
     "unit_moments": "moments",
-    "unit_places": "places"
+    "unit_places": "places",
+    "your_trip": "Your trip"
   },
   "referral": {
     "code_intro": "Share this code. Every time a friend signs up with it, you both get 500 XP.",
@@ -1263,6 +1277,7 @@
     "upcoming": "upcoming"
   },
   "settings": {
+    "copy_schema": "Copy schema",
     "danger_zone": "Danger zone",
     "delete_account": "Delete account",
     "delete_account_cta": "Delete my account",
@@ -1317,7 +1332,8 @@
     "font_curly": "Curly & Fun 🎡",
     "font_handwriting": "Handwritten Character ✍️",
     "font_modern": "Modern Gen Z 🚀",
-    "font_playful": "Playful Gen Z 🎈"
+    "font_playful": "Playful Gen Z 🎈",
+    "toggle": "Toggle theme"
   },
   "todos": {
     "add": "Add a to-do",

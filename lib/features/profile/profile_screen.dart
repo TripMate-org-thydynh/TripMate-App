@@ -1536,7 +1536,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   ? [
                                       _buildBadgeCard(
                                         emoji: '🔥',
-                                        title: 'Chaos King',
+                                        title: 'profile.badge_chaos_king'.tr(),
                                         tier: 'Gold Tier',
                                         isRare: true,
                                         onTap: () => Navigator.push(
@@ -1550,7 +1550,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                       ),
                                       _buildBadgeCard(
                                         emoji: '📸',
-                                        title: 'Pro Paparazzi',
+                                        title: 'profile.badge_paparazzi'.tr(),
                                         tier: 'Silver Tier',
                                         isRare: false,
                                         onTap: () => Navigator.push(
@@ -1564,7 +1564,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                       ),
                                       _buildBadgeCard(
                                         emoji: '🍜',
-                                        title: 'Street Food Legend',
+                                        title: 'profile.badge_street_food'.tr(),
                                         tier: 'Rare Tier',
                                         isRare: true,
                                         onTap: () => Navigator.push(
@@ -1578,7 +1578,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                       ),
                                       _buildBadgeCard(
                                         emoji: '🔒',
-                                        title: 'Locked Badge',
+                                        title: 'profile.badge_locked_name'.tr(),
                                         tier: 'Locked',
                                         isRare: false,
                                         isLocked: true,

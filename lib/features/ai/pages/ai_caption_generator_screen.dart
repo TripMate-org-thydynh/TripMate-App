@@ -478,7 +478,7 @@ class _AICaptionGeneratorScreenState
                     size: 20,
                   ),
                   onPressed: widget.onThemeToggle,
-                  tooltip: 'Toggle Theme',
+                  tooltip: 'theme.toggle'.tr(),
                 ),
               IconButton(
                 icon: _isGenerating

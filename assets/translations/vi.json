@@ -36,6 +36,7 @@
     "budget_pace_ok": "Vừa",
     "budget_pace_slow": "Chậm",
     "budget_sub": "Trợ lý tối ưu hóa ngân sách và roast chi tiêu cực phũ",
+    "budget_title": "Trợ lý ngân sách",
     "budget_top_post": "vào {} ({})",
     "budget_top_pre": "Tiêu nhiều nhất:",
     "budget_total": "Tổng đã chi",
@@ -47,6 +48,7 @@
     "caption_redone": "Đã nghĩ lại caption mới cho bạn! 🍳",
     "caption_tagline": "biến mớ hỗn độn thành thơ ✨",
     "chat_sub": "Trò chuyện cực kỳ hỗn loạn và đầy tính giải trí với Matey AI",
+    "companion_mode": "Chế độ đồng hành",
     "critical_insight": "ĐIỂM ĐÁNG CHÚ Ý",
     "drama_sub": "Đo lường chỉ số căng thẳng và drama trong squad thời gian thực",
     "generate_captions": "Tạo caption bằng AI",
@@ -100,7 +102,8 @@
     "vibe_match_sub": "Đo lường mức độ hợp cạ và rung động tâm hồn của cả hội bạn",
     "vibe_placeholder": "VD: quán cà phê view đồi ở Đà Lạt",
     "vibe_title": "Vibe Match ✨",
-    "workspace_sub": "Hàng đợi render video recap & bóc tách hóa đơn nền"
+    "workspace_sub": "Hàng đợi render video recap & bóc tách hóa đơn nền",
+    "wrapped_title": "Tổng kết chuyến"
   },
   "ai_hub": {
     "boost": "Bứt Tốc ⚡",
@@ -865,20 +868,25 @@
     "squad_energy": "Squad Energy"
   },
   "moments": {
+    "auto_sorter": "Tự động sắp xếp",
     "cam_hint": "Bấm để chụp · Giữ để quay",
     "cam_none": "Không tìm thấy camera nào trên máy.",
     "cam_title": "Squad Cam",
     "caption_hint": "Viết gì đó về tấm này...",
     "caption_saved": "Đã lưu caption cho ảnh 🪄",
     "caption_short": "Thêm một dòng...",
+    "caption_studio": "Xưởng viết caption",
+    "caption_studio_sub": "Caption cà khịa cho ảnh của bạn",
     "empty": "Chưa có khoảnh khắc nào",
     "empty_sub": "Chụp gì đó để lưu kỷ niệm chuyến đi!",
     "from_gallery": "Thư viện",
     "hub_menu": "Bộ sưu tập",
     "load_failed": "Không tải được khoảnh khắc",
     "no_caption": "Ảnh này chưa có caption.",
+    "photo_map": "Bản đồ ảnh",
     "photo_map_empty_body": "Đăng khoảnh khắc kèm vị trí để cả nhóm thấy hành trình trên bản đồ.",
     "photo_map_empty_title": "Chưa có ảnh nào gắn vị trí",
+    "photo_map_sub": "Kỷ niệm ghim trên bản đồ",
     "pick_hint": "Chọn ảnh để đăng",
     "post": "Đăng lên",
     "post_title": "Đăng khoảnh khắc 📸",
@@ -1090,10 +1098,13 @@
     "atlas_streak": "STREAK PHƯỢT THỦ",
     "avatar_changed": "🎨 Đổi avatar ngẫu nhiên mới thành công!",
     "backup_title": "Sao lưu & khôi phục (JSON)",
+    "badge_chaos_king": "Vua quậy",
     "badge_condition": "Điều kiện",
     "badge_locked": "Chưa mở khoá",
+    "badge_locked_name": "Huy hiệu chưa mở",
     "badge_mvp_payer": "Chi đẹp",
     "badge_new_member": "Thành viên mới",
+    "badge_paparazzi": "Thợ săn ảnh",
     "badge_planner": "Tay tổ chức",
     "badge_reliable": "Đáng tin",
     "badge_remaining": {
@@ -1101,6 +1112,7 @@
       "other": "còn {} nữa"
     },
     "badge_rookie": "Tân binh",
+    "badge_street_food": "Huyền thoại ăn vặt",
     "badge_unlocked": "Đã mở khoá 🎉",
     "bio": "Tiểu sử / Bio",
     "buddies_empty_body": "Rủ bạn vào chuyến bằng mã mời, xong chuyến họ sẽ hiện ở đây.",
@@ -1201,10 +1213,12 @@
     "mvp_caption": "Đóng góp nhiều nhất: đăng ảnh, lên plan và trả tiền trước.",
     "mvp_title": "MVP của chuyến",
     "per_head": "~{} / người",
+    "replay_tagline": "Chuyến đó đáng xem lại lắm.",
     "share_text": "Chuyến {} của tụi mình: {} địa điểm, {} khoảnh khắc, {} ngày. Lên đồ đi chơi với TripMate nào! ✈️",
     "unit_days": "ngày",
     "unit_moments": "khoảnh khắc",
-    "unit_places": "địa điểm"
+    "unit_places": "địa điểm",
+    "your_trip": "Chuyến của bạn"
   },
   "referral": {
     "code_intro": "Chia sẻ mã này! Mỗi khi một đứa bạn nhập mã và đăng ký thành công, cả hai sẽ nhận ngay 500 XP bứt tốc cấp độ!",
@@ -1263,6 +1277,7 @@
     "upcoming": "sắp diễn ra"
   },
   "settings": {
+    "copy_schema": "Sao chép schema",
     "danger_zone": "Vùng nguy hiểm",
     "delete_account": "Xoá tài khoản",
     "delete_account_cta": "Xoá tài khoản của tôi",
@@ -1317,7 +1332,8 @@
     "font_curly": "Ngoằn nghèo Vui nhộn 🎡",
     "font_handwriting": "Chữ viết tay Cá tính ✍️",
     "font_modern": "Gen Z Hiện đại 🚀",
-    "font_playful": "Gen Z Năng động 🎈"
+    "font_playful": "Gen Z Năng động 🎈",
+    "toggle": "Đổi giao diện sáng/tối"
   },
   "todos": {
     "add": "Thêm việc cần làm",

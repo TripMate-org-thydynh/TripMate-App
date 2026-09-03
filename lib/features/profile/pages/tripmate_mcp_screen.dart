@@ -168,7 +168,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                         color: Colors.white70,
                         size: 18,
                       ),
-                      tooltip: 'Copy schema',
+                      tooltip: 'settings.copy_schema'.tr(),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: jsonString));
                         ScaffoldMessenger.of(context).showSnackBar(

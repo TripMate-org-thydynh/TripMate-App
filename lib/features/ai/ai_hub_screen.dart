@@ -150,10 +150,10 @@ class AiHubScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
                             PillTag(
-                              text: 'Companion Mode',
+                              text: 'ai.companion_mode'.tr(),
                               color: GenZTokens.lilac,
                             ),
                             Spacer(),
@@ -252,7 +252,7 @@ class AiHubScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Budget Assistant',
+                  title: 'ai.budget_title'.tr(),
                   subtitle:
                       'ai.budget_sub'.tr(),
                   icon: Icons.monetization_on_outlined,
@@ -268,7 +268,7 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Personality Analysis',
+                  title: 'ai.personality_title'.tr(),
                   subtitle:
                       'ai.personality_sub'.tr(),
                   icon: Icons.psychology_outlined,
@@ -284,7 +284,7 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Mood Detection',
+                  title: 'ai.mood_title'.tr(),
                   subtitle:
                       'ai.drama_sub'.tr(),
                   icon: Icons.mood_bad_outlined,
@@ -300,7 +300,7 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Recommendation Timeline',
+                  title: 'ai.timeline_title'.tr(),
                   subtitle: 'ai.hub_route_sub'.tr(),
                   icon: Icons.timeline_outlined,
                   color: GenZTokens.blue,
@@ -320,7 +320,7 @@ class AiHubScreen extends StatelessWidget {
                 // trên số liệu thật nên trỏ thẳng sang đấy.
                 _buildHubCard(
                   context: context,
-                  title: 'Trip Wrapped',
+                  title: 'ai.wrapped_title'.tr(),
                   subtitle: 'ai.hub_recap_sub'.tr(),
                   icon: Icons.auto_awesome,
                   color: secondaryColor,
@@ -356,7 +356,7 @@ class AiHubScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Generation Queue',
+                  title: 'ai.queue_title'.tr(),
                   subtitle:
                       'ai.workspace_sub'.tr(),
                   icon: Icons.queue_play_next,
@@ -372,7 +372,7 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Saved Prompts',
+                  title: 'ai.prompts_title'.tr(),
                   subtitle: 'ai.hub_prompts_sub'.tr(),
                   icon: Icons.bookmark_outline,
                   color: GenZTokens.green,
@@ -387,7 +387,7 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Chat History',
+                  title: 'ai.history_title'.tr(),
                   subtitle: 'ai.hub_history_sub'.tr(),
                   icon: Icons.history_edu,
                   color: primaryColor,

@@ -233,9 +233,13 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   ),
                 ),
                 Text(
-                  _index < _places.length
-                      ? '${_index + 1} / ${_places.length}'
-                      : 'common.done_excl'.tr(),
+                  // Deck rong thi khong the "Xong roi!" — truoc day header van
+                  // bao xong trong khi than man dang noi la chua co gi de vuot.
+                  _places.isEmpty
+                      ? ''
+                      : (_index < _places.length
+                            ? '${_index + 1} / ${_places.length}'
+                            : 'common.done_excl'.tr()),
                   style: AppFonts.body(fontSize: 12, color: _textSec),
                 ),
               ],

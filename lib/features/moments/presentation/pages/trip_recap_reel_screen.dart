@@ -118,7 +118,7 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
       _RecapSlide.hero(
         palette: _Palette.tangerine,
         kicker: 'TRIPMATE WRAPPED',
-        title: recap.tripName.isEmpty ? 'Your trip' : recap.tripName,
+        title: recap.tripName.isEmpty ? 'recap.your_trip'.tr() : recap.tripName,
         caption: recap.destination?.trim().isNotEmpty == true
             ? recap.destination!.trim()
             : 'A trip worth replaying.',
@@ -180,7 +180,7 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
       _RecapSlide.outro(
         palette: _Palette.midnight,
         kicker: 'SAVE THE VIBE',
-        title: 'That trip deserves a replay.',
+        title: 'recap.replay_tagline'.tr(),
         caption: 'Share your Wrapped with the squad.',
       ),
     ];

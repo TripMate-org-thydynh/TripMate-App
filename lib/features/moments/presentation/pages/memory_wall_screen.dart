@@ -59,9 +59,6 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
 
     // TripMate color tokens
     final bgGradStart = Theme.of(context).scaffoldBackgroundColor;
-    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
-    // va viet cung accent cua preset *grape*, nen doi theme khong an.
-    final primary = Theme.of(context).colorScheme.primary;
     final textPrimary = isDark
         ? const Color(0xFFFDF6D3)
         : const Color(0xFF141210);
@@ -224,6 +221,30 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             ],
                           ),
                         ),
+                        // Nut mo Hub menu.
+                        //
+                        // Truoc day nut nay noi giua luoi anh (`Positioned`),
+                        // nen cuon den dau la de len caption den do. Menu thuoc
+                        // ve thanh dieu huong tren cung, khong phai vat noi giua
+                        // noi dung.
+                        GestureDetector(
+                          onTap: () => _showHubMenu(context),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            margin: const EdgeInsets.only(right: 8),
+                            decoration: BoxDecoration(
+                              color: surfaceColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: textPrimary, width: 2),
+                            ),
+                            child: Icon(
+                              Icons.auto_awesome_mosaic_outlined,
+                              color: textPrimary,
+                              size: 20,
+                            ),
+                          ),
+                        ),
                         // Dark/Light Theme Toggle
                         GestureDetector(
                           onTap: widget.onThemeToggle,
@@ -276,11 +297,15 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             }
                             return SingleChildScrollView(
                               physics: const BouncingScrollPhysics(),
+                              // Chua cho FAB "Squad Cam" va nut Hub noi ben tren
+                              // luoi (BUG-006). Padding phai nam o VUNG CUON,
+                              // khong phai o tung khung polaroid — dat vao the
+                              // thi moi anh thua mot mang trang 110px.
                               padding: const EdgeInsets.fromLTRB(
                                 16,
                                 16,
                                 16,
-                                96,
+                                120,
                               ),
                               child: Wrap(
                                 spacing: 16,
@@ -316,76 +341,6 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
               // Floating Emojis overlay stack
               ..._floatingEmojis,
 
-              // Bottom floating reaction pill & Menu Hub button
-              // bottom: 96 chu khong phai 24 — hang FAB (Squad Cam) nam o 24 va
-              // truoc day de len pill nay, che mat cac nut ben trong.
-              Positioned(
-                bottom: 96,
-                left: 24,
-                right: 24,
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: surfaceColor,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: textPrimary, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
-                            blurRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Tha cam xuc nay nam o tung tam polaroid (co
-                          // moment de gui len server), khong con o day.
-                          GestureDetector(
-                            onTap: () => _showHubMenu(context),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: primary.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: primary, width: 2),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.auto_awesome_mosaic_outlined,
-                                    color: primary,
-                                    size: 12,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'moments.hub_menu'.tr(),
-                                    style: AppFonts.body(
-                                      color: primary,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -579,8 +534,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
           children: [
             Container(
               width: 172,
-              // Chừa chỗ cho FAB "Squad Cam" và nút Hub (BUG-006).
-              padding: const EdgeInsets.all(8).copyWith(bottom: 110),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: frameColor,
                 borderRadius: BorderRadius.circular(6),
@@ -933,8 +887,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     _buildFeatureTile(
                       context,
                       icon: Icons.auto_awesome_outlined,
-                      title: 'AI Caption Studio',
-                      desc: 'Witty quote roasts',
+                      title: 'moments.caption_studio'.tr(),
+                      desc: 'moments.caption_studio_sub'.tr(),
                       color: const Color(0xFFFFB300),
                       onTap: () {
                         Navigator.pop(context);
@@ -952,7 +906,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     _buildFeatureTile(
                       context,
                       icon: Icons.auto_mode_outlined,
-                      title: 'AI Auto-Sorter',
+                      title: 'moments.auto_sorter'.tr(),
                       desc: 'Tag & organize chaos',
                       color: Colors.tealAccent,
                       onTap: () {
@@ -971,8 +925,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     _buildFeatureTile(
                       context,
                       icon: Icons.map_outlined,
-                      title: 'Photo Map',
-                      desc: 'Moments on map',
+                      title: 'moments.photo_map'.tr(),
+                      desc: 'moments.photo_map_sub'.tr(),
                       color: Colors.orangeAccent,
                       // Trước đây mở Photo Map bằng id bịa
                       // 'hagiang-loop-123' — chuyến không tồn tại nên màn
