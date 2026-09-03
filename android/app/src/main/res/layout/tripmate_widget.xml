@@ -1,56 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Widget khoảnh khắc squad.
+  Widget khoảnh khắc squad — ô 4x4.
 
-  Bố cục cố tình đơn giản: ảnh chiếm gần hết, chữ nằm trên dải mờ dưới đáy.
-  RemoteViews chỉ hỗ trợ một tập widget hạn chế nên không dùng được
-  ConstraintLayout hay custom view ở đây.
+  Bố cục ở đây cố tình chỉ có MỘT ImageView: toàn bộ chồng ảnh, viền polaroid,
+  góc nghiêng và đổ bóng đều được vẽ sẵn thành một bitmap trong
+  `WidgetCanvas.kt`.
+
+  Lý do: `RemoteViews` chỉ cho phép một tập widget rất hạn chế — không xoay được
+  view, không đổ bóng, không cắt bo góc ảnh. Ghép nhiều `ImageView` lệch nhau
+  chỉ ra được các hình chữ nhật thẳng đứng, trông như lỗi layout chứ không ra
+  chồng ảnh. Vẽ bằng `Canvas` cho đúng thứ cần: ảnh nghiêng, viền trắng dày,
+  bóng mềm.
+
+  `widget_empty` là lớp phủ chỉ hiện khi chưa có ảnh nào.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/widget_background">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/widget_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/widget_image_desc"
         android:src="@drawable/widget_placeholder" />
 
-    <!-- Dải tối để chữ luôn đọc được dù ảnh sáng hay tối -->
+    <!-- Trạng thái rỗng: mời chụp, thay vì để một ô trống khó hiểu. -->
     <LinearLayout
+        android:id="@+id/widget_empty"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/widget_scrim"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="10dp">
+        android:gravity="center"
+        android:padding="20dp"
+        android:background="@drawable/widget_background"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/widget_author"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:gravity="center"
+            android:textColor="#141210"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:text="@string/widget_empty_title" />
 
         <TextView
             android:id="@+id/widget_trip"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="#E6FFFFFF"
-            android:textSize="12sp"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:textColor="#4A453E"
+            android:textSize="13sp"
             android:text="@string/widget_empty_body" />
     </LinearLayout>
 </FrameLayout>

@@ -1,3 +1,4 @@
+import '../../../../core/services/widget_pin.dart';
 import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
@@ -907,7 +908,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                       context,
                       icon: Icons.auto_mode_outlined,
                       title: 'moments.auto_sorter'.tr(),
-                      desc: 'Tag & organize chaos',
+                      desc: 'moments.auto_sorter_sub'.tr(),
                       color: Colors.tealAccent,
                       onTap: () {
                         Navigator.pop(context);
@@ -937,6 +938,19 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             PhotoMapScreen(tripId: tripId, isDarkMode: isDark),
                       ),
                     ),
+                    // Lối tắt ghim widget lên màn hình chính.
+                    //
+                    // Không có nó thì người dùng phải tự mò khay tiện ích của
+                    // launcher — phần lớn sẽ không làm, và widget dù đã cài vẫn
+                    // không ai thấy.
+                    _buildFeatureTile(
+                      context,
+                      icon: Icons.widgets_outlined,
+                      title: 'moments.pin_widget'.tr(),
+                      desc: 'moments.pin_widget_sub'.tr(),
+                      color: const Color(0xFF8B4DE8),
+                      onTap: () => _pinWidget(context),
+                    ),
                   ],
                 ),
               ],
@@ -945,6 +959,26 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
         );
       },
     );
+  }
+
+  /// Mở hộp thoại ghim widget của hệ thống.
+  ///
+  /// Launcher nào không hỗ trợ thì nói rõ cách làm thủ công, thay vì bấm xong
+  /// không thấy gì xảy ra.
+  Future<void> _pinWidget(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    Navigator.pop(context);
+    final ok = await WidgetPin.isSupported() && await WidgetPin.request();
+    if (!mounted) return;
+    if (!ok) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('moments.pin_widget_manual'.tr()),
+          duration: const Duration(seconds: 6),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   /// Mở màn cần một chuyến cụ thể.

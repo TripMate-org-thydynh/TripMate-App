@@ -10,6 +10,11 @@ import '../network/api_client.dart';
 /// Một mục hiển thị trên widget màn hình chính.
 class WidgetMoment {
   final String id;
+
+  /// Cần cho việc thả cảm xúc: endpoint reaction nằm dưới trip
+  /// (`/trips/:tripId/moments/:id/reactions`). Backend vẫn luôn trả trường này
+  /// trong `widget-feed`, trước đây client chỉ bỏ qua nó.
+  final String tripId;
   final String imageUrl;
   final String authorName;
   final String tripName;
@@ -19,6 +24,7 @@ class WidgetMoment {
 
   const WidgetMoment({
     required this.id,
+    required this.tripId,
     required this.imageUrl,
     required this.authorName,
     required this.tripName,
@@ -29,6 +35,7 @@ class WidgetMoment {
 
   factory WidgetMoment.fromJson(Map<String, dynamic> j) => WidgetMoment(
     id: j['id'] as String? ?? '',
+    tripId: j['tripId'] as String? ?? '',
     imageUrl: j['imageUrl'] as String? ?? '',
     authorName: j['authorName'] as String? ?? '',
     tripName: j['tripName'] as String? ?? '',
@@ -39,6 +46,7 @@ class WidgetMoment {
 
   Map<String, dynamic> toJson() => {
     'id': id,
+    'tripId': tripId,
     'imageUrl': imageUrl,
     'authorName': authorName,
     'tripName': tripName,
@@ -115,6 +123,31 @@ class WidgetSync {
     } catch (e) {
       debugPrint('Cập nhật widget thất bại: $e');
     }
+  }
+
+  /// Đọc lại feed đã lưu cho widget.
+  ///
+  /// Màn xem khoảnh khắc mở từ widget dùng **đúng dữ liệu widget đang hiện**,
+  /// không gọi lại mạng: người dùng vừa nhìn thấy tấm nào thì mở ra phải là
+  /// tấm đó. Rỗng thì mới lấy từ server.
+  Future<List<WidgetMoment>> loadFeed() async {
+    await _ensureConfigured();
+    final raw = await HomeWidget.getWidgetData<String>(keyFeedJson);
+    final parsed = _decodeFeed(raw);
+    if (parsed.isNotEmpty) return parsed;
+
+    await refresh();
+    return _decodeFeed(await HomeWidget.getWidgetData<String>(keyFeedJson));
+  }
+
+  List<WidgetMoment> _decodeFeed(String? raw) {
+    if (raw == null || raw.isEmpty) return const [];
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) return const [];
+    return decoded
+        .whereType<Map>()
+        .map((e) => WidgetMoment.fromJson(e.cast<String, dynamic>()))
+        .toList();
   }
 
   /// Xoá dữ liệu widget khi đăng xuất — không để ảnh của squad cũ nằm lại trên

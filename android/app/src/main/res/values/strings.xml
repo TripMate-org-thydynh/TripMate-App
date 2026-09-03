@@ -2,8 +2,8 @@
 <!-- Chuỗi cho widget màn hình chính. App dùng easy_localization nên chỉ những
      chuỗi native (widget chạy ngoài Flutter) mới cần nằm ở đây. -->
 <resources>
-    <string name="widget_description">Khoảnh khắc mới nhất của squad</string>
-    <string name="widget_image_desc">Ảnh mới nhất từ squad</string>
+    <string name="widget_description">Chồng ảnh mới nhất của squad — chạm để xem và thả cảm xúc</string>
+    <string name="widget_image_desc">Chồng ảnh mới nhất từ squad</string>
     <string name="widget_empty_title">Chưa có khoảnh khắc nào</string>
     <string name="widget_empty_body">Chạm để chụp gửi cả nhóm</string>
 </resources>

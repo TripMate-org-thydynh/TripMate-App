@@ -1,3 +1,4 @@
+import '../../features/moments/presentation/pages/moment_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,6 +81,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             tripId: tripId,
           );
         },
+      ),
+      // Widget màn hình chính mở thẳng vào đây: tripmate://moments/viewer
+      //
+      // Phải khai báo TRƯỚC route bắt-tất `/:code` bên dưới, nếu không "viewer"
+      // sẽ bị hiểu là mã mời chuyến và mở nhầm màn tham gia.
+      GoRoute(
+        path: '/viewer',
+        builder: (context, state) => const MomentViewerScreen(),
       ),
       // Custom scheme tripmate://join/<code> nơi 'join' là host còn path là '/<code>'
       GoRoute(
