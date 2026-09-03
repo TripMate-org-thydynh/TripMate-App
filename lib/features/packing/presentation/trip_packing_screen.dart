@@ -51,12 +51,47 @@ class TripPackingScreen extends ConsumerWidget {
       PhosphorIconsFill.identificationCard,
       Color(0xFFF5822B),
     ),
+    'MEDICINE': (
+      'packing.cat_medicine',
+      PhosphorIconsFill.firstAid,
+      Color(0xFFE0245E),
+    ),
     'OTHER': (
       'expense.cat_other',
       PhosphorIconsFill.package,
       Color(0xFFD6248C),
     ),
   };
+
+  /// Dữ liệu thật đang dùng **hai bộ mã danh mục khác nhau**.
+  ///
+  /// `packing.templates.ts` ở backend sinh `CLOTHES` / `GADGETS` / `DOCS`,
+  /// nhưng các bản ghi có sẵn trong DB lại là `CLOTHING` / `ELECTRONICS` /
+  /// `DOCUMENTS`. Cột `category` là `String` tự do, không có enum ràng buộc,
+  /// nên cả hai cùng tồn tại hợp lệ. Trước đây chỉ `TOILETRIES` trùng nhau, nên
+  /// **6 trên 8 món rơi hết vào "Khác"** — màn hình hiện bốn nhóm cùng tên
+  /// "Khác" và người dùng không biết nhóm nào là gì.
+  ///
+  /// Quy đổi ở client thay vì migrate dữ liệu: không đụng vào bản ghi của người
+  /// dùng, và vẫn đúng với dữ liệu tạo mới sau này.
+  static const _categoryAliases = <String, String>{
+    'CLOTHING': 'CLOTHES',
+    'ELECTRONICS': 'GADGETS',
+    'GADGET': 'GADGETS',
+    'DOCUMENTS': 'DOCS',
+    'DOCUMENT': 'DOCS',
+    'TOILETRY': 'TOILETRIES',
+    'HYGIENE': 'TOILETRIES',
+    'MEDICAL': 'MEDICINE',
+    'MEDS': 'MEDICINE',
+  };
+
+  /// Mã danh mục đã chuẩn hoá; mã lạ thì về `OTHER`.
+  static String _normalizeCategory(String? raw) {
+    final c = (raw ?? 'OTHER').toUpperCase();
+    final mapped = _categoryAliases[c] ?? c;
+    return _categories.containsKey(mapped) ? mapped : 'OTHER';
+  }
 
   /// Phần tử thứ 1 trong `_categories` là KEY i18n — dịch ở đây để mọi chỗ
   /// gọi `_catMeta().$1` đều nhận nhãn theo ngôn ngữ hiện tại.
@@ -362,7 +397,7 @@ class TripPackingScreen extends ConsumerWidget {
     // Nhóm theo category, giữ thứ tự category cố định.
     final grouped = <String, List<PackingItem>>{};
     for (final it in list.items) {
-      grouped.putIfAbsent(it.category, () => []).add(it);
+      grouped.putIfAbsent(_normalizeCategory(it.category), () => []).add(it);
     }
     final orderedKeys = [
       ..._categories.keys.where(grouped.containsKey),
