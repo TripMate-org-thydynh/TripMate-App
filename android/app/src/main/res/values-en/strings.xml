@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_description">Your squad\'s latest moment</string>
-    <string name="widget_image_desc">Latest photo from your squad</string>
+    <string name="widget_description">Your squad\'s latest photos - tap to view and react</string>
+    <string name="widget_image_desc">Latest photos from your squad</string>
     <string name="widget_empty_title">No moments yet</string>
     <string name="widget_empty_body">Tap to snap one for the squad</string>
 </resources>

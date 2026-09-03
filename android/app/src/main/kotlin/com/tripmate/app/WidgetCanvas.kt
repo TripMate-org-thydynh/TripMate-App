@@ -37,7 +37,12 @@ import kotlin.math.min
  */
 object WidgetCanvas {
 
-    /** Cạnh bitmap xuất ra. Đủ nét cho ô 4x4 mà không phình bộ nhớ RemoteViews. */
+    /**
+     * Cạnh bitmap xuất ra.
+     *
+     * Giữ 720 dù widget mặc định là ô 2x2: người dùng kéo to ra được, và bitmap
+     * nhỏ thì lúc đó sẽ vỡ. 720x720 ARGB ~2MB, vẫn trong hạn của RemoteViews.
+     */
     private const val SIZE = 720
 
     private const val CREAM = 0xFFFDF6D3.toInt()
@@ -45,8 +50,13 @@ object WidgetCanvas {
     private const val FRAME = 0xFFFFFDF5.toInt()
     private const val YELLOW = 0xFFFFD84D.toInt()
 
-    /** Góc nghiêng từng lớp, phần tử cuối là lớp trên cùng (không nghiêng). */
-    private val TILTS = floatArrayOf(-7f, 4.5f, 0f)
+    /**
+     * Góc nghiêng từng lớp, phần tử cuối là lớp trên cùng (không nghiêng).
+     *
+     * Nghiêng vừa phải: ở ô 2x2 mỗi độ nghiêng ăn vào bề ngang thật của ảnh
+     * chính, nghiêng nhiều thì chồng ảnh rối mà ảnh lại nhỏ đi.
+     */
+    private val TILTS = floatArrayOf(-6f, 4f, 0f)
 
     fun render(
         photos: List<Bitmap>,
@@ -174,23 +184,23 @@ object WidgetCanvas {
         val cx = SIZE / 2f
         val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
-            textSize = SIZE * 0.062f
+            textSize = SIZE * 0.074f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             textAlign = Paint.Align.CENTER
         }
         val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.argb(225, 255, 255, 255)
-            textSize = SIZE * 0.044f
+            textSize = SIZE * 0.054f
             textAlign = Paint.Align.CENTER
         }
 
         // Giữ chữ cách mép ảnh một khoảng: viền trắng dày + bo góc sẽ liếm vào
         // phần chữ nếu đặt sát đáy, và ở cỡ widget nhỏ thì mất hẳn dòng dưới.
         val hasSub = subtitle.isNotBlank()
-        val baseName = if (hasSub) SIZE * 0.812f else SIZE * 0.848f
+        val baseName = if (hasSub) SIZE * 0.800f else SIZE * 0.845f
         canvas.drawText(ellipsize(author, namePaint), cx, baseName, namePaint)
         if (hasSub) {
-            canvas.drawText(ellipsize(subtitle, subPaint), cx, SIZE * 0.872f, subPaint)
+            canvas.drawText(ellipsize(subtitle, subPaint), cx, SIZE * 0.874f, subPaint)
         }
     }
 
