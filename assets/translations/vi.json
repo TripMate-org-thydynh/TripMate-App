@@ -1,11 +1,14 @@
 {
   "activity": {
+    "added_expense": "{name} vừa thêm một khoản chi",
+    "added_place": "{name} vừa thêm điểm vào lịch trình",
     "chat_sent": "{name} vừa nhắn trong nhóm",
     "document_uploaded": "{name} vừa tải lên tài liệu",
     "expense_added": "{name} vừa ghi một khoản chi",
     "game_started": "{name} vừa mở một mini game",
     "generic": "{name} vừa cập nhật {trip}",
     "itinerary_added": "{name} vừa thêm điểm vào lịch trình",
+    "joined_trip": "{name} vừa tham gia chuyến",
     "journal_written": "{name} vừa viết nhật ký",
     "member_joined": "{name} vừa tham gia {trip}",
     "member_left": "{name} đã rời {trip}",
@@ -13,6 +16,7 @@
     "note_added": "{name} vừa thêm ghi chú",
     "payment_made": "{name} vừa thanh toán một khoản",
     "poll_created": "{name} vừa tạo một bình chọn",
+    "posted_moment": "{name} vừa đăng một khoảnh khắc",
     "trip_created": "{name} vừa tạo chuyến {trip}"
   },
   "activity_hub": {
@@ -1164,6 +1168,8 @@
     "public_no_stats": "Thống kê công khai sẽ có khi bạn cùng đi một chuyến với nhau.",
     "public_title": "Xem Profile Bạn Bè 👀",
     "recent_log": "Lịch Sử Hỗn Loạn",
+    "recent_log_empty": "Chưa có hoạt động nào. Đi một chuyến là có ngay!",
+    "recent_log_failed": "Không tải được hoạt động gần đây",
     "save": "Lưu thông tin cá nhân",
     "social_save": "Lưu Liên Kết",
     "social_saved": "🎉 Lưu liên kết mạng xã hội thành công!",

@@ -1,6 +1,8 @@
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 
+import '../dashboard/data/home_feed_repository.dart';
+
 import 'data/xp_repository.dart';
 import '../moments/data/moments_repository.dart';
 import '../moments/presentation/pages/memory_wall_screen.dart';
@@ -457,6 +459,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     );
   }
 
+  /// Đổi một hoạt động của squad thành câu mô tả theo ngôn ngữ đang chọn.
+  String _activityText(SquadActivity a) {
+    final key = switch (a.type) {
+      'MOMENT' => 'activity.posted_moment',
+      'EXPENSE' => 'activity.added_expense',
+      'ITINERARY' => 'activity.added_place',
+      'JOIN' => 'activity.joined_trip',
+      _ => 'activity.generic',
+    };
+    return key.tr(namedArgs: {'name': a.actorName, 'trip': a.tripName});
+  }
+
   Widget _buildChaosFeedCard({
     required IconData icon,
     required Color accentColor,
@@ -509,26 +523,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  RichText(
-                    text: TextSpan(
-                      style: AppFonts.body(
-                        fontSize: 13.5,
-                        color: textPrimaryColor,
-                        height: 1.4,
-                      ),
-                      children: [
-                        const TextSpan(
-                          text: 'Booked a chaotic weekend trip to ',
-                        ),
-                        TextSpan(
-                          text: 'Taipei',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                        ),
-                        const TextSpan(text: ' with 4 others.'),
-                      ],
+                  // Ham nay nhan `description` nhung truoc day **bo qua no**
+                  // va tu ve cung chuoi "Booked a chaotic weekend trip to
+                  // Taipei with 4 others." — nen du goi voi du lieu that thi
+                  // man hinh van hien cau bia.
+                  Text(
+                    description,
+                    style: AppFonts.body(
+                      fontSize: 13.5,
+                      color: textPrimaryColor,
+                      height: 1.4,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -605,107 +609,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             }),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1A1712)
-                                : Colors.black.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: const Color(0xFF1FA85C),
-                              width: 2,
+                        // Khong co ai thi khong hien huy hieu "+0".
+                        if (extraFriends > 0) const SizedBox(width: 8),
+                        if (extraFriends > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(0xFF1A1712)
+                                  : Colors.black.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: const Color(0xFF1FA85C),
+                                width: 2,
+                              ),
+                            ),
+                            child: Text(
+                              '+$extraFriends',
+                              style: AppFonts.body(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF1FA85C),
+                              ),
                             ),
                           ),
-                          child: Text(
-                            '+$extraFriends',
-                            style: AppFonts.body(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1FA85C),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
                 ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChaosSettlementCard({
-    required IconData icon,
-    required Color accentColor,
-    required String description,
-    required bool isDark,
-    required Color primaryColor,
-    required Color textPrimaryColor,
-    required Color surfaceColor,
-  }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: isDark ? surfaceColor : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
-            width: 2,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isDark
-                    ? const Color(0xFF1A1712)
-                    : Colors.black.withValues(alpha: 0.03),
-                border: Border.all(color: accentColor, width: 2.0),
-                boxShadow: isDark
-                    ? [
-                        BoxShadow(
-                          color: accentColor.withValues(alpha: 0.3),
-                          blurRadius: 0,
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Icon(icon, color: accentColor, size: 24),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: RichText(
-                text: TextSpan(
-                  style: AppFonts.body(
-                    fontSize: 13.5,
-                    color: textPrimaryColor,
-                    height: 1.4,
-                  ),
-                  children: [
-                    const TextSpan(text: 'Settled up '),
-                    TextSpan(
-                      text: '\$420',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
-                      ),
-                    ),
-                    const TextSpan(text: ' for the Tokyo bender.'),
-                  ],
-                ),
               ),
             ),
           ],
@@ -1592,7 +1526,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                       final isLocked =
                                           badge['unlockedAt'] == null;
                                       final title =
-                                          badge['title'] ?? 'profile.titles'.tr();
+                                          badge['title'] ??
+                                          'profile.titles'.tr();
 
                                       String emoji = '🏆';
                                       String cleanTitle = title;
@@ -1772,34 +1707,63 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           ),
                           const SizedBox(height: 16),
 
-                          // Chaos feeds
-                          _buildChaosFeedCard(
-                            icon: Icons.flight_takeoff,
-                            accentColor: primaryColor,
-                            description:
-                                'Booked a chaotic weekend trip to Taipei with 4 others.',
-                            time: '2 hours ago',
-                            isDark: isDark,
-                            primaryColor: primaryColor,
-                            textPrimaryColor: textPrimaryColor,
-                            friendAvatars: const [
-                              'assets/images/avatar_minh_nhat.webp',
-                              'assets/images/avatar_thao_ly.webp',
-                            ],
-                            extraFriends: 2,
-                            surfaceColor: surfaceColor,
-                          ),
-                          const SizedBox(height: 12),
-
-                          _buildChaosSettlementCard(
-                            icon: Icons.account_balance_wallet,
-                            accentColor: secondaryColor,
-                            description:
-                                'Settled up \$420 for the Tokyo bender.',
-                            isDark: isDark,
-                            primaryColor: primaryColor,
-                            textPrimaryColor: textPrimaryColor,
-                            surfaceColor: surfaceColor,
+                          // Hoạt động THẬT của squad.
+                          //
+                          // Trước đây đây là hai thẻ bịa cứng: "Booked a chaotic
+                          // weekend trip to Taipei with 4 others · 2 hours ago"
+                          // và "Settled up $420 for the Tokyo bender" — tiếng Anh,
+                          // số liệu tự nghĩ ra, giống hệt nhau với mọi tài khoản.
+                          // Nay đọc `squadActivitiesProvider`, cùng nguồn mà tab
+                          // Live đang dùng.
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final async = ref.watch(squadActivitiesProvider);
+                              return async.when(
+                                loading: () => const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                                error: (_, _) => Text(
+                                  'profile.recent_log_failed'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 13,
+                                    color: textSecondaryColor,
+                                  ),
+                                ),
+                                data: (items) {
+                                  if (items.isEmpty) {
+                                    return Text(
+                                      'profile.recent_log_empty'.tr(),
+                                      style: AppFonts.body(
+                                        fontSize: 13,
+                                        color: textSecondaryColor,
+                                      ),
+                                    );
+                                  }
+                                  return Column(
+                                    children: [
+                                      for (final a in items.take(3)) ...[
+                                        _buildChaosFeedCard(
+                                          icon: Icons.bolt_outlined,
+                                          accentColor: primaryColor,
+                                          description: _activityText(a),
+                                          time: a.tripName,
+                                          isDark: isDark,
+                                          primaryColor: primaryColor,
+                                          textPrimaryColor: textPrimaryColor,
+                                          friendAvatars: const [],
+                                          extraFriends: 0,
+                                          surfaceColor: surfaceColor,
+                                        ),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ],
+                                  );
+                                },
+                              );
+                            },
                           ),
 
                           const SizedBox(height: 36),

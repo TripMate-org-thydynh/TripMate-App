@@ -1,11 +1,14 @@
 {
   "activity": {
+    "added_expense": "{name} added an expense",
+    "added_place": "{name} added a stop to the itinerary",
     "chat_sent": "{name} posted in the group chat",
     "document_uploaded": "{name} uploaded a document",
     "expense_added": "{name} logged an expense",
     "game_started": "{name} started a mini game",
     "generic": "{name} updated {trip}",
     "itinerary_added": "{name} added a stop to the itinerary",
+    "joined_trip": "{name} joined the trip",
     "journal_written": "{name} wrote a journal entry",
     "member_joined": "{name} joined {trip}",
     "member_left": "{name} left {trip}",
@@ -13,6 +16,7 @@
     "note_added": "{name} added a note",
     "payment_made": "{name} settled a payment",
     "poll_created": "{name} created a poll",
+    "posted_moment": "{name} posted a moment",
     "trip_created": "{name} created the trip {trip}"
   },
   "activity_hub": {
@@ -1164,6 +1168,8 @@
     "public_no_stats": "Public stats appear once you have travelled together.",
     "public_title": "Friend's profile 👀",
     "recent_log": "Recent Chaos Log",
+    "recent_log_empty": "No activity yet. Take a trip and it will show up here.",
+    "recent_log_failed": "Couldn't load recent activity",
     "save": "Save profile",
     "social_save": "Save links",
     "social_saved": "🎉 Social links saved!",
