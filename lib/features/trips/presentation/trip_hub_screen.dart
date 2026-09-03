@@ -416,7 +416,10 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.file(PhosphorIconsStyle.fill),
                         'trips.hub_documents'.tr(),
-                        'hub.reservations'.tr(),
+                        // Truoc day o day dung 'hub.reservations' ("Kho ve &
+                        // Booking") — do la phu de cua tile Dat cho, khong phai
+                        // cua Tai lieu.
+                        'hub.documents_sub'.tr(),
                         const Color(0xFF3D8BFF),
                         () => TripDocumentsScreen(
                           tripId: trip.id,
@@ -427,7 +430,9 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
                         'trips.hub_journal'.tr(),
-                        'hub.moments_sub'.tr(),
+                        // Truoc day dung 'hub.moments_sub' ("Anh & Ky niem
+                        // nhom") — phu de cua tile Khoanh khac.
+                        'hub.journal_sub'.tr(),
                         const Color(0xFFCF9FFF),
                         () => TripJournalScreen(
                           tripId: trip.id,
