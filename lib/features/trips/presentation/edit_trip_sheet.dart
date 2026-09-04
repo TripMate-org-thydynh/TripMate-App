@@ -343,7 +343,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   style: AppFonts.body(color: _textPri, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'vd: 3000000',
+                    hintText: 'trips.budget_hint'.tr(),
                     hintStyle: AppFonts.body(color: _textSec),
                     prefixIcon: Icon(
                       PhosphorIcons.wallet(),

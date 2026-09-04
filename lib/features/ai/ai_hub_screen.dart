@@ -192,7 +192,7 @@ class AiHubScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
-                  title: 'Matey AI — Emotional Chaos',
+                  title: 'ai.matey_title'.tr(),
                   subtitle:
                       'ai.chat_sub'.tr(),
                   icon: Icons.chat_bubble_outline,
@@ -208,7 +208,7 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Vibe Matcher — Squad Energy',
+                  title: 'ai.vibe_matcher_title'.tr(),
                   subtitle:
                       'ai.vibe_match_sub'.tr(),
                   icon: Icons.favorite_border,
@@ -227,7 +227,7 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Itinerary Planner — Matey Plans',
+                  title: 'ai.planner_title'.tr(),
                   subtitle:
                       'ai.planner_sub'.tr(),
                   icon: Icons.auto_awesome_motion,

@@ -1513,7 +1513,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                       _buildBadgeCard(
                                         emoji: '🔒',
                                         title: 'profile.badge_locked_name'.tr(),
-                                        tier: 'Locked',
+                                        tier: 'profile.badge_locked'.tr(),
                                         isRare: false,
                                         isLocked: true,
                                         onTap: () => showGlobalSnack(
@@ -1550,7 +1550,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         emoji: emoji,
                                         title: cleanTitle,
                                         tier: isLocked
-                                            ? 'Locked'
+                                            ? 'profile.badge_locked'.tr()
                                             : (badge['id'] == 'b1'
                                                   ? 'Gold Tier'
                                                   : 'Silver Tier'),

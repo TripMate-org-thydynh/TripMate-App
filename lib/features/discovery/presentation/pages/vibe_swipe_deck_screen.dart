@@ -224,7 +224,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             child: Column(
               children: [
                 Text(
-                  'Vibe Match',
+                  'vibe_deck.title'.tr(),
                   style: AppFonts.heading(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,

@@ -418,7 +418,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
               size: 20,
             ),
             onPressed: () => Navigator.maybePop(context),
-            tooltip: 'Back',
+            tooltip: 'common.back'.tr(),
           ),
           Text(
             'trip.mate',

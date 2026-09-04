@@ -406,7 +406,7 @@ class _AICaptionGeneratorScreenState
                                               _copyToClipboard(optionText),
                                           constraints: const BoxConstraints(),
                                           padding: EdgeInsets.zero,
-                                          tooltip: 'Copy',
+                                          tooltip: 'common.copy'.tr(),
                                         ),
                                       ),
                                     ],
@@ -455,7 +455,7 @@ class _AICaptionGeneratorScreenState
               size: 20,
             ),
             onPressed: () => Navigator.maybePop(context),
-            tooltip: 'Back',
+            tooltip: 'common.back'.tr(),
           ),
           Text(
             'trip.mate',

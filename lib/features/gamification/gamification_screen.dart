@@ -57,7 +57,7 @@ class GamificationScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'SQUAD CHAOS PLAYGROUND',
+                    'games.hub_kicker'.tr(),
                     style: AppFonts.heading(
                       color: GenZTokens.paper,
                       fontSize: 20,
