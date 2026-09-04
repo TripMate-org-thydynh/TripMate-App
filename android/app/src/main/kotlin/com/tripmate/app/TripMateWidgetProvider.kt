@@ -64,11 +64,20 @@ class TripMateWidgetProvider : HomeWidgetProvider() {
 
             loadAllAsync(urls) { photos ->
                 if (photos.isEmpty()) return@loadAllAsync
+                val ageMs = System.currentTimeMillis() - top.createdAtMs
                 val bitmap = WidgetCanvas.render(
                     photos = photos,
                     author = top.authorName,
                     subtitle = top.caption ?: top.tripName,
                     extraCount = (feed.size - photos.size).coerceAtLeast(0),
+                    timeLabel = relativeTime(context, top.createdAtMs),
+                    // Quá một ngày không có ảnh mới thì nhắc — đó là lúc vòng
+                    // lặp "gửi ảnh → bạn bè thấy" nguội đi và cần một cú hích.
+                    nudge = if (top.createdAtMs > 0 && ageMs > 24 * 3600_000L) {
+                        context.getString(R.string.widget_nudge)
+                    } else {
+                        null
+                    },
                 )
                 views.setImageViewBitmap(R.id.widget_image, bitmap)
                 appWidgetManager.updateAppWidget(widgetId, views)
@@ -82,6 +91,8 @@ class TripMateWidgetProvider : HomeWidgetProvider() {
         val authorName: String,
         val tripName: String,
         val caption: String?,
+        /** Mốc đăng ảnh, milli epoch. 0 nghĩa là không đọc được. */
+        val createdAtMs: Long,
     )
 
     private fun parseFeed(raw: String?): List<FeedItem> {
@@ -95,7 +106,48 @@ class TripMateWidgetProvider : HomeWidgetProvider() {
                 authorName = o.optString("authorName"),
                 tripName = o.optString("tripName"),
                 caption = o.optString("caption").takeIf { it.isNotBlank() && it != "null" },
+                createdAtMs = parseIso(o.optString("createdAt")),
             )
+        }
+    }
+
+    /**
+     * Đọc mốc thời gian ISO-8601 mà Flutter ghi ra.
+     *
+     * Dùng `Instant` thay vì `SimpleDateFormat`: chuỗi có phần mili và hậu tố
+     * `Z`, và `SimpleDateFormat` không phải thread-safe — widget giải mã ảnh
+     * trên nhiều luồng.
+     */
+    private fun parseIso(raw: String?): Long {
+        if (raw.isNullOrBlank()) return 0L
+        return runCatching { java.time.Instant.parse(raw).toEpochMilli() }
+            .getOrElse {
+                runCatching {
+                    java.time.LocalDateTime.parse(raw)
+                        .toInstant(java.time.ZoneOffset.UTC).toEpochMilli()
+                }.getOrDefault(0L)
+            }
+    }
+
+    /**
+     * Nhãn thời gian ngắn cho ảnh mới nhất: "vừa xong", "2 giờ trước"...
+     *
+     * Đây là thứ biến widget từ một tấm ảnh tĩnh thành **cửa sổ đang sống**:
+     * người xem biết ngay ảnh này vừa mới hay đã cũ, nên có lý do liếc lại.
+     */
+    private fun relativeTime(context: Context, whenMs: Long): String {
+        if (whenMs <= 0L) return ""
+        val diff = System.currentTimeMillis() - whenMs
+        if (diff < 0) return context.getString(R.string.widget_time_now)
+        val min = diff / 60_000
+        val hour = min / 60
+        val day = hour / 24
+        return when {
+            min < 2 -> context.getString(R.string.widget_time_now)
+            min < 60 -> context.getString(R.string.widget_time_min, min)
+            hour < 24 -> context.getString(R.string.widget_time_hour, hour)
+            day < 7 -> context.getString(R.string.widget_time_day, day)
+            else -> ""
         }
     }
 

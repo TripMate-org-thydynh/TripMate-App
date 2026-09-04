@@ -58,11 +58,17 @@ object WidgetCanvas {
      */
     private val TILTS = floatArrayOf(-6f, 4f, 0f)
 
+    /**
+     * @param timeLabel nhãn kiểu "2 giờ trước"; rỗng thì không vẽ
+     * @param nudge lời nhắc khi squad lâu chưa đăng ảnh; null thì không vẽ
+     */
     fun render(
         photos: List<Bitmap>,
         author: String,
         subtitle: String,
         extraCount: Int,
+        timeLabel: String = "",
+        nudge: String? = null,
     ): Bitmap {
         val out = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(out)
@@ -76,8 +82,12 @@ object WidgetCanvas {
             drawPolaroid(canvas, layers[i], tilts[i], depth = i, isTop = i == 0)
         }
 
-        if (layers.isNotEmpty()) drawOverlayText(canvas, author, subtitle)
+        if (layers.isNotEmpty()) {
+            drawOverlayText(canvas, author, subtitle, hasNudge = !nudge.isNullOrBlank())
+        }
         if (extraCount > 0) drawExtraBadge(canvas, extraCount)
+        if (timeLabel.isNotBlank()) drawTimeChip(canvas, timeLabel)
+        if (!nudge.isNullOrBlank()) drawNudge(canvas, nudge)
         return out
     }
 
@@ -180,7 +190,12 @@ object WidgetCanvas {
      * Đặt chữ lên ảnh thay vì xếp dưới là chỗ lấy lại được nhiều không gian
      * nhất — trước đây riêng khối chữ đã ăn hơn một phần năm chiều cao widget.
      */
-    private fun drawOverlayText(canvas: Canvas, author: String, subtitle: String) {
+    private fun drawOverlayText(
+        canvas: Canvas,
+        author: String,
+        subtitle: String,
+        hasNudge: Boolean,
+    ) {
         val cx = SIZE / 2f
         val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
@@ -196,12 +211,67 @@ object WidgetCanvas {
 
         // Giữ chữ cách mép ảnh một khoảng: viền trắng dày + bo góc sẽ liếm vào
         // phần chữ nếu đặt sát đáy, và ở cỡ widget nhỏ thì mất hẳn dòng dưới.
+        // Dải nhắc chiếm chỗ ở đáy, nên khi có nó thì nhấc cả khối chữ lên —
+        // nếu không, băng vàng liếm mất dòng tên chuyến.
+        val lift = if (hasNudge) SIZE * 0.088f else 0f
         val hasSub = subtitle.isNotBlank()
-        val baseName = if (hasSub) SIZE * 0.800f else SIZE * 0.845f
+        val baseName = (if (hasSub) SIZE * 0.800f else SIZE * 0.845f) - lift
         canvas.drawText(ellipsize(author, namePaint), cx, baseName, namePaint)
         if (hasSub) {
-            canvas.drawText(ellipsize(subtitle, subPaint), cx, SIZE * 0.874f, subPaint)
+            canvas.drawText(
+                ellipsize(subtitle, subPaint), cx, SIZE * 0.874f - lift, subPaint,
+            )
         }
+    }
+
+    /**
+     * Chip thời gian ở góc trên trái ảnh.
+     *
+     * Biến widget từ một tấm ảnh tĩnh thành cửa sổ đang sống: liếc qua là biết
+     * ảnh vừa mới hay đã cũ — chính điều khiến người ta nhìn lại nhiều lần.
+     */
+    private fun drawTimeChip(canvas: Canvas, label: String) {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = SIZE * 0.042f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+        val padH = SIZE * 0.028f
+        val padV = SIZE * 0.018f
+        val w = paint.measureText(label) + padH * 2
+        val h = paint.textSize + padV * 2
+        val left = SIZE * 0.10f
+        val top = SIZE * 0.115f
+        val r = RectF(left, top, left + w, top + h)
+
+        canvas.drawRoundRect(
+            r, h / 2, h / 2,
+            Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(150, 10, 9, 8) },
+        )
+        canvas.drawText(label, left + padH, top + padV + paint.textSize * 0.82f, paint)
+    }
+
+    /**
+     * Dải nhắc khi squad lâu chưa đăng ảnh.
+     *
+     * Widget im lặng khi không có gì mới thì dần bị bỏ qua. Một dòng nhắc biến
+     * khoảng lặng đó thành lời mời chụp tấm tiếp theo.
+     */
+    private fun drawNudge(canvas: Canvas, text: String) {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = INK
+            textSize = SIZE * 0.040f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        val h = SIZE * 0.082f
+        val top = SIZE - h - SIZE * 0.022f
+        val r = RectF(SIZE * 0.09f, top, SIZE * 0.91f, top + h)
+        canvas.drawRoundRect(r, h / 2, h / 2, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = YELLOW })
+        canvas.drawText(
+            ellipsize(text, paint), SIZE / 2f,
+            top + h / 2 + paint.textSize * 0.36f, paint,
+        )
     }
 
     /** Huy hiệu "+N" cho những ảnh chưa hiện — gợi ý chạm vào để xem tiếp. */

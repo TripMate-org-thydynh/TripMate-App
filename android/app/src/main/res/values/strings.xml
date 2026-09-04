@@ -6,4 +6,9 @@
     <string name="widget_image_desc">Chồng ảnh mới nhất từ squad</string>
     <string name="widget_empty_title">Chưa có khoảnh khắc nào</string>
     <string name="widget_empty_body">Chạm để chụp gửi cả nhóm</string>
+    <string name="widget_time_now">vừa xong</string>
+    <string name="widget_time_min">%1$d phút trước</string>
+    <string name="widget_time_hour">%1$d giờ trước</string>
+    <string name="widget_time_day">%1$d ngày trước</string>
+    <string name="widget_nudge">Squad đang chờ ảnh của bạn</string>
 </resources>
