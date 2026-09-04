@@ -163,87 +163,30 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           ),
         ],
       ),
-      // Bottom nav brutalist: top border ink dày, item active = viên accent bo tròn
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: bg,
-          border: Border(
-            top: BorderSide(color: ink, width: GenZTokens.borderWidth),
-          ),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: GenZTokens.space2,
-              vertical: GenZTokens.space2,
-            ),
-            child: Row(
-              children: List.generate(navItems.length, (index) {
-                final item = navItems[index];
-                final selected = index == _selectedIndex;
-                return Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      setState(() => _selectedIndex = index);
-                      if (index == 4) {
-                        ref.read(profileDataProvider.notifier).loadProfile();
-                      }
-                    },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
-                          curve: Curves.easeOutBack,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: selected ? accent : Colors.transparent,
-                            borderRadius: BorderRadius.circular(
-                              GenZTokens.radiusPill,
-                            ),
-                            border: selected
-                                ? Border.all(
-                                    color: ink,
-                                    width: GenZTokens.borderWidthThin,
-                                  )
-                                : null,
-                          ),
-                          child: Icon(
-                            selected ? item.active : item.icon,
-                            size: 24,
-                            color: selected
-                                ? GenZTokens.ink
-                                : ink.withValues(alpha: 0.55),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          item.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: AppFonts.heading(
-                            fontSize: 10,
-                            fontWeight: selected
-                                ? FontWeight.w700
-                                : FontWeight.w500,
-                            color: selected ? ink : ink.withValues(alpha: 0.55),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-        ),
+      // Bottom nav: nút giữa nhô lên khỏi thanh, thanh lõm ôm quanh nó.
+      //
+      // Nút "Tạo chuyến" là hành động chính của app nhưng trước đây nằm lẫn
+      // giữa bốn tab điều hướng, cùng cỡ cùng kiểu — không có gì cho biết nó
+      // quan trọng hơn. Tách nó lên thành nút nổi khiến ngón cái tìm thấy ngay,
+      // và vết lõm giữ cho thanh vẫn liền một khối chứ không phải một nút dán
+      // đè lên.
+      //
+      // Style brutalist giữ nguyên: viền ink dày, bóng cứng, item đang chọn là
+      // viên accent bo tròn.
+      bottomNavigationBar: _NotchedNavBar(
+        items: navItems,
+        selectedIndex: _selectedIndex,
+        centerIndex: 2,
+        bg: bg,
+        ink: ink,
+        accent: accent,
+        onTap: (index) {
+          HapticFeedback.selectionClick();
+          setState(() => _selectedIndex = index);
+          if (index == 4) {
+            ref.read(profileDataProvider.notifier).loadProfile();
+          }
+        },
       ),
     );
 
@@ -390,4 +333,239 @@ class DoodleBackgroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant DoodleBackgroundPainter oldDelegate) =>
       oldDelegate.ink != ink || oldDelegate.progress != progress;
+}
+
+/// Thanh điều hướng có vết lõm ôm nút giữa.
+///
+/// `BottomNavigationBar` dựng sẵn không làm được kiểu này: nó không cho một
+/// mục vượt ra ngoài chiều cao thanh. Nên thanh được vẽ bằng `CustomPainter`
+/// (để cắt đúng đường cong lõm) và các mục xếp chồng lên trên bằng `Stack`.
+class _NotchedNavBar extends StatelessWidget {
+  final List<({IconData icon, IconData active, String label})> items;
+  final int selectedIndex;
+  final int centerIndex;
+  final Color bg;
+  final Color ink;
+  final Color accent;
+  final ValueChanged<int> onTap;
+
+  const _NotchedNavBar({
+    required this.items,
+    required this.selectedIndex,
+    required this.centerIndex,
+    required this.bg,
+    required this.ink,
+    required this.accent,
+    required this.onTap,
+  });
+
+  /// Bán kính nút nổi và khoảng hở quanh nó.
+  static const double _fabRadius = 30;
+  /// Khoảng hở giữa mép nút và mép vết lõm.
+  ///
+  /// Phải đủ rộng để nhìn thấy nền ở giữa hai đường viền. Để hẹp thì viền lõm
+  /// và viền nút dính vào nhau thành một khối đen dày, trông như lỗi vẽ.
+  static const double _fabGap = 11;
+
+  /// Phần nút nhô lên khỏi mặt thanh.
+  ///
+  /// Bằng đúng bán kính nút, nên **tâm nút nằm ngay trên mặt thanh**: nửa trên
+  /// nổi hẳn lên, nửa dưới chìm vào vết lõm. Lấy số khác thì cung lõm và đường
+  /// tròn của nút không còn đồng tâm, và hở ra hai "tai" ở hai bên.
+  static const double _lift = _fabRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    const barHeight = 64.0;
+
+    return SizedBox(
+      height: barHeight + _lift + bottomInset,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Mặt thanh + đường viền trên, đã khoét lõm.
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: barHeight + bottomInset,
+            child: CustomPaint(
+              painter: _NotchPainter(
+                bg: bg,
+                ink: ink,
+                notchRadius: _fabRadius + _fabGap,
+              ),
+            ),
+          ),
+          // Các mục điều hướng; chỗ của nút giữa để trống.
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: bottomInset,
+            height: barHeight,
+            child: Row(
+              children: List.generate(items.length, (index) {
+                if (index == centerIndex) return const Spacer();
+                return Expanded(child: _item(index));
+              }),
+            ),
+          ),
+          // Nút nổi ở giữa + nhãn của nó.
+          //
+          // Bốn mục kia đều có nhãn; bỏ nhãn ở đây thì hàng chữ bị khuyết một
+          // ô giữa, nhìn như lỗi bố cục.
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _centerButton(),
+                // Canh cho thẳng hàng với nhãn của bốn mục kia — chúng nằm
+                // thấp hơn vì được căn giữa trong chiều cao thanh.
+                const SizedBox(height: 10),
+                Text(
+                  items[centerIndex].label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: AppFonts.heading(
+                    fontSize: 10,
+                    fontWeight: selectedIndex == centerIndex
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                    color: selectedIndex == centerIndex
+                        ? ink
+                        : ink.withValues(alpha: 0.55),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _item(int index) {
+    final item = items[index];
+    final selected = index == selectedIndex;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => onTap(index),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutBack,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: selected ? accent : Colors.transparent,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+              border: selected
+                  ? Border.all(color: ink, width: GenZTokens.borderWidthThin)
+                  : null,
+            ),
+            child: Icon(
+              selected ? item.active : item.icon,
+              size: 22,
+              color: selected ? GenZTokens.ink : ink.withValues(alpha: 0.55),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            item.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: AppFonts.heading(
+              fontSize: 10,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              color: selected ? ink : ink.withValues(alpha: 0.55),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _centerButton() {
+    final selected = selectedIndex == centerIndex;
+    final item = items[centerIndex];
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => onTap(centerIndex),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutBack,
+        width: _fabRadius * 2,
+        height: _fabRadius * 2,
+        decoration: BoxDecoration(
+          color: selected ? accent : bg,
+          shape: BoxShape.circle,
+          border: Border.all(color: ink, width: GenZTokens.borderWidth),
+          // Không đổ bóng ở đây: vết lõm đã tạo chiều sâu, thêm bóng nữa là ba
+          // lớp đen chồng nhau (viền lõm + viền nút + bóng).
+        ),
+        child: Icon(
+          selected ? item.active : item.icon,
+          size: 28,
+          color: selected ? GenZTokens.ink : accent,
+        ),
+      ),
+    );
+  }
+}
+
+/// Vẽ mặt thanh với một vết lõm hình cung ở chính giữa.
+class _NotchPainter extends CustomPainter {
+  final Color bg;
+  final Color ink;
+  final double notchRadius;
+
+  const _NotchPainter({
+    required this.bg,
+    required this.ink,
+    required this.notchRadius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final r = notchRadius;
+
+    // Vết lõm là **một cung tròn tâm ngay trên mặt thanh**, cùng tâm với nút.
+    //
+    // Bản trước ghép hai đoạn cubic với một cung rồi mới hạ xuống, nên đường
+    // cong không trùng đường tròn của nút và hở ra hai "tai" ở hai bên.
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(cx - r, 0)
+      ..arcToPoint(
+        Offset(cx + r, 0),
+        radius: Radius.circular(r),
+        clockwise: false,
+      )
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(path, Paint()..color = bg);
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = ink
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = GenZTokens.borderWidth,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _NotchPainter old) =>
+      old.bg != bg || old.ink != ink || old.notchRadius != notchRadius;
 }

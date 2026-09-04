@@ -84,6 +84,13 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
   late final List<_RecapSlide> _slides = _buildSlides();
   int _index = 0;
 
+  /// Người dùng đang giữ màn hình.
+  ///
+  /// Trước đây ấn giữ chỉ dừng thanh tiến trình, còn nội dung vẫn chạy tiếp —
+  /// nên "giữ để xem kỹ" không có tác dụng thật. Cờ này đi xuống tận slide để
+  /// cuộn phim đứng lại đúng khung đang chiếu.
+  bool _paused = false;
+
   TripRecap get recap => widget.recap;
 
   @override
@@ -124,6 +131,16 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
             ? recap.destination!.trim()
             : 'recap.cap_hero'.tr(),
       ),
+      // Cuộn phim ký ức: đặt ngay sau slide mở đầu, khi người xem còn chưa
+      // biết sẽ thấy gì. Ảnh chạy vụt qua rồi chậm dần lại đúng một tấm — cảm
+      // giác tua lại băng cũ, thay vì mở thẳng ra một lưới ảnh.
+      if (recap.moments.length >= 3)
+        _RecapSlide.reel(
+          palette: _Palette.midnight,
+          kicker: 'recap.k_reel'.tr(),
+          title: 'recap.reel_title'.tr(),
+          caption: 'recap.reel_caption'.tr(),
+        ),
       if (recap.moments.isNotEmpty)
         _RecapSlide.gallery(
           palette: _Palette.ink,
@@ -252,8 +269,16 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: _onTapDown,
-        onLongPressStart: (_) => _progress.stop(),
-        onLongPressEnd: (_) => _progress.forward(),
+        onLongPressStart: (_) {
+          setState(() => _paused = true);
+          _progress.stop();
+          _enter.stop();
+        },
+        onLongPressEnd: (_) {
+          setState(() => _paused = false);
+          _progress.forward();
+          _enter.forward();
+        },
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -264,13 +289,62 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
               animation: _enter,
               child: SizedBox.expand(
                 key: ValueKey('slide-$_index'),
-                child: _SlideStage(slide: slide, recap: recap, share: _share),
+                child: _SlideStage(
+                  slide: slide,
+                  recap: recap,
+                  share: _share,
+                  paused: _paused,
+                ),
               ),
             ),
             _TopChrome(
               index: _index,
               length: _slides.length,
               controller: _progress,
+            ),
+            // Chỉ báo dừng: không có nó thì người dùng giữ màn hình mà không
+            // chắc app có nhận hay không.
+            IgnorePointer(
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 180),
+                opacity: _paused ? 1 : 0,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 96),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.55),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.pause_rounded,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'recap.paused'.tr(),
+                            style: AppFonts.body(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -341,11 +415,13 @@ class _SlideStage extends StatelessWidget {
   final _RecapSlide slide;
   final TripRecap recap;
   final VoidCallback share;
+  final bool paused;
 
   const _SlideStage({
     required this.slide,
     required this.recap,
     required this.share,
+    required this.paused,
   });
 
   @override
@@ -383,10 +459,23 @@ class _SlideStage extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final compact = constraints.maxHeight < 720;
+                // Cuộn phim phải TRÀN KÍN màn.
+                //
+                // Mọi slide khác dùng chung một khung lề, nhưng ở đây lề biến
+                // ảnh thành một tấm hình dán giữa nền — mất hẳn cảm giác đang
+                // ngồi trước máy chiếu. Nó tự lo phần chữ bằng dải tối riêng.
+                if (slide.type == _SlideType.reel) {
+                  return _ReelSlide(
+                    slide: slide,
+                    recap: recap,
+                    paused: paused,
+                  );
+                }
                 return Padding(
                   padding: EdgeInsets.fromLTRB(22, compact ? 58 : 70, 22, 28),
                   child: switch (slide.type) {
                     _SlideType.hero => _HeroSlide(slide: slide, recap: recap),
+                    _SlideType.reel => const SizedBox.shrink(),
                     _SlideType.gallery => _GallerySlide(
                       slide: slide,
                       recap: recap,
@@ -437,6 +526,223 @@ class _HeroSlide extends StatelessWidget {
         const SizedBox(height: 28),
         _Enter(order: 4, child: _MiniStats(recap: recap)),
       ],
+    );
+  }
+}
+
+/// Cuộn phim ký ức: ảnh chạy vụt qua rồi **chậm dần** lại đúng một tấm.
+///
+/// Nhịp mượn từ chuyện tua lại một cuộn băng: lúc đầu ảnh lướt qua nhanh tới
+/// mức chỉ kịp nhận ra màu, rồi thưa dần, rồi dừng hẳn. Điều khiến nó "có cảm
+/// giác quá khứ" không phải tốc độ mà là **sự bất thường của khung hình** —
+/// nhấp nháy độ sáng, ngả vàng, và một vệt sáng quét dọc như xước phim.
+///
+/// Toàn bộ chạy trên một `AnimationController`; chỉ số ảnh suy ra từ tiến trình
+/// nên khi người dùng giữ màn hình để dừng, ảnh đứng lại đúng khung đang xem.
+class _ReelSlide extends StatefulWidget {
+  final _RecapSlide slide;
+  final TripRecap recap;
+  final bool paused;
+
+  const _ReelSlide({
+    required this.slide,
+    required this.recap,
+    required this.paused,
+  });
+
+  @override
+  State<_ReelSlide> createState() => _ReelSlideState();
+}
+
+class _ReelSlideState extends State<_ReelSlide>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _reel = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 3400),
+  )..forward();
+
+  @override
+  void didUpdateWidget(covariant _ReelSlide old) {
+    super.didUpdateWidget(old);
+    // Giữ màn hình thì cuộn phim đứng lại ngay khung đang chiếu; thả ra thì
+    // chạy tiếp từ đúng chỗ đó, không nhảy cóc.
+    if (widget.paused != old.paused) {
+      widget.paused ? _reel.stop() : _reel.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _reel.dispose();
+    super.dispose();
+  }
+
+  /// Tổng số khung đã lướt qua tại thời điểm [t] (0→1).
+  ///
+  /// Dùng hàm mũ giảm dần: đạo hàm chính là tốc độ, nên tốc độ tự chậm lại mà
+  /// không cần chia giai đoạn bằng tay. `1 - pow(1 - t, 3)` cho đúng cảm giác
+  /// "vụt qua rồi thả trôi".
+  static const _totalFrames = 34;
+
+  int _frameAt(double t) {
+    final eased = 1 - math.pow(1 - t, 3).toDouble();
+    return (eased * _totalFrames).floor();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final shots = widget.recap.moments;
+    if (shots.isEmpty) return const SizedBox.shrink();
+
+    return AnimatedBuilder(
+      animation: _reel,
+      builder: (context, _) {
+        final t = _reel.value;
+        final frame = _frameAt(t);
+        final shot = shots[frame % shots.length];
+        // Nhấp nháy mạnh lúc chạy nhanh, tắt dần khi ảnh đã đứng lại — cuối
+        // slide phải nhìn rõ được tấm ảnh, không thể cứ chớp mãi.
+        final flickerAmount = (1 - t) * 0.6;
+
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: _ReelFrame(
+                key: ValueKey(shot.posterUrl),
+                url: shot.posterUrl,
+                flicker: flickerAmount,
+                settle: t,
+              ),
+            ),
+            Positioned.fill(child: _AgedFilm(progress: t, amount: flickerAmount)),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(22, 60, 22, 34),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0x00000000), Color(0xD9000000)],
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _Kicker(text: widget.slide.kicker),
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.slide.title,
+                      style: AppFonts.heading(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w900,
+                        height: 1.05,
+                        letterSpacing: -1,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _CaptionText(widget.slide.caption),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Một khung của cuộn phim.
+///
+/// Ảnh hơi phóng to lúc đầu rồi lùi về đúng cỡ khi dừng, cộng độ sáng dao
+/// động — hai thứ đó gộp lại cho cảm giác máy chiếu đang bắt nét.
+class _ReelFrame extends StatelessWidget {
+  final String url;
+  final double flicker;
+  final double settle;
+
+  const _ReelFrame({
+    super.key,
+    required this.url,
+    required this.flicker,
+    required this.settle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Dao động theo khung, không theo thời gian thực: nhấp nháy phải trùng
+    // nhịp đổi ảnh thì mới ra chất phim, lệch nhịp sẽ thành lỗi hiển thị.
+    final jitter = flicker * 0.22 * (url.hashCode % 7 - 3) / 3;
+    return Opacity(
+      opacity: (1 - flicker * 0.18 + jitter).clamp(0.55, 1.0),
+      child: Transform.scale(
+        scale: 1.14 - 0.14 * settle,
+        child: _NetworkOrAssetImage(url: url, fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+/// Lớp "phim cũ": ngả vàng, tối bốn góc, và một vệt xước quét dọc.
+class _AgedFilm extends StatelessWidget {
+  final double progress;
+  final double amount;
+
+  const _AgedFilm({required this.progress, required this.amount});
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Stack(
+        children: [
+          // Ngả vàng — dấu hiệu quen thuộc nhất của ảnh cũ.
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: const Color(0xFFD9A441).withValues(alpha: 0.20 * amount + 0.06),
+              ),
+            ),
+          ),
+          // Tối bốn góc, kéo mắt vào giữa khung.
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  radius: 0.95,
+                  colors: [Color(0x00000000), Color(0x8C000000)],
+                  stops: [0.55, 1.0],
+                ),
+              ),
+            ),
+          ),
+          // Vệt xước quét dọc một lần, đúng lúc phim đang chạy nhanh nhất.
+          if (amount > 0.08)
+            Positioned(
+              left: 0,
+              right: 0,
+              top: -120 + progress * 1400,
+              height: 90,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.white.withValues(alpha: 0.10 * amount),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -623,12 +929,27 @@ class _TiltedShots extends StatelessWidget {
                           ),
                         ),
                       )
-                      .animate(delay: (120 * (shots.length - i)).ms)
-                      .fadeIn(duration: 380.ms)
-                      .scale(
-                        begin: const Offset(0.82, 0.82),
+                      // Bay từ ngoài mép phải vào, vừa xoay vừa thu về đúng
+                      // góc nghiêng của mình. Chỉ phóng to rồi mờ dần như
+                      // trước thì ảnh "hiện ra", còn thế này thì ảnh "được
+                      // ném vào" — đó mới là thứ giữ mắt người xem.
+                      .animate(delay: (140 * (shots.length - i)).ms)
+                      .fadeIn(duration: 320.ms)
+                      .slideX(
+                        begin: 1.4,
+                        duration: 620.ms,
+                        curve: Curves.easeOutQuint,
+                      )
+                      .rotate(
+                        begin: 0.06,
+                        end: 0,
+                        duration: 620.ms,
                         curve: Curves.easeOutBack,
-                        duration: 520.ms,
+                      )
+                      .scale(
+                        begin: const Offset(0.86, 0.86),
+                        curve: Curves.easeOutBack,
+                        duration: 560.ms,
                       ),
             ),
         ],
@@ -1566,7 +1887,7 @@ class _NetworkOrAssetImage extends StatelessWidget {
   }
 }
 
-enum _SlideType { hero, gallery, stat, mvp, money, outro }
+enum _SlideType { hero, reel, gallery, stat, mvp, money, outro }
 
 class _RecapSlide {
   final _SlideType type;
@@ -1594,6 +1915,19 @@ class _RecapSlide {
     required String caption,
   }) => _RecapSlide._(
     type: _SlideType.hero,
+    palette: palette,
+    kicker: kicker,
+    title: title,
+    caption: caption,
+  );
+
+  factory _RecapSlide.reel({
+    required _Palette palette,
+    required String kicker,
+    required String title,
+    required String caption,
+  }) => _RecapSlide._(
+    type: _SlideType.reel,
     palette: palette,
     kicker: kicker,
     title: title,
