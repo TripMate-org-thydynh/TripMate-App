@@ -377,19 +377,20 @@ class _NotchedNavBar extends StatelessWidget {
   /// viền lõm và viền nút dính vào nhau thành một khối đen dày.
   static const double _fabRadius = 28;
 
+  /// Khoảng nút bay lên khỏi mặt thanh.
+  ///
+  /// Trước đây tâm nút nằm đúng trên mặt thanh, nên nửa dưới nút chìm vào hốc
+  /// và nhìn như bị dính vào thanh. Nâng tâm lên khỏi mặt thanh khiến nút tách
+  /// hẳn ra — hốc chỉ còn là vệt lõm nông đỡ phía dưới.
+  static const double _fabFloat = 23;
+
   /// Khoảng hở giữa mép nút và mép vết lõm.
   ///
-  /// Để 0: hốc ôm KHÍT nút, viền hốc chạy sát viền nút thành một nét. Trước để
-  /// 10 thì lộ ra một vành nền giữa hai đường viền — nhìn như phần thừa quanh
-  /// nút chứ không phải nút nằm trong hốc.
-  static const double _fabGap = 0;
+  /// Nhỏ vừa đủ để hốc trông mềm mà không lộ ra vành nền quanh nút.
+  static const double _fabGap = 4;
 
-  /// Phần nút nhô lên khỏi mặt thanh.
-  ///
-  /// Bằng đúng bán kính nút, nên **tâm nút nằm ngay trên mặt thanh**: nửa trên
-  /// nổi hẳn, nửa dưới chìm vào vết lõm. Số khác thì cung lõm và đường tròn của
-  /// nút không còn đồng tâm và hở ra hai "tai" hai bên.
-  static const double _lift = _fabRadius;
+  /// Tổng phần nút chiếm phía trên mặt thanh.
+  static const double _lift = _fabRadius + _fabFloat;
 
   static const double _barHeight = 62;
 
@@ -411,7 +412,12 @@ class _NotchedNavBar extends StatelessWidget {
           // Kẹp biên ngay tại đây để nút và vết lõm dùng CHUNG một toạ độ.
           // Nếu chỉ painter tự kẹp thì ở tab đầu/cuối vết lõm dừng lại còn nút
           // vẫn trượt tiếp và lòi ra ngoài mép màn hình.
-          const edge = _fabRadius + _fabGap + 6;
+          // Chừa đủ chỗ cho CẢ hốc, không chỉ cho nút.
+          //
+          // Để hẹp thì ở tab đầu/cuối nửa hốc nằm ngoài màn: nút trông như bị
+          // cắt cụt và đường viền bên ngoài biến mất. Cộng thêm bán kính hốc
+          // thay vì một số nhỏ tuỳ ý.
+          const edge = _fabRadius + _fabGap + 18;
           final targetX = (slot * (selectedIndex + 0.5))
               .clamp(edge, c.maxWidth - edge);
 
@@ -432,6 +438,7 @@ class _NotchedNavBar extends StatelessWidget {
                         ink: ink,
                         notchRadius: _fabRadius + _fabGap,
                         notchCenterX: notchX,
+                        notchLift: _fabFloat,
                       ),
                     ),
                   ),
@@ -517,8 +524,12 @@ class _NotchedNavBar extends StatelessWidget {
           color: accent,
           shape: BoxShape.circle,
           border: Border.all(color: ink, width: GenZTokens.borderWidth),
-          // Không đổ bóng: vết lõm đã tạo chiều sâu, thêm bóng nữa là ba lớp
-          // đen chồng nhau (viền lõm + viền nút + bóng).
+          // Bóng cứng kiểu brutalist. Trước đây nút chìm vào hốc nên bóng chỉ
+          // chồng thêm một lớp đen; nay nút đã tách hẳn ra, bóng mới có việc:
+          // nói cho mắt biết nó đang bay phía trên thanh.
+          boxShadow: [
+            BoxShadow(color: ink, offset: const Offset(0, 4), blurRadius: 0),
+          ],
         ),
         child: Icon(item.active, size: 26, color: GenZTokens.ink),
       ),
@@ -533,11 +544,18 @@ class _NotchPainter extends CustomPainter {
   final double notchRadius;
   final double notchCenterX;
 
+  /// Tâm nút nằm cao hơn mặt thanh bao nhiêu.
+  ///
+  /// Truyền vào để hốc được khoét đúng phần nút thực sự chìm xuống: nút bay
+  /// càng cao thì hốc càng nông.
+  final double notchLift;
+
   const _NotchPainter({
     required this.bg,
     required this.ink,
     required this.notchRadius,
     required this.notchCenterX,
+    required this.notchLift,
   });
 
   @override
@@ -550,7 +568,7 @@ class _NotchPainter extends CustomPainter {
     // mạch — cũng chính là thứ Material dùng cho `BottomAppBar`.
     final host = Rect.fromLTWH(0, 0, size.width, size.height);
     final guest = Rect.fromCircle(
-      center: Offset(notchCenterX, 0),
+      center: Offset(notchCenterX, -notchLift),
       radius: notchRadius,
     );
     final path = const CircularNotchedRectangle().getOuterPath(host, guest);
@@ -570,5 +588,6 @@ class _NotchPainter extends CustomPainter {
       old.bg != bg ||
       old.ink != ink ||
       old.notchRadius != notchRadius ||
-      old.notchCenterX != notchCenterX;
+      old.notchCenterX != notchCenterX ||
+      old.notchLift != notchLift;
 }
