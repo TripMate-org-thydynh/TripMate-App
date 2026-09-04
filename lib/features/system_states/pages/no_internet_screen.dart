@@ -328,60 +328,11 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
-
-                  // Next Up Tokyo Shibuya Crossing card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: surfaceColor,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: borderCol),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: primaryColor.withValues(alpha: 0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.flight_takeoff,
-                            color: primaryColor,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Next Up',
-                                style: AppFonts.body(
-                                  fontSize: 11,
-                                  color: textSecondary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Tokyo Shibuya Crossing',
-                                style: AppFonts.heading(
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(Icons.cloud_off, color: textSecondary, size: 16),
-                      ],
-                    ),
-                  ),
+                  // Trước đây ở đây có thẻ "Next Up: Tokyo Shibuya Crossing"
+                  // — một điểm đến bịa, hiện cho MỌI người dùng mất mạng dù họ
+                  // đang đi Đà Lạt. Màn offline không đọc được dữ liệu chuyến
+                  // (đó là lý do nó hiện ra), nên không có nguồn nào để thay
+                  // bằng số liệu thật. Bỏ hẳn thay vì bịa tiếp.
 
                   const SizedBox(height: 60),
 
@@ -452,7 +403,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                         ),
                       ),
                       child: Text(
-                        'Play Offline Dino Game',
+                        tr('offline.play_dino'),
                         style: AppFonts.heading(
                           fontWeight: FontWeight.bold,
                           color: primaryColor,

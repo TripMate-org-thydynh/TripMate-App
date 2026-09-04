@@ -117,21 +117,21 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
     return [
       _RecapSlide.hero(
         palette: _Palette.tangerine,
-        kicker: 'TRIPMATE WRAPPED',
+        kicker: 'recap.k_wrapped'.tr(),
         title: recap.tripName.isEmpty ? 'recap.your_trip'.tr() : recap.tripName,
         caption: recap.destination?.trim().isNotEmpty == true
             ? recap.destination!.trim()
-            : 'A trip worth replaying.',
+            : 'recap.cap_hero'.tr(),
       ),
       if (recap.moments.isNotEmpty)
         _RecapSlide.gallery(
           palette: _Palette.ink,
-          kicker: 'MEMORY WALL',
+          kicker: 'recap.k_wall'.tr(),
           title: '${recap.momentCount}',
           unit: 'recap.unit_moments'.tr(),
           caption: recap.moments.first.caption?.trim().isNotEmpty == true
               ? recap.moments.first.caption!.trim()
-              : 'Your best frames made the whole trip feel alive.',
+              : 'recap.cap_wall'.tr(),
         )
       else if (recap.momentCount > 0)
         _RecapSlide.stat(
@@ -146,7 +146,7 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
         _RecapSlide.stat(
           palette: _Palette.lime,
           icon: PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-          kicker: 'THE ROUTE',
+          kicker: 'recap.k_route'.tr(),
           title: '${recap.placeCount}',
           unit: 'recap.unit_places'.tr(),
           caption: 'recap.cap_places'.tr(args: ['${recap.placeCount}']),
@@ -155,7 +155,7 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
         _RecapSlide.stat(
           palette: _Palette.cobalt,
           icon: PhosphorIcons.path(PhosphorIconsStyle.fill),
-          kicker: 'THE STREAK',
+          kicker: 'recap.k_streak'.tr(),
           title: '${recap.days}',
           unit: 'recap.unit_days'.tr(),
           caption: 'recap.cap_days'.tr(args: ['${recap.memberCount}']),
@@ -163,14 +163,14 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
       if (recap.mvpName != null)
         _RecapSlide.mvp(
           palette: _Palette.rose,
-          kicker: 'SQUAD MVP',
+          kicker: 'recap.k_mvp'.tr(),
           title: recap.mvpName!,
           caption: 'recap.mvp_caption'.tr(),
         ),
       if (recap.totalSpent > 0)
         _RecapSlide.money(
           palette: _Palette.green,
-          kicker: 'GROUP SPEND',
+          kicker: 'recap.k_spend'.tr(),
           title: _money(recap.totalSpent, recap.currency),
           caption: 'recap.cap_money'.tr(args: ['${recap.expenseCount}']),
           unit: 'recap.per_head'.tr(
@@ -179,9 +179,9 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
         ),
       _RecapSlide.outro(
         palette: _Palette.midnight,
-        kicker: 'SAVE THE VIBE',
+        kicker: 'recap.k_outro'.tr(),
         title: 'recap.replay_tagline'.tr(),
-        caption: 'Share your Wrapped with the squad.',
+        caption: 'recap.cap_outro'.tr(),
       ),
     ];
   }
@@ -473,7 +473,14 @@ class _StatSlide extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _Enter(order: 0, child: _Kicker(text: slide.kicker)),
-        const Spacer(),
+        const SizedBox(height: 18),
+        // Dải ảnh thật của chuyến, lấp đúng mảng trống phía trên.
+        //
+        // Số liệu suông trên nền gradient thì không ai chụp màn khoe; vài khung
+        // hình quen mặt khiến người xem nhận ra ngay chuyến của mình.
+        if (recap.moments.isNotEmpty)
+          _Enter(order: 1, dy: 24, child: _PhotoStrip(moments: recap.moments)),
+        const Spacer(flex: 2),
         Row(
           children: [
             _Enter(order: 1, child: _IconBadge(icon: slide.icon!)),
@@ -486,12 +493,12 @@ class _StatSlide extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 24),
-        _Enter(order: 3, child: _BigNumber(value: slide.title, fontSize: 110)),
+        const SizedBox(height: 18),
+        _Enter(order: 3, child: _BigNumber(value: slide.title, fontSize: 128)),
         _Enter(order: 4, child: _UnitText(slide.unit ?? '')),
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
         _Enter(order: 5, child: _CaptionText(slide.caption)),
-        const Spacer(),
+        const Spacer(flex: 3),
         _Enter(order: 6, child: _MetricRibbon(recap: recap)),
       ],
     );
@@ -641,7 +648,7 @@ class _OutroSlide extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  'Share Trip Wrapped',
+                  'recap.share_cta'.tr(),
                   style: AppFonts.heading(
                     fontSize: 17,
                     fontWeight: FontWeight.w900,
@@ -670,14 +677,17 @@ class _BackgroundMedia extends StatelessWidget {
         : recap.moments.isNotEmpty
         ? recap.moments.first.posterUrl
         : null;
-    if (url == null || slide.type == _SlideType.stat) {
-      return const SizedBox.shrink();
-    }
+    if (url == null) return const SizedBox.shrink();
     // Ken Burns: anh nen phong cham suot slide cho do tinh.
     final t = _EnterScope.maybeOf(context);
     final image = _NetworkOrAssetImage(url: url, fit: BoxFit.cover);
     return Opacity(
-      opacity: slide.type == _SlideType.gallery ? 0.18 : 0.24,
+      opacity: switch (slide.type) {
+        // Số liệu là nhân vật chính ở slide này; ảnh chỉ để đỡ trơ.
+        _SlideType.stat => 0.13,
+        _SlideType.gallery => 0.18,
+        _ => 0.24,
+      },
       child: t == null
           ? image
           : AnimatedBuilder(
@@ -980,17 +990,55 @@ class _MiniStats extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _MiniStat(value: '${recap.days}', label: 'days'),
+          child: _MiniStat(value: '${recap.days}', label: 'recap.mini_days'.tr()),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _MiniStat(value: '${recap.placeCount}', label: 'stops'),
+          child: _MiniStat(value: '${recap.placeCount}', label: 'recap.mini_stops'.tr()),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _MiniStat(value: '${recap.momentCount}', label: 'moments'),
+          child: _MiniStat(value: '${recap.momentCount}', label: 'recap.mini_moments'.tr()),
         ),
       ],
+    );
+  }
+}
+
+/// Dải ảnh ngang, dùng ở slide số liệu.
+///
+/// Cố tình nhỏ và mờ hơn `_MomentDeck` của slide thư viện: ở đây ảnh là nền
+/// phụ, con số mới là nhân vật chính.
+class _PhotoStrip extends StatelessWidget {
+  final List<TripRecapMoment> moments;
+
+  const _PhotoStrip({required this.moments});
+
+  @override
+  Widget build(BuildContext context) {
+    final shots = moments.take(4).toList();
+    if (shots.isEmpty) return const SizedBox.shrink();
+    return SizedBox(
+      height: 74,
+      child: Row(
+        children: [
+          for (var i = 0; i < shots.length; i++) ...[
+            if (i > 0) const SizedBox(width: 8),
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Opacity(
+                  opacity: 0.92,
+                  child: _NetworkOrAssetImage(
+                    url: shots[i].posterUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -1012,15 +1060,15 @@ class _MetricRibbon extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _MiniStat(value: '${recap.memberCount}', label: 'crew'),
+            child: _MiniStat(value: '${recap.memberCount}', label: 'recap.mini_crew'.tr()),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _MiniStat(value: '${recap.placeCount}', label: 'stops'),
+            child: _MiniStat(value: '${recap.placeCount}', label: 'recap.mini_stops'.tr()),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _MiniStat(value: '${recap.expenseCount}', label: 'bills'),
+            child: _MiniStat(value: '${recap.expenseCount}', label: 'recap.mini_bills'.tr()),
           ),
         ],
       ),
