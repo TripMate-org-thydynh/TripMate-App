@@ -145,6 +145,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     final Widget mainContent = Scaffold(
       backgroundColor: bg,
+      // Cho thân màn chạy XUỐNG DƯỚI thanh điều hướng.
+      //
+      // Không có nó thì vết lõm tuy đã khoét thủng mặt thanh nhưng phía sau vẫn
+      // là nền Scaffold, nên nhìn ra một mảng nền thừa ôm quanh nút thay vì
+      // thấy nội dung xuyên qua. Nền doodle phía sau cũng nhờ đó phủ liền mạch
+      // tới đáy màn.
+      extendBody: true,
       body: Stack(
         children: [
           // Nền cream phẳng + doodle sparkle xoay/nhấp nhẹ liên tục
@@ -369,7 +376,13 @@ class _NotchedNavBar extends StatelessWidget {
   /// Khoảng hở phải đủ rộng để nhìn thấy nền giữa hai đường viền; để hẹp thì
   /// viền lõm và viền nút dính vào nhau thành một khối đen dày.
   static const double _fabRadius = 28;
-  static const double _fabGap = 10;
+
+  /// Khoảng hở giữa mép nút và mép vết lõm.
+  ///
+  /// Để 0: hốc ôm KHÍT nút, viền hốc chạy sát viền nút thành một nét. Trước để
+  /// 10 thì lộ ra một vành nền giữa hai đường viền — nhìn như phần thừa quanh
+  /// nút chứ không phải nút nằm trong hốc.
+  static const double _fabGap = 0;
 
   /// Phần nút nhô lên khỏi mặt thanh.
   ///
