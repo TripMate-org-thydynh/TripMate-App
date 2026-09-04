@@ -64,6 +64,7 @@ dependencies:
   # Phát video ngắn trong bảng tin khoảnh khắc.
   video_player: ^2.9.2
   path_provider: ^2.1.4
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
   flutter_test:

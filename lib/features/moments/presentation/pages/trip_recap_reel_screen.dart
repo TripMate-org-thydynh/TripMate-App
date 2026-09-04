@@ -1,3 +1,4 @@
+import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -361,6 +362,22 @@ class _SlideStage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           _BackgroundMedia(recap: recap, slide: slide),
+          // Lớp phủ tối dần xuống đáy.
+          //
+          // Khi ảnh nền được cho hiện rõ, chữ trắng lập tức chìm vào những vùng
+          // sáng của ảnh. Phủ một lớp tối theo chiều dọc giữ chữ luôn đọc được
+          // mà không phải hạ ảnh xuống mờ tịt như trước.
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0x59000000), Color(0x14000000), Color(0xB3000000)],
+                stops: [0.0, 0.38, 1.0],
+              ),
+            ),
+            child: SizedBox.expand(),
+          ),
           _TextureOverlay(seed: slide.palette.seed),
           SafeArea(
             child: LayoutBuilder(
@@ -461,6 +478,20 @@ class _GallerySlide extends StatelessWidget {
   }
 }
 
+/// Slide số liệu — bố cục kiểu **áp phích**, không phải slide trình chiếu.
+///
+/// Bản trước có đủ dấu hiệu của một màn hình do máy sinh ra: gradient hai màu
+/// bão hoà, mọi khối căn trái đều tăm tắp, chữ trắng an toàn, dải bốn ảnh bo
+/// góc bằng nhau như danh sách thumbnail. Không khối nào tranh sự chú ý với
+/// khối nào, nên chẳng có gì để nhìn.
+///
+/// Ba thay đổi tạo ra khác biệt:
+///
+/// 1. **Con số tràn khỏi mép trái.** Bị cắt mất một phần là điều khiến mắt đọc
+///    nó như một mảng hình, không phải một dòng dữ liệu.
+/// 2. **Nhãn đơn vị đè lên chân số.** Hai lớp chữ chồng nhau phá thế xếp hàng
+///    dọc đều đặn — đó chính là thứ làm bố cục cũ trông vô hồn.
+/// 3. **Ảnh nghiêng, chồng, lệch cỡ** thay cho hàng thumbnail đều nhau.
 class _StatSlide extends StatelessWidget {
   final _RecapSlide slide;
   final TripRecap recap;
@@ -469,38 +500,139 @@ class _StatSlide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final shots = recap.moments.take(3).toList();
+    return Stack(
       children: [
-        _Enter(order: 0, child: _Kicker(text: slide.kicker)),
-        const SizedBox(height: 18),
-        // Dải ảnh thật của chuyến, lấp đúng mảng trống phía trên.
-        //
-        // Số liệu suông trên nền gradient thì không ai chụp màn khoe; vài khung
-        // hình quen mặt khiến người xem nhận ra ngay chuyến của mình.
-        if (recap.moments.isNotEmpty)
-          _Enter(order: 1, dy: 24, child: _PhotoStrip(moments: recap.moments)),
-        const Spacer(flex: 2),
-        Row(
+        // Ảnh nghiêng thả ở góc trên phải: phá thế cân đối, và cho người xem
+        // một mảnh chuyến thật để nhận ra.
+        if (shots.isNotEmpty)
+          Positioned(
+            top: 4,
+            // Truoc de -18 nen tam ngoai cung bi cat mat o mep man.
+            right: 0,
+            child: _TiltedShots(shots: shots),
+          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Enter(order: 1, child: _IconBadge(icon: slide.icon!)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _Enter(
-                order: 2,
-                child: _AvatarRail(members: recap.members, compact: true),
+            _Kicker(text: slide.kicker)
+                .animate()
+                .fadeIn(duration: 420.ms)
+                .slideX(begin: -0.12, curve: Curves.easeOutCubic),
+            const Spacer(flex: 3),
+            // Số + nhãn: nhãn đè lên chân số, cả cụm tràn trái.
+            Transform.translate(
+              offset: const Offset(-16, 0),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _BigNumber(value: slide.title, fontSize: 148)
+                      .animate()
+                      .fadeIn(duration: 320.ms)
+                      .slideX(
+                        begin: -0.25,
+                        duration: 640.ms,
+                        curve: Curves.easeOutQuint,
+                      ),
+                  Positioned(
+                    left: 26,
+                    bottom: -6,
+                    child:
+                        _UnitText(slide.unit ?? '')
+                            .animate(delay: 260.ms)
+                            .fadeIn(duration: 380.ms)
+                            .slideY(begin: 0.6, curve: Curves.easeOutCubic),
+                  ),
+                ],
               ),
             ),
+            const SizedBox(height: 26),
+            _CaptionText(slide.caption)
+                .animate(delay: 420.ms)
+                .fadeIn(duration: 420.ms)
+                .slideY(begin: 0.25, curve: Curves.easeOutCubic),
+            const SizedBox(height: 18),
+            _AvatarRail(members: recap.members, compact: true)
+                .animate(delay: 540.ms)
+                .fadeIn(duration: 380.ms)
+                .slideX(begin: -0.1, curve: Curves.easeOutCubic),
+            // Chi mot khoang tho nho truoc ribbon: de Spacer o day thi mang
+            // trong giua avatar va ribbon rong bang ca mot phan tu man hinh.
+            const SizedBox(height: 28),
+            _MetricRibbon(recap: recap)
+                .animate(delay: 660.ms)
+                .fadeIn(duration: 420.ms)
+                .slideY(begin: 0.4, curve: Curves.easeOutCubic),
           ],
         ),
-        const SizedBox(height: 18),
-        _Enter(order: 3, child: _BigNumber(value: slide.title, fontSize: 128)),
-        _Enter(order: 4, child: _UnitText(slide.unit ?? '')),
-        const SizedBox(height: 14),
-        _Enter(order: 5, child: _CaptionText(slide.caption)),
-        const Spacer(flex: 3),
-        _Enter(order: 6, child: _MetricRibbon(recap: recap)),
       ],
+    );
+  }
+}
+
+/// Ba tấm ảnh nghiêng chồng nhau, lệch cỡ.
+///
+/// Cùng ngôn ngữ hình ảnh với widget màn hình chính, nên người dùng nhận ra
+/// ngay đây là cùng một app — thay vì một màn hình lạ.
+class _TiltedShots extends StatelessWidget {
+  final List<TripRecapMoment> shots;
+
+  const _TiltedShots({required this.shots});
+
+  static const _tilts = [-11.0, 7.0, -3.0];
+  static const _sizes = [96.0, 116.0, 84.0];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 220,
+      height: 190,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          for (var i = shots.length - 1; i >= 0; i--)
+            Positioned(
+              right: 12.0 + i * 46,
+              top: 10.0 + i * 26,
+              child:
+                  Transform.rotate(
+                        angle: _tilts[i % _tilts.length] * 3.1415926 / 180,
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.94),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.28),
+                                blurRadius: 14,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: SizedBox(
+                              width: _sizes[i % _sizes.length],
+                              height: _sizes[i % _sizes.length],
+                              child: _NetworkOrAssetImage(
+                                url: shots[i].posterUrl,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .animate(delay: (120 * (shots.length - i)).ms)
+                      .fadeIn(duration: 380.ms)
+                      .scale(
+                        begin: const Offset(0.82, 0.82),
+                        curve: Curves.easeOutBack,
+                        duration: 520.ms,
+                      ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -682,11 +814,15 @@ class _BackgroundMedia extends StatelessWidget {
     final t = _EnterScope.maybeOf(context);
     final image = _NetworkOrAssetImage(url: url, fit: BoxFit.cover);
     return Opacity(
+      // Ảnh nền để RÕ hẳn, không còn mờ tịt.
+      //
+      // Mức 0.13 cũ vừa không nhìn thấy gì vừa làm nền đục — tệ hơn cả không
+      // có ảnh. Nay bảng màu đã tối xuyên suốt nên chữ trắng vẫn nổi, và người
+      // xem thực sự thấy được chuyến của mình phía sau con số.
       opacity: switch (slide.type) {
-        // Số liệu là nhân vật chính ở slide này; ảnh chỉ để đỡ trơ.
-        _SlideType.stat => 0.13,
-        _SlideType.gallery => 0.18,
-        _ => 0.24,
+        _SlideType.stat => 0.42,
+        _SlideType.gallery => 0.30,
+        _ => 0.46,
       },
       child: t == null
           ? image
@@ -1001,44 +1137,6 @@ class _MiniStats extends StatelessWidget {
           child: _MiniStat(value: '${recap.momentCount}', label: 'recap.mini_moments'.tr()),
         ),
       ],
-    );
-  }
-}
-
-/// Dải ảnh ngang, dùng ở slide số liệu.
-///
-/// Cố tình nhỏ và mờ hơn `_MomentDeck` của slide thư viện: ở đây ảnh là nền
-/// phụ, con số mới là nhân vật chính.
-class _PhotoStrip extends StatelessWidget {
-  final List<TripRecapMoment> moments;
-
-  const _PhotoStrip({required this.moments});
-
-  @override
-  Widget build(BuildContext context) {
-    final shots = moments.take(4).toList();
-    if (shots.isEmpty) return const SizedBox.shrink();
-    return SizedBox(
-      height: 74,
-      child: Row(
-        children: [
-          for (var i = 0; i < shots.length; i++) ...[
-            if (i > 0) const SizedBox(width: 8),
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
-                child: Opacity(
-                  opacity: 0.92,
-                  child: _NetworkOrAssetImage(
-                    url: shots[i].posterUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }
@@ -1582,39 +1680,46 @@ class _Palette {
 
   const _Palette(this.colors, this.seed);
 
+  // Bảng màu: **cùng họ, tối dần**, không nhảy sang vàng chói ở góc đối diện.
+  //
+  // Bản trước có bảy palette nhưng chung đúng một công thức — tối, rồi bão hoà,
+  // rồi vàng/cam sáng. Nhìn slide nào cũng ra slide nào, và cặp "xanh lá sang
+  // vàng" là thứ không ai chọn có chủ đích. Nay mỗi bảng đi trong một họ màu và
+  // giữ nền tối xuyên suốt: chỗ sáng duy nhất trên màn là chữ và ảnh, nên mắt
+  // biết phải nhìn đâu.
   static const tangerine = _Palette([
-    Color(0xFFFF7A1A),
-    Color(0xFFE33D5F),
-    Color(0xFF321035),
+    Color(0xFF2B0F0A),
+    Color(0xFF7A2A12),
+    Color(0xFF3D1408),
   ], 3);
   static const ink = _Palette([
-    Color(0xFF111827),
-    Color(0xFF6046FF),
-    Color(0xFFE94B86),
+    Color(0xFF0B1020),
+    Color(0xFF2A2069),
+    Color(0xFF120E24),
   ], 7);
   static const lime = _Palette([
-    Color(0xFF103B2F),
-    Color(0xFF17A668),
-    Color(0xFFF3D34A),
+    Color(0xFF07231B),
+    Color(0xFF11543D),
+    Color(0xFF09261D),
   ], 13);
   static const cobalt = _Palette([
-    Color(0xFF0E2A5C),
-    Color(0xFF1768AC),
-    Color(0xFFFFB84D),
+    Color(0xFF061428),
+    Color(0xFF10396E),
+    Color(0xFF07182E),
   ], 19);
   static const rose = _Palette([
-    Color(0xFF43113A),
-    Color(0xFFE94B86),
-    Color(0xFFFFC857),
+    Color(0xFF2A0A22),
+    Color(0xFF6E1F4A),
+    Color(0xFF320C28),
   ], 23);
   static const green = _Palette([
-    Color(0xFF073B3A),
-    Color(0xFF0EAD69),
-    Color(0xFFF7B801),
+    Color(0xFF04211F),
+    Color(0xFF0B4F45),
+    Color(0xFF062825),
   ], 29);
   static const midnight = _Palette([
-    Color(0xFF09090B),
-    Color(0xFF25316D),
-    Color(0xFFF75C03),
+    Color(0xFF07070A),
+    Color(0xFF171A33),
+    Color(0xFF0B0B12),
   ], 31);
 }
