@@ -384,8 +384,14 @@ class _NotchedNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
+    // Chiều cao chỉ tính mặt thanh — KHÔNG cộng phần nút nhô lên.
+    //
+    // Trước đây cộng cả `_lift`, nên Scaffold dành thêm một dải trống bằng nửa
+    // nút phía trên vạch ngăn: nội dung bị đẩy lên mà chỗ đó chẳng có gì. Nay
+    // nút tràn ra ngoài khung thanh (`Clip.none`) và chỉ đè lên nội dung,
+    // đúng như một nút nổi.
     return SizedBox(
-      height: _barHeight + _lift + bottomInset,
+      height: _barHeight + bottomInset,
       child: LayoutBuilder(
         builder: (context, c) {
           final slot = c.maxWidth / items.length;
@@ -406,11 +412,7 @@ class _NotchedNavBar extends StatelessWidget {
               return Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    height: _barHeight + bottomInset,
+                  Positioned.fill(
                     child: CustomPaint(
                       painter: _NotchPainter(
                         bg: bg,
@@ -434,9 +436,12 @@ class _NotchedNavBar extends StatelessWidget {
                     ),
                   ),
                   // Nút nổi: icon của tab đang chọn, trượt theo.
+                  //
+                  // `top` âm để tâm nút nằm đúng trên mặt thanh mà không cần
+                  // khung thanh phải cao thêm.
                   Positioned(
                     left: notchX - _fabRadius,
-                    top: 0,
+                    top: -_lift,
                     child: _floatingButton(),
                   ),
                 ],
