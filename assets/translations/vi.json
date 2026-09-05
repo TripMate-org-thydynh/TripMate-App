@@ -976,7 +976,8 @@
     "q_night": "Buổi tối bạn chọn?",
     "q_trip": "Chuyến đi lý tưởng là?",
     "question_n": "Câu {i}/{total}",
-    "vibe_budget_max": "Tiết kiệm hết mức"
+    "vibe_budget_max": "Tiết kiệm hết mức",
+    "vibe_question": "squad muốn đi kiểu gì?"
   },
   "packing": {
     "add": "Thêm",

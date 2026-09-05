@@ -339,7 +339,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           child: Column(
             children: [
               Text(
-                "squad muốn đi kiểu gì?",
+                'onboarding.vibe_question'.tr(),
                 textAlign: TextAlign.center,
                 style: AppFonts.heading(
                   fontSize: 32,

@@ -379,10 +379,10 @@ class _NotchedNavBar extends StatelessWidget {
 
   /// Khoảng nút bay lên khỏi mặt thanh.
   ///
-  /// Trước đây tâm nút nằm đúng trên mặt thanh, nên nửa dưới nút chìm vào hốc
-  /// và nhìn như bị dính vào thanh. Nâng tâm lên khỏi mặt thanh khiến nút tách
-  /// hẳn ra — hốc chỉ còn là vệt lõm nông đỡ phía dưới.
-  static const double _fabFloat = 23;
+  /// Để cao quá thì nút tách rời khỏi thanh, nhìn như một nút dán đè lên chứ
+  /// không phải một phần của thanh. Mức này cho nút NGỒI TRONG hốc: nhô lên đủ
+  /// để nổi bật, nhưng phần dưới vẫn nằm trong vệt lõm ôm lấy nó.
+  static const double _fabFloat = 8;
 
   /// Khoảng hở giữa mép nút và mép vết lõm.
   ///
@@ -567,8 +567,14 @@ class _NotchPainter extends CustomPainter {
     // này dựng sẵn hai đoạn cong chuyển tiếp ở hai bên, cho đúng dáng hốc liền
     // mạch — cũng chính là thứ Material dùng cho `BottomAppBar`.
     final host = Rect.fromLTWH(0, 0, size.width, size.height);
+    // Tâm hốc đặt SÁT mặt thanh, không theo tâm nút.
+    //
+    // Nút được cho bay cao hẳn lên, nên nếu lấy đúng tâm nút thì đường tròn chỉ
+    // cắt mặt thanh một đoạn rất nông — hốc gần như phẳng, nhìn không ra chỗ
+    // lõm. Hạ tâm xuống mép thanh thì cắt được gần trọn nửa dưới đường tròn, ra
+    // đúng dáng hõm ôm lấy nút.
     final guest = Rect.fromCircle(
-      center: Offset(notchCenterX, -notchLift),
+      center: Offset(notchCenterX, -notchLift * 0.45),
       radius: notchRadius,
     );
     final path = const CircularNotchedRectangle().getOuterPath(host, guest);

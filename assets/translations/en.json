@@ -976,7 +976,8 @@
     "q_night": "How do you spend the evening?",
     "q_trip": "Your ideal trip is?",
     "question_n": "Question {i}/{total}",
-    "vibe_budget_max": "As cheap as possible"
+    "vibe_budget_max": "As cheap as possible",
+    "vibe_question": "what vibe is your squad after?"
   },
   "packing": {
     "add": "Add",
