@@ -1,12 +1,16 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../core/widgets/gen_z_widgets.dart';
 
 // Pages
 import 'pages/matey_ai_emotional_chaos_screen.dart';
 import 'pages/ai_budget_assistant_screen.dart';
-import 'pages/ai_trip_summary_screen.dart';
+import '../gamification/data/games_repository.dart';
+import '../moments/presentation/pages/trip_recap_reel_screen.dart';
 import 'pages/ai_chat_history_screen.dart';
-import 'pages/ai_suggestion_feed_screen.dart';
 import 'pages/ai_personality_analysis_screen.dart';
 import 'pages/ai_mood_detection_screen.dart';
 import 'pages/ai_recommendation_timeline_screen.dart';
@@ -25,11 +29,12 @@ class AiHubScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Brand design system tokens
-    final primaryColor = isDark ? const Color(0xFF8B5CF6) : const Color(0xFFE0533C);
-    final secondaryColor = isDark ? const Color(0xFF06B6D4) : const Color(0xFFEBA83A);
-    final backgroundColor = isDark ? const Color(0xFF0B0F19) : const Color(0xFFFCFAF6);
-    final surfaceColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    // Token Gen Z Neo-Brutalist
+    const primaryColor = GenZTokens.purple;
+    const secondaryColor = GenZTokens.yellow;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -44,62 +49,58 @@ class AiHubScreen extends StatelessWidget {
             backgroundColor: backgroundColor,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+              icon: Icon(Icons.arrow_back, color: ink),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                'Matey AI Space 🔮',
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.bold,
+                'ai.hub_title'.tr(),
+                style: AppFonts.heading(
+                  fontWeight: FontWeight.w800,
                   fontSize: 18,
-                  color: isDark ? Colors.white : Colors.black87,
+                  letterSpacing: -0.5,
+                  color: ink,
                 ),
               ),
               background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: isDark
-                        ? [
-                            const Color(0xFF312E81), // Indigo 900
-                            const Color(0xFF581C87), // Purple 900
-                            backgroundColor, // Obsidian
-                          ]
-                        : [
-                            const Color(0xFFEEF2FF), // Indigo 50
-                            const Color(0xFFF3E8FF), // Purple 50
-                            backgroundColor, // Warm Ivory
-                          ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
+                color: backgroundColor,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Glow background bubble
+                    // Khối sticker màu đặc trang trí
                     Positioned(
-                      right: -30,
-                      top: 40,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: primaryColor.withValues(alpha: 0.15),
+                      right: -20,
+                      top: 20,
+                      child: Transform.rotate(
+                        angle: 0.15,
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(28),
+                            color: secondaryColor,
+                            border: Border.all(
+                              color: ink,
+                              width: GenZTokens.borderWidth,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                     Positioned(
-                      left: -20,
-                      bottom: 20,
+                      left: -30,
+                      bottom: 10,
                       child: Container(
-                        width: 120,
-                        height: 120,
+                        width: 100,
+                        height: 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: secondaryColor.withValues(alpha: 0.15),
+                          color: GenZTokens.lilac,
+                          border: Border.all(
+                            color: ink,
+                            width: GenZTokens.borderWidth,
+                          ),
                         ),
                       ),
                     ),
@@ -107,25 +108,24 @@ class AiHubScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 40),
-                        // Premium mascot icon
+                        // Icon robot — khối tím viền ink hard shadow
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              colors: [primaryColor, secondaryColor],
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusCard,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: primaryColor.withValues(alpha: 0.4),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
+                            color: primaryColor,
+                            border: Border.all(
+                              color: ink,
+                              width: GenZTokens.borderWidth,
+                            ),
+                            boxShadow: GenZTokens.hardShadow(ink),
                           ),
-                          child: const Text(
-                            '🧠',
-                            style: TextStyle(fontSize: 42),
+                          child: Icon(
+                            PhosphorIcons.robot(PhosphorIconsStyle.fill),
+                            size: 40,
+                            color: GenZTokens.paper,
                           ),
                         ),
                       ],
@@ -142,106 +142,77 @@ class AiHubScreen extends StatelessWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 // Matey AI companion intro card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.only(bottom: 28),
-                  decoration: BoxDecoration(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 28),
+                  child: HardShadowBox(
                     color: surfaceColor,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isDark ? primaryColor.withValues(alpha: 0.2) : primaryColor.withValues(alpha: 0.1),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            PillTag(
+                              text: 'ai.companion_mode'.tr(),
+                              color: GenZTokens.lilac,
+                            ),
+                            Spacer(),
+                            PillTag(text: 'Online', color: GenZTokens.green),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'ai.hub_welcome'.tr(),
+                          style: AppFonts.heading(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                            letterSpacing: -0.5,
+                            color: ink,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'ai.hub_intro'.tr(),
+                          style: AppFonts.body(
+                            color: isDark
+                                ? GenZTokens.inkSoftDark
+                                : GenZTokens.inkSoft,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            height: 1.45,
+                          ),
+                        ),
+                      ],
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 16,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              'Companion Mode',
-                              style: GoogleFonts.plusJakartaSans(
-                                color: primaryColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                          const Spacer(),
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Online',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Chào mừng cưng đến với Matey AI! ⚡',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: isDark ? Colors.white : Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Hệ thống AI phân tích tính cách, đo lường sự hỗn loạn và hỗ trợ tính toán ngân sách du lịch đang hoạt động hết công suất. Hãy chạm để khám phá!',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: isDark ? Colors.grey[350] : Colors.black54,
-                          fontSize: 13,
-                          height: 1.45,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
 
                 // SECTION 1: TRẢI NGHIỆM TƯƠNG TÁC
-                _buildSectionHeader('Tương Tác Companion 🎭', isDark),
+                _buildSectionHeader('ai.section_companion'.tr(), isDark),
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
-                  title: 'Matey AI — Emotional Chaos',
-                  subtitle: 'Trò chuyện cực kỳ hỗn loạn và đầy tính giải trí với Matey AI 🔮',
+                  title: 'ai.matey_title'.tr(),
+                  subtitle:
+                      'ai.chat_sub'.tr(),
                   icon: Icons.chat_bubble_outline,
                   color: primaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const MateyAiEmotionalChaosScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const MateyAiEmotionalChaosScreen(),
+                    ),
                   ),
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Vibe Matcher — Squad Energy',
-                  subtitle: 'Đo lường mức độ hợp cạ và rung động tâm hồn của cả hội bạn 🗺️',
+                  title: 'ai.vibe_matcher_title'.tr(),
+                  subtitle:
+                      'ai.vibe_match_sub'.tr(),
                   icon: Icons.favorite_border,
-                  color: const Color(0xFFEC4899),
+                  color: GenZTokens.magenta,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
@@ -256,8 +227,9 @@ class AiHubScreen extends StatelessWidget {
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Itinerary Planner — Matey Plans',
-                  subtitle: 'Tạo và tối ưu hóa lịch trình Kyoto / Dalat siêu tốc bằng AI 🛫',
+                  title: 'ai.planner_title'.tr(),
+                  subtitle:
+                      'ai.planner_sub'.tr(),
                   icon: Icons.auto_awesome_motion,
                   color: secondaryColor,
                   isDark: isDark,
@@ -276,129 +248,157 @@ class AiHubScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // SECTION 2: HỖ TRỢ CHUYẾN ĐI
-                _buildSectionHeader('Hỗ Trợ & Phân Tích Squad 🧠', isDark),
+                _buildSectionHeader('ai.section_analysis'.tr(), isDark),
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Budget Assistant',
-                  subtitle: 'Trợ lý tối ưu hóa ngân sách và roast chi tiêu cực phũ 💸🔥',
+                  title: 'ai.budget_title'.tr(),
+                  subtitle:
+                      'ai.budget_sub'.tr(),
                   icon: Icons.monetization_on_outlined,
-                  color: const Color(0xFF10B981),
+                  color: GenZTokens.green,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AiBudgetAssistantScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const AiBudgetAssistantScreen(),
+                    ),
                   ),
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Personality Analysis',
-                  subtitle: 'Roast và xếp hạng tính cách lười biếng / ham chơi của từng đứa 👹',
+                  title: 'ai.personality_title'.tr(),
+                  subtitle:
+                      'ai.personality_sub'.tr(),
                   icon: Icons.psychology_outlined,
-                  color: Colors.orangeAccent,
+                  color: GenZTokens.orange,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AiPersonalityAnalysisScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const AiPersonalityAnalysisScreen(),
+                    ),
                   ),
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Mood Detection',
-                  subtitle: 'Đo lường chỉ số căng thẳng và drama trong squad thời gian thực 🎭',
+                  title: 'ai.mood_title'.tr(),
+                  subtitle:
+                      'ai.drama_sub'.tr(),
                   icon: Icons.mood_bad_outlined,
-                  color: const Color(0xFFEF4444),
+                  color: GenZTokens.red,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AiMoodDetectionScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const AiMoodDetectionScreen(),
+                    ),
                   ),
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Recommendation Timeline',
-                  subtitle: 'Lộ trình gợi ý hoạt động độc lạ theo múi giờ ⏰',
+                  title: 'ai.timeline_title'.tr(),
+                  subtitle: 'ai.hub_route_sub'.tr(),
                   icon: Icons.timeline_outlined,
-                  color: const Color(0xFF06B6D4),
+                  color: GenZTokens.blue,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AiRecommendationTimelineScreen()),
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const AiRecommendationTimelineScreen(),
+                    ),
                   ),
                 ),
+                // Trước đây tile này mở AiTripSummaryScreen — một màn 925 dòng
+                // in cứng "842 khoảnh khắc", nhân vật "Alex"/"Thảo Ly" và ảnh
+                // Unsplash, không gọi API nào. Trip Wrapped làm đúng việc đó
+                // trên số liệu thật nên trỏ thẳng sang đấy.
                 _buildHubCard(
                   context: context,
-                  title: 'AI Suggestion Feed',
-                  subtitle: 'Cập nhật giao thông, thời tiết thông minh kèm giải pháp 🌦️',
-                  icon: Icons.rss_feed,
-                  color: const Color(0xFF14B8A6),
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AiSuggestionFeedScreen()),
-                  ),
-                ),
-                _buildHubCard(
-                  context: context,
-                  title: 'AI Trip Summary Recap',
-                  subtitle: 'Ghép video kỷ niệm hành trình tự động cực cháy 🎞️',
-                  icon: Icons.video_library_outlined,
+                  title: 'ai.wrapped_title'.tr(),
+                  subtitle: 'ai.hub_recap_sub'.tr(),
+                  icon: Icons.auto_awesome,
                   color: secondaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AiTripSummaryScreen()),
-                  ),
+                  onTap: () {
+                    final tripId = ProviderScope.containerOf(
+                      context,
+                      listen: false,
+                    ).read(activeTripIdProvider);
+                    if (tripId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('games.need_trip_body'.tr())),
+                      );
+                      return;
+                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => TripRecapReelScreen(
+                          isDarkMode: isDark,
+                          tripId: tripId,
+                        ),
+                      ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 24),
 
                 // SECTION 3: QUẢN LÝ TÁC VỤ
-                _buildSectionHeader('Không Gian Làm Việc AI 🖥️', isDark),
+                _buildSectionHeader('ai.section_workspace'.tr(), isDark),
                 const SizedBox(height: 12),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Generation Queue',
-                  subtitle: 'Hàng đợi render video recap & bóc tách hóa đơn nền 🔄',
+                  title: 'ai.queue_title'.tr(),
+                  subtitle:
+                      'ai.workspace_sub'.tr(),
                   icon: Icons.queue_play_next,
-                  color: const Color(0xFFEC4899),
+                  color: GenZTokens.magenta,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AiGenerationQueueScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const AiGenerationQueueScreen(),
+                    ),
                   ),
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Saved Prompts',
-                  subtitle: 'Danh sách các câu lệnh mẫu siêu tốc cực kỳ xịn sò 📌',
+                  title: 'ai.prompts_title'.tr(),
+                  subtitle: 'ai.hub_prompts_sub'.tr(),
                   icon: Icons.bookmark_outline,
-                  color: const Color(0xFF10B981),
+                  color: GenZTokens.green,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AiSavedPromptsScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const AiSavedPromptsScreen(),
+                    ),
                   ),
                 ),
                 _buildHubCard(
                   context: context,
-                  title: 'AI Chat History',
-                  subtitle: 'Lịch sử tra cứu các thông tin cũ từ Matey AI 📂',
+                  title: 'ai.history_title'.tr(),
+                  subtitle: 'ai.hub_history_sub'.tr(),
                   icon: Icons.history_edu,
                   color: primaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AiChatHistoryScreen()),
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AiChatHistoryScreen(isDarkMode: isDark),
+                    ),
                   ),
                 ),
 
@@ -416,10 +416,11 @@ class AiHubScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Text(
         title,
-        style: GoogleFonts.plusJakartaSans(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: isDark ? Colors.white : Colors.black87,
+        style: AppFonts.heading(
+          fontWeight: FontWeight.w800,
+          fontSize: 18,
+          letterSpacing: -0.5,
+          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
         ),
       ),
     );
@@ -437,86 +438,64 @@ class AiHubScreen extends StatelessWidget {
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.08),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      child: PressableCard(
+        onTap: onTap,
+        color: surfaceColor,
+        radius: 18,
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            // Ô icon vuông màu accent đặc, viền ink
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                color: color,
+                border: Border.all(
+                  color: GenZTokens.ink,
+                  width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              child: Icon(icon, color: GenZTokens.ink, size: 22),
             ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(18),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
+            const SizedBox(width: 16),
+
+            // Texts
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Icon container with neon circle design
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: color.withValues(alpha: 0.12),
-                      border: Border.all(
-                        color: color.withValues(alpha: 0.25),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Icon(
-                      icon,
-                      color: color,
-                      size: 22,
+                  Text(
+                    title,
+                    style: AppFonts.heading(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                     ),
                   ),
-                  const SizedBox(width: 16),
-
-                  // Texts
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          subtitle,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.5,
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: AppFonts.body(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w500,
+                      color: isDark
+                          ? GenZTokens.inkSoftDark
+                          : GenZTokens.inkSoft,
+                      height: 1.35,
                     ),
-                  ),
-
-                  // Arrow forward
-                  Icon(
-                    Icons.chevron_right,
-                    color: isDark ? Colors.grey[600] : Colors.grey[400],
-                    size: 20,
                   ),
                 ],
               ),
             ),
-          ),
+
+            // Arrow forward
+            Icon(
+              Icons.arrow_forward,
+              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+              size: 18,
+            ),
+          ],
         ),
       ),
     );

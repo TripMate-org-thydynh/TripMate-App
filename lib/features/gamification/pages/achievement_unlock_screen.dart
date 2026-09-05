@@ -1,145 +1,182 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AchievementUnlockScreen extends StatelessWidget {
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../../profile/data/badges_repository.dart';
+
+/// Danh hiệu đã mở khoá và tiến độ tới các danh hiệu còn lại.
+///
+/// Trước đây màn này là một màn hình ăn mừng in cứng: "Level 4 Reached",
+/// "RARITY: MYTHIC", "1,200 / 2,000 to Lvl 5" — không đọc dữ liệu nào và có
+/// nút chỉ hiện "Tính năng đang được hoàn thiện 🚧". Nay lấy danh hiệu thật từ
+/// `/users/me/badges`, tiến độ đếm từ số chuyến, khoản chi đã trả và check-in.
+class AchievementUnlockScreen extends ConsumerWidget {
   const AchievementUnlockScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Confetti and glowing badge mockup
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: 160,
-                      height: 160,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.amberAccent.withValues(alpha: 0.3),
-                            blurRadius: 40,
-                            spreadRadius: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: const BoxDecoration(
-                        color: Colors.amber,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.emoji_events,
-                        color: Colors.white,
-                        size: 64,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 36),
-
-                Text(
-                  'ACHIEVEMENT UNLOCKED! 🏆',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                    foreground: Paint()
-                      ..shader = const LinearGradient(
-                        colors: [Colors.amber, Colors.orangeAccent],
-                      ).createShader(const Rect.fromLTWH(0.0, 0.0, 300.0, 70.0)),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  'Siêu Cấp Phượt Thủ Nhật Bản 🇯🇵',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
-                    'Chúc mừng cưng đã hoàn thành xuất sắc 5 hành trình cùng TripMate! Danh hiệu danh giá này đã được cập nhật vĩnh viễn vào trang cá nhân.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
-                      fontSize: 13,
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-
-                // XP rewards callout
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.bolt, color: Colors.purpleAccent),
-                      SizedBox(width: 8),
-                      Text(
-                        '+1000 XP & 100 Điểm Tích Lũy',
-                        style: TextStyle(
-                          color: Colors.purpleAccent,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 48),
-
-                // Exit action
-                SizedBox(
-                  width: 200,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('Tuyệt vời!', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ],
-            ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: ink),
+        title: Text(
+          'games.badges_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: ink),
+            onPressed: () => ref.invalidate(badgesProvider),
+          ),
+        ],
+      ),
+      body: ref
+          .watch(badgesProvider)
+          .when(
+            loading: () =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            error: (e, _) => AppErrorState(
+              isDark: isDark,
+              error: e,
+              onRetry: () => ref.invalidate(badgesProvider),
+            ),
+            data: (badges) {
+              if (badges.isEmpty) {
+                return AppEmptyState(
+                  isDark: isDark,
+                  icon: Icons.emoji_events_outlined,
+                  title: 'games.badges_title'.tr(),
+                  body: 'games.badges_empty'.tr(),
+                );
+              }
+              final unlocked = badges.where((b) => b.unlocked).length;
+              return RefreshIndicator(
+                onRefresh: () async => ref.invalidate(badgesProvider),
+                child: ListView(
+                  padding: const EdgeInsets.all(GenZTokens.space5),
+                  children: [
+                    _summary(isDark, unlocked, badges.length),
+                    const SizedBox(height: GenZTokens.space5),
+                    for (final b in badges) ...[
+                      _card(isDark, b),
+                      const SizedBox(height: GenZTokens.space4),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+    );
+  }
+
+  Widget _summary(bool isDark, int unlocked, int total) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(GenZTokens.space5),
+      decoration: BoxDecoration(
+        color: GenZTokens.yellow,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(
+          color: GenZTokens.ink,
+          width: GenZTokens.borderWidth,
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            '$unlocked / $total',
+            style: AppFonts.heading(
+              fontSize: 34,
+              fontWeight: FontWeight.w900,
+              color: GenZTokens.ink,
+            ),
+          ),
+          Text(
+            'games.badges_unlocked'.tr(),
+            style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _card(bool isDark, TripBadge b) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+
+    return Container(
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      decoration: BoxDecoration(
+        color: b.unlocked ? GenZTokens.green.withValues(alpha: 0.18) : surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(
+          color: ink,
+          width: b.unlocked
+              ? GenZTokens.borderWidth
+              : GenZTokens.borderWidthThin,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                b.unlocked ? Icons.emoji_events : Icons.lock_outline,
+                size: 20,
+                color: b.unlocked ? GenZTokens.success : inkSoft,
+              ),
+              const SizedBox(width: GenZTokens.space3),
+              Expanded(
+                child: Text(
+                  b.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: ink,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            b.desc,
+            style: AppFonts.body(fontSize: 12.5, color: inkSoft, height: 1.4),
+          ),
+          const SizedBox(height: GenZTokens.space3),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: b.percent / 100,
+              minHeight: 8,
+              backgroundColor: inkSoft.withValues(alpha: 0.2),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                b.unlocked ? GenZTokens.success : GenZTokens.orange,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${b.current} / ${b.target}',
+            style: AppFonts.body(fontSize: 12, color: inkSoft),
+          ),
+        ],
       ),
     );
   }

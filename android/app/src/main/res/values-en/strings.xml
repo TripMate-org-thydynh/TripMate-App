@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Your squad\'s latest photos - tap to view and react</string>
+    <string name="widget_image_desc">Latest photos from your squad</string>
+    <string name="widget_empty_title">No moments yet</string>
+    <string name="widget_empty_body">Tap to snap one for the squad</string>
+    <string name="widget_time_now">just now</string>
+    <string name="widget_time_min">%1$d min ago</string>
+    <string name="widget_time_hour">%1$dh ago</string>
+    <string name="widget_time_day">%1$dd ago</string>
+    <string name="widget_nudge">Your squad is waiting for a photo</string>
+</resources>

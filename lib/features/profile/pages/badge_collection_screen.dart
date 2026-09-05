@@ -1,201 +1,142 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../data/badges_repository.dart';
 import 'badge_detail_screen.dart';
-import '../../../core/api_service.dart';
 
-class BadgeCollectionScreen extends StatefulWidget {
-  const BadgeCollectionScreen({super.key});
+/// Bộ sưu tập danh hiệu.
+///
+/// Trước đây khi `/users/me/badges` lỗi, màn này âm thầm rơi về `_mockBadges` —
+/// 3 danh hiệu in cứng, hai cái đầu luôn ở trạng thái "đã mở khoá" — nên mất
+/// mạng là người dùng tưởng mình đã đạt được chúng. Nay hỏng thì báo hỏng.
+class BadgeCollectionScreen extends ConsumerWidget {
+  final bool isDarkMode;
 
-  @override
-  State<BadgeCollectionScreen> createState() => _BadgeCollectionScreenState();
-}
-
-class _BadgeCollectionScreenState extends State<BadgeCollectionScreen> {
-  final List<Map<String, dynamic>> _mockBadges = const [
-    {
-      'id': 'b1',
-      'title': 'Siêu Cấp Phượt Thủ 🏆',
-      'desc': 'Đi trên 5 chuyến đi cùng TripMate',
-      'unlocked': true,
-      'color': Colors.amber,
-    },
-    {
-      'id': 'b2',
-      'title': 'Thần Tài Gõ Đầu 💸',
-      'desc': 'Bị chọn thanh toán wheel splitter game',
-      'unlocked': true,
-      'color': Colors.purpleAccent,
-    },
-    {
-      'id': 'b3',
-      'title': 'Thần Gió Nhật Bản 🚄',
-      'desc': 'Có checkin tàu Shinkansen',
-      'unlocked': false,
-      'color': Colors.grey,
-    },
-  ];
-
-  List<dynamic> _liveBadges = [];
-  bool _isLoading = true;
+  const BadgeCollectionScreen({super.key, this.isDarkMode = false});
 
   @override
-  void initState() {
-    super.initState();
-    _fetchBadges();
-  }
-
-  Future<void> _fetchBadges() async {
-    final response = await ApiService.get('/users/me/badges');
-    if (mounted) {
-      if (response is List) {
-        setState(() {
-          _liveBadges = response;
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _liveBadges = List.from(_mockBadges);
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = isDarkMode;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
+        iconTheme: IconThemeData(color: ink),
         title: Text(
-          'Travel Trophies 🏆',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
+          'games.badges_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: ink),
+            onPressed: () => ref.invalidate(badgesProvider),
+          ),
+        ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.purple))
-          : SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Danh Hiệu & Cúp Du Lịch',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
+      body: ref
+          .watch(badgesProvider)
+          .when(
+            loading: () =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            error: (e, _) => AppErrorState(
+              isDark: isDark,
+              error: e,
+              onRetry: () => ref.invalidate(badgesProvider),
+            ),
+            data: (badges) {
+              if (badges.isEmpty) {
+                return AppEmptyState(
+                  isDark: isDark,
+                  icon: Icons.emoji_events_outlined,
+                  title: 'games.badges_title'.tr(),
+                  body: 'games.badges_empty'.tr(),
+                );
+              }
+              return RefreshIndicator(
+                onRefresh: () async => ref.invalidate(badgesProvider),
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(GenZTokens.space5),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: GenZTokens.space4,
+                    mainAxisSpacing: GenZTokens.space4,
+                    childAspectRatio: 0.92,
                   ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Khám phá các cột mốc danh hiệu cưng đã mở khóa trong suốt các chặng đường đi.',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 32),
+                  itemCount: badges.length,
+                  itemBuilder: (context, i) =>
+                      _tile(context, isDark, badges[i]),
+                ),
+              );
+            },
+          ),
+    );
+  }
 
-                  // Badges Grid
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: _liveBadges.length,
-                    itemBuilder: (context, index) {
-                      final badge = _liveBadges[index];
-                      final isUnlocked = badge['unlockedAt'] != null || badge['unlocked'] == true;
-                      final title = badge['title'] as String;
-                      final desc = badge['desc'] as String;
-                      
-                      // Map custom colors dynamically
-                      final accentColor = badge['id'] == 'b1'
-                          ? Colors.amber
-                          : (badge['id'] == 'b2' ? Colors.purpleAccent : Colors.teal);
+  Widget _tile(BuildContext context, bool isDark, TripBadge b) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BadgeDetailScreen(
-                                title: title,
-                                desc: desc,
-                                unlocked: isUnlocked,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isUnlocked ? accentColor.withValues(alpha: 0.3) : Colors.transparent,
-                              width: 2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Opacity(
-                                opacity: isUnlocked ? 1.0 : 0.4,
-                                child: Icon(
-                                  isUnlocked ? Icons.emoji_events : Icons.lock_outline,
-                                  color: isUnlocked ? accentColor : Colors.grey,
-                                  size: 48,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                title,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                desc,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(color: Colors.grey, fontSize: 10),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BadgeDetailScreen(badge: b, isDarkMode: isDark),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(GenZTokens.space4),
+        decoration: BoxDecoration(
+          color: b.unlocked ? GenZTokens.yellow : surface,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: ink,
+            width: b.unlocked
+                ? GenZTokens.borderWidth
+                : GenZTokens.borderWidthThin,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              b.unlocked ? Icons.emoji_events : Icons.lock_outline,
+              size: 26,
+              color: b.unlocked ? GenZTokens.ink : inkSoft,
+            ),
+            const Spacer(),
+            Text(
+              b.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppFonts.heading(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: b.unlocked ? GenZTokens.ink : ink,
               ),
             ),
+            const SizedBox(height: 4),
+            Text(
+              '${b.current} / ${b.target}',
+              style: AppFonts.body(
+                fontSize: 12,
+                color: b.unlocked ? GenZTokens.ink : inkSoft,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

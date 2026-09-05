@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Web-only: google_sign_in_web cần Web OAuth client ID (mobile dùng google-services.json).
+       Dùng chung serverClientId đã cấu hình trong auth_flow_screen.dart.
+       LƯU Ý: Google Cloud Console phải thêm "Authorized JavaScript origin" cho origin đang chạy
+       (vd http://localhost:5092) thì login web mới thành công. -->
+  <meta name="google-signin-client_id" content="1072006483967-ivo0843uk7j8a557l18eevr4q2clargm.apps.googleusercontent.com">
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.

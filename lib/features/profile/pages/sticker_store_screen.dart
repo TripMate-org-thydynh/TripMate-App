@@ -1,222 +1,202 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'sticker_inventory_screen.dart';
-import '../../../core/api_service.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class StickerStoreScreen extends StatefulWidget {
-  const StickerStoreScreen({super.key});
+import '../../../core/app_messenger.dart';
+import '../../../core/network/api_exception.dart';
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../data/xp_repository.dart';
+import '../widgets/xp_balance_chip.dart';
+
+/// Cửa hàng sticker — đổi XP lấy sticker để gửi trong Squad Chat.
+///
+/// Trước đây màn này gọi một endpoint không hề trừ XP (mua gì cũng miễn phí) và
+/// kho lưu trong RAM server nên mất sạch sau mỗi lần khởi động lại. Nay số dư,
+/// giá và quyền sở hữu đều thật.
+class StickerStoreScreen extends ConsumerStatefulWidget {
+  final bool isDarkMode;
+
+  const StickerStoreScreen({super.key, this.isDarkMode = false});
 
   @override
-  State<StickerStoreScreen> createState() => _StickerStoreScreenState();
+  ConsumerState<StickerStoreScreen> createState() => _StickerStoreScreenState();
 }
 
-class _StickerStoreScreenState extends State<StickerStoreScreen> {
-  final List<Map<String, dynamic>> _mockStickers = const [
-    {'id': 'stk-1', 'label': 'Cười ra nước mắt 😂', 'costXP': 100},
-    {'id': 'stk-2', 'label': 'Cà khịa hết nấc 😜', 'costXP': 200},
-    {'id': 'stk-3', 'label': 'Mệt mỏi vì tiền 💸', 'costXP': 150},
-    {'id': 'stk-4', 'label': 'Đang bay lắc 🚀', 'costXP': 180},
-  ];
+class _StickerStoreScreenState extends ConsumerState<StickerStoreScreen> {
+  /// Id đang xử lý mua — để khoá nút, tránh bấm hai lần trừ hai lần.
+  String? _buying;
 
-  List<dynamic> _liveStickers = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchStickers();
-  }
-
-  Future<void> _fetchStickers() async {
-    final response = await ApiService.get('/users/sticker-store');
-    if (mounted) {
-      if (response is List) {
-        setState(() {
-          _liveStickers = response;
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _liveStickers = List.from(_mockStickers);
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _purchaseSticker(String stickerId, String label) async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    final response = await ApiService.post('/users/me/stickers/purchase', {
-      'stickerId': stickerId,
-    });
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (response != null && response['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('🎉 Mua thành công sticker: $label!'),
-            backgroundColor: Colors.purple,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Giao dịch thất bại. Vui lòng thử lại sau!'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
+  Future<void> _buy(StoreItem item) async {
+    if (_buying != null) return;
+    setState(() => _buying = item.id);
+    try {
+      await ref.read(xpRepositoryProvider).buySticker(item.id);
+      if (!mounted) return;
+      invalidateXp(ref);
+      HapticFeedback.mediumImpact();
+      showGlobalSnack('xp.bought'.tr(args: [item.label]));
+    } catch (e) {
+      if (!mounted) return;
+      // Hiện đúng lý do BE trả: thiếu XP, đã sở hữu, hết hàng...
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    } finally {
+      if (mounted) setState(() => _buying = null);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
+        iconTheme: IconThemeData(color: ink),
         title: Text(
-          'Cửa Hàng Sticker 🎭',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
+          'xp.sticker_store'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.inventory_2_outlined, color: isDark ? Colors.white : Colors.black87),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const StickerInventoryScreen(),
+          XpBalanceChip(isDark: isDark),
+          const SizedBox(width: 12),
+        ],
+      ),
+      body: ref
+          .watch(stickerStoreProvider)
+          .when(
+            loading: () =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            error: (e, _) => AppErrorState(
+              isDark: isDark,
+              error: e,
+              onRetry: () => ref.invalidate(stickerStoreProvider),
+            ),
+            data: (items) {
+              if (items.isEmpty) {
+                return AppEmptyState(
+                  isDark: isDark,
+                  icon: Icons.emoji_emotions_outlined,
+                  title: 'xp.sticker_store'.tr(),
+                  body: 'xp.store_empty'.tr(),
+                );
+              }
+              return RefreshIndicator(
+                onRefresh: () async => invalidateXp(ref),
+                child: ListView(
+                  padding: const EdgeInsets.all(GenZTokens.space5),
+                  children: [
+                    Text(
+                      'xp.store_hint'.tr(),
+                      style: AppFonts.body(
+                        fontSize: 13,
+                        color: isDark
+                            ? GenZTokens.inkSoftDark
+                            : GenZTokens.inkSoft,
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: GenZTokens.space5),
+                    for (final item in items) ...[
+                      _card(isDark, item),
+                      const SizedBox(height: GenZTokens.space3),
+                    ],
+                  ],
                 ),
               );
             },
           ),
+    );
+  }
+
+  Widget _card(bool isDark, StoreItem item) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final busy = _buying == item.id;
+    // Rõ ràng ba trạng thái: đã có / mua được / chưa đủ XP.
+    final canBuy = !item.owned && item.affordable && _buying == null;
+
+    return Container(
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      decoration: BoxDecoration(
+        color: item.owned ? GenZTokens.green.withValues(alpha: 0.16) : surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+      ),
+      child: Row(
+        children: [
+          Text(item.emoji ?? '❔', style: const TextStyle(fontSize: 34)),
+          const SizedBox(width: GenZTokens.space4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: ink,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${'xp.rarity_${item.rarity.toLowerCase()}'.tr()} · ${item.costXp} XP',
+                  style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: GenZTokens.space3),
+          if (item.owned)
+            Icon(Icons.check_circle, color: GenZTokens.success, size: 26)
+          else
+            ElevatedButton(
+              onPressed: canBuy ? () => _buy(item) : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: GenZTokens.yellow,
+                foregroundColor: GenZTokens.ink,
+                disabledBackgroundColor: inkSoft.withValues(alpha: 0.2),
+                elevation: 0,
+                side: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                ),
+              ),
+              child: busy
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(
+                      item.affordable
+                          ? 'xp.buy'.tr()
+                          : 'xp.not_enough_short'.tr(),
+                      style: AppFonts.heading(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: GenZTokens.ink,
+                      ),
+                    ),
+            ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.purple))
-          : SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Expressive Chaos Stickers',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Mua sticker độc lạ để thả thính hoặc cà khịa cực mạnh trong chat nhóm.',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Stickers Grid
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: _liveStickers.length,
-                    itemBuilder: (context, index) {
-                      final item = _liveStickers[index];
-                      final id = item['id'] as String;
-                      final label = item['label'] as String;
-                      final costXP = item['costXP'] ?? item['cost'] ?? 150;
-                      
-                      // Safely extract the emoji (last word or character)
-                      final emoji = label.split(' ').last;
-
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              emoji,
-                              style: const TextStyle(fontSize: 48),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              label,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: isDark ? Colors.white : Colors.black87,
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              '$costXP XP',
-                              style: const TextStyle(
-                                color: Colors.purpleAccent,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            ElevatedButton(
-                              onPressed: () => _purchaseSticker(id, label),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.purple,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: const Text(
-                                'Mua Ngay',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
     );
   }
 }

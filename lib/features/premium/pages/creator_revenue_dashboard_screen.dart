@@ -1,30 +1,35 @@
+import '../../../core/format/money.dart';
 import '../../../core/theme/theme.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/api_service.dart';
 
 class CreatorRevenueDashboardScreen extends StatefulWidget {
   const CreatorRevenueDashboardScreen({super.key});
 
   @override
-  State<CreatorRevenueDashboardScreen> createState() => _CreatorRevenueDashboardScreenState();
+  State<CreatorRevenueDashboardScreen> createState() =>
+      _CreatorRevenueDashboardScreenState();
 }
 
-class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardScreen> {
+class _CreatorRevenueDashboardScreenState
+    extends State<CreatorRevenueDashboardScreen> {
   bool _isPayoutRequesting = false;
   bool _isLoading = false;
 
-  int _themesSold = 42;
-  int _stickersSold = 128;
-  int _totalSales = 1450000;
-  int _creatorShare = 1015000;
-  int _payoutPending = 450000;
+  // Khởi tạo 0, không phải số bịa. Trước đây các biến này mặc định
+  // 42 theme / 128 sticker / 1.45tr doanh thu, và vì API dùng `?? _biến` nên
+  // creator chưa bán gì vẫn thấy một bảng doanh thu như thật.
+  int _themesSold = 0;
+  int _stickersSold = 0;
+  int _totalSales = 0;
+  int _creatorShare = 0;
+  int _payoutPending = 0;
 
-  List<Map<String, dynamic>> _recentSales = [
-    { 'item': 'Chủ đề Kyoto Retro 🎋', 'buyer': 'Hoàng Yến', 'price': 49000, 'date': '2026-05-25' },
-    { 'item': 'Nhãn dán Phú Quốc Shark 🦈', 'buyer': 'Phú Khang', 'price': 15000, 'date': '2026-05-24' },
-    { 'item': 'Chủ đề Dalat Vintage 🌲', 'buyer': 'Minh Nhật', 'price': 49000, 'date': '2026-05-23' },
-  ];
+  // Rỗng cho tới khi API trả giao dịch thật. Trước đây đây là 3 đơn bịa
+  // (người mua "Hoàng Yến", "Phú Khang", "Minh Nhật") hiện cho mọi tài khoản.
+  List<Map<String, dynamic>> _recentSales = [];
 
   @override
   void initState() {
@@ -41,19 +46,25 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
     if (response != null) {
       setState(() {
         _themesSold = (response['themesSoldCount'] as int?) ?? _themesSold;
-        _stickersSold = (response['stickersSoldCount'] as int?) ?? _stickersSold;
+        _stickersSold =
+            (response['stickersSoldCount'] as int?) ?? _stickersSold;
         _totalSales = (response['totalSalesRevenue'] as int?) ?? _totalSales;
         _creatorShare = (response['creatorShare'] as int?) ?? _creatorShare;
         _payoutPending = (response['payoutPending'] as int?) ?? _payoutPending;
-        
+
         if (response['recentSales'] != null) {
-          final List<dynamic> salesList = response['recentSales'] as List<dynamic>;
-          _recentSales = salesList.map((item) => {
-            'item': item['item'] ?? 'Sản phẩm sáng tạo',
-            'buyer': item['buyer'] ?? 'Bạn bè',
-            'price': (item['price'] as int?) ?? 0,
-            'date': item['date'] ?? 'Vừa qua',
-          }).toList();
+          final List<dynamic> salesList =
+              response['recentSales'] as List<dynamic>;
+          _recentSales = salesList
+              .map(
+                (item) => {
+                  'item': item['item'] ?? 'premium.creative_product'.tr(),
+                  'buyer': item['buyer'] ?? 'common.friends'.tr(),
+                  'price': (item['price'] as int?) ?? 0,
+                  'date': item['date'] ?? 'premium.recent'.tr(),
+                },
+              )
+              .toList();
         }
       });
     }
@@ -70,7 +81,7 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
 
     // Simulate direct post to confirm payouts
     await Future.delayed(const Duration(milliseconds: 1500));
-    
+
     if (!mounted) return;
     setState(() {
       _isPayoutRequesting = false;
@@ -78,8 +89,8 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('💸 Yêu cầu rút tiền thành công! Payout đã được gửi duyệt! Chờ ngân hàng xử lý nhé!'),
+      SnackBar(
+        content: Text('premium.payout_ok'.tr()),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.green,
       ),
@@ -90,12 +101,17 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Brand design tokens
-    final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
-    final secondaryColor = isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary;
-    final backgroundColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
-    final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
+    final primaryColor = isDark
+        ? TripMateTheme.darkPrimary
+        : TripMateTheme.lightPrimary;
+    final backgroundColor = isDark
+        ? TripMateTheme.darkBackground
+        : TripMateTheme.lightBackground;
+    final surfaceColor = isDark
+        ? TripMateTheme.darkSurface
+        : TripMateTheme.lightSurface;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -103,12 +119,15 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Thu Nhập Sáng Tạo 🎨',
-          style: GoogleFonts.plusJakartaSans(
+          'premium.creator_revenue'.tr(),
+          style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
           ),
@@ -121,7 +140,9 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.purpleAccent))
+          ? const Center(
+              child: CircularProgressIndicator(color: Colors.purpleAccent),
+            )
           : SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(20.0),
@@ -132,16 +153,12 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [primaryColor, secondaryColor],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
                           color: primaryColor.withValues(alpha: 0.3),
-                          blurRadius: 16,
+                          blurRadius: 0,
                           offset: const Offset(0, 4),
                         ),
                       ],
@@ -150,8 +167,8 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'SỐ DƯ KHẢ DỤNG RÚT 💸',
-                          style: GoogleFonts.plusJakartaSans(
+                          'premium.available_balance'.tr(),
+                          style: AppFonts.heading(
                             color: Colors.white70,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -162,27 +179,40 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '${_payoutPending.toString()}đ',
-                              style: GoogleFonts.plusJakartaSans(
+                              formatMoney(_payoutPending, locale: context.locale.languageCode),
+                              style: AppFonts.heading(
                                 color: Colors.white,
                                 fontSize: 32,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: _payoutPending == 0 || _isPayoutRequesting ? null : _requestPayout,
+                              onPressed:
+                                  _payoutPending == 0 || _isPayoutRequesting
+                                  ? null
+                                  : _requestPayout,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: primaryColor,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                               child: _isPayoutRequesting
                                   ? SizedBox(
                                       width: 14,
                                       height: 14,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: primaryColor,
+                                      ),
                                     )
-                                  : Text('Yêu Cầu Rút ⚡', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                                  : Text(
+                                      'premium.request_payout'.tr(),
+                                      style: AppFonts.heading(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                             ),
                           ],
                         ),
@@ -190,8 +220,14 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildMiniStat('Doanh Thu Shop', '${_totalSales.toString()}đ'),
-                            _buildMiniStat('Phần Chia Sáng Tạo (70%)', '${_creatorShare.toString()}đ'),
+                            _buildMiniStat(
+                              'Doanh Thu Shop',
+                              formatMoney(_totalSales, locale: context.locale.languageCode),
+                            ),
+                            _buildMiniStat(
+                              'premium.creator_share'.tr(),
+                              formatMoney(_creatorShare, locale: context.locale.languageCode),
+                            ),
                           ],
                         ),
                       ],
@@ -202,8 +238,8 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
 
                   // Visual Chart
                   Text(
-                    'Xu Hướng Bán Hàng 📈',
-                    style: GoogleFonts.plusJakartaSans(
+                    'premium.sales_trend'.tr(),
+                    style: AppFonts.heading(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                       color: isDark ? Colors.white : Colors.black87,
@@ -217,10 +253,15 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
                     decoration: BoxDecoration(
                       color: surfaceColor,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
+                      border: Border.all(
+                        color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+                      ),
                     ),
                     child: CustomPaint(
-                      painter: _RevenueChartPainter(isDark: isDark, strokeColor: primaryColor),
+                      painter: _RevenueChartPainter(
+                        isDark: isDark,
+                        strokeColor: primaryColor,
+                      ),
                     ),
                   ),
 
@@ -228,8 +269,8 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
 
                   // Recent sales lists
                   Text(
-                    'Giao Dịch Gần Đây 🛒',
-                    style: GoogleFonts.plusJakartaSans(
+                    'premium.recent_txn'.tr(),
+                    style: AppFonts.heading(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                       color: isDark ? Colors.white : Colors.black87,
@@ -239,26 +280,49 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
 
                   Card(
                     color: surfaceColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     borderOnForeground: false,
                     child: Column(
                       children: _recentSales.map((sale) {
                         return Column(
                           children: [
                             ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                              title: Text(sale['item'] as String, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13)),
-                              subtitle: Text('Mua bởi: ${sale['buyer']}  •  ${sale['date']}', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey)),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              title: Text(
+                                sale['item'] as String,
+                                style: AppFonts.heading(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'premium.bought_by_on'.tr(
+                                  namedArgs: {
+                                    'buyer': '${sale['buyer']}',
+                                    'date': '${sale['date']}',
+                                  },
+                                ),
+                                style: AppFonts.heading(
+                                  fontSize: 11,
+                                  color: Colors.grey,
+                                ),
+                              ),
                               trailing: Text(
-                                '+${sale['price']}đ',
-                                style: GoogleFonts.plusJakartaSans(
+                                '+${formatMoney((sale['price'] as num?) ?? 0, locale: context.locale.languageCode)}',
+                                style: AppFonts.heading(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
                                   fontSize: 13,
                                 ),
                               ),
                             ),
-                            if (_recentSales.indexOf(sale) < _recentSales.length - 1)
+                            if (_recentSales.indexOf(sale) <
+                                _recentSales.length - 1)
                               const Divider(height: 1),
                           ],
                         );
@@ -275,9 +339,19 @@ class _CreatorRevenueDashboardScreenState extends State<CreatorRevenueDashboardS
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.plusJakartaSans(color: Colors.white70, fontSize: 11)),
+        Text(
+          label,
+          style: AppFonts.heading(color: Colors.white70, fontSize: 11),
+        ),
         const SizedBox(height: 4),
-        Text(value, style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.5)),
+        Text(
+          value,
+          style: AppFonts.heading(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 13.5,
+          ),
+        ),
       ],
     );
   }
@@ -298,15 +372,28 @@ class _RevenueChartPainter extends CustomPainter {
 
     final fillPaint = Paint()
       ..shader = LinearGradient(
-        colors: [strokeColor.withValues(alpha: 0.3), strokeColor.withValues(alpha: 0.0)],
+        colors: [
+          strokeColor.withValues(alpha: 0.3),
+          strokeColor.withValues(alpha: 0.0),
+        ],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     final path = Path()
       ..moveTo(0, size.height * 0.8)
-      ..quadraticBezierTo(size.width * 0.2, size.height * 0.7, size.width * 0.4, size.height * 0.4)
-      ..quadraticBezierTo(size.width * 0.6, size.height * 0.1, size.width * 0.8, size.height * 0.3)
+      ..quadraticBezierTo(
+        size.width * 0.2,
+        size.height * 0.7,
+        size.width * 0.4,
+        size.height * 0.4,
+      )
+      ..quadraticBezierTo(
+        size.width * 0.6,
+        size.height * 0.1,
+        size.width * 0.8,
+        size.height * 0.3,
+      )
       ..lineTo(size.width, size.height * 0.2);
 
     final fillPath = Path.from(path)

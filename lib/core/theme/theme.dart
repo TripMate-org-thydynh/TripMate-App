@@ -1,196 +1,320 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'app_fonts.dart';
+import 'gen_z_tokens.dart';
+import 'theme_provider.dart';
 
+/// Theme Gen Z Neo-Brutalist: khối màu đặc, viền ink dày, hard shadow,
+/// heading Space Grotesk 800, số liệu Space Mono.
 class TripMateTheme {
-  // Brand color constants - Light
-  static const Color lightPrimary = Color(0xFFE0533C); // Coral
-  static const Color lightSecondary = Color(0xFFEBA83A); // Amber
-  static const Color lightBackground = Color(0xFFFCFAF6); // Warm Ivory
-  static const Color lightSurface = Colors.white;
-  static const Color lightTextPrimary = Color(0xFF1E2022); // Charcoal
-  static const Color lightTextSecondary = Color(0xFF686D76); // Slate
+  // ── Active theme states ─────────────────────────────────────────────────────
+  static AppAccent _activeAccent = AppAccent.mint;
+  static ThemeMode activeThemeMode = ThemeMode.light;
 
-  // Brand color constants - Dark (Stitch design system)
-  static const Color darkPrimary = Color(0xFF8B5CF6); // Electric Purple (#8b5cf6)
-  static const Color darkSecondary = Color(0xFF34D399); // Mint Green (#34d399)
-  static const Color darkTertiary = Color(0xFFFB923C); // Coral Orange (#fb923c)
-  static const Color darkBackground = Color(0xFF0B1326); // Deep Indigo / Obsidian (#0b1326)
-  static const Color darkSurface = Color(0xFF171F33); // surface-container (#171f33)
-  static const Color darkSurfaceLow = Color(0xFF131B2E); // surface-container-low (#131b2e)
-  static const Color darkSurfaceHigh = Color(0xFF222A3D); // surface-container-high (#222a3d)
-  static const Color darkSurfaceHighest = Color(0xFF2D3449); // surface-container-highest (#2d3449)
-  static const Color darkTextPrimary = Color(0xFFDAE2FD); // on-surface (#dae2fd)
-  static const Color darkTextSecondary = Color(0xFFCBC3D7); // on-surface-variant (#cbc3d7)
+  static set activeAccent(AppAccent accent) => _activeAccent = accent;
 
-  static ThemeData get lightTheme {
-    return ThemeData(
-      useMaterial3: true,
+  // ── Dynamic getters driven by current accent ────────────────────────────────
+  static Color get lightPrimary => _activeAccent.accent;
+  static Color get lightSecondary => _activeAccent.pair;
+  static Color get lightTertiary => GenZTokens.lilac;
+  static Color get lightBackground => _activeAccent.lightBackground;
+  static Color get lightSurface => GenZTokens.paper;
+  static Color get lightTextPrimary => GenZTokens.ink;
+  static Color get lightTextSecondary => GenZTokens.inkSoft;
+
+  static Color get darkPrimary => _activeAccent.accent;
+  static Color get darkSecondary => _activeAccent.pair;
+  static Color get darkTertiary => GenZTokens.lilac;
+  static Color get darkBackground => GenZTokens.creamDark;
+  static Color get darkSurface => GenZTokens.paperDark;
+  static Color get darkSurfaceLow => const Color(0xFF15120D);
+  static Color get darkSurfaceHigh => const Color(0xFF2E2820);
+  static Color get darkSurfaceHighest => const Color(0xFF383126);
+  static Color get darkTextPrimary => GenZTokens.inkDark;
+  static Color get darkTextSecondary => GenZTokens.inkSoftDark;
+
+  // ── Shared ──────────────────────────────────────────────────────────────────
+  static const double radiusCard = GenZTokens.radiusCard;
+  static const double radiusButton = GenZTokens.radiusButton;
+  static const double radiusChip = GenZTokens.radiusPill;
+
+  static ThemeData get lightTheme => buildLight(_activeAccent);
+  static ThemeData get darkTheme => buildDark(_activeAccent);
+
+  // ── Light theme ─────────────────────────────────────────────────────────────
+  static ThemeData buildLight(AppAccent accent) {
+    _activeAccent = accent;
+
+    return _build(
       brightness: Brightness.light,
-      primaryColor: lightPrimary,
-      scaffoldBackgroundColor: lightBackground,
-      colorScheme: const ColorScheme.light(
-        primary: lightPrimary,
-        secondary: lightSecondary,
-        surface: lightSurface,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
-        onSurface: lightTextPrimary,
+      accent: accent.accent,
+      onAccent: accent.onAccent,
+      accentSoft: accent.lightSoft,
+      background: accent.lightBackground,
+      surface: GenZTokens.paper,
+      ink: GenZTokens.ink,
+      inkSoft: GenZTokens.inkSoft,
+    );
+  }
+
+  // ── Dark theme ──────────────────────────────────────────────────────────────
+  static ThemeData buildDark(AppAccent accent) {
+    _activeAccent = accent;
+
+    return _build(
+      brightness: Brightness.dark,
+      accent: accent.accent,
+      onAccent: accent.onAccent,
+      accentSoft: accent.lightSoft,
+      background: GenZTokens.creamDark,
+      surface: GenZTokens.paperDark,
+      ink: GenZTokens.inkDark,
+      inkSoft: GenZTokens.inkSoftDark,
+    );
+  }
+
+  // ── Core builder ────────────────────────────────────────────────────────────
+  static ThemeData _build({
+    required Brightness brightness,
+    required Color accent,
+    required Color onAccent,
+    required Color accentSoft,
+    required Color background,
+    required Color surface,
+    required Color ink,
+    required Color inkSoft,
+  }) {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      primaryColor: accent,
+      scaffoldBackgroundColor: background,
+      splashFactory: InkSparkle.splashFactory,
+      colorScheme: ColorScheme(
+        brightness: brightness,
+        primary: accent,
+        onPrimary: onAccent,
+        secondary: accentSoft,
+        onSecondary: onAccent,
+        tertiary: GenZTokens.lilac,
+        onTertiary: onAccent,
+        error: GenZTokens.red,
+        onError: GenZTokens.paper,
+        surface: surface,
+        onSurface: ink,
+        onSurfaceVariant: inkSoft,
+        outline: ink,
       ),
-      textTheme: GoogleFonts.interTextTheme().copyWith(
-        displayLarge: GoogleFonts.plusJakartaSans(
-          fontSize: 32,
-          fontWeight: FontWeight.w800,
-          color: lightTextPrimary,
-        ),
-        displayMedium: GoogleFonts.plusJakartaSans(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: lightTextPrimary,
-        ),
-        titleLarge: GoogleFonts.plusJakartaSans(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: lightTextPrimary,
-        ),
-        titleMedium: GoogleFonts.plusJakartaSans(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: lightTextPrimary,
-        ),
-        bodyLarge: GoogleFonts.inter(
-          fontSize: 16,
-          color: lightTextPrimary,
-        ),
-        bodyMedium: GoogleFonts.inter(
-          fontSize: 14,
-          color: lightTextSecondary,
-        ),
-        labelLarge: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: lightTextPrimary,
-        ),
-        labelSmall: GoogleFonts.inter(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: lightTextSecondary,
-        ),
-      ),
-      appBarTheme: const AppBarTheme(
+      textTheme: _buildTextTheme(ink, inkSoft),
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: lightTextPrimary),
-        titleTextStyle: TextStyle(
-          color: lightTextPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        centerTitle: false,
+        iconTheme: IconThemeData(color: ink, size: 26),
+        titleTextStyle: AppFonts.heading(
+          color: ink,
+          fontSize: 22,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.5,
         ),
       ),
       cardTheme: CardThemeData(
-        color: lightSurface,
-        elevation: 2,
-        shadowColor: lightPrimary.withValues(alpha: 0.08),
+        color: surface,
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24), // Stitch ROUND_FULL for buttons, round cards 24px
+          borderRadius: const BorderRadius.all(
+            Radius.circular(GenZTokens.radiusCard),
+          ),
+          side: BorderSide(color: ink, width: GenZTokens.borderWidth),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: lightPrimary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999), // Stitch Pill primary buttons
+        style: ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll(accent),
+          foregroundColor: WidgetStatePropertyAll(onAccent),
+          elevation: const WidgetStatePropertyAll(0),
+          padding: const WidgetStatePropertyAll(GenZTokens.buttonPadding),
+          side: WidgetStatePropertyAll(
+            BorderSide(color: ink, width: GenZTokens.borderWidth),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: const WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(GenZTokens.radiusButton),
+              ),
+            ),
+          ),
+          textStyle: WidgetStatePropertyAll(
+            AppFonts.heading(fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: ink,
+          side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+          padding: GenZTokens.buttonPadding,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(GenZTokens.radiusButton),
+            ),
+          ),
+          textStyle: AppFonts.heading(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: ink,
+          textStyle: AppFonts.heading(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surface,
+        contentPadding: GenZTokens.inputPadding,
+        labelStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w600),
+        hintStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w600),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+          borderSide: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+          borderSide: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+          borderSide: BorderSide(
+            color: accent,
+            width: GenZTokens.borderWidthFocus,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+          borderSide: const BorderSide(
+            color: GenZTokens.red,
+            width: GenZTokens.borderWidthThin,
+          ),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: accentSoft,
+        side: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+        shape: const StadiumBorder(),
+        labelStyle: AppFonts.mono(
+          color: ink,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      dividerTheme: DividerThemeData(color: ink, thickness: 2, space: 0),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: background,
+        selectedItemColor: ink,
+        unselectedItemColor: inkSoft,
+        selectedLabelStyle: AppFonts.heading(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+        ),
+        unselectedLabelStyle: AppFonts.body(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+        ),
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: surface,
+        contentTextStyle: AppFonts.body(
+          color: ink,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+          side: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          side: BorderSide(color: ink, width: GenZTokens.borderWidth),
         ),
       ),
     );
   }
 
-  static ThemeData get darkTheme {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      primaryColor: darkPrimary,
-      scaffoldBackgroundColor: darkBackground,
-      colorScheme: const ColorScheme.dark(
-        primary: darkPrimary,
-        secondary: darkSecondary,
-        surface: darkSurface,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
-        onSurface: darkTextPrimary,
+  // ── Text theme: Baloo 2 display + Nunito body + Space Mono số liệu ────
+  static TextTheme _buildTextTheme(Color primary, Color secondary) {
+    return AppFonts.bodyTextTheme().copyWith(
+      displayLarge: AppFonts.heading(
+        fontSize: 34,
+        fontWeight: FontWeight.w800,
+        color: primary,
+        letterSpacing: -0.5,
+        height: 1.05,
       ),
-      textTheme: GoogleFonts.interTextTheme().copyWith(
-        displayLarge: GoogleFonts.plusJakartaSans(
-          fontSize: 32,
-          fontWeight: FontWeight.w800,
-          color: darkTextPrimary,
-        ),
-        displayMedium: GoogleFonts.plusJakartaSans(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: darkTextPrimary,
-        ),
-        titleLarge: GoogleFonts.plusJakartaSans(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: darkTextPrimary,
-        ),
-        titleMedium: GoogleFonts.plusJakartaSans(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: darkTextPrimary,
-        ),
-        bodyLarge: GoogleFonts.inter(
-          fontSize: 16,
-          color: darkTextPrimary,
-        ),
-        bodyMedium: GoogleFonts.inter(
-          fontSize: 14,
-          color: darkTextSecondary,
-        ),
-        labelLarge: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: darkTextPrimary,
-        ),
-        labelSmall: GoogleFonts.inter(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: darkTextSecondary,
-        ),
+      displayMedium: AppFonts.heading(
+        fontSize: 26,
+        fontWeight: FontWeight.w800,
+        color: primary,
+        letterSpacing: -0.5,
+        height: 1.05,
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: darkTextPrimary),
-        titleTextStyle: TextStyle(
-          color: darkTextPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+      titleLarge: AppFonts.heading(
+        fontSize: 22,
+        fontWeight: FontWeight.w800,
+        color: primary,
+        letterSpacing: -0.5,
       ),
-      cardTheme: CardThemeData(
-        color: darkSurface,
-        elevation: 4,
-        shadowColor: Colors.black.withValues(alpha: 0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24), // Stitch standard UI cards
-        ),
+      titleMedium: AppFonts.heading(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: primary,
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: darkPrimary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999), // Stitch Pill primary buttons
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        ),
+      titleSmall: AppFonts.heading(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        color: primary,
+      ),
+      bodyLarge: AppFonts.body(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: primary,
+      ),
+      bodyMedium: AppFonts.body(
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+        color: secondary,
+      ),
+      labelLarge: AppFonts.heading(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: primary,
+      ),
+      labelSmall: AppFonts.mono(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        color: secondary,
       ),
     );
   }
+
+  /// Style mono cho số tiền / ngày / giờ ("$1,140", "9:41").
+  static TextStyle mono({
+    double fontSize = 16,
+    FontWeight fontWeight = FontWeight.w700,
+    Color? color,
+  }) => AppFonts.mono(fontSize: fontSize, fontWeight: fontWeight, color: color);
 }

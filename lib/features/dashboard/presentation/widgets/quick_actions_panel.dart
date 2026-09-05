@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../../discovery/presentation/pages/ai_vibe_match_screen.dart';
-import '../../../moments/presentation/pages/ghost_cam_screen.dart';
+import '../../../discovery/presentation/pages/vibe_swipe_deck_screen.dart';
+import '../../../moments/presentation/pages/memory_wall_screen.dart';
 import '../../../gamification/gamification_screen.dart';
 import '../../../profile/profile_screen.dart';
 import '../../../ai/ai_hub_screen.dart';
 import '../../../premium/premium_hub_screen.dart';
-import '../../../system_states/system_states_hub_screen.dart';
-import '../../../marketing/marketing_hub_screen.dart';
+import '../../../expense_tracker/presentation/pages/trip_balances_screen.dart';
+import '../../../trips/presentation/pick_trip_sheet.dart';
+import '../../../trips/presentation/my_trips_screen.dart';
+import '../../../discovery/presentation/pages/photo_location_screen.dart';
+import '../../../../core/widgets/gen_z_widgets.dart';
 
 class QuickActionsPanel extends StatelessWidget {
   final bool isDarkMode;
@@ -21,245 +26,239 @@ class QuickActionsPanel extends StatelessWidget {
     required this.onThemeToggle,
   });
 
-  final List<Map<String, dynamic>> _actions = const [
+  // ── Primary 4 actions (2×2 Spark-style colored cards) ────────────────────────
+  static const List<Map<String, dynamic>> _primaryActions = [
+    {'labelKey': 'dashboard.split_money', 'type': 'expense', 'isPrimary': true},
+    // Trước đây ô này mở Ghost Cam — một màn "máy ảnh" mà khung ngắm chỉ là
+    // ảnh Unsplash và nút chụp chỉ hiện "Captured ... moment!" chứ không chụp
+    // hay lưu gì. App chưa có đường tải ảnh lên nên chưa đăng được khoảnh
+    // khắc; ô này nay mở Memory Wall để xem kỷ niệm thật.
+    {'labelKey': 'dashboard.memories', 'type': 'memories', 'isPrimary': false},
+    {'labelKey': 'dashboard.bingo', 'type': 'bingo', 'isPrimary': false},
     {
-      "icon": Icons.payments_outlined,
-      "title": "dashboard.split_money",
-      "gradient": [Color(0xFF10B981), Color(0xFF059669)],
-      "emoji": "💸",
+      'labelKey': 'dashboard.vibe_match',
+      'type': 'vibe_match',
+      'isPrimary': true,
     },
-    {
-      "icon": Icons.photo_camera_outlined,
-      "title": "dashboard.ghost_cam",
-      "gradient": [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
-      "emoji": "📸",
-    },
-    {
-      "icon": Icons.sports_esports_outlined,
-      "title": "dashboard.gamification",
-      "gradient": [Color(0xFFEC4899), Color(0xFFDB2777)],
-      "emoji": "🕹️",
-    },
-    {
-      "icon": Icons.person_outline,
-      "title": "dashboard.profile",
-      "gradient": [Color(0xFFEBA83A), Color(0xFFD97706)],
-      "emoji": "🛡️",
-    },
-    {
-      "icon": Icons.explore_outlined,
-      "title": "dashboard.vibe_match",
-      "gradient": [Color(0xFF3B82F6), Color(0xFF2563EB)],
-      "emoji": "🗺",
-    },
-    {
-      "icon": Icons.psychology_outlined,
-      "title": "dashboard.ai_hub",
-      "gradient": [Color(0xFFA855F7), Color(0xFF7C3AED)],
-      "emoji": "🔮",
-    },
-    {
-      "icon": Icons.workspace_premium_outlined,
-      "title": "dashboard.premium_hub",
-      "gradient": [Color(0xFFF59E0B), Color(0xFFD97706)],
-      "emoji": "💎",
-    },
-    {
-      "icon": Icons.warning_amber_outlined,
-      "title": "dashboard.system_hub",
-      "gradient": [Color(0xFFEF4444), Color(0xFFB91C1C)],
-      "emoji": "⚙️",
-    },
-    {
-      "icon": Icons.campaign_outlined,
-      "title": "dashboard.marketing_hub",
-      "gradient": [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
-      "emoji": "📢",
-    }
   ];
 
-  String _getActionTitle(String key) {
-    if (key == "dashboard.gamification") return "Trò Chơi 🕹️";
-    if (key == "dashboard.profile") return "Cá Nhân 🛡️";
-    if (key == "dashboard.ai_hub") return "Matey AI Hub 🔮";
-    if (key == "dashboard.premium_hub") return "Premium Space 💎";
-    if (key == "dashboard.system_hub") return "Hệ Thống ⚙️";
-    if (key == "dashboard.marketing_hub") return "Core Showcase 📢";
-    return key.tr();
+  // ── Secondary actions (compact horizontal row) ────────────────────────────────
+  static const List<Map<String, dynamic>> _secondaryActions = [
+    {'labelKey': 'dashboard.photo_map', 'type': 'photo_loc'},
+    {'labelKey': 'dashboard.trips', 'type': 'trips'},
+    {'labelKey': 'dashboard.profile', 'type': 'profile'},
+    {'labelKey': 'dashboard.matey_ai', 'type': 'ai_hub'},
+    {'labelKey': 'dashboard.premium', 'type': 'premium'},
+  ];
+
+  IconData _primaryIcon(String type) {
+    switch (type) {
+      case 'expense':
+        return PhosphorIcons.wallet();
+      case 'memories':
+        return PhosphorIcons.camera();
+      case 'bingo':
+        return PhosphorIcons.gameController();
+      default:
+        return PhosphorIcons.heartbeat();
+    }
+  }
+
+  IconData _secondaryIcon(String type) {
+    switch (type) {
+      case 'photo_loc':
+        return PhosphorIcons.mapPin();
+      case 'trips':
+        return PhosphorIcons.airplaneTilt();
+      case 'profile':
+        return PhosphorIcons.user();
+      case 'ai_hub':
+        return PhosphorIcons.robot();
+      default:
+        return PhosphorIcons.crown();
+    }
+  }
+
+  void _handleTap(BuildContext context, String type) {
+    HapticFeedback.mediumImpact();
+    switch (type) {
+      case 'photo_loc':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PhotoLocationScreen(isDarkMode: isDarkMode),
+          ),
+        );
+      case 'trips':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MyTripsScreen(isDarkMode: isDarkMode),
+          ),
+        );
+      case 'expense':
+        // Chia tiền THẬT: chọn chuyến → màn số dư/quyết toán (wired backend).
+        () async {
+          final trip = await PickTripSheet.show(
+            context,
+            isDarkMode,
+            title: 'expense.pick_trip_title'.tr(),
+          );
+          if (trip != null && context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TripBalancesScreen(
+                  tripId: trip.id,
+                  tripName: trip.name,
+                  isDarkMode: isDarkMode,
+                ),
+              ),
+            );
+          }
+        }();
+      case 'memories':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MemoryWallScreen(
+              isDarkMode: isDarkMode,
+              onThemeToggle: onThemeToggle,
+            ),
+          ),
+        );
+      case 'bingo':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const GamificationScreen()),
+        );
+      case 'vibe_match':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VibeSwipeDeckScreen(
+              isDarkMode: isDarkMode,
+              onThemeToggle: onThemeToggle,
+            ),
+          ),
+        );
+      case 'profile':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ProfileScreen()),
+        );
+      case 'ai_hub':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const AiHubScreen()),
+        );
+      case 'premium':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PremiumHubScreen()),
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ── Section header ───────────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Text(
-            "dashboard.quick_actions".tr(),
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+          child: Row(
+            children: [
+              Text(
+                'dashboard.quick_actions'.tr(),
+                style: AppFonts.heading(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  letterSpacing: -0.5,
+                  color: ink,
+                ),
+              ),
+              const SizedBox(width: 8),
+              PillTag(
+                text: 'quick',
+                icon: PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+                color: GenZTokens.yellow,
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
+
+        // ── Primary 2×2 Spark-style colored cards ────────────────────────────
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 2.2,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.9,
           ),
-          itemCount: _actions.length,
+          itemCount: _primaryActions.length,
           itemBuilder: (context, index) {
-            final action = _actions[index];
-            final gradient = action["gradient"] as List<Color>;
+            final action = _primaryActions[index];
+            final type = action['type'] as String;
+            // Mỗi ô một khối màu accent đặc — chữ và viền LUÔN là ink
+            const cardColors = [
+              GenZTokens.yellow,
+              GenZTokens.lilac,
+              GenZTokens.green,
+              GenZTokens.pink,
+            ];
+            final bgColor = cardColors[index % cardColors.length];
 
-            return GestureDetector(
-              onTap: () {
-                if (action["title"] == "dashboard.vibe_match") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AIVibeMatchScreen(
-                        isDarkMode: isDarkMode,
-                        onThemeToggle: onThemeToggle,
-                      ),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.ai_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AiHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.premium_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PremiumHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.system_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SystemStatesHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.marketing_hub") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MarketingHubScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.ghost_cam") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GhostCamScreen(
-                        isDarkMode: isDarkMode,
-                        onThemeToggle: onThemeToggle,
-                      ),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.gamification") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GamificationScreen(),
-                    ),
-                  );
-                } else if (action["title"] == "dashboard.profile") {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Opened ${_getActionTitle(action['title'] as String)}!"),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isDark
-                        ? [
-                            gradient[0].withValues(alpha: 0.15),
-                            gradient[1].withValues(alpha: 0.05),
-                          ]
-                        : [
-                            gradient[0].withValues(alpha: 0.12),
-                            gradient[1].withValues(alpha: 0.06),
-                          ],
+            return PopIn(
+              index: index,
+              child: PressableCard(
+                onTap: () => _handleTap(context, type),
+                color: bgColor,
+                borderColor: ink,
+                shadowColor: ink,
+                radius: GenZTokens.radiusButton,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                  border: Border.all(
-                    color: gradient[0].withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Stack(
+                  child: Row(
                     children: [
-                      Positioned(
-                        right: -10,
-                        bottom: -10,
-                        child: Text(
-                          action["emoji"] as String,
-                          style: TextStyle(
-                            fontSize: 48,
-                            color: Colors.white.withValues(alpha: 0.1),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: GenZTokens.paper,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: GenZTokens.ink,
+                            width: GenZTokens.borderWidthThin,
                           ),
                         ),
+                        child: Icon(
+                          _primaryIcon(type),
+                          size: 18,
+                          color: GenZTokens.ink,
+                        ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: gradient[0].withValues(alpha: 0.2),
-                              ),
-                              child: Icon(
-                                action["icon"] as IconData,
-                                color: gradient[0],
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _getActionTitle(action["title"] as String),
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          (action['labelKey'] as String).tr(),
+                          style: AppFonts.heading(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: GenZTokens.ink,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -268,6 +267,51 @@ class QuickActionsPanel extends StatelessWidget {
               ),
             );
           },
+        ),
+
+        const SizedBox(height: 14),
+
+        // ── Secondary actions horizontal row ─────────────────────────────────
+        SizedBox(
+          height: 52,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _secondaryActions.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final action = _secondaryActions[index];
+              final type = action['type'] as String;
+
+              return PressableCard(
+                onTap: () => _handleTap(context, type),
+                color: paper,
+                borderColor: ink,
+                shadowColor: ink,
+                borderWidth: GenZTokens.borderWidthThin,
+                radius: GenZTokens.radiusPill,
+                depth: 3,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(_secondaryIcon(type), size: 15, color: ink),
+                    const SizedBox(width: 6),
+                    Text(
+                      (action['labelKey'] as String).tr().toUpperCase(),
+                      style: AppFonts.mono(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: ink,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ],
     );

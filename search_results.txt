@@ -1,0 +1,40 @@
+batch7_specs.txt | Line 81: SCREEN: 58_monthly_analytics_prd
+  + 1: =========================================
+  + 2: --- KEY PARAGRAPHS AND TEXT BLOCKS ---
+  + 3: 
+  + 4: --- ALL BUTTONS ---
+  + 5: 
+  + 6: 
+  + 7: =========================================
+  + 8: SCREEN: 59_location_ping
+  + 9: =========================================
+  + 10: --- KEY PARAGRAPHS AND TEXT BLOCKS ---
+  + 11: [h1] trip.mate
+  + 12: [span] notifications
+  + 13: [div text] where's the squad?chaos is finding its way.
+  + 14: [h2] where's the squad?
+  + 15: [p] chaos is finding its way.
+  + 16: [span] You
+  + 17: [span] Minh Nhật
+  + 18: [span] 2 mins away
+  + 19: [span] Thảo Ly
+  + 20: [span] still in the Grab 🚕
+  + 21: [span] 😭
+  + 22: [span] bro where are you?
+  + 23: [span] radar
+  + 24: [p] Status
+  + 25: [p] 2/4 Squad nearby
+  + 26: [span] more_horiz
+  + 27: [span] cell_tower
+  + 28: [span] warning
+  + 29: 
+  + 30: --- ALL BUTTONS ---
+  + 31: [Interactive] Text: "notifications" | Class: "style_primary_color style_universal_hover style_interactions p-2 rounded-full bg-surface-container/50"
+  + 32: [Interactive] Text: "cell_towerwhere are you 😭" | Class: "flex-1 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-label-lg text-label-lg py-4 rounded-full flex items-center justify-center gap-2 neon-glow-primary active:scale-95 transition-all duration-200 shadow-lg font-bold"
+  + 33: [Interactive] Text: "warning" | Class: "w-14 h-14 bg-error/10 text-error border border-error/50 rounded-full flex items-center justify-center neon-glow-error active:scale-95 transition-all duration-200 flex-shrink-0"
+  + 34: 
+  + 35: 
+  + 36: =========================================
+  + 37: SCREEN: 60_scrapbook_archiving
+  + 38: =========================================
+  + 39: --- KEY PARAGRAPHS AND TEXT BLOCKS ---

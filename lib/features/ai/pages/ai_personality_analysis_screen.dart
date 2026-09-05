@@ -1,148 +1,149 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AiPersonalityAnalysisScreen extends StatelessWidget {
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../../gamification/data/games_repository.dart';
+import '../data/ai_repository.dart';
+
+/// Phân tích tính cách squad — AI "roast" từng thành viên dựa trên chi tiêu.
+///
+/// Trước đây màn này in cứng 3 người không tồn tại (Alex Nguyễn / Trần Bình /
+/// Minh Nhật) và không hề gọi API, nên ai mở ra cũng thấy y hệt nhau. Nay gọi
+/// `/ai/trips/:id/personality` với chuyến thật; AI bận thì BE trả 503 và màn
+/// này hiện đúng thông báo đó.
+class AiPersonalityAnalysisScreen extends ConsumerWidget {
   const AiPersonalityAnalysisScreen({super.key});
 
-  final List<Map<String, String>> _membersRoast = const [
-    {
-      'name': 'Alex Nguyễn',
-      'type': 'Chúa Tể Hỗn Loạn 👑',
-      'roast': 'Thích tiêu tiền nhóm và chia nợ bằng vòng quay roulette! Không quan tâm ví ai khóc!',
-    },
-    {
-      'name': 'Trần Bình',
-      'type': 'Thần Tài Săn Deal 💸',
-      'roast': 'Checkin chậm nhất nhưng đòi hóa đơn chi tiết nhất nhóm! Sợ mất 1 đồng xu!',
-    },
-    {
-      'name': 'Minh Nhật',
-      'type': 'Phượt Thủ Selfie 🤳',
-      'roast': 'Gom 90% bộ nhớ album chung chỉ để up ảnh của mình! Sợ mọi người quên mặt!',
-    },
+  static const _cardColors = [
+    GenZTokens.yellow,
+    GenZTokens.lilac,
+    GenZTokens.pink,
+    GenZTokens.green,
   ];
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.pop(context),
+        iconTheme: IconThemeData(color: ink),
+        title: Text(
+          'ai.personality_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
+          ),
         ),
-        title: const Text('Phân Tích Tính Cách Squad 🎭', style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // AI Header
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: const LinearGradient(
-                  colors: [Colors.purpleAccent, Colors.pinkAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.auto_awesome, color: Colors.white, size: 28),
-                  SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'MATEY AI ANALYSIS 🎭',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Phân tích thói quen phượt thủ thực tế dựa trên số liệu chi tiêu và hoạt động.',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            height: 1.3,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+        actions: [
+          if (tripId != null)
+            IconButton(
+              icon: Icon(Icons.refresh, color: ink),
+              onPressed: () => ref.invalidate(squadPersonalityProvider(tripId)),
             ),
-
-            const SizedBox(height: 28),
-
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _membersRoast.length,
-              itemBuilder: (context, index) {
-                final item = _membersRoast[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item['name']!,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.purple.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              item['type']!,
-                              style: const TextStyle(
-                                color: Colors.purpleAccent,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Roast: ${item['roast']}',
-                            style: TextStyle(
-                              color: isDark ? Colors.grey[300] : Colors.grey[750],
-                              fontSize: 13,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+        ],
+      ),
+      body: tripId == null
+          ? AppEmptyState(
+              isDark: isDark,
+              icon: Icons.theater_comedy_outlined,
+              title: 'games.need_trip_title'.tr(),
+              body: 'games.need_trip_body'.tr(),
+            )
+          : ref
+                .watch(squadPersonalityProvider(tripId))
+                .when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                );
-              },
+                  error: (e, _) => AppErrorState(
+                    isDark: isDark,
+                    error: e,
+                    onRetry: () =>
+                        ref.invalidate(squadPersonalityProvider(tripId)),
+                  ),
+                  data: (roasts) {
+                    if (roasts.isEmpty) {
+                      return AppEmptyState(
+                        isDark: isDark,
+                        icon: Icons.theater_comedy_outlined,
+                        title: 'ai.personality_title'.tr(),
+                        body: 'ai.personality_empty'.tr(),
+                      );
+                    }
+                    return RefreshIndicator(
+                      onRefresh: () async =>
+                          ref.invalidate(squadPersonalityProvider(tripId)),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(GenZTokens.space5),
+                        itemCount: roasts.length,
+                        separatorBuilder: (_, _) =>
+                            const SizedBox(height: GenZTokens.space4),
+                        itemBuilder: (_, i) => _card(roasts[i], i),
+                      ),
+                    );
+                  },
+                ),
+    );
+  }
+
+  Widget _card(SquadRoast r, int index) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(GenZTokens.space5),
+      decoration: BoxDecoration(
+        color: _cardColors[index % _cardColors.length],
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(
+          color: GenZTokens.ink,
+          width: GenZTokens.borderWidth,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            r.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppFonts.heading(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              color: GenZTokens.ink,
+            ),
+          ),
+          if (r.type.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              r.type,
+              style: AppFonts.heading(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: GenZTokens.ink,
+              ),
             ),
           ],
-        ),
+          if (r.roast.isNotEmpty) ...[
+            const SizedBox(height: GenZTokens.space3),
+            Text(
+              r.roast,
+              style: AppFonts.body(
+                fontSize: 13.5,
+                color: GenZTokens.ink,
+                height: 1.45,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

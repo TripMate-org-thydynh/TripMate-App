@@ -1,208 +1,223 @@
-import '../../../core/theme/theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import '../../../core/api_service.dart';
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+
+/// Thiết lập gói cước.
+///
+/// Trước đây màn này dựng sẵn một gói "Elite Squad" đang chạy cho MỌI tài
+/// khoản: ngày gia hạn 20/06/2026, nguồn tiền "Visa **** 4242", công tắc tự
+/// động gia hạn và nút huỷ gói — tất cả đều không gọi đâu cả, kể cả với người
+/// chưa từng mua. Nay đọc trạng thái thật từ `/premium/subscriptions`.
+///
+/// Gói bán qua Google Play Billing nên việc đổi nguồn tiền, bật/tắt gia hạn và
+/// huỷ gói đều do Play quản lý — app không dựng lại các công tắc đó.
 class SubscriptionSettingsScreen extends StatefulWidget {
   const SubscriptionSettingsScreen({super.key});
 
   @override
-  State<SubscriptionSettingsScreen> createState() => _SubscriptionSettingsScreenState();
+  State<SubscriptionSettingsScreen> createState() =>
+      _SubscriptionSettingsScreenState();
 }
 
-class _SubscriptionSettingsScreenState extends State<SubscriptionSettingsScreen> {
-  bool _autoRenew = true;
+class _SubscriptionSettingsScreenState
+    extends State<SubscriptionSettingsScreen> {
+  Map<String, dynamic>? _sub;
+  bool _loading = true;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetch();
+  }
+
+  Future<void> _fetch() async {
+    setState(() {
+      _loading = true;
+      _failed = false;
+    });
+    final res = await ApiService.get('/premium/subscriptions');
+    if (!mounted) return;
+    setState(() {
+      _sub = res;
+      _failed = res == null;
+      _loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
+        iconTheme: IconThemeData(color: ink),
         title: Text(
-          'Thiết Lập Gói Cước ⚙️',
-          style: GoogleFonts.plusJakartaSans(
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
+          'premium.settings_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: ink,
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Plan Info
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.purple,
-                    ),
-                    child: const Icon(Icons.star, color: Colors.white, size: 24),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Elite Squad — Premium 💎',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Chu kỳ: 99.000đ / tháng\nNgày gia hạn kế tiếp: 20/06/2026',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+      body: _body(isDark),
+    );
+  }
+
+  Widget _body(bool isDark) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+    }
+    if (_failed) {
+      return AppErrorState(isDark: isDark, onRetry: _fetch);
+    }
+
+    final isActive = _sub?['status'] == 'ACTIVE';
+    if (!isActive) {
+      return AppEmptyState(
+        isDark: isDark,
+        icon: Icons.workspace_premium_outlined,
+        title: 'premium.no_plan_title'.tr(),
+        body: 'premium.no_plan_body'.tr(),
+      );
+    }
+
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final price = (_sub?['price'] as num?)?.toInt() ?? 0;
+    final next = _parseDate(_sub?['nextBillingDate'] as String?);
+    final benefits = (_sub?['benefits'] as List?)?.whereType<String>().toList();
+
+    return RefreshIndicator(
+      onRefresh: _fetch,
+      child: ListView(
+        padding: const EdgeInsets.all(GenZTokens.space5),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(GenZTokens.space5),
+            decoration: BoxDecoration(
+              color: GenZTokens.lilac,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(
+                color: GenZTokens.ink,
+                width: GenZTokens.borderWidth,
               ),
             ),
-
-            const SizedBox(height: 28),
-
-            Text(
-              'Tùy chọn thanh toán',
-              style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            Card(
-              color: isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Column(
-                children: [
-                  SwitchListTile(
-                    title: Text(
-                      'Tự động gia hạn',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Gia hạn tự động bằng nguồn tiền đã đăng ký để tránh gián đoạn dịch vụ AI.',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 11.5),
-                    ),
-                    value: _autoRenew,
-                    activeThumbColor: Colors.purpleAccent,
-                    onChanged: (val) {
-                      setState(() {
-                        _autoRenew = val;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(val ? '🔔 Đã kích hoạt gia hạn tự động!' : '🔕 Đã tắt tự động gia hạn!'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    title: Text(
-                      'Thay đổi phương thức nguồn',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w600),
-                    ),
-                    subtitle: Text('Visa **** 4242', style: GoogleFonts.plusJakartaSans(fontSize: 11.5)),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('💳 Mở ví MoMo / Bank account để liên kết nguồn mới!'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 48),
-
-            // Cancel Plan option
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      backgroundColor: isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface,
-                      title: Text(
-                        'Hủy Gói Elite Squad? 😢',
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
-                      ),
-                      content: Text(
-                        'Cưng sẽ mất toàn bộ quyền xuất clip recap hành trình 4K và bộ nhãn dán dìm hàng độc quyền đấy nha!',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 13),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('Giữ Lại 💖', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('💔 Đã hủy gói Elite Squad. Các đặc quyền vẫn giữ tới 20/06/2026.'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          },
-                          child: Text('Hủy Gói', style: GoogleFonts.plusJakartaSans(color: Colors.redAccent)),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                child: Text(
-                  'Hủy đăng ký Elite Squad',
-                  style: GoogleFonts.plusJakartaSans(
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13.5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'premium.plan_elite'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
+                    color: GenZTokens.ink,
                   ),
                 ),
+                const SizedBox(height: GenZTokens.space2),
+                Text(
+                  'premium.price_monthly'.tr(args: [_money(price)]),
+                  style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
+                ),
+                if (next != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    'premium.next_billing'.tr(
+                      args: [
+                        DateFormat.yMMMd(
+                          context.locale.toLanguageTag(),
+                        ).format(next),
+                      ],
+                    ),
+                    style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (benefits != null && benefits.isNotEmpty) ...[
+            const SizedBox(height: GenZTokens.space5),
+            Text(
+              'premium.benefits'.tr(),
+              style: AppFonts.heading(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: ink,
               ),
             ),
+            const SizedBox(height: GenZTokens.space3),
+            for (final b in benefits)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.check, size: 16, color: GenZTokens.success),
+                    const SizedBox(width: GenZTokens.space2),
+                    Expanded(
+                      child: Text(
+                        b,
+                        style: AppFonts.body(fontSize: 13, color: ink),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
-        ),
+          const SizedBox(height: GenZTokens.space5),
+          // Play Billing quản lý gia hạn/huỷ gói — app chỉ nói rõ chỗ làm,
+          // không dựng công tắc giả như trước.
+          Container(
+            padding: const EdgeInsets.all(GenZTokens.space4),
+            decoration: BoxDecoration(
+              color: surface,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline, size: 18, color: inkSoft),
+                const SizedBox(width: GenZTokens.space3),
+                Expanded(
+                  child: Text(
+                    'premium.manage_in_play'.tr(),
+                    style: AppFonts.body(
+                      fontSize: 13,
+                      color: inkSoft,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  static DateTime? _parseDate(String? raw) =>
+      raw == null ? null : DateTime.tryParse(raw);
+
+  /// 99000 -> "99.000" (kiểu VN, không phụ thuộc locale đang chọn).
+  static String _money(int v) {
+    final s = v.toString();
+    final b = StringBuffer();
+    for (var i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) b.write('.');
+      b.write(s[i]);
+    }
+    return b.toString();
   }
 }

@@ -1,291 +1,481 @@
-import '../../core/theme/theme.dart';
+// Chi lay `tr`: easy_localization re-export intl, va intl cung co
+// TextDirection -> va cham voi dart:ui trong SlideGradientTransform.
+import 'package:easy_localization/easy_localization.dart' show tr;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Pages
+import '../profile/data/profile_provider.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'pages/subscription_checkout_screen.dart';
 import 'pages/billing_history_screen.dart';
 import 'pages/subscription_settings_screen.dart';
 import 'pages/referral_rewards_screen.dart';
-import 'pages/promo_code_screen.dart';
 import 'pages/creator_revenue_dashboard_screen.dart';
+import 'pages/referral_campaign_screen.dart';
 
-class PremiumHubScreen extends StatelessWidget {
+class PremiumHubScreen extends StatefulWidget {
   const PremiumHubScreen({super.key});
 
   @override
+  State<PremiumHubScreen> createState() => _PremiumHubScreenState();
+}
+
+class _PremiumHubScreenState extends State<PremiumHubScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shimmerController;
+
+  /// Theo đúng chế độ sáng/tối của app thay vì giữ cờ riêng — cờ riêng làm màn
+  /// này lệch pha với theme người dùng đã chọn.
+  bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
+
+  final List<String> _themes = [
+    'Tokyo Neon',
+    'Đà Lạt Mist',
+    'Beach Chaos',
+    'Retro Film',
+    'Cyber Night',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    
-    // Brand Design System constants
-    final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
-    final secondaryColor = isDark ? TripMateTheme.darkSecondary : TripMateTheme.lightSecondary;
-    final backgroundColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
-    final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
+    final isDark = _isDarkMode;
+
+    final primaryColor = isDark
+        ? const Color(0xFFC9B8FF)
+        : const Color(0xFFF5822B);
+    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
+    // va viet cung accent cua preset *grape*, nen doi theme khong an.
+    final secondaryColor = Theme.of(context).colorScheme.primary;
+    final tertiaryColor = isDark
+        ? const Color(0xFFFFB783)
+        : const Color(0xFFF5822B);
+
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final textPrimary = isDark
+        ? const Color(0xFFFDF6D3)
+        : const Color(0xFF141210);
+    final textSecondary = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
+    final glassBorder = textPrimary; // viền ink brutalist
 
     return Scaffold(
-      backgroundColor: backgroundColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          // Premium Luxury Glowing Header
-          SliverAppBar(
-            expandedHeight: 220.0,
-            floating: false,
-            pinned: true,
-            backgroundColor: backgroundColor,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-              onPressed: () => Navigator.pop(context),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                'TripMate Premium Space 💎',
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
-              ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: isDark
-                        ? [
-                            const Color(0xFF3F1B68), // Deep Dark Purple
-                            backgroundColor, // Obsidian
-                          ]
-                        : [
-                            const Color(0xFFF5EDFF), // Soft Purple
-                            backgroundColor, // Warm Ivory
-                          ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      right: -30,
-                      top: 40,
-                      child: Container(
-                        width: 140,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: secondaryColor.withValues(alpha: 0.12),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: -20,
-                      bottom: 20,
-                      child: Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: primaryColor.withValues(alpha: 0.12),
-                        ),
-                      ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 50),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              colors: [primaryColor, secondaryColor],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: primaryColor.withValues(alpha: 0.35),
-                                blurRadius: 16,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
-                          ),
-                          child: const Text('💎', style: TextStyle(fontSize: 38)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Menu Options List
-          SliverPadding(
-            padding: const EdgeInsets.all(20.0),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Header status card
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.only(bottom: 24),
-                  decoration: BoxDecoration(
-                    color: surfaceColor,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isDark ? primaryColor.withValues(alpha: 0.2) : primaryColor.withValues(alpha: 0.1),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.02),
-                        blurRadius: 10,
-                      ),
-                    ],
+      backgroundColor: bgColor,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                // Top app bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Elite Squad Active! 👑',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: isDark ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Đặc quyền xa xỉ bậc nhất đã mở khóa cho tài khoản của cưng.',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: textPrimary,
                         ),
+                        onPressed: () => Navigator.pop(context),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'Active',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
-                          ),
+                      Text(
+                        tr('premium.elite_squad'),
+                        style: AppFonts.heading(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                Text(
-                  'Dịch Vụ Đăng Ký 💳',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Branding and title
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'trip.mate',
+                                  style: AppFonts.heading(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -1.5,
+                                    color: textPrimary,
+                                  ),
+                                ),
+                                // Username THẬT của user.
+                                //
+                                // Trước đây in cứng '@adventure_seeker' nên ai
+                                // mở màn Premium cũng thấy tên tài khoản của
+                                // một người không tồn tại.
+                                Consumer(
+                                  builder: (context, ref, _) {
+                                    final p = ref
+                                        .watch(profileDataProvider)
+                                        .profile;
+                                    final name =
+                                        p?['username'] as String? ??
+                                        p?['name'] as String? ??
+                                        '';
+                                    if (name.isEmpty) {
+                                      return const SizedBox.shrink();
+                                    }
+                                    return Text(
+                                      '@$name',
+                                      style: AppFonts.body(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: tertiaryColor,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: tertiaryColor.withValues(alpha: 0.15),
+                              ),
+                              child: Icon(
+                                Icons.workspace_premium,
+                                color: tertiaryColor,
+                                size: 24,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
 
-                _buildOptionCard(
-                  title: 'Gói Cước & Nâng Cấp 👑',
-                  desc: 'So sánh đặc quyền, bảng giá và kích hoạt Elite Squad',
-                  icon: Icons.workspace_premium_outlined,
-                  color: primaryColor,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SubscriptionCheckoutScreen()),
-                  ),
-                ),
-                _buildOptionCard(
-                  title: 'Thiết Lập Gia Hạn ⚙',
-                  desc: 'Quản lý phương thức nguồn tiền tự động gia hạn cước',
-                  icon: Icons.settings_applications_outlined,
-                  color: secondaryColor,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SubscriptionSettingsScreen()),
-                  ),
-                ),
-                _buildOptionCard(
-                  title: 'Lịch Sử Invoices 🧾',
-                  desc: 'Xem và tải về các hóa đơn giao dịch PDF của cưng',
-                  icon: Icons.history_edu_outlined,
-                  color: Colors.blueAccent,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const BillingHistoryScreen()),
-                  ),
-                ),
+                        Text(
+                          tr('premium.hero_sub'),
+                          style: AppFonts.heading(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            color: textPrimary,
+                            height: 1.3,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
 
-                const SizedBox(height: 24),
+                        // Cinematic themes section
+                        Text(
+                          tr('premium.cinematic_themes'),
+                          style: AppFonts.heading(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 38,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: _themes.length,
+                            itemBuilder: (context, index) {
+                              final thm = _themes[index];
+                              final isNeon = thm == 'Tokyo Neon';
+                              return Container(
+                                margin: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(0xFF262019)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(19),
+                                  border: Border.all(
+                                    color: isNeon
+                                        ? secondaryColor
+                                        : glassBorder,
+                                    width: isNeon ? 1.5 : 1.0,
+                                  ),
+                                  boxShadow: isNeon
+                                      ? [
+                                          BoxShadow(
+                                            color: secondaryColor.withValues(
+                                              alpha: 0.25,
+                                            ),
+                                            blurRadius: 0,
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    thm,
+                                    style: AppFonts.heading(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: isNeon
+                                          ? secondaryColor
+                                          : textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 24),
 
-                Text(
-                  'Không Gian Marketing & Tác Giả 🎨',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                        // Feature check rows list
+                        _buildFeatureRow(
+                          '✨ Premium Identity',
+                          'Stand out with glowing squad tags & gold border highlights.',
+                          primaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
+                        _buildFeatureRow(
+                          '🗺️ Hidden Travel Spots',
+                          'Unlock exclusive geolocated pins & secret local viewpoints.',
+                          secondaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
+                        _buildFeatureRow(
+                          '💯 Exclusive Reactions',
+                          'Express chaos with custom LIT, DEAD, and YASSS emojis.',
+                          tertiaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
+                        _buildFeatureRow(
+                          '📦 Infinite High-Res Storage',
+                          'Keep original raw frames and cinematic highlights forever.',
+                          primaryColor,
+                          textPrimary,
+                          textSecondary,
+                        ),
 
-                _buildOptionCard(
-                  title: 'Giới Thiệu Nhận XP 🎁',
-                  desc: 'Mời thêm bạn cùng đi phượt để cùng hưởng cấp độ',
-                  icon: Icons.card_giftcard_outlined,
-                  color: Colors.orangeAccent,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ReferralRewardsScreen()),
-                  ),
-                ),
-                _buildOptionCard(
-                  title: 'Nhập Mã Giảm Giá 🎫',
-                  desc: 'Kích hoạt phiếu quà tặng du lịch & giảm giá voucher',
-                  icon: Icons.confirmation_number_outlined,
-                  color: Colors.greenAccent,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const PromoCodeScreen()),
-                  ),
-                ),
-                _buildOptionCard(
-                  title: 'Thu Nhập Sáng Tạo 🎨',
-                  desc: 'Dashboard thống kê chia sẻ doanh thu shop theme / sticker',
-                  icon: Icons.monetization_on_outlined,
-                  color: secondaryColor,
-                  isDark: isDark,
-                  surfaceColor: surfaceColor,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CreatorRevenueDashboardScreen()),
-                  ),
-                ),
+                        const SizedBox(height: 28),
 
-                const SizedBox(height: 48),
-              ]),
+                        // Shimmering dark metallic Payment/Join button
+                        AnimatedBuilder(
+                          animation: _shimmerController,
+                          builder: (context, child) {
+                            return ShaderMask(
+                              shaderCallback: (bounds) {
+                                return LinearGradient(
+                                  colors: [
+                                    Colors.white.withValues(alpha: 0.1),
+                                    Colors.white.withValues(alpha: 0.9),
+                                    Colors.white.withValues(alpha: 0.1),
+                                  ],
+                                  stops: const [0.35, 0.5, 0.65],
+                                  transform: SlideGradientTransform(
+                                    percent: _shimmerController.value,
+                                  ),
+                                ).createShader(bounds);
+                              },
+                              blendMode: BlendMode.srcATop,
+                              child: child,
+                            );
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SubscriptionCheckoutScreen(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Color(0xFF222222),
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: Colors.white24,
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.6),
+                                    blurRadius: 0,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                  BoxShadow(
+                                    color: primaryColor.withValues(alpha: 0.15),
+                                    blurRadius: 0,
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      tr('premium.join_elite'),
+                                      style: AppFonts.heading(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 28),
+
+                        // Secondary Options list
+                        Text(
+                          tr('premium.services_settings'),
+                          style: AppFonts.heading(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        _buildSettingTile(
+                          'Subscription Settings ⚙',
+                          'Manage payment methods & automatic renewals',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SubscriptionSettingsScreen(),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
+
+                        _buildSettingTile(
+                          'Invoices History 🧾',
+                          'Download PDF invoices of your payments history',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const BillingHistoryScreen(),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
+
+                        _buildSettingTile(
+                          'Referral Rewards 🎁',
+                          'Invite squad mates & receive free premium levels',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ReferralRewardsScreen(),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
+
+                        _buildSettingTile(
+                          'Referral Campaign 🤝',
+                          'Bring the squad & unlock lifetime Elite access',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReferralCampaignScreen(
+                                  isDarkMode: _isDarkMode,
+                                  onThemeToggle: () {},
+                                ),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
+
+                        _buildSettingTile(
+                          'Creative Shop Revenue 🎨',
+                          'Dashboard of your custom sticker packages sales',
+                          () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const CreatorRevenueDashboardScreen(),
+                              ),
+                            );
+                          },
+                          cardBg,
+                          glassBorder,
+                          textPrimary,
+                          textSecondary,
+                        ),
+
+                        const SizedBox(height: 48),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -293,53 +483,96 @@ class PremiumHubScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOptionCard({
-    required String title,
-    required String desc,
-    required IconData icon,
-    required Color color,
-    required bool isDark,
-    required Color surfaceColor,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildFeatureRow(
+    String title,
+    String subtitle,
+    Color glowColor,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isDark ? color.withValues(alpha: 0.15) : color.withValues(alpha: 0.08),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: ListTile(
-          onTap: onTap,
-          leading: Container(
-            padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: color.withValues(alpha: 0.12),
+              color: glowColor.withValues(alpha: 0.15),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(Icons.done, color: glowColor, size: 14),
           ),
-          title: Text(
-            title,
-            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13.5),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppFonts.heading(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppFonts.body(fontSize: 11, color: textSecondary),
+                ),
+              ],
+            ),
           ),
-          subtitle: Text(
-            desc,
-            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey, height: 1.3),
-          ),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
-        ),
+        ],
       ),
     );
+  }
+
+  Widget _buildSettingTile(
+    String title,
+    String desc,
+    VoidCallback onTap,
+    Color cardBg,
+    Color glassBorder,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: glassBorder, width: 2),
+        boxShadow: [BoxShadow(color: glassBorder, offset: const Offset(0, 3))],
+      ),
+      child: ListTile(
+        onTap: onTap,
+        title: Text(
+          title,
+          style: AppFonts.heading(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: textPrimary,
+          ),
+        ),
+        subtitle: Text(
+          desc,
+          style: AppFonts.body(fontSize: 10, color: textSecondary),
+        ),
+        trailing: const Icon(Icons.arrow_forward, size: 14, color: Colors.grey),
+      ),
+    );
+  }
+}
+
+class SlideGradientTransform extends GradientTransform {
+  final double percent;
+  const SlideGradientTransform({required this.percent});
+
+  @override
+  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
+    final double dx = bounds.width * (percent * 2.0 - 1.0);
+    return Matrix4.translationValues(dx, 0.0, 0.0);
   }
 }

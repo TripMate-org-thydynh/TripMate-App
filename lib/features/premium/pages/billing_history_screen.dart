@@ -1,6 +1,8 @@
+import '../../../core/format/money.dart';
 import '../../../core/theme/theme.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../core/api_service.dart';
 
 class BillingHistoryScreen extends StatefulWidget {
@@ -11,33 +13,11 @@ class BillingHistoryScreen extends StatefulWidget {
 }
 
 class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
-  List<Map<String, dynamic>> _invoices = [
-    {
-      'id': 'INV-9982',
-      'date': '2026-05-20',
-      'title': 'Elite Squad Subscription (1 Tháng) 👑',
-      'amount': '99.000đ',
-      'method': 'Visa *4242',
-      'status': 'Thành công',
-    },
-    {
-      'id': 'INV-8812',
-      'date': '2026-04-20',
-      'title': 'Xuất Video Recap Kyoto 4K 🎞️',
-      'amount': '25.000đ',
-      'method': 'Momo Wallet',
-      'status': 'Thành công',
-    },
-    {
-      'id': 'INV-7734',
-      'date': '2026-03-15',
-      'title': 'Chủ Đề Dalat Vintage Premium 🌲',
-      'amount': '49.000đ',
-      'method': 'Vietcombank *9999',
-      'status': 'Thành công',
-    }
-  ];
-  
+  // Rỗng cho tới khi /premium/billing-history trả giao dịch thật (endpoint
+  // nay đọc bảng payment_transactions). Trước đây 3 hoá đơn cứng
+  // "Visa *4242 · 99.000đ · Thành công" hiện cho cả tài khoản chưa mua gì.
+  List<Map<String, dynamic>> _invoices = [];
+
   bool _isLoading = false;
 
   @override
@@ -55,14 +35,21 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
     if (response != null && response['history'] != null) {
       final List<dynamic> list = response['history'] as List<dynamic>;
       setState(() {
-        _invoices = list.map((item) => {
-          'id': item['id'] ?? 'GD-${item.hashCode.abs()}',
-          'date': item['date'] ?? 'Vừa qua',
-          'title': item['description'] ?? 'Giao dịch nâng cấp',
-          'amount': '${(item['amount'] as int?) ?? 0}đ',
-          'method': item['method'] ?? 'Nguồn đã lưu',
-          'status': item['status'] ?? 'Thành công',
-        }).toList();
+        _invoices = list
+            .map(
+              (item) => {
+                'id': item['id'] ?? 'GD-${item.hashCode.abs()}',
+                'date': item['date'] ?? 'premium.recent'.tr(),
+                'title': item['description'] ?? 'premium.upgrade_tx'.tr(),
+                'amount': formatMoney(
+                  (item['amount'] as int?) ?? 0,
+                  locale: context.locale.languageCode,
+                ),
+                'method': item['method'] ?? 'premium.saved_source'.tr(),
+                'status': item['status'] ?? 'common.success_plain'.tr(),
+              },
+            )
+            .toList();
       });
     }
 
@@ -75,11 +62,17 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Brand Tokens
-    final primaryColor = isDark ? TripMateTheme.darkPrimary : TripMateTheme.lightPrimary;
-    final backgroundColor = isDark ? TripMateTheme.darkBackground : TripMateTheme.lightBackground;
-    final surfaceColor = isDark ? TripMateTheme.darkSurface : TripMateTheme.lightSurface;
+    final primaryColor = isDark
+        ? TripMateTheme.darkPrimary
+        : TripMateTheme.lightPrimary;
+    final backgroundColor = isDark
+        ? TripMateTheme.darkBackground
+        : TripMateTheme.lightBackground;
+    final surfaceColor = isDark
+        ? TripMateTheme.darkSurface
+        : TripMateTheme.lightSurface;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -87,12 +80,15 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Lịch Sử Hóa Đơn 🧾',
-          style: GoogleFonts.plusJakartaSans(
+          'premium.billing_history'.tr(),
+          style: AppFonts.heading(
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : Colors.black87,
           ),
@@ -105,7 +101,35 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.purpleAccent))
+          ? const Center(
+              child: CircularProgressIndicator(color: Colors.purpleAccent),
+            )
+          : _invoices.isEmpty
+          // Chưa mua gì thì nói thẳng, thay vì hiện hoá đơn bịa như trước.
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.receipt_long_outlined,
+                      size: 40,
+                      color: Colors.white.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'premium.no_invoices'.tr(),
+                      textAlign: TextAlign.center,
+                      style: AppFonts.body(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
           : ListView.builder(
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(20),
@@ -122,14 +146,17 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                     ),
                   ),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: Text(
                             inv['title'] as String,
-                            style: GoogleFonts.plusJakartaSans(
+                            style: AppFonts.heading(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                               color: isDark ? Colors.white : Colors.black87,
@@ -140,7 +167,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                         ),
                         Text(
                           inv['amount'] as String,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                             color: primaryColor,
@@ -153,16 +180,23 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                       children: [
                         const SizedBox(height: 6),
                         Text(
-                          'Mã GD: ${inv['id']}  •  Ngày: ${inv['date']}',
-                          style: GoogleFonts.plusJakartaSans(
+                          'premium.tx_id_date'.tr(
+                            namedArgs: {
+                              'id': '${inv['id']}',
+                              'date': '${inv['date']}',
+                            },
+                          ),
+                          style: AppFonts.heading(
                             fontSize: 11.5,
                             color: Colors.grey,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Nguồn thanh toán: ${inv['method']}',
-                          style: GoogleFonts.plusJakartaSans(
+                          'premium.paid_with'.tr(
+                            namedArgs: {'method': '${inv['method']}'},
+                          ),
+                          style: AppFonts.heading(
                             fontSize: 11.5,
                             color: isDark ? Colors.grey[400] : Colors.grey[600],
                           ),
@@ -170,11 +204,18 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                       ],
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.download_for_offline_outlined, color: primaryColor),
+                      icon: Icon(
+                        Icons.download_for_offline_outlined,
+                        color: primaryColor,
+                      ),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('📥 Đang tải hóa đơn ${inv['id']} dạng PDF...'),
+                            content: Text(
+                              'premium.downloading_invoice'.tr(
+                                namedArgs: {'id': '${inv['id']}'},
+                              ),
+                            ),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );

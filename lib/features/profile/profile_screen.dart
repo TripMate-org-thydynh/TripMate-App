@@ -1,6 +1,20 @@
-import 'dart:ui';
+import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+
+import '../dashboard/data/home_feed_repository.dart';
+
+import 'data/xp_repository.dart';
+import '../moments/data/moments_repository.dart';
+import '../moments/presentation/pages/memory_wall_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/app_messenger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../core/theme/theme_provider.dart';
+import '../../core/theme/gen_z_tokens.dart';
+import 'data/profile_provider.dart';
+
 import 'pages/badge_collection_screen.dart';
 import 'pages/edit_profile_screen.dart';
 import 'pages/friends_list_screen.dart';
@@ -8,20 +22,33 @@ import 'pages/profile_statistics_screen.dart';
 import 'pages/public_profile_screen.dart';
 import 'pages/shared_trips_history_screen.dart';
 import 'pages/social_links_manager_screen.dart';
-import 'pages/squad_reputation_screen.dart';
-import 'pages/sticker_store_screen.dart';
+import '../gamification/pages/squad_leaderboard_screen.dart';
+import 'pages/sticker_inventory_screen.dart';
+import 'pages/xp_wallet_screen.dart';
 import 'pages/theme_marketplace_screen.dart';
-import '../../core/api_service.dart';
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+import 'pages/travel_atlas_screen.dart';
+import 'pages/backup_restore_screen.dart';
+import 'pages/tripmate_mcp_screen.dart';
+import '../settings/presentation/account_privacy_screen.dart';
+
+class ProfileScreen extends ConsumerStatefulWidget {
+  final bool? isDarkMode;
+  final ValueChanged<Offset>? onThemeToggleWithPosition;
+
+  const ProfileScreen({
+    super.key,
+    this.isDarkMode,
+    this.onThemeToggleWithPosition,
+  });
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateMixin {
+class _ProfileScreenState extends ConsumerState<ProfileScreen>
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
-  
+
   // Real-time backend databases loaded state
   Map<String, dynamic>? _userProfile;
   Map<String, dynamic>? _userStats;
@@ -35,25 +62,13 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
-    
-    _loadDashboardData();
-  }
 
-  Future<void> _loadDashboardData() async {
-    final profile = await ApiService.get('/users/me');
-    final stats = await ApiService.get('/users/me/stats');
-    final badges = await ApiService.get('/users/me/badges');
-    
-    if (mounted) {
-      setState(() {
-        _userProfile = profile;
-        _userStats = stats;
-        if (badges is List) {
-          _userBadges = badges;
-        }
-        _isLoading = false;
-      });
-    }
+    // Silently fetch fresh profile data in the background on entry
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref.read(profileDataProvider.notifier).loadProfile(forceRefresh: true);
+      }
+    });
   }
 
   @override
@@ -62,652 +77,6 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Force always dark to match the premium cinematic dark onboarding screen
-    final isDark = context.mounted;
-
-    // Premium Tailwind hex color tokens mapped
-    final primaryColor = const Color(0xFFD0BCFF);
-    final secondaryColor = const Color(0xFF45DFA4);
-    final tertiaryColor = const Color(0xFFFFB783);
-    final backgroundColor = const Color(0xFF0B1326);
-    final surfaceColor = const Color(0xFF171F33);
-    final textPrimaryColor = const Color(0xFFDAE2FD);
-    final textSecondaryColor = const Color(0xFFCBC3D7);
-
-    // Live backend data properties with secure visual mock fallbacks
-    final name = _userProfile?['name'] ?? 'Minh Nhật';
-    final username = _userProfile?['username'] ?? 'mnhat_travels';
-    final level = _userProfile?['travelScore'] != null ? (_userProfile!['travelScore'] ~/ 500) + 1 : 24;
-    final xp = _userProfile?['travelScore'] != null ? _userProfile!['travelScore'] % 500 : 8420;
-    final List<dynamic> vibeTags = _userProfile?['vibeTags'] is List 
-        ? _userProfile!['vibeTags'] 
-        : ['Chaos Planner', 'MVP Payer', 'Nightlife Lover'];
-    final avatarUrl = _userProfile?['avatarUrl'] ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuDLEui7EjvkHqpOtxT75qvmlSCJ9wccTxZHFnkqbQ7m--E6HGrhKnsJtrL2GDihf2FhhrrhdSQNucxZbDJAO6aLatXSt85bB-l6x9IM5ATjoFNpWUBr8XexKHp-UAg1uq87dPwg4PWZ5YNCMSEEHcd0e_x7apUYsHB94fhhpnv3cua0_DqPuc2VvBOglqhzvDWgph7OzMrHd71mBP4_IYyAJES--uo8nLNq161e_1nhMmkf9ZNHQheEn4QZJGsbcFzUQrlWbUYmDTLA';
-    final bio = _userProfile?['bio'] ?? 'Planning Seoul';
-    
-    final totalTrips = _userStats?['totalTrips']?.toString() ?? '24';
-    final totalDistance = _userStats?['totalDistanceKm'] != null 
-        ? '${(_userStats!['totalDistanceKm'] as num).toInt()} km' 
-        : '1.2k';
-    final reputationScore = _userStats?['squadReputationScore'] != null
-        ? (_userStats!['squadReputationScore'] >= 90 ? 'Legendary' : 'Reliable')
-        : 'Legendary';
-    final countriesCount = _userStats?['chaosScore']?.toString() ?? '15';
-
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Stack(
-        children: [
-          // 1. Ambient Background Layer (Mesh Gradients)
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.8, -0.6),
-                radius: 1.2,
-                colors: [
-                  Color(0x3D8B5CF6), // Soft Stitch Purple mesh glow
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(-0.8, 0.2),
-                radius: 1.5,
-                colors: [
-                  Color(0x2834D399), // Soft Stitch Mint mesh glow
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(0.0, 0.8),
-                radius: 1.3,
-                colors: [
-                  Color(0x20FB923C), // Soft Stitch Orange mesh glow
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-
-          // 2. Cinematic Karst Landscape Backdrop
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.15,
-              child: Image.network(
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const SizedBox(),
-              ),
-            ),
-          ),
-
-          // Blur overlay
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.12),
-              ),
-            ),
-          ),
-
-          // 3. Scrollable Content
-          _isLoading
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFFD0BCFF)))
-              : CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-              // Top Custom App Bar
-              SliverAppBar(
-                expandedHeight: 88.0,
-                floating: false,
-                pinned: true,
-                backgroundColor: backgroundColor.withValues(alpha: 0.5),
-                elevation: 0,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Container(color: Colors.transparent),
-                ),
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 16.0, top: 12.0),
-                  child: Center(
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: primaryColor.withValues(alpha: 0.3), width: 1.5),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(99),
-                        child: Image.network(
-                          avatarUrl,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                title: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Center(
-                    child: ShaderMask(
-                      shaderCallback: (bounds) {
-                        return LinearGradient(
-                          colors: [primaryColor, secondaryColor],
-                        ).createShader(bounds);
-                      },
-                      child: Text(
-                        'trip.mate',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.w800,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 26,
-                          letterSpacing: -1.5,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0, top: 12.0),
-                    child: Center(
-                      child: IconButton(
-                        icon: Icon(Icons.palette_outlined, color: primaryColor, size: 26),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const ThemeMarketplaceScreen()),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16.0, top: 12.0),
-                    child: Center(
-                      child: IconButton(
-                        icon: Icon(Icons.add_reaction_outlined, color: primaryColor, size: 26),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const StickerStoreScreen()),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // Main Canvas body list
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    const SizedBox(height: 24),
-
-                    // 4. Gamer Profile Hero Section
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Glassmorphic main panel card
-                        Padding(
-                          padding: const EdgeInsets.only(top: 64.0),
-                          child: _buildGlassCard(
-                            isDark: isDark,
-                            primaryColor: primaryColor,
-                            surfaceColor: surfaceColor,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 72.0, left: 16, right: 16, bottom: 24),
-                              child: Column(
-                                children: [
-                                  // User name glow text
-                                  Text(
-                                    name,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w800,
-                                      color: isDark ? Colors.white : textPrimaryColor,
-                                      shadows: isDark
-                                          ? [
-                                              Shadow(
-                                                color: Colors.white.withValues(alpha: 0.3),
-                                                blurRadius: 10,
-                                              )
-                                            ]
-                                          : null,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const SocialLinksManagerScreen()),
-                                          );
-                                        },
-                                        child: Icon(
-                                          Icons.link,
-                                          color: primaryColor.withValues(alpha: 0.6),
-                                          size: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        '@$username',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: primaryColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 24),
-
-                                  // Level progression box
-                                  _buildLevelBox(
-                                    context: context,
-                                    isDark: isDark,
-                                    primaryColor: primaryColor,
-                                    secondaryColor: secondaryColor,
-                                    tertiaryColor: tertiaryColor,
-                                    textPrimaryColor: textPrimaryColor,
-                                    textSecondaryColor: textSecondaryColor,
-                                    level: level,
-                                    xp: xp,
-                                    reputation: reputationScore,
-                                  ),
-                                  const SizedBox(height: 20),
-
-                                  // Vibe Tags
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    alignment: WrapAlignment.center,
-                                    children: vibeTags.map((v) {
-                                      final isChaos = v.toString().toLowerCase().contains('chaos');
-                                      final isMvp = v.toString().toLowerCase().contains('mvp');
-                                      final Color tagColor = isChaos
-                                          ? const Color(0xFFFFB4AB)
-                                          : (isMvp ? const Color(0xFF45DFA4) : const Color(0xFFD0BCFF));
-                                      final IconData tagIcon = isChaos
-                                          ? Icons.local_fire_department
-                                          : (isMvp ? Icons.attach_money : Icons.nightlife);
-                                      return _buildVibeTag(v.toString(), tagIcon, tagColor, isDark);
-                                    }).toList(),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  const Divider(color: Colors.white12, height: 1),
-                                  const SizedBox(height: 20),
-
-                                  // Core Stats Row
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => const ProfileStatisticsScreen()),
-                                      );
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        _buildStatItem(totalTrips, 'Trips', isDark),
-                                        _buildStatItem(totalDistance, 'Memories', isDark),
-                                        _buildStatItem(countriesCount, 'Countries', isDark),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // Floating Avatar situated overlapping top edge
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                // Glowing avatar container
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PublicProfileScreen(
-                                          userName: name,
-                                          avatarUrl: avatarUrl,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: AnimatedBuilder(
-                                    animation: _pulseController,
-                                    builder: (context, child) {
-                                      final glowVal = 20.0 + (_pulseController.value * 20.0);
-                                      return Container(
-                                        width: 128,
-                                        height: 128,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: backgroundColor, width: 4.0),
-                                          boxShadow: isDark
-                                              ? [
-                                                  BoxShadow(
-                                                    color: primaryColor.withValues(alpha: 0.5),
-                                                    blurRadius: glowVal,
-                                                    spreadRadius: 2,
-                                                  )
-                                                ]
-                                              : null,
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(99),
-                                          child: Image.network(
-                                            avatarUrl,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-
-                                // Status Planning Seoul Capsule
-                                Positioned(
-                                  bottom: -8,
-                                  left: -20,
-                                  right: -20,
-                                  child: Center(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: isDark ? const Color(0xFF0B1326) : Colors.white,
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(color: Colors.white24, width: 1.0),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.3),
-                                            blurRadius: 10,
-                                          )
-                                        ],
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Text('✈️', style: TextStyle(fontSize: 12)),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            bio,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                              color: textPrimaryColor,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        // Edit Button on Top Right (Mobile-friendly layout)
-                        Positioned(
-                          top: 80,
-                          right: 16,
-                          child: _buildIconButton(
-                            icon: Icons.edit,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const EditProfileScreen()),
-                              );
-                            },
-                            primaryColor: primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 36),
-
-                    // 5. Achievements Showcase Section
-                    Row(
-                      children: [
-                        Icon(Icons.workspace_premium, color: tertiaryColor, size: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Achievements',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Horizontal Scrolling Achievement Badges list
-                    SizedBox(
-                      height: 116,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        children: _userBadges.isEmpty
-                            ? [
-                                _buildBadgeCard(
-                                  emoji: '🔥',
-                                  title: 'Chaos King',
-                                  tier: 'Gold Tier',
-                                  isRare: true,
-                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen())),
-                                ),
-                                _buildBadgeCard(
-                                  emoji: '📸',
-                                  title: 'Pro Paparazzi',
-                                  tier: 'Silver Tier',
-                                  isRare: false,
-                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen())),
-                                ),
-                                _buildBadgeCard(
-                                  emoji: '🍜',
-                                  title: 'Street Food Legend',
-                                  tier: 'Rare Tier',
-                                  isRare: true,
-                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen())),
-                                ),
-                                _buildBadgeCard(
-                                  emoji: '🔒',
-                                  title: 'Locked',
-                                  tier: '???',
-                                  isRare: false,
-                                  isLocked: true,
-                                  onTap: () {},
-                                ),
-                              ]
-                            : _userBadges.map<Widget>((badge) {
-                                final isLocked = badge['unlockedAt'] == null;
-                                final title = badge['title'] ?? 'Danh hiệu';
-                                
-                                String emoji = '🏆';
-                                String cleanTitle = title;
-                                
-                                final RegExp emojiRegExp = RegExp(r'[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]', unicode: true);
-                                final match = emojiRegExp.firstMatch(title);
-                                if (match != null) {
-                                  emoji = match.group(0) ?? '🏆';
-                                  cleanTitle = title.replaceAll(emoji, '').trim();
-                                }
-                                
-                                return _buildBadgeCard(
-                                  emoji: emoji,
-                                  title: cleanTitle,
-                                  tier: isLocked ? 'Locked' : (badge['id'] == 'b1' ? 'Gold Tier' : 'Silver Tier'),
-                                  isRare: badge['id'] == 'b1' || badge['id'] == 'b3',
-                                  isLocked: isLocked,
-                                  onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const BadgeCollectionScreen()));
-                                  },
-                                );
-                              }).toList(),
-                      ),
-                    ),
-
-                    const SizedBox(height: 36),
-
-                    // 6. Chaotic Memories (Tilted Polaroid Grid)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.auto_awesome, color: primaryColor, size: 24),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Chaotic Memories',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: textPrimaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const SharedTripsHistoryScreen()),
-                            );
-                          },
-                          child: Text(
-                            'VIEW GALLERY',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: secondaryColor,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Row showing two beautiful tilted polaroids
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Expanded(
-                          child: Transform.rotate(
-                            angle: -0.04, // -2 degrees
-                            child: _buildPolaroidCard(
-                              imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3GMXqvkv7uLzBEwA053VHefaRGTOBFv9pTiz4bGlwT3SitTC9LRaYcpcJyK9XvjTKlEwUO-HvGCy2RDEf8M6dn73NUnHiLBwHGLxd4UbzSIEYhZdeh_fpkxVnYibFtDcEsR3wv0XBn28SgESBBx4kMdBaxUpfQ8L9xvwOEvavloSBYj-cDYHYkHe9VeWkXgwWFNAqhRfYL42Z5Kg-btcNzHP-Th7tZinynYg64EpjYgPKaPNKWXrfexUy8vkEAtLTm5_zGCTYzd3L',
-                              caption: 'BKK Night out 🇹🇭',
-                              onTap: () {},
-                              surfaceColor: surfaceColor,
-                              textPrimary: textPrimaryColor,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Transform.rotate(
-                            angle: 0.05, // 3 degrees
-                            child: _buildPolaroidCard(
-                              imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZqibfx7smwKzO4mXEfKGVEiX_kK0-wy5TgllNKWMgkxqqjeLrzctDOKWIW3k8iEM85WecgzRsWFOuIoU9vrPjTPJ7vf3zDZjT64e-dtMNGzl8CLi2mCtGn5ApWuYstm9__T6C8P4mq7HLfZ1OXH-MNKYlrtoIzWyDs_oTUcK6uLUHRXLFYaKNfz7Xe0Sl-rVBDhNScWn9i5usx4yH8CAQbpd66Etuz7AeEkKa4awoEEQNZh8wScKz1d3Cd-H8ZefRd-DDLlsyreO-',
-                              caption: 'Seoul Searching 🇰🇷',
-                              onTap: () {},
-                              surfaceColor: surfaceColor,
-                              textPrimary: textPrimaryColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 36),
-
-                    // 7. Recent Activity Quest Log (Recent Chaos Log)
-                    Row(
-                      children: [
-                        Icon(Icons.history, color: secondaryColor, size: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Recent Chaos Log',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: textPrimaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Chaos feeds
-                    _buildChaosFeedCard(
-                      icon: Icons.flight_takeoff,
-                      accentColor: primaryColor,
-                      description: 'Booked a chaotic weekend trip to Taipei with 4 others.',
-                      time: '2 hours ago',
-                      isDark: isDark,
-                      primaryColor: primaryColor,
-                      textPrimaryColor: textPrimaryColor,
-                      friendAvatars: const [
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuA1y6WvPiLYsHKlTRB6MQXUdfofDAc6F6zA_OUoxVJ44xDMfI-glkYPZlhkMe2pxgJGVzJNChT9ruLNSBIKZ1NmCuetbHgdFy8sWorqus-9PkpGJ5BYvl3O-EVPgkLrcPFiJ7Hg9oceWMywnHH2uxQIAYIhQn4jDPWvWZkrFHEZHk_sGAKdq0Jh_yzObuSjDut4SF7nrJ954zT44Qu_b9IKZ3XeeSTrUNwNvlYgjg4CKACygqOdPERGR8T1emC-4a3PtkSegIqbYqzj',
-                        'https://lh3.googleusercontent.com/aida-public/AB6AXuCjU3P9uI6vdJX8NmKFk1eCTAp1BznSiyFHQEsD4THJT-rmb9aYBo5zD7LuoTwnWk0SlnFaET0ARhhgcFuupzG3C24xoArHCnc_-VKF-KE7Z5877UM99Qu5BICeXj3_elnHXeue7zM4_uDLNjYpeUGCs7P3QZKCfH5YaIv1zfBhHk4GyNX4J4vK9KShs9rvLp_q9dDM6bLfrhlwX7LGjEa2arXGi5pn3TRkajwn6bsUYTWUQ6ITLMQa3IWiZjKXJOCg2FZqzHMKLMlM'
-                      ],
-                      extraFriends: 2,
-                    ),
-                    const SizedBox(height: 12),
-
-                    _buildChaosSettlementCard(
-                      icon: Icons.account_balance_wallet,
-                      accentColor: secondaryColor,
-                      description: 'Settled up \$420 for the Tokyo bender.',
-                      isDark: isDark,
-                      primaryColor: primaryColor,
-                      textPrimaryColor: textPrimaryColor,
-                    ),
-
-                    const SizedBox(height: 48),
-                  ]),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper builders for beautiful components
   Widget _buildGlassCard({
     required Widget child,
     required bool isDark,
@@ -716,32 +85,26 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
   }) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(32),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24.0, sigmaY: 24.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isDark
-                ? const Color(0x99171F33) // rgba(23, 31, 51, 0.6)
-                : Colors.white.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.05),
-              width: 1.0,
-            ),
-            boxShadow: isDark
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.4),
-                      blurRadius: 32,
-                      offset: const Offset(0, 8),
-                    )
-                  ]
-                : null,
+      child: Container(
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(
+            color: isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210),
+            width: 2.5,
           ),
-          child: child,
+          // Hard shadow brutalist (đặc, không blur).
+          boxShadow: [
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.6)
+                  : const Color(0xFF141210),
+              blurRadius: 0,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
+        child: child,
       ),
     );
   }
@@ -756,17 +119,25 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     required Color textSecondaryColor,
     required int level,
     required int xp,
+    required int xpPerLevel,
     required String reputation,
   }) {
-    final int fillFlex = (xp / 100).clamp(1, 100).toInt();
+    final int fillFlex = ((xp % xpPerLevel) / xpPerLevel * 100)
+        .clamp(1, 100)
+        .toInt();
     final int emptyFlex = 100 - fillFlex;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0x332D3449) : Colors.black.withValues(alpha: 0.03),
+        color: isDark
+            ? const Color(0x332D3449)
+            : Colors.black.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black,
+          width: 2,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -776,20 +147,20 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
             children: [
               Row(
                 children: [
-                  Icon(Icons.military_tech, color: tertiaryColor, size: 20),
+                  Icon(Icons.military_tech, color: textPrimaryColor, size: 20),
                   const SizedBox(width: 4),
                   Text(
                     'Lvl $level',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: tertiaryColor,
+                      color: textPrimaryColor,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Global Nomad',
-                    style: GoogleFonts.inter(
+                    'profile.nomad_tag'.tr(),
+                    style: AppFonts.body(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: textSecondaryColor,
@@ -799,11 +170,11 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                 ],
               ),
               Text(
-                '${xp.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]},")} / 10,000 XP',
-                style: GoogleFonts.inter(
+                '${xp % xpPerLevel} / $xpPerLevel XP',
+                style: AppFonts.body(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: secondaryColor,
+                  color: textSecondaryColor,
                 ),
               ),
             ],
@@ -814,7 +185,9 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
           Container(
             height: 8,
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF060E20) : Colors.black12,
+              color: isDark
+                  ? const Color(0xFF060E20)
+                  : Colors.black.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Row(
@@ -823,16 +196,14 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                   flex: fillFlex,
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [secondaryColor, secondaryColor.withValues(alpha: 0.8)],
-                      ),
+                      color: primaryColor,
                       borderRadius: BorderRadius.circular(4),
                       boxShadow: isDark
                           ? [
                               BoxShadow(
-                                color: secondaryColor.withValues(alpha: 0.5),
-                                blurRadius: 8,
-                              )
+                                color: primaryColor.withValues(alpha: 0.5),
+                                blurRadius: 0,
+                              ),
                             ]
                           : null,
                     ),
@@ -849,7 +220,13 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SquadReputationScreen()),
+                MaterialPageRoute(
+                  // Trỏ sang bảng xếp hạng THẬT. Màn "Squad Reputation" cũ là
+                  // một báo cáo tính cách bịa hoàn toàn (MVP mang tên người
+                  // không có trong nhóm, "Over-Caffeination Risk 85%"...) và
+                  // không có nguồn dữ liệu nào ở backend.
+                  builder: (context) => const SquadLeaderboardScreen(),
+                ),
               );
             },
             child: Row(
@@ -858,16 +235,24 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
                 const SizedBox(width: 6),
                 RichText(
                   text: TextSpan(
-                    style: GoogleFonts.inter(fontSize: 12, color: textSecondaryColor),
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      color: textSecondaryColor,
+                    ),
                     children: [
-                      const TextSpan(text: 'Squad Rep: '),
+                      TextSpan(text: '${'profile.squad_rep'.tr()}: '),
                       TextSpan(
                         text: reputation,
-                        style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(width: 4),
+                Icon(Icons.verified, color: primaryColor, size: 12),
               ],
             ),
           ),
@@ -876,81 +261,61 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildVibeTag(String label, IconData icon, Color color, bool isDark) {
+  Widget _buildActiveBadgeChip(
+    String label,
+    Color accent,
+    bool isDark,
+    Color surface,
+  ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF171F33) : Colors.black.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.0),
-        boxShadow: isDark
-            ? [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.08),
-                  blurRadius: 8,
-                )
-              ]
-            : null,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 14),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+        color: isDark ? surface.withValues(alpha: 0.8) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: accent, width: 2),
+        boxShadow: [
+          BoxShadow(color: accent.withValues(alpha: 0.1), blurRadius: 0),
         ],
+      ),
+      child: Text(
+        label,
+        style: AppFonts.body(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: isDark ? accent : Colors.black87,
+        ),
       ),
     );
   }
 
-  Widget _buildStatItem(String val, String label, bool isDark) {
+  Widget _buildStatItem(
+    String val,
+    String label,
+    bool isDark,
+    Color textPrimaryColor,
+    Color primaryColor,
+  ) {
     return Column(
       children: [
         Text(
           val,
-          style: GoogleFonts.plusJakartaSans(
+          style: AppFonts.heading(
             fontSize: 28,
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : const Color(0xFF1E2022),
+            color: textPrimaryColor,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           label.toUpperCase(),
-          style: GoogleFonts.inter(
+          style: AppFonts.body(
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
-            color: const Color(0xFFD0BCFF),
+            color: textPrimaryColor.withValues(alpha: 0.6),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    required Color primaryColor,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: const Color(0xFF171F33).withValues(alpha: 0.6),
-          shape: BoxShape.circle,
-          border: Border.all(color: primaryColor.withValues(alpha: 0.3)),
-        ),
-        child: Icon(icon, color: primaryColor, size: 18),
-      ),
     );
   }
 
@@ -961,63 +326,66 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     required bool isRare,
     bool isLocked = false,
     required VoidCallback onTap,
+    required Color primaryColor,
   }) {
+    // Theme-aware để không bị chìm trên nền kem (trước đây chỉ hợp nền tối).
+    final isDark = widget.isDarkMode ?? false;
+    final ink = isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+    final sub = isDark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 140,
         margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: isLocked
-              ? Colors.transparent
-              : (isRare
-                  ? const Color(0x44FFB783).withValues(alpha: 0.1)
-                  : const Color(0xFF171F33).withValues(alpha: 0.4)),
+          color: surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isLocked
-                ? Colors.white12
-                : (isRare ? const Color(0xFFFFDCC5).withValues(alpha: 0.4) : Colors.white12),
-            style: isLocked ? BorderStyle.none : BorderStyle.solid,
-          ),
-          boxShadow: isRare
-              ? [
+          border: Border.all(color: ink, width: 2),
+          // Hard shadow brutalist cho card đã mở khoá.
+          boxShadow: isLocked
+              ? null
+              : [
                   BoxShadow(
-                    color: const Color(0xFFFFB783).withValues(alpha: 0.1),
-                    blurRadius: 10,
-                  )
-                ]
-              : null,
+                    color: ink,
+                    blurRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            isLocked
-                ? const Icon(Icons.lock, color: Colors.white30, size: 30)
-                : Text(emoji, style: const TextStyle(fontSize: 28)),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: isLocked ? Colors.white30 : const Color(0xFFFFB783),
+        child: Opacity(
+          opacity: isLocked ? 0.55 : 1.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              isLocked
+                  ? Icon(Icons.lock, color: sub, size: 30)
+                  : Text(emoji, style: const TextStyle(fontSize: 28)),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppFonts.heading(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: ink,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              tier,
-              style: GoogleFonts.inter(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: isLocked ? Colors.white24 : Colors.white54,
+              const SizedBox(height: 2),
+              Text(
+                tier,
+                style: AppFonts.body(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: sub,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1037,11 +405,11 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white, width: 2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 16,
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 0,
               offset: const Offset(0, 8),
             ),
           ],
@@ -1052,7 +420,24 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               borderRadius: BorderRadius.circular(8),
               child: AspectRatio(
                 aspectRatio: 1.0,
-                child: Image.network(imageUrl, fit: BoxFit.cover),
+                child: imageUrl.startsWith('assets/')
+                    ? Image.asset(imageUrl, fit: BoxFit.cover)
+                    : CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.broken_image),
+                      ),
               ),
             ),
             const SizedBox(height: 12),
@@ -1061,8 +446,8 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
               child: Text(
                 caption,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12.5,
+                style: AppFonts.heading(
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: textPrimary,
                 ),
@@ -1072,6 +457,18 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
         ),
       ),
     );
+  }
+
+  /// Đổi một hoạt động của squad thành câu mô tả theo ngôn ngữ đang chọn.
+  String _activityText(SquadActivity a) {
+    final key = switch (a.type) {
+      'MOMENT' => 'activity.posted_moment',
+      'EXPENSE' => 'activity.added_expense',
+      'ITINERARY' => 'activity.added_place',
+      'JOIN' => 'activity.joined_trip',
+      _ => 'activity.generic',
+    };
+    return key.tr(namedArgs: {'name': a.actorName, 'trip': a.tripName});
   }
 
   Widget _buildChaosFeedCard({
@@ -1084,213 +481,2183 @@ class _ProfileScreenState extends State<ProfileScreen> with TickerProviderStateM
     required Color textPrimaryColor,
     required List<String> friendAvatars,
     required int extraFriends,
+    required Color surfaceColor,
   }) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0x99171F33) : Colors.white.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: isDark ? surfaceColor : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+            width: 2,
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF0B1326) : Colors.black.withValues(alpha: 0.03),
-                  border: Border.all(color: accentColor, width: 1.5),
-                  boxShadow: isDark
-                      ? [
-                          BoxShadow(
-                            color: accentColor.withValues(alpha: 0.3),
-                            blurRadius: 10,
-                          )
-                        ]
-                      : null,
-                ),
-                child: Icon(icon, color: accentColor, size: 20),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark
+                    ? const Color(0xFF1A1712)
+                    : Colors.black.withValues(alpha: 0.03),
+                border: Border.all(color: accentColor, width: 1.5),
+                boxShadow: isDark
+                    ? [
+                        BoxShadow(
+                          color: accentColor.withValues(alpha: 0.3),
+                          blurRadius: 0,
+                        ),
+                      ]
+                    : null,
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.inter(fontSize: 14, color: textPrimaryColor),
-                        children: [
-                          const TextSpan(text: 'Booked a chaotic weekend trip to '),
-                          TextSpan(
-                            text: 'Taipei',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: primaryColor,
-                              shadows: isDark
-                                  ? [
-                                      Shadow(
-                                        color: primaryColor.withValues(alpha: 0.5),
-                                        blurRadius: 8,
-                                      )
-                                    ]
-                                  : null,
-                            ),
-                          ),
-                          const TextSpan(text: ' with 4 others.'),
-                        ],
-                      ),
+              child: Icon(icon, color: accentColor, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Ham nay nhan `description` nhung truoc day **bo qua no**
+                  // va tu ve cung chuoi "Booked a chaotic weekend trip to
+                  // Taipei with 4 others." — nen du goi voi du lieu that thi
+                  // man hinh van hien cau bia.
+                  Text(
+                    description,
+                    style: AppFonts.body(
+                      fontSize: 13.5,
+                      color: textPrimaryColor,
+                      height: 1.4,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      time.toUpperCase(),
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: primaryColor.withValues(alpha: 0.6),
-                        letterSpacing: 1.0,
-                      ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    time.toUpperCase(),
+                    style: AppFonts.body(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: primaryColor.withValues(alpha: 0.6),
+                      letterSpacing: 1.0,
                     ),
-                    const SizedBox(height: 12),
+                  ),
+                  const SizedBox(height: 12),
 
-                    // Overlapping Avatar Stack of Friends
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const FriendsListScreen()),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            height: 32,
-                            width: 32.0 * friendAvatars.length - 12.0 * (friendAvatars.length - 1),
-                            child: Stack(
-                              children: List.generate(friendAvatars.length, (idx) {
-                                return Positioned(
-                                  left: idx * 20.0,
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: const Color(0xFF171F33), width: 2.0),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(99),
-                                      child: Image.network(
-                                        friendAvatars[idx],
-                                        fit: BoxFit.cover,
-                                      ),
+                  // Overlapping Avatar Stack of Friends
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FriendsListScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 32,
+                          width:
+                              32.0 * friendAvatars.length -
+                              12.0 * (friendAvatars.length - 1),
+                          child: Stack(
+                            children: List.generate(friendAvatars.length, (
+                              idx,
+                            ) {
+                              return Positioned(
+                                left: idx * 20.0,
+                                child: Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xFF262019),
+                                      width: 2.0,
                                     ),
                                   ),
-                                );
-                              }),
-                            ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(99),
+                                    child:
+                                        friendAvatars[idx].startsWith('assets/')
+                                        ? Image.asset(
+                                            friendAvatars[idx],
+                                            fit: BoxFit.cover,
+                                          )
+                                        : CachedNetworkImage(
+                                            imageUrl: friendAvatars[idx],
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Container(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.1),
+                                                ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(
+                                                      Icons.person,
+                                                      size: 16,
+                                                    ),
+                                          ),
+                                  ),
+                                ),
+                              );
+                            }),
                           ),
-                          const SizedBox(width: 8),
+                        ),
+                        // Khong co ai thi khong hien huy hieu "+0".
+                        if (extraFriends > 0) const SizedBox(width: 8),
+                        if (extraFriends > 0)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF0B1326) : Colors.black.withValues(alpha: 0.05),
+                              color: isDark
+                                  ? const Color(0xFF1A1712)
+                                  : Colors.black.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xFF45DFA4).withValues(alpha: 0.3)),
+                              border: Border.all(
+                                color: const Color(0xFF1FA85C),
+                                width: 2,
+                              ),
                             ),
                             child: Text(
                               '+$extraFriends',
-                              style: GoogleFonts.inter(
+                              style: AppFonts.body(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF45DFA4),
+                                color: const Color(0xFF1FA85C),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildChaosSettlementCard({
-    required IconData icon,
-    required Color accentColor,
-    required String description,
-    required bool isDark,
-    required Color primaryColor,
-    required Color textPrimaryColor,
-  }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0x99171F33) : Colors.white.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF0B1326) : Colors.black.withValues(alpha: 0.03),
-                  border: Border.all(color: accentColor, width: 2.0),
-                  boxShadow: isDark
-                      ? [
-                          BoxShadow(
-                            color: accentColor.withValues(alpha: 0.3),
-                            blurRadius: 10,
-                          )
-                        ]
-                      : null,
+  @override
+  Widget build(BuildContext context) {
+    final profileState = ref.watch(profileDataProvider);
+    _userProfile = profileState.profile;
+    _userStats = profileState.stats;
+    _userBadges = profileState.badges;
+    _isLoading = profileState.isLoading;
+
+    final theme = Theme.of(context);
+    final isDark = widget.isDarkMode ?? (theme.brightness == Brightness.dark);
+    final currentAccent = ref.watch(accentProvider);
+    final currentMode = ref.watch(themeProvider);
+
+    // standard design tokens — driven by selected accent
+    final primaryColor = currentAccent.accent;
+    final secondaryColor = currentAccent.lightSoft;
+    final tertiaryColor = currentAccent.accent;
+    final backgroundColor = isDark
+        ? const Color(0xFF1A1712)
+        : currentAccent.lightBackground;
+    final surfaceColor = isDark
+        ? const Color(0xFF262019)
+        : const Color(0xFFFFFDF5);
+    final textPrimaryColor = isDark
+        ? const Color(0xFFFFFDF5)
+        : const Color(0xFF141210);
+    final textSecondaryColor = isDark
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
+
+    // dynamic variables
+    final name = _userProfile?['name'] ?? 'Traveller';
+    final username = _userProfile?['username'] ?? 'traveller';
+    // Cấp và XP lấy từ ví THẬT.
+    //
+    // Trước đây tính từ `travelScore` — một cột trong bảng users mà KHÔNG dòng
+    // nào trong backend cộng vào, nên luôn hiện "Lvl 1 · 0 / 10,000 XP" dù
+    // người dùng đã kiếm được bao nhiêu.
+    final wallet = ref.watch(xpWalletProvider).valueOrNull;
+    final level = wallet?.level ?? 1;
+    final xp = wallet?.earned ?? 0;
+    final xpPerLevel = wallet?.xpPerLevel ?? 500;
+
+    final rawAvatar = _userProfile?['avatarUrl'] as String?;
+    // Không có avatar thật → sinh avatar chữ-cái-đầu theo tên (màu brand),
+    // mỗi user 1 avatar riêng thay vì cùng 1 ảnh stock giả.
+    final avatarUrl = (rawAvatar != null && rawAvatar.isNotEmpty)
+        ? rawAvatar
+        : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}'
+              '&background=FFD84D&color=141210&bold=true&size=256';
+    final bio = _userProfile?['bio'] ?? 'profile.default_bio'.tr();
+
+    // Hiển thị số liệu THẬT (mặc định 0 khi backend chưa có), không dùng số giả.
+    final totalTrips = _userStats?['totalTrips']?.toString() ?? '0';
+    final distanceKm = (_userStats?['totalDistanceKm'] as num?)?.toInt() ?? 0;
+    final totalDistance = '$distanceKm km';
+    final repScore = _userStats?['squadReputationScore'] as num?;
+    final reputationScore = repScore == null || repScore < 30
+        ? 'New'
+        : (repScore >= 90 ? 'Legendary' : 'Reliable');
+    // Ô thứ ba từng lấy `chaosScore` rồi gắn nhãn "Countries" — nhãn không hề
+    // khớp dữ liệu (BUG-005): backend chưa bao giờ trả số quốc gia. Nay dùng
+    // `totalPlaces` thật (số điểm lịch trình có toạ độ) và đổi nhãn cho đúng.
+    final placesCount = (_userStats?['totalPlaces'] as num?)?.toInt() ?? 0;
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      body: Stack(
+        children: [
+          // 1. Ambient Background Layer (Mesh Gradients)
+          if (isDark) ...[
+            Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(0.8, -0.6),
+                  radius: 1.2,
+                  colors: [
+                    Color(0x3D8B5CF6), // Soft Stitch Purple mesh glow
+                    Colors.transparent,
+                  ],
                 ),
-                child: Icon(icon, color: accentColor, size: 24),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: RichText(
-                  text: TextSpan(
-                    style: GoogleFonts.inter(fontSize: 14, color: textPrimaryColor),
-                    children: [
-                      const TextSpan(text: 'Settled up '),
-                      TextSpan(
-                        text: '\$420',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: accentColor,
-                          shadows: isDark
-                              ? [
-                                  Shadow(
-                                    color: accentColor.withValues(alpha: 0.5),
-                                    blurRadius: 8,
-                                  )
-                                ]
-                              : null,
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(-0.8, 0.2),
+                  radius: 1.5,
+                  colors: [
+                    Color(0x2834D399), // Soft Stitch Mint mesh glow
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ] else ...[
+            Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(0.8, -0.6),
+                  radius: 1.2,
+                  colors: [
+                    Color(0x1CE0533C), // Soft Stitch Coral glow
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment(-0.8, 0.2),
+                  radius: 1.5,
+                  colors: [
+                    Color(0x0BEBA83A), // Soft Stitch Gold glow
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ],
+
+          // 2. Cinematic Karst Landscape Backdrop
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.08,
+              child: CachedNetworkImage(
+                imageUrl:
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const SizedBox(),
+                errorWidget: (context, url, error) => const SizedBox(),
+              ),
+            ),
+          ),
+
+          // Blur overlay
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
+            ),
+          ),
+
+          // 3. Scrollable Content
+          _isLoading
+              ? Center(child: CircularProgressIndicator(color: primaryColor))
+              : CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  slivers: [
+                    // Top Custom App Bar
+                    SliverAppBar(
+                      expandedHeight: 88.0,
+                      floating: false,
+                      pinned: true,
+                      backgroundColor: backgroundColor,
+                      elevation: 0,
+                      centerTitle: false,
+                      titleSpacing: 4,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Container(color: Colors.transparent),
+                      ),
+                      leading: Padding(
+                        padding: const EdgeInsets.only(left: 16.0, top: 12.0),
+                        child: Center(
+                          // Nếu màn được push (có thể pop) → nút Back để quay lại;
+                          // nếu là tab (không pop được) → avatar như cũ.
+                          child: Navigator.canPop(context)
+                              ? GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: surfaceColor,
+                                      border: Border.all(
+                                        color: textPrimaryColor,
+                                        width: 2.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.arrow_back_rounded,
+                                      color: textPrimaryColor,
+                                      size: 22,
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: textPrimaryColor,
+                                      width: 2.5,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(99),
+                                    child: CachedNetworkImage(
+                                      imageUrl: avatarUrl,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Container(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.person),
+                                    ),
+                                  ),
+                                ),
                         ),
                       ),
-                      const TextSpan(text: ' for the Tokyo bender.'),
+                      title: Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'trip.mate',
+                            style: AppFonts.heading(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 20,
+                              letterSpacing: -1.0,
+                              color: textPrimaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      actions: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              final newLocale =
+                                  context.locale.languageCode == 'vi'
+                                  ? const Locale('en')
+                                  : const Locale('vi');
+                              context.setLocale(newLocale);
+                            },
+                            child: Container(
+                              width: 34,
+                              height: 34,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: surfaceColor,
+                                border: Border.all(
+                                  color: textPrimaryColor,
+                                  width: 2.0,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  context.locale.languageCode.toUpperCase(),
+                                  style: AppFonts.body(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    color: textPrimaryColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        if (widget.onThemeToggleWithPosition != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12.0),
+                            child: GestureDetector(
+                              onTapDown: (details) {
+                                widget.onThemeToggleWithPosition!(
+                                  details.globalPosition,
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Icon(
+                                  isDark
+                                      ? Icons.light_mode_outlined
+                                      : Icons.dark_mode_outlined,
+                                  color: textPrimaryColor,
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 2.0, top: 12.0),
+                          child: Center(
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 34,
+                                minHeight: 34,
+                              ),
+                              icon: Icon(
+                                Icons.palette_outlined,
+                                color: textPrimaryColor,
+                                size: 22,
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ThemeMarketplaceScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            right: 12.0,
+                            top: 12.0,
+                          ),
+                          child: Center(
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 34,
+                                minHeight: 34,
+                              ),
+                              icon: Icon(
+                                Icons.add_reaction_outlined,
+                                color: textPrimaryColor,
+                                size: 22,
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        StickerInventoryScreen(
+                                          isDarkMode: isDark,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Main Canvas body list
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 16.0,
+                      ),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          const SizedBox(height: 24),
+
+                          // Gamer Profile Hero Section
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              // Glassmorphic main panel card
+                              Padding(
+                                padding: const EdgeInsets.only(top: 64.0),
+                                child: _buildGlassCard(
+                                  isDark: isDark,
+                                  primaryColor: primaryColor,
+                                  surfaceColor: surfaceColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 72.0,
+                                      left: 16,
+                                      right: 16,
+                                      bottom: 24,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        // User name glow text
+                                        Text(
+                                          name,
+                                          style: AppFonts.heading(
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w800,
+                                            color: textPrimaryColor,
+                                            shadows: isDark
+                                                ? [
+                                                    Shadow(
+                                                      color: Colors.white
+                                                          .withValues(
+                                                            alpha: 0.3,
+                                                          ),
+                                                      blurRadius: 0,
+                                                    ),
+                                                  ]
+                                                : null,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const SocialLinksManagerScreen(),
+                                                  ),
+                                                );
+                                              },
+                                              child: Icon(
+                                                Icons.link,
+                                                color: primaryColor.withValues(
+                                                  alpha: 0.6,
+                                                ),
+                                                size: 20,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              '@$username',
+                                              style: AppFonts.body(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: textSecondaryColor,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Chạm vào thanh cấp để mở ví XP
+                                        // (số dư + sổ cái từng lần cộng/trừ).
+                                        GestureDetector(
+                                          onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => XpWalletScreen(
+                                                isDarkMode: isDark,
+                                              ),
+                                            ),
+                                          ),
+                                          child: _buildLevelBox(
+                                            context: context,
+                                            isDark: isDark,
+                                            primaryColor: primaryColor,
+                                            secondaryColor: secondaryColor,
+                                            tertiaryColor: tertiaryColor,
+                                            textPrimaryColor: textPrimaryColor,
+                                            textSecondaryColor:
+                                                textSecondaryColor,
+                                            level: level,
+                                            xp: xp,
+                                            xpPerLevel: xpPerLevel,
+                                            reputation: reputationScore,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Badges row
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          alignment: WrapAlignment.center,
+                                          children: [
+                                            _buildActiveBadgeChip(
+                                              totalTrips == '0'
+                                                  ? 'profile.badge_rookie'.tr()
+                                                  : 'profile.badge_planner'
+                                                        .tr(),
+                                              const Color(0xFFFF9E80),
+                                              isDark,
+                                              surfaceColor,
+                                            ),
+                                            _buildActiveBadgeChip(
+                                              reputationScore == 'Legendary'
+                                                  ? 'profile.badge_mvp_payer'
+                                                        .tr()
+                                                  : (reputationScore ==
+                                                            'Reliable'
+                                                        ? 'profile.badge_reliable'
+                                                              .tr()
+                                                        : 'profile.badge_new_member'
+                                                              .tr()),
+                                              secondaryColor,
+                                              isDark,
+                                              surfaceColor,
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 24),
+                                        const Divider(
+                                          color: Colors.white12,
+                                          height: 1,
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Travel Atlas Button
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TravelAtlasScreen(
+                                                      isDarkMode: isDark,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                              horizontal: 16,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: GenZTokens.yellow,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              border: Border.all(
+                                                color: GenZTokens.ink,
+                                                width: 2,
+                                              ),
+                                              boxShadow: GenZTokens.hardShadow(
+                                                GenZTokens.ink,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  Icons.explore_outlined,
+                                                  color: GenZTokens.ink,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  'profile.open_travel_atlas'
+                                                      .tr(),
+                                                  style: AppFonts.heading(
+                                                    fontWeight: FontWeight.w900,
+                                                    fontSize: 12,
+                                                    color: GenZTokens.ink,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Core Stats Row
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ProfileStatisticsScreen(),
+                                              ),
+                                            );
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              _buildStatItem(
+                                                totalTrips,
+                                                'profile.stat_trips'.tr(),
+                                                isDark,
+                                                textPrimaryColor,
+                                                primaryColor,
+                                              ),
+                                              _buildStatItem(
+                                                totalDistance,
+                                                'profile.stat_distance'.tr(),
+                                                isDark,
+                                                textPrimaryColor,
+                                                primaryColor,
+                                              ),
+                                              _buildStatItem(
+                                                '$placesCount',
+                                                'profile.stat_places'.tr(),
+                                                isDark,
+                                                textPrimaryColor,
+                                                primaryColor,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              // Floating Avatar situated overlapping top edge
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      // Glowing avatar container
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PublicProfileScreen(
+                                                    userName: name,
+                                                    avatarUrl: avatarUrl,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+                                        child: AnimatedBuilder(
+                                          animation: _pulseController,
+                                          builder: (context, child) {
+                                            final glowVal =
+                                                20.0 +
+                                                (_pulseController.value * 20.0);
+                                            return Container(
+                                              width: 128,
+                                              height: 128,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: backgroundColor,
+                                                  width: 4.0,
+                                                ),
+                                                boxShadow: isDark
+                                                    ? [
+                                                        BoxShadow(
+                                                          color: primaryColor
+                                                              .withValues(
+                                                                alpha: 0.5,
+                                                              ),
+                                                          blurRadius: glowVal,
+                                                          spreadRadius: 2,
+                                                        ),
+                                                      ]
+                                                    : [
+                                                        BoxShadow(
+                                                          color: primaryColor
+                                                              .withValues(
+                                                                alpha: 0.15,
+                                                              ),
+                                                          blurRadius: 0,
+                                                          spreadRadius: 1,
+                                                        ),
+                                                      ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(99),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: avatarUrl,
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) =>
+                                                      Container(
+                                                        color: Colors.black
+                                                            .withValues(
+                                                              alpha: 0.1,
+                                                            ),
+                                                      ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          const Icon(
+                                                            Icons.person,
+                                                            size: 40,
+                                                          ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+
+                                      // Status Planning Seoul Capsule
+                                      Positioned(
+                                        bottom: -8,
+                                        left: -100,
+                                        right: -100,
+                                        child: Center(
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isDark
+                                                  ? const Color(0xFF1A1712)
+                                                  : Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              border: Border.all(
+                                                color: isDark
+                                                    ? Colors.white24
+                                                    : Colors.black12,
+                                                width: 1.0,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.2),
+                                                  blurRadius: 0,
+                                                ),
+                                              ],
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Text(
+                                                  '✈️',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Flexible(
+                                                  child: Text(
+                                                    bio,
+                                                    style: AppFonts.body(
+                                                      fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: textPrimaryColor,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              // Edit Button on Top Right (Mobile-friendly layout)
+                              Positioned(
+                                top: 80,
+                                right: 16,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const EditProfileScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(
+                                              0xFF262019,
+                                            ).withValues(alpha: 0.6)
+                                          : Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: primaryColor,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 36),
+
+                          // Achievements Showcase Section
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.workspace_premium,
+                                color: tertiaryColor,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'profile.achievements'.tr(),
+                                style: AppFonts.heading(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: textPrimaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Horizontal Scrolling Achievement Badges list
+                          SizedBox(
+                            height: 136,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              children: _userBadges.isEmpty
+                                  ? [
+                                      _buildBadgeCard(
+                                        emoji: '🔥',
+                                        title: 'profile.badge_chaos_king'.tr(),
+                                        tier: 'Gold Tier',
+                                        isRare: true,
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BadgeCollectionScreen(),
+                                          ),
+                                        ),
+                                        primaryColor: primaryColor,
+                                      ),
+                                      _buildBadgeCard(
+                                        emoji: '📸',
+                                        title: 'profile.badge_paparazzi'.tr(),
+                                        tier: 'Silver Tier',
+                                        isRare: false,
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BadgeCollectionScreen(),
+                                          ),
+                                        ),
+                                        primaryColor: primaryColor,
+                                      ),
+                                      _buildBadgeCard(
+                                        emoji: '🍜',
+                                        title: 'profile.badge_street_food'.tr(),
+                                        tier: 'Rare Tier',
+                                        isRare: true,
+                                        onTap: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BadgeCollectionScreen(),
+                                          ),
+                                        ),
+                                        primaryColor: primaryColor,
+                                      ),
+                                      _buildBadgeCard(
+                                        emoji: '🔒',
+                                        title: 'profile.badge_locked_name'.tr(),
+                                        tier: 'profile.badge_locked'.tr(),
+                                        isRare: false,
+                                        isLocked: true,
+                                        onTap: () => showGlobalSnack(
+                                          'common.feature_wip2'.tr(),
+                                        ),
+                                        primaryColor: primaryColor,
+                                      ),
+                                    ]
+                                  : _userBadges.map<Widget>((badge) {
+                                      final isLocked =
+                                          badge['unlockedAt'] == null;
+                                      final title =
+                                          badge['title'] ??
+                                          'profile.titles'.tr();
+
+                                      String emoji = '🏆';
+                                      String cleanTitle = title;
+
+                                      final RegExp emojiRegExp = RegExp(
+                                        r'[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]',
+                                        unicode: true,
+                                      );
+                                      final match = emojiRegExp.firstMatch(
+                                        title,
+                                      );
+                                      if (match != null) {
+                                        emoji = match.group(0) ?? '🏆';
+                                        cleanTitle = title
+                                            .replaceAll(emoji, '')
+                                            .trim();
+                                      }
+
+                                      return _buildBadgeCard(
+                                        emoji: emoji,
+                                        title: cleanTitle,
+                                        tier: isLocked
+                                            ? 'profile.badge_locked'.tr()
+                                            : (badge['id'] == 'b1'
+                                                  ? 'Gold Tier'
+                                                  : 'Silver Tier'),
+                                        isRare:
+                                            badge['id'] == 'b1' ||
+                                            badge['id'] == 'b3',
+                                        isLocked: isLocked,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const BadgeCollectionScreen(),
+                                            ),
+                                          );
+                                        },
+                                        primaryColor: primaryColor,
+                                      );
+                                    }).toList(),
+                            ),
+                          ),
+
+                          const SizedBox(height: 36),
+
+                          // Chaotic Memories (Tilted Polaroid Grid)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.auto_awesome,
+                                      color: primaryColor,
+                                      size: 24,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'profile.memories'.tr(),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppFonts.heading(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: textPrimaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SharedTripsHistoryScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'profile.view_gallery'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: secondaryColor,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Kỷ niệm THẬT của user.
+                          //
+                          // Trước đây đây là 2 tấm polaroid cứng ("BKK Night
+                          // out 🇹🇭", "Seoul Searching 🇰🇷") kèm ảnh asset —
+                          // ai mở profile cũng thấy mình từng đi Bangkok và
+                          // Seoul — và chạm vào chỉ hiện "đang hoàn thiện".
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final moments = ref
+                                  .watch(recentMomentsProvider)
+                                  .maybeWhen(
+                                    data: (m) => m.take(2).toList(),
+                                    orElse: () => const <RecentMoment>[],
+                                  );
+                              if (moments.isEmpty) {
+                                return Text(
+                                  'profile.memories_empty'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 13,
+                                    color: textSecondaryColor,
+                                  ),
+                                );
+                              }
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  for (var i = 0; i < moments.length; i++) ...[
+                                    if (i > 0) const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Transform.rotate(
+                                        angle: i.isEven ? -0.04 : 0.05,
+                                        child: _buildPolaroidCard(
+                                          imageUrl: moments[i].mediaUrl,
+                                          caption: moments[i].title,
+                                          onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => MemoryWallScreen(
+                                                isDarkMode: isDark,
+                                                onThemeToggle: () {},
+                                              ),
+                                            ),
+                                          ),
+                                          surfaceColor: surfaceColor,
+                                          textPrimary: textPrimaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
+                          ),
+
+                          const SizedBox(height: 36),
+
+                          // Recent Activity Quest Log (Recent Chaos Log)
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.history,
+                                color: secondaryColor,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'profile.recent_log'.tr(),
+                                style: AppFonts.heading(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: textPrimaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Hoạt động THẬT của squad.
+                          //
+                          // Trước đây đây là hai thẻ bịa cứng: "Booked a chaotic
+                          // weekend trip to Taipei with 4 others · 2 hours ago"
+                          // và "Settled up $420 for the Tokyo bender" — tiếng Anh,
+                          // số liệu tự nghĩ ra, giống hệt nhau với mọi tài khoản.
+                          // Nay đọc `squadActivitiesProvider`, cùng nguồn mà tab
+                          // Live đang dùng.
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final async = ref.watch(squadActivitiesProvider);
+                              return async.when(
+                                loading: () => const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                                error: (_, _) => Text(
+                                  'profile.recent_log_failed'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 13,
+                                    color: textSecondaryColor,
+                                  ),
+                                ),
+                                data: (items) {
+                                  if (items.isEmpty) {
+                                    return Text(
+                                      'profile.recent_log_empty'.tr(),
+                                      style: AppFonts.body(
+                                        fontSize: 13,
+                                        color: textSecondaryColor,
+                                      ),
+                                    );
+                                  }
+                                  return Column(
+                                    children: [
+                                      for (final a in items.take(3)) ...[
+                                        _buildChaosFeedCard(
+                                          icon: Icons.bolt_outlined,
+                                          accentColor: primaryColor,
+                                          description: _activityText(a),
+                                          time: a.tripName,
+                                          isDark: isDark,
+                                          primaryColor: primaryColor,
+                                          textPrimaryColor: textPrimaryColor,
+                                          friendAvatars: const [],
+                                          extraFriends: 0,
+                                          surfaceColor: surfaceColor,
+                                        ),
+                                        const SizedBox(height: 12),
+                                      ],
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+
+                          const SizedBox(height: 36),
+
+                          // ── Giao diện app ─────────────────────────────────
+                          _buildThemePicker(
+                            isDark: isDark,
+                            primaryColor: primaryColor,
+                            surfaceColor: surfaceColor,
+                            textPrimaryColor: textPrimaryColor,
+                            textSecondaryColor: textSecondaryColor,
+                            currentAccent: currentAccent,
+                            currentMode: currentMode,
+                          ),
+
+                          const SizedBox(height: 36),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.settings_outlined,
+                                color: primaryColor,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'general.settings'.tr(),
+                                style: AppFonts.heading(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: textPrimaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.language_rounded,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'profile.lang_label'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'profile.lang_sub'.tr(),
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Toggle option buttons
+                                  Row(
+                                    children: [
+                                      _buildLangOption(
+                                        label: 'Tiếng Việt',
+                                        isSelected:
+                                            context.locale.languageCode == 'vi',
+                                        onTap: () => context.setLocale(
+                                          const Locale('vi'),
+                                        ),
+                                        isDark: isDark,
+                                        primaryColor: primaryColor,
+                                        surfaceColor: surfaceColor,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _buildLangOption(
+                                        label: 'English',
+                                        isSelected:
+                                            context.locale.languageCode == 'en',
+                                        onTap: () => context.setLocale(
+                                          const Locale('en'),
+                                        ),
+                                        isDark: isDark,
+                                        primaryColor: primaryColor,
+                                        surfaceColor: surfaceColor,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+                          // Quyền riêng tư & Tài khoản (PDPD)
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    AccountPrivacyScreen(isDarkMode: isDark),
+                              ),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.shield_outlined,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'profile.privacy_and_account'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'profile.privacy_sub'.tr(),
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    size: 14,
+                                    color: textSecondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+                          // Sao lưu & Khôi phục Offline
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    BackupRestoreScreen(isDarkMode: isDark),
+                              ),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.backup_outlined,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'system_phases.backup_title'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'profile.backup_title'.tr(),
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    size: 14,
+                                    color: textSecondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+                          // MCP AI Connection Setting
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    TripmateMcpScreen(isDarkMode: isDark),
+                              ),
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: isDark ? surfaceColor : Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? const Color(0xFF1A1712)
+                                          : Colors.black.withValues(
+                                              alpha: 0.03,
+                                            ),
+                                      border: Border.all(
+                                        color: primaryColor,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.smart_toy_outlined,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'system_phases.mcp_title'.tr(),
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: textPrimaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'profile.mcp_title'.tr(),
+                                          style: AppFonts.body(
+                                            fontSize: 11,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    size: 14,
+                                    color: textSecondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 48),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemePicker({
+    required bool isDark,
+    required Color primaryColor,
+    required Color surfaceColor,
+    required Color textPrimaryColor,
+    required Color textSecondaryColor,
+    required AppAccent currentAccent,
+    required ThemeMode currentMode,
+  }) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final currentFont = ref.watch(fontProvider);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: ink, width: GenZTokens.borderWidth),
+          boxShadow: GenZTokens.hardShadow(ink),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? const Color(0xFF1A1712)
+                        : Colors.black.withValues(alpha: 0.03),
+                    border: Border.all(color: primaryColor, width: 1.5),
+                  ),
+                  child: Icon(
+                    Icons.palette_outlined,
+                    color: primaryColor,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'profile.app_interface'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'profile.theme_and_color'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 11,
+                          color: textSecondaryColor,
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                // Sáng / Tối toggle
+                Container(
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  padding: const EdgeInsets.all(2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildModeBtn(
+                        icon: Icons.light_mode_outlined,
+                        label: 'profile.theme_light_short'.tr(),
+                        selected: currentMode == ThemeMode.light,
+                        primaryColor: primaryColor,
+                        isDark: isDark,
+                        textPrimaryColor: textPrimaryColor,
+                        onTap: (position) {
+                          if (currentMode != ThemeMode.light) {
+                            if (widget.onThemeToggleWithPosition != null) {
+                              widget.onThemeToggleWithPosition!(position);
+                            } else {
+                              ref
+                                  .read(themeProvider.notifier)
+                                  .setThemeMode(ThemeMode.light);
+                            }
+                          }
+                        },
+                      ),
+                      _buildModeBtn(
+                        icon: Icons.dark_mode_outlined,
+                        label: 'profile.theme_dark_short'.tr(),
+                        selected: currentMode == ThemeMode.dark,
+                        primaryColor: primaryColor,
+                        isDark: isDark,
+                        textPrimaryColor: textPrimaryColor,
+                        onTap: (position) {
+                          if (currentMode != ThemeMode.dark) {
+                            if (widget.onThemeToggleWithPosition != null) {
+                              widget.onThemeToggleWithPosition!(position);
+                            } else {
+                              ref
+                                  .read(themeProvider.notifier)
+                                  .setThemeMode(ThemeMode.dark);
+                            }
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // Bảng màu: 4 accent miễn phí + 3 accent đổi bằng XP.
+            //
+            // Accent premium chưa mua thì KHÓA — bấm vào mở thẳng chợ thay vì
+            // đổi màu, để không ai dùng được thứ chưa trả XP.
+            Builder(
+              builder: (context) {
+                final ownedThemeIds = ref
+                    .watch(themeStoreProvider)
+                    .maybeWhen(
+                      data: (items) =>
+                          items.where((t) => t.owned).map((t) => t.id).toSet(),
+                      orElse: () => <String>{},
+                    );
+                bool unlocked(AppAccent a) =>
+                    !kPremiumAccents.contains(a) ||
+                    ownedThemeIds.contains(kAccentThemeId[a]);
+
+                return Row(
+                  children: AppAccent.values.map((accent) {
+                    final selected = accent == currentAccent;
+                    final isUnlocked = unlocked(accent);
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!isUnlocked) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ThemeMarketplaceScreen(isDarkMode: isDark),
+                              ),
+                            );
+                            return;
+                          }
+                          ref.read(accentProvider.notifier).setAccent(accent);
+                        },
+                        child: Column(
+                          children: [
+                            // Swatch cặp màu preset (accent trên, pair dưới),
+                            // viền ink + hard shadow khi được chọn
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              height: 44,
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: ink,
+                                  width: selected
+                                      ? GenZTokens.borderWidth
+                                      : 1.5,
+                                ),
+                                boxShadow: selected
+                                    ? [
+                                        BoxShadow(
+                                          color: ink,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Stack(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            color: accent.accent,
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Container(color: accent.pair),
+                                        ),
+                                      ],
+                                    ),
+                                    if (selected)
+                                      Center(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: GenZTokens.paper,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: GenZTokens.ink,
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.check_rounded,
+                                            color: GenZTokens.ink,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              accent.label,
+                              style: AppFonts.body(
+                                fontSize: 10,
+                                fontWeight: selected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                                color: selected
+                                    ? primaryColor
+                                    : textSecondaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+
+            const SizedBox(height: 16),
+            Divider(color: ink, thickness: 1.5),
+            const SizedBox(height: 16),
+
+            Text(
+              'profile.font_style'.tr(),
+              style: AppFonts.heading(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: textPrimaryColor,
               ),
-            ],
+            ),
+            const SizedBox(height: 12),
+
+            Column(
+              children: AppFontOption.values.map((fontOpt) {
+                final isSelected = fontOpt == currentFont;
+
+                final textColor = isSelected
+                    ? currentAccent.onAccent
+                    : textPrimaryColor;
+                final textSecColor = isSelected
+                    ? currentAccent.onAccent.withValues(alpha: 0.7)
+                    : textSecondaryColor;
+
+                // Preview styles for each font option
+                TextStyle previewHeading;
+                TextStyle previewBody;
+
+                switch (fontOpt) {
+                  case AppFontOption.playful:
+                    previewHeading = GoogleFonts.baloo2(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.nunito(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.curly:
+                    previewHeading = GoogleFonts.grandstander(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.comfortaa(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.handwriting:
+                    previewHeading = GoogleFonts.sriracha(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.patrickHand(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.modern:
+                    previewHeading = GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.dmSans(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.brutalist:
+                    previewHeading = GoogleFonts.spaceGrotesk(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.outfit(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                  case AppFontOption.clean:
+                    previewHeading = GoogleFonts.quicksand(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textColor,
+                    );
+                    previewBody = GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: textSecColor,
+                    );
+                    break;
+                }
+
+                return GestureDetector(
+                  onTap: () =>
+                      ref.read(fontProvider.notifier).setFontOption(fontOpt),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? primaryColor
+                          : isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isSelected
+                            ? primaryColor
+                            : ink.withValues(alpha: 0.2),
+                        width: isSelected ? 2.5 : 1.5,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: ink,
+                                offset: const Offset(0, 3),
+                                blurRadius: 0,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(fontOpt.label, style: previewHeading),
+                              const SizedBox(height: 2),
+                              Text(fontOpt.description, style: previewBody),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        if (isSelected)
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: ink,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check_rounded,
+                              color: primaryColor,
+                              size: 14,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeBtn({
+    required IconData icon,
+    required String label,
+    required bool selected,
+    required Color primaryColor,
+    required bool isDark,
+    required Color textPrimaryColor,
+    required ValueChanged<Offset> onTap,
+  }) {
+    Offset tapPosition = Offset.zero;
+    return GestureDetector(
+      onTapDown: (details) {
+        tapPosition = details.globalPosition;
+      },
+      onTap: () => onTap(tapPosition),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected
+              ? (isDark ? Colors.white.withValues(alpha: 0.15) : Colors.white)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(999),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 0,
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: selected
+                  ? primaryColor
+                  : textPrimaryColor.withValues(alpha: 0.5),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: AppFonts.body(
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                color: selected
+                    ? primaryColor
+                    : textPrimaryColor.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLangOption({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required bool isDark,
+    required Color primaryColor,
+    required Color surfaceColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? primaryColor.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? primaryColor
+                : (isDark ? Colors.white24 : Colors.black12),
+            width: 1.2,
+          ),
+        ),
+        child: Text(
+          label,
+          style: AppFonts.body(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: isSelected
+                ? primaryColor
+                : (isDark ? Colors.white70 : Colors.black54),
           ),
         ),
       ),

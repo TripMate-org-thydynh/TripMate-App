@@ -1,26 +1,42 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class AiReceiptScannerScreen extends StatefulWidget {
-  const AiReceiptScannerScreen({super.key});
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/app_messenger.dart';
+import '../../../../core/format/money.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
+import '../../data/expenses_repository.dart';
+
+class AiReceiptScannerScreen extends ConsumerStatefulWidget {
+  final String tripId;
+  final bool isDarkMode;
+
+  const AiReceiptScannerScreen({
+    super.key,
+    required this.tripId,
+    required this.isDarkMode,
+  });
 
   @override
-  State<AiReceiptScannerScreen> createState() => _AiReceiptScannerScreenState();
+  ConsumerState<AiReceiptScannerScreen> createState() =>
+      _AiReceiptScannerScreenState();
 }
 
-class _AiReceiptScannerScreenState extends State<AiReceiptScannerScreen>
+class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _scannerController;
   late Animation<double> _scannerAnimation;
 
-  bool _isScanning = true;
-  bool _showItems = false;
+  bool _isSelecting = true;
+  bool _isScanning = false;
+  String? _selectedReceiptName;
+  String? _merchantName;
 
-  final List<Map<String, dynamic>> _detectedItems = [
-    {'name': 'Lẩu gà lá é lớn', 'price': 350000.0, 'checked': true},
-    {'name': 'Nước ngọt lon', 'price': 60000.0, 'checked': true},
-    {'name': 'Mì gói thêm', 'price': 20000.0, 'checked': false},
-    {'name': 'Khăn lạnh', 'price': 10000.0, 'checked': false},
-  ];
+  final List<Map<String, dynamic>> _detectedItems = [];
 
   @override
   void initState() {
@@ -28,21 +44,11 @@ class _AiReceiptScannerScreenState extends State<AiReceiptScannerScreen>
     _scannerController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
+    );
 
     _scannerAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _scannerController, curve: Curves.easeInOut),
     );
-
-    // Mock completing scan in 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _isScanning = false;
-          _showItems = true;
-        });
-      }
-    });
   }
 
   @override
@@ -51,294 +57,532 @@ class _AiReceiptScannerScreenState extends State<AiReceiptScannerScreen>
     super.dispose();
   }
 
+  void _startScanning(String receiptName, String mockUrl) async {
+    setState(() {
+      _isSelecting = false;
+      _isScanning = true;
+      _selectedReceiptName = receiptName;
+    });
+
+    _scannerController.repeat(reverse: true);
+
+    try {
+      // Gọi BE NestJS thật endpoint: /trips/:tripId/expenses/ocr
+      final result = await ref
+          .read(expensesRepositoryProvider)
+          .scanReceipt(widget.tripId, mockUrl);
+
+      // Cho chạy hiệu ứng quét tối thiểu 1.5 giây cho "vibe" công nghệ.
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      if (mounted) {
+        setState(() {
+          _isScanning = false;
+          _merchantName = result['merchant'] ?? 'expense.receipt'.tr();
+          _detectedItems.clear();
+          final items = result['items'] as List?;
+          if (items != null) {
+            for (var item in items) {
+              _detectedItems.add({
+                'name': item['name'] ?? 'expense.dish'.tr(),
+                'price': (item['price'] as num?)?.toDouble() ?? 0.0,
+                'checked': item['selected'] ?? true,
+              });
+            }
+          } else {
+            // Fallback nếu không có list items
+            _detectedItems.add({
+              'name': 'expense.receipt_total'.tr(),
+              'price': (result['total'] as num?)?.toDouble() ?? 0.0,
+              'checked': true,
+            });
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        // Hiện đúng lý do BE trả về (AI hết quota, ảnh mờ...) thay vì một câu
+        // chung chung khiến người dùng cứ bấm lại mãi.
+        showGlobalSnack(
+          e is ApiException
+              ? e.message
+              : 'expense.scan_failed'.tr(),
+          isError: true,
+        );
+        setState(() {
+          _isSelecting = true;
+          _isScanning = false;
+        });
+      }
+    } finally {
+      _scannerController.stop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final primaryColor = Colors.purple;
+    final primaryColor = const Color(0xFFF5822B);
+    final secondaryColor = const Color(0xFF1FA85C);
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final textPrimary = widget.isDarkMode
+        ? Colors.white
+        : const Color(0xFF262019);
+    final textSecondary = widget.isDarkMode
+        ? const Color(0xFFB8AE9C)
+        : const Color(0xFF4A453E);
+    final cardBg = widget.isDarkMode ? const Color(0xFF262019) : Colors.white;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
-          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back_ios_new, color: textPrimary),
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Quét Hóa Đơn AI 📸',
-          style: TextStyle(
-            color: isDark ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
+          'expense.scan_title'.tr(),
+          style: AppFonts.heading(
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            color: textPrimary,
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          // SCANNING VIEWPORT
-          if (_isScanning)
-            Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.purpleAccent, width: 2),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Mock receipt background
-                        Opacity(
-                          opacity: 0.4,
-                          child: Center(
-                            child: Icon(
-                              Icons.receipt_long,
-                              size: 150,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                        ),
-
-                        // Animated scanning line
-                        AnimatedBuilder(
-                          animation: _scannerAnimation,
-                          builder: (context, child) {
-                            return Positioned(
-                              top: _scannerAnimation.value * 280 + 40,
-                              left: 20,
-                              right: 20,
-                              child: Container(
-                                height: 4,
-                                decoration: BoxDecoration(
-                                  color: Colors.purpleAccent,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.purpleAccent.withValues(alpha: 0.8),
-                                      blurRadius: 8,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        // Status loading text
-                        Positioned(
-                          bottom: 30,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.6),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Row(
-                              children: [
-                                SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
-                                  ),
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  'AI đang quét các món...',
-                                  style: TextStyle(
-                                    color: Colors.purpleAccent,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+      body: SafeArea(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: _isSelecting
+              ? _buildReceiptSelector(textPrimary, textSecondary, cardBg)
+              : _isScanning
+              ? _buildScanningViewport(
+                  primaryColor,
+                  secondaryColor,
+                  textPrimary,
+                  textSecondary,
+                )
+              : _buildItemsBreakdown(
+                  primaryColor,
+                  secondaryColor,
+                  cardBg,
+                  textPrimary,
+                  textSecondary,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
+        ),
+      ),
+    );
+  }
+
+  // Màn hình chọn hóa đơn mẫu để quét
+  Widget _buildReceiptSelector(
+    Color textPrimary,
+    Color textSecondary,
+    Color cardBg,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      key: const ValueKey('selector_view'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFFDF5),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: GenZTokens.ink, width: 2),
+              boxShadow: GenZTokens.hardShadow(GenZTokens.ink),
+            ),
+            child: Row(
+              children: [
+                const Text('⚡', style: TextStyle(fontSize: 24)),
+                const SizedBox(width: 12),
+                Expanded(
                   child: Text(
-                    'Đặt hóa đơn ngay ngắn trong khung hình để AI đọc chính xác giá trị và tên món ăn nhé cưng!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+                    'expense.scan_sub'.tr(),
+                    style: AppFonts.body(
+                      color: GenZTokens.ink,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
                     ),
                   ),
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'expense.scan_pick'.tr(),
+            style: AppFonts.heading(
+              fontWeight: FontWeight.w900,
+              fontSize: 13,
+              color: textPrimary,
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Trước đây chỗ này là 2 hoá đơn demo cứng (ảnh món ăn trên Unsplash),
+          // nên "quét hoá đơn" không bao giờ đọc được hoá đơn của người dùng.
+          _sourceTile(
+            icon: Icons.photo_camera_outlined,
+            title: 'expense.scan_camera'.tr(),
+            subtitle: 'expense.scan_camera_sub'.tr(),
+            source: ImageSource.camera,
+            cardBg: cardBg,
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+          ),
+          const SizedBox(height: 16),
+          _sourceTile(
+            icon: Icons.photo_library_outlined,
+            title: 'expense.scan_gallery'.tr(),
+            subtitle: 'expense.scan_gallery_sub'.tr(),
+            source: ImageSource.gallery,
+            cardBg: cardBg,
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
 
-          // DETECTED ITEMS SHEET
-          if (_showItems)
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(24),
+  /// Đọc ảnh người dùng chọn rồi gửi base64 lên `/expenses/ocr`.
+  ///
+  /// BE nhận cả URL lẫn chuỗi base64 (`data:image/...`), nên không cần upload
+  /// file trung gian.
+  Future<void> _pickAndScan(ImageSource source) async {
+    final XFile? file = await ImagePicker().pickImage(
+      source: source,
+      // Nén bớt: ảnh gốc 12MP làm payload phình to mà OCR không cần.
+      maxWidth: 1600,
+      imageQuality: 85,
+    );
+    if (file == null || !mounted) return;
+    final bytes = await file.readAsBytes();
+    if (!mounted) return;
+    _startScanning(
+      'expense.receipt_just_taken'.tr(),
+      'data:image/jpeg;base64,${base64Encode(bytes)}',
+    );
+  }
+
+  Widget _sourceTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required ImageSource source,
+    required Color cardBg,
+    required Color textPrimary,
+    required Color textSecondary,
+  }) {
+    return GestureDetector(
+      onTap: () => _pickAndScan(source),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: textPrimary, width: 2),
+          boxShadow: GenZTokens.hardShadow(textPrimary),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 28, color: textPrimary),
+            const SizedBox(width: 16),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Success banner
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                  Text(
+                    title,
+                    style: AppFonts.heading(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      color: textPrimary,
                     ),
-                    child: Row(
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppFonts.body(fontSize: 12.5, color: textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Hiệu ứng quét hóa đơn
+  Widget _buildScanningViewport(
+    Color primaryColor,
+    Color secondaryColor,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
+    return Center(
+      key: const ValueKey('scanning_view'),
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 200,
+              height: 280,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: primaryColor, width: 3),
+                boxShadow: GenZTokens.hardShadow(textPrimary),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Opacity(
+                    opacity: 0.3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.check_circle, color: Colors.green),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'AI đã quét xong! Tỉ lệ chính xác 96%. Vui lòng tích chọn những món cưng đã xơi để tính tiền.',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
+                        Icon(
+                          Icons.receipt_long,
+                          size: 80,
+                          // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+                          // vi accent mint la vang thi chu trang chim han.
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _selectedReceiptName ?? 'SCANNING...',
+                          style: AppFonts.mono(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  // Receipt details
-                  Text(
-                    'Lẩu gà lá é Tao Ngộ 🍜',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                  Text(
-                    'Ngày quét: Hôm nay • Kyoto-Dalat Trip',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Item breakdown checkboxes
-                  Card(
-                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: _detectedItems.length,
-                            itemBuilder: (context, index) {
-                              final item = _detectedItems[index];
-                              return CheckboxListTile(
-                                activeColor: primaryColor,
-                                controlAffinity: ListTileControlAffinity.leading,
-                                title: Text(
-                                  item['name'] as String,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : Colors.black87,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  '${(item['price'] as double).toStringAsFixed(0)} đ',
-                                  style: const TextStyle(
-                                    color: Colors.purpleAccent,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                value: item['checked'] as bool,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    _detectedItems[index]['checked'] = value ?? false;
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                          const Divider(height: 32),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Phần cưng cần trả:',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.grey[300] : Colors.grey[700],
-                                ),
-                              ),
-                              Text(
-                                '${_calculateTotalSelected().toStringAsFixed(0)} đ',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.purpleAccent,
-                                ),
+                  AnimatedBuilder(
+                    animation: _scannerAnimation,
+                    builder: (context, child) {
+                      return Positioned(
+                        top: _scannerAnimation.value * 230 + 20,
+                        left: 10,
+                        right: 10,
+                        child: Container(
+                          height: 3,
+                          decoration: BoxDecoration(
+                            color: primaryColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: primaryColor.withValues(alpha: 0.8),
+                                blurRadius: 4,
+                                spreadRadius: 2,
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Split button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Đã lưu hóa đơn quét bằng AI! Phần của cưng là ${_calculateTotalSelected().toStringAsFixed(0)} đ',
-                            ),
-                            backgroundColor: Colors.purple,
-                          ),
-                        );
-                        Navigator.of(context).pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
                         ),
-                        elevation: 3,
-                      ),
-                      child: const Text(
-                        'Xác nhận phần chia của tôi',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 36),
+            Text(
+              'expense.scan_working'.tr(),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                color: textPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'expense.scan_working_sub'.tr(),
+              textAlign: TextAlign.center,
+              style: AppFonts.body(color: textSecondary, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Kết quả bóc tách hóa đơn
+  Widget _buildItemsBreakdown(
+    Color primaryColor,
+    Color secondaryColor,
+    Color cardBg,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
+    return SingleChildScrollView(
+      key: const ValueKey('breakdown_view'),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.green, width: 2),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.green, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'expense.scan_done'.tr(),
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            _merchantName ?? 'expense.receipt_info'.tr(),
+            style: AppFonts.heading(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: textPrimary,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Container(
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: textPrimary, width: 2),
+              boxShadow: GenZTokens.hardShadow(textPrimary),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _detectedItems.length,
+                  itemBuilder: (context, index) {
+                    final item = _detectedItems[index];
+                    final isChecked = item['checked'] as bool;
+                    return CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      activeColor: primaryColor,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      title: Text(
+                        item['name'] as String,
+                        style: AppFonts.heading(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: textPrimary,
+                        ),
+                      ),
+                      subtitle: Text(
+                        formatMoney(item['price'] as double, locale: context.locale.languageCode),
+                        style: AppFonts.body(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      value: isChecked,
+                      onChanged: (bool? val) {
+                        setState(() {
+                          _detectedItems[index]['checked'] = val ?? false;
+                        });
+                      },
+                    );
+                  },
+                ),
+                const Divider(height: 24, color: Colors.black12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'expense.your_share'.tr(),
+                      style: AppFonts.heading(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: textSecondary,
+                      ),
+                    ),
+                    Text(
+                      formatMoney(_calculateTotalSelected(), locale: context.locale.languageCode),
+                      style: AppFonts.body(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          GestureDetector(
+            onTap: () {
+              final total = _calculateTotalSelected();
+              Navigator.pop(context, {
+                'amount': total,
+                'description': 'expense.scan_description'.tr(
+                  namedArgs: {
+                    'merchant': _merchantName ?? 'common.unnamed'.tr(),
+                  },
+                ),
+              });
+            },
+            child: Container(
+              width: double.infinity,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: primaryColor,
+                border: Border.all(color: textPrimary, width: 2),
+                boxShadow: GenZTokens.hardShadow(textPrimary),
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'expense.apply_amount'.tr(),
+                      style: AppFonts.heading(
+                        // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
+                        // vi accent mint la vang thi chu trang chim han.
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

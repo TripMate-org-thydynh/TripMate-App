@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class PublicProfileScreen extends StatelessWidget {
@@ -16,15 +17,23 @@ class PublicProfileScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? const Color(0xFF141210)
+          : const Color(0xFFFDF6D3),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Xem Profile Bạn Bè 👀', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          'profile.public_title'.tr(),
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -32,64 +41,35 @@ class PublicProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             // Center Profile info
-            CircleAvatar(
-              radius: 54,
-              backgroundImage: NetworkImage(avatarUrl),
-            ),
+            CircleAvatar(radius: 54, backgroundImage: NetworkImage(avatarUrl)),
             const SizedBox(height: 16),
             Text(
               userName,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               '@tripmate_buddy',
-              style: TextStyle(color: Colors.grey, fontSize: 13),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 13,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
+
+            // Chua co endpoint public profile: app chi biet ten va avatar cua
+            // nguoi nay (lay tu danh sach ban dong hanh). Truoc day cho nay in
+            // cung mot doan bio va "12 chuyen / 3.2k XP / 98% uy tin" cho BAT
+            // KY ai mo ra — so lieu bia ve mot nguoi that.
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                'Là cạ cứng du lịch thích chinh phục các cung đường dài, cực kỳ uy tín và thân thiện! 🏕️',
+                'profile.public_no_stats'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isDark ? Colors.grey[400] : Colors.grey[600],
                   fontSize: 13,
                   height: 1.4,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // Statistics row
-            Card(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              child: const Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        Text('12', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Chuyến đi', style: TextStyle(color: Colors.grey, fontSize: 11)),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text('3.2k', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Điểm XP', style: TextStyle(color: Colors.grey, fontSize: 11)),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text('98%', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Độ uy tín', style: TextStyle(color: Colors.grey, fontSize: 11)),
-                      ],
-                    ),
-                  ],
                 ),
               ),
             ),
