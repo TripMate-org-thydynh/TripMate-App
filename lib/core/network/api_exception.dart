@@ -15,7 +15,22 @@ class ApiException implements Exception {
   final String message;
   final String? code;
 
-  ApiException(this.message, {this.statusCode, this.code});
+  /// Phần dữ liệu máy đọc được mà backend gửi kèm.
+  ///
+  /// Ví dụ khi vượt hạn mức: `{quota: 'activeTrips', limit: 2, plan: 'FREE'}`.
+  /// Không giữ lại thì paywall chỉ nói được câu chung chung, thay vì nêu đúng
+  /// giới hạn người dùng vừa chạm.
+  final Map<String, dynamic> details;
+
+  ApiException(
+    this.message, {
+    this.statusCode,
+    this.code,
+    this.details = const {},
+  });
+
+  /// Vượt hạn mức của gói hiện tại — chỗ duy nhất nên mở paywall.
+  bool get isQuotaExceeded => code == 'QUOTA_EXCEEDED';
 
   bool get isNetwork => statusCode == null;
   bool get isUnauthorized => statusCode == 401;
@@ -37,6 +52,7 @@ class ApiException implements Exception {
     // BE trả message trong body (envelope lỗi hoặc Nest exception)
     String message = 'errors.unknown_error'.tr();
     String? code;
+    Map<String, dynamic> details = const {};
     if (data is Map) {
       final m = data['message'] ?? data['error'];
       if (m is String) {
@@ -45,6 +61,7 @@ class ApiException implements Exception {
         message = m.first.toString();
       }
       if (data['code'] is String) code = data['code'] as String;
+      details = data.cast<String, dynamic>();
     }
 
     if (status == 401) message = 'errors.session_expired'.tr();
@@ -64,7 +81,12 @@ class ApiException implements Exception {
       message = 'errors.request_invalid'.tr();
     }
 
-    return ApiException(message, statusCode: status, code: code);
+    return ApiException(
+      message,
+      statusCode: status,
+      code: code,
+      details: details,
+    );
   }
 
   @override

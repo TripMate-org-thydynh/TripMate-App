@@ -1013,6 +1013,20 @@
     "transfer_note": "TripMate expense split",
     "transfer_to": "Transfer to"
   },
+  "paywall": {
+    "cta": "Upgrade now",
+    "headline_ai": "Free covers {n} AI runs a month",
+    "headline_generic": "Unlock all of TripMate",
+    "headline_members": "Free covers {n} people per trip",
+    "headline_moments": "Free covers {n} photos per trip",
+    "headline_trips": "Free covers {n} trips at a time",
+    "later": "Maybe later",
+    "plan_plus": "TripMate+",
+    "plan_plus_year": "Or {price} a year, 36% cheaper",
+    "plan_squad": "Squad Pass",
+    "plan_squad_each": "5 people share it · {price} each",
+    "sub": "Splitting bills, posting photos and chat stay free forever. Upgrade only to travel more."
+  },
   "photo": {
     "coords": "Coordinates: {lat}, {lng}",
     "map_title": "Photo map 🗺️📸",

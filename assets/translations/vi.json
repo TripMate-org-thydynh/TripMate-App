@@ -1013,6 +1013,20 @@
     "transfer_note": "TripMate chia tiền",
     "transfer_to": "Chuyển cho"
   },
+  "paywall": {
+    "cta": "Nâng cấp ngay",
+    "headline_ai": "Bản miễn phí cho {n} lượt AI mỗi tháng",
+    "headline_generic": "Mở khoá TripMate đầy đủ",
+    "headline_members": "Bản miễn phí cho {n} người mỗi chuyến",
+    "headline_moments": "Bản miễn phí cho {n} ảnh mỗi chuyến",
+    "headline_trips": "Bản miễn phí cho {n} chuyến cùng lúc",
+    "later": "Để sau",
+    "plan_plus": "TripMate+",
+    "plan_plus_year": "Trả theo năm {price}, rẻ hơn 36%",
+    "plan_squad": "Squad Pass",
+    "plan_squad_each": "5 người dùng chung · {price} mỗi người",
+    "sub": "Chia tiền, đăng ảnh và chat vẫn miễn phí mãi mãi. Nâng cấp chỉ để đi nhiều hơn."
+  },
   "photo": {
     "coords": "Toạ độ: {lat}, {lng}",
     "map_title": "Bản đồ ảnh 🗺️📸",

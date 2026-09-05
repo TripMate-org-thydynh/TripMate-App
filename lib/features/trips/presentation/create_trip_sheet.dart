@@ -1,3 +1,5 @@
+import '../../premium/data/entitlement_provider.dart';
+import '../../premium/presentation/paywall_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -168,6 +170,20 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         if (mounted) Navigator.pop(context);
       }
     } on ApiException catch (e) {
+      // Vượt hạn mức thì mở paywall thay vì báo lỗi.
+      //
+      // Đây là lúc duy nhất người dùng thực sự cần nghe về gói trả phí: họ vừa
+      // muốn làm một việc cụ thể và bị chặn. Backend gửi kèm `quota` và `limit`
+      // nên paywall nêu được đúng con số vừa chạm, thay vì quảng cáo chung.
+      if (e.isQuotaExceeded && mounted) {
+        setState(() => _busy = false);
+        await PaywallSheet.show(
+          context,
+          quota: quotaFromName(e.details['quota'] as String?),
+          limit: (e.details['limit'] as num?)?.toInt(),
+        );
+        return;
+      }
       _snack(e.message, error: true);
       setState(() => _busy = false);
     } catch (e) {
