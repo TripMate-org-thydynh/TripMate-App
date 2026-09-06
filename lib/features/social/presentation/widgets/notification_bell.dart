@@ -55,7 +55,7 @@ class NotificationBell extends ConsumerWidget {
                   child: Text(
                     unread > 9 ? '9+' : '$unread',
                     style: AppFonts.heading(
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),

@@ -502,7 +502,7 @@ class _NotchedNavBar extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: AppFonts.heading(
-              fontSize: 10,
+              fontSize: 11.5,
               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               color: selected ? ink : ink.withValues(alpha: 0.55),
             ),

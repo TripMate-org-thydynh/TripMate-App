@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/app_messenger.dart';
 import '../../../../core/services/media_uploader.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../premium/presentation/paywall_sheet.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../../core/widgets/state_views.dart';
@@ -64,6 +65,8 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy.remove(m.id));
+      if (await PaywallSheet.maybeShow(context, e)) return;
+      if (!mounted) return;
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,
@@ -91,6 +94,8 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy.remove(m.id));
+      if (await PaywallSheet.maybeShow(context, e)) return;
+      if (!mounted) return;
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,

@@ -45,15 +45,15 @@ class OfflineBanner extends ConsumerWidget {
                   style: AppFonts.heading(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
-                    fontSize: 12,
-                    letterSpacing: 0.5,
+                    fontSize: 13,
+                    letterSpacing: 0.3,
                   ),
                 ),
                 Text(
                   'errors.offline_cache'.tr(),
                   style: AppFonts.body(
                     color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 10,
+                    fontSize: 12,
                   ),
                 ),
               ],

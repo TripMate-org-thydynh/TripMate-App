@@ -326,7 +326,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                           child: Text(
                             'games.trip_wrapped'.tr(),
                             style: AppFonts.heading(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 2,
                               color: const Color(0xFFC9B8FF),
@@ -533,7 +533,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                       child: Text(
                         award['label'] as String,
                         style: AppFonts.heading(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: accentColor,
                           letterSpacing: 0.5,

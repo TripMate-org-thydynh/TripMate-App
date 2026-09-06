@@ -432,7 +432,7 @@ class TripTodosScreen extends ConsumerWidget {
                         child: Text(
                           pm.$1,
                           style: GoogleFonts.spaceMono(
-                            fontSize: 10,
+                            fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: pm.$2,
                           ),
@@ -440,12 +440,12 @@ class TripTodosScreen extends ConsumerWidget {
                       ),
                       if (it.dueDate != null) ...[
                         const SizedBox(width: 8),
-                        Icon(Icons.event, size: 12, color: _textSec),
+                        Icon(Icons.event, size: 14, color: _textSec),
                         const SizedBox(width: 3),
                         Text(
                           '${it.dueDate!.toLocal().day}/${it.dueDate!.toLocal().month}',
                           style: GoogleFonts.spaceMono(
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: _textSec,
                           ),

@@ -1064,7 +1064,6 @@
     "cinematic_themes": "Cinematic themes",
     "code_copied": "📋 Copied code \"{}\" to clipboard!",
     "copy_code": "Copy code ⚡",
-    "creative_product": "Creative product",
     "creator_revenue": "Creator earnings 🎨",
     "creator_share": "Creator share (70%)",
     "downloading_invoice": "Downloading invoice {id} as PDF...",
@@ -1087,7 +1086,6 @@
     "paid_with": "Paid with: {method}",
     "payment_failed": "Payment did not go through. Please try again later.",
     "payment_method": "Payment method 💳",
-    "payout_ok": "💸 Withdrawal requested! Your payout is pending approval — the bank will take it from here.",
     "perk_early": "Early access to advanced mini-games",
     "perk_fullres": "Upload media at original resolution",
     "perk_recap": "Unlimited AI recap exports",
@@ -1115,7 +1113,30 @@
     "upgrade_tx": "Upgrade transaction",
     "your_code": "YOUR REFERRAL CODE 🎒",
     "your_perks": "Your perks 📊",
-    "your_squad": "Your squad"
+    "your_squad": "Your squad",
+    "choose_plan": "Choose a plan",
+    "choose_term": "Choose a term",
+    "choose_wallet": "Choose a wallet",
+    "plan_PLUS": "TripMate Plus",
+    "plan_SQUAD": "TripMate Squad",
+    "seats_single": "For one person",
+    "seats_included": "Shared with {n} people",
+    "per_month": "month",
+    "term_months": "{n} months",
+    "term_save": "Save {p}%",
+    "pay_now": "Pay {amount}",
+    "cannot_open_wallet": "Could not open the wallet app. Install it and try again.",
+    "payment_pending": "The wallet has not reported back yet. If you paid, your plan will switch on shortly.",
+    "charge_notice": "You will be charged {amount} for {months} months. No auto-renewal — buy again when it expires.",
+    "active_until": "Active until {}",
+    "no_autorenew_notice": "This plan is a one-off payment for one term — nothing is charged automatically. Buy again when it expires, or don’t: everything you saved stays.",
+    "via_seat_notice": "You are on a seat someone else paid for. It ends when their plan does.",
+    "promo_label": "Promo code",
+    "promo_hint": "Enter a code if you have one",
+    "promo_apply": "Apply",
+    "promo_remove": "Remove code",
+    "promo_saved": "Saves {amount}",
+    "promo_invalid": "This code does not work for this plan"
   },
   "privacy": {
     "body_1": "TripMate only collects what the app needs to run (profile, ",
@@ -1286,7 +1307,10 @@
     "friend_code_hint": "Friend code (e.g. SELF)",
     "list_title": "People you referred ({n})",
     "share_intro": "Send this link to a close friend. When they install the app and join your squad, you unlock an Elite milestone.",
-    "steps": "1. Share your personal referral link with three friends.\\n\\n2. They install the app and connect an account.\\n\\n3. Unlock TripMate Elite for life, completely free."
+    "steps": "1. Share your personal referral link with three friends.\\n\\n2. They install the app and connect an account.\\n\\n3. Unlock TripMate Elite for life, completely free.",
+    "joined_on": "Joined {when}",
+    "already_referred": "You already used {name}’s code. One per person.",
+    "reward_note": "Each friend who joins with your link = +{xp} XP for you."
   },
   "reservations": {
     "add": "Add reservation",
@@ -1636,5 +1660,32 @@
     "theme_store": "Theme store 🎨",
     "to_next": "{} XP to next level",
     "wallet": "XP wallet"
+  },
+  "trial": {
+    "days_left": "{n} days left in trial",
+    "hours_left": "{n} hours left in trial",
+    "minutes_left": "{n} minutes left in trial",
+    "ends_on": "Ends {when}",
+    "badge": "Free trial in progress",
+    "cta": "Try {n} days free",
+    "terms_no_charge": "Free for {n} days — no card, no automatic charge. After {n} days you go back to Free; keep going only if you choose to buy, at {price}/month. Stop any time under Subscription.",
+    "terms_autocharge": "Free for {n} days, then {price}/month automatically. Cancel any time before the {n} days are up under Subscription and you pay nothing.",
+    "start_failed": "Could not start the trial. Please try again later.",
+    "cancel_cta": "Stop trial",
+    "cancel_title": "Stop the trial?",
+    "cancel_body": "You go back to Free right away and cannot restart the trial. Everything you saved stays.",
+    "cancel_keep": "Keep going",
+    "cancel_confirm": "Stop",
+    "settings_notice": "You are on a free trial — nothing has been charged and nothing will be charged automatically. It reverts to Free when it ends."
+  },
+  "creator": {
+    "title": "Creator marketplace",
+    "not_open_title": "Not open yet",
+    "not_open_body": "TripMate has no way for you to publish your own themes or stickers yet, so there is no revenue to share. When it opens, you will track it here.",
+    "my_store_title": "Your XP store",
+    "my_store_body": "Themes and stickers are bought with XP, not money. Here is what you own.",
+    "stickers_owned": "Stickers owned",
+    "themes_owned": "Themes unlocked",
+    "xp_spent": "XP spent in the store"
   }
 }

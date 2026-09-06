@@ -428,7 +428,7 @@ class _AiBudgetAssistantScreenState
                     child: Text(
                       'ai.judging_you'.tr(),
                       style: AppFonts.body(
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFFFFDAD6),
                       ),
@@ -523,9 +523,9 @@ class _AiBudgetAssistantScreenState
                   Text(
                     'ai.matey_says'.tr(),
                     style: AppFonts.body(
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      letterSpacing: 1.5,
+                      letterSpacing: 1.2,
                       color: secondary,
                     ),
                   ),
@@ -598,9 +598,9 @@ class _AiBudgetAssistantScreenState
                       child: Text(
                         'ai.critical_insight'.tr(),
                         style: AppFonts.body(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
+                          letterSpacing: 1.0,
                           color: errorColor,
                         ),
                       ),
@@ -668,9 +668,9 @@ class _AiBudgetAssistantScreenState
                   child: Text(
                     'ai.vibe_check'.tr(),
                     style: AppFonts.body(
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.0,
                       color: textMuted,
                     ),
                   ),
@@ -710,7 +710,7 @@ class _AiBudgetAssistantScreenState
                                     ? 'ai.budget_used'.tr()
                                     : 'ai.budget_unset'.tr(),
                                 style: AppFonts.body(
-                                  fontSize: 10,
+                                  fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF68FCBF),
                                 ),
@@ -730,7 +730,7 @@ class _AiBudgetAssistantScreenState
                       children: [
                         Text(
                           'ai.remaining'.tr(),
-                          style: AppFonts.body(fontSize: 10, color: textMuted),
+                          style: AppFonts.body(fontSize: 12, color: textMuted),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -747,7 +747,7 @@ class _AiBudgetAssistantScreenState
                       children: [
                         Text(
                           'ai.budget_pace'.tr(),
-                          style: AppFonts.body(fontSize: 10, color: textMuted),
+                          style: AppFonts.body(fontSize: 12, color: textMuted),
                         ),
                         const SizedBox(height: 2),
                         Row(

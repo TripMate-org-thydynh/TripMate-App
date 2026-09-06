@@ -466,7 +466,7 @@ class TripItineraryScreen extends ConsumerWidget {
                   'itinerary.minutes'.tr(
                     namedArgs: {'n': '${it.durationMinutes}'},
                   ),
-                  style: AppFonts.body(fontSize: 11, color: _textSec),
+                  style: AppFonts.body(fontSize: 12, color: _textSec),
                 ),
               ],
             ),

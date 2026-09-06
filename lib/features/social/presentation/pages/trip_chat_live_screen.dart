@@ -317,7 +317,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
             const SizedBox(width: 5),
             Text(
               _connected ? 'live' : 'common.connecting'.tr(),
-              style: AppFonts.body(fontSize: 11, color: _textSec),
+              style: AppFonts.body(fontSize: 12, color: _textSec),
             ),
           ],
         ),
@@ -415,7 +415,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               child: Text(
                 m.senderName,
                 style: AppFonts.body(
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: _textSec,
                 ),

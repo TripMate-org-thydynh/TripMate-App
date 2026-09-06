@@ -1,11 +1,14 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
+
+import '../../../core/api_service.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../profile/data/profile_provider.dart';
 import '../../../core/app_messenger.dart';
 
 /// Man gioi thieu ban be.
@@ -31,16 +34,41 @@ class ReferralCampaignScreen extends ConsumerStatefulWidget {
 
 class _ReferralCampaignScreenState
     extends ConsumerState<ReferralCampaignScreen> {
-  /// Link moi dua tren username that; chua co username thi de trong.
-  String get _inviteLink {
-    final u =
-        ref.watch(profileDataProvider).profile?['username'] as String? ?? '';
-    return u.isEmpty
-        ? 'https://tripmate.app/invite'
-        : 'https://tripmate.app/invite/$u';
+  /// Link mời mang MÃ GIỚI THIỆU thật do server sinh.
+  ///
+  /// Trước đây link ghép từ username. Ai đổi tên là mọi link đã chia sẻ thành
+  /// vô hiệu, username lộ ra ngoài, và **server không biết mã đó tồn tại** nên
+  /// người bấm vào không được tính cho ai cả.
+  String get _inviteLink => _code == null
+      ? 'https://tripmate.app/invite'
+      : 'https://tripmate.app/invite/$_code';
+
+  String? _code;
+
+  /// Số bạn đã mời được, đọc từ server.
+  ///
+  /// Trước đây con số này tăng lên mỗi lần người dùng **bấm sao chép link** —
+  /// một thanh tiến độ tự chạy, không liên quan gì tới việc có ai tham gia hay
+  /// không.
+  int _spotsFilled = 0;
+
+  int _rewardPerInvite = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
   }
 
-  int _spotsFilled = 0;
+  Future<void> _load() async {
+    final res = await ApiService.get('/premium/referrals/me');
+    if (!mounted || res is! Map) return;
+    setState(() {
+      _code = res['code'] as String?;
+      _spotsFilled = (res['count'] as num?)?.toInt() ?? 0;
+      _rewardPerInvite = (res['rewardPerInvite'] as num?)?.toInt() ?? 0;
+    });
+  }
 
   void _shareLink() {
     showModalBottomSheet(
@@ -118,12 +146,11 @@ class _ReferralCampaignScreenState
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
-                      setState(() {
-                        // Simulate one slot filling up upon share simulation
-                        if (_spotsFilled < 3) {
-                          _spotsFilled++;
-                        }
-                      });
+                      // KHÔNG tăng bộ đếm ở đây: sao chép link không phải là
+                      // có người tham gia. Con số chỉ đổi khi server xác nhận
+                      // một lần giới thiệu thành công, nên tải lại thay vì
+                      // đoán.
+                      unawaited(_load());
                     },
                   ),
                 ],
@@ -295,16 +322,16 @@ class _ReferralCampaignScreenState
                         Icon(
                           Icons.workspace_premium,
                           color: tertiaryColor,
-                          size: 12,
+                          size: 14,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           'premium.exclusive'.tr(),
                           style: AppFonts.heading(
-                            fontSize: 9,
+                            fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: tertiaryColor,
-                            letterSpacing: 1.2,
+                            letterSpacing: 1.0,
                           ),
                         ),
                       ],
@@ -354,7 +381,7 @@ class _ReferralCampaignScreenState
                               ),
                             ),
                             Text(
-                              '$_spotsFilled / 3',
+                              '$_spotsFilled',
                               style: AppFonts.body(
                                 fontWeight: FontWeight.w900,
                                 fontSize: 18,
@@ -365,9 +392,15 @@ class _ReferralCampaignScreenState
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '${3 - _spotsFilled} spots remaining for lifetime Elite access.',
+                          // Nói đúng phần thưởng CÓ THẬT: mỗi lượt mời thành
+                          // công được cộng XP. "3 suất Elite trọn đời" là một
+                          // lời hứa không có gì đứng sau — không có chỗ nào
+                          // trong hệ thống cấp quyền vĩnh viễn cho ai cả.
+                          'referral.reward_note'.tr(
+                            namedArgs: {'xp': '$_rewardPerInvite'},
+                          ),
                           style: AppFonts.body(
-                            fontSize: 11,
+                            fontSize: 12,
                             color: textSecondary,
                           ),
                         ),

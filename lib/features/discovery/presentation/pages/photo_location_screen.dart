@@ -295,7 +295,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
           child: Text(
             isExif ? 'photo.src_gps'.tr() : 'photo.src_ai'.tr(),
             style: AppFonts.mono(
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
               color: GenZTokens.ink,
             ),

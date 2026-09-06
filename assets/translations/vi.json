@@ -1064,7 +1064,6 @@
     "cinematic_themes": "Giao diện điện ảnh",
     "code_copied": "📋 Đã sao chép mã \"{}\" vào khay nhớ tạm!",
     "copy_code": "Sao Chép Mã ⚡",
-    "creative_product": "Sản phẩm sáng tạo",
     "creator_revenue": "Thu Nhập Sáng Tạo 🎨",
     "creator_share": "Phần Chia Sáng Tạo (70%)",
     "downloading_invoice": "Đang tải hoá đơn {id} dạng PDF...",
@@ -1087,7 +1086,6 @@
     "paid_with": "Nguồn thanh toán: {method}",
     "payment_failed": "Thanh toán không thành công. Thử lại sau nhé.",
     "payment_method": "Phương Thức Thanh Toán 💳",
-    "payout_ok": "💸 Yêu cầu rút tiền thành công! Payout đã được gửi duyệt! Chờ ngân hàng xử lý nhé!",
     "perk_early": "Quyền truy cập sớm các mini-game nâng cao 🎭",
     "perk_fullres": "Tải lên tệp phương tiện độ phân giải gốc 📂",
     "perk_recap": "Không giới hạn AI Recap Exports 🎬",
@@ -1115,7 +1113,30 @@
     "upgrade_tx": "Giao dịch nâng cấp",
     "your_code": "MÃ GIỚI THIỆU CỦA CƯNG 🎒",
     "your_perks": "Đặc Quyền Của Cưng 📊",
-    "your_squad": "Nhóm của bạn"
+    "your_squad": "Nhóm của bạn",
+    "choose_plan": "Chọn gói",
+    "choose_term": "Chọn kỳ hạn",
+    "choose_wallet": "Chọn ví",
+    "plan_PLUS": "TripMate Plus",
+    "plan_SQUAD": "TripMate Squad",
+    "seats_single": "Dùng cho một người",
+    "seats_included": "Dùng chung cho {n} người",
+    "per_month": "tháng",
+    "term_months": "{n} tháng",
+    "term_save": "Tiết kiệm {p}%",
+    "pay_now": "Trả {amount}",
+    "cannot_open_wallet": "Không mở được ứng dụng ví. Cưng cài ví rồi thử lại nhé!",
+    "payment_pending": "Ví chưa báo về. Nếu đã trả tiền, gói sẽ tự bật trong ít phút nữa.",
+    "charge_notice": "Sẽ thu {amount} cho {months} tháng. Không tự động gia hạn — hết hạn thì cưng chủ động mua tiếp.",
+    "active_until": "Dùng được tới {}",
+    "no_autorenew_notice": "Gói này trả một lần cho một kỳ, không tự động trừ tiền. Hết hạn thì cưng chủ động mua tiếp — không mua cũng không sao, mọi thứ đã lưu vẫn còn nguyên.",
+    "via_seat_notice": "Cưng đang dùng ghế do người khác trả. Ghế hết hiệu lực khi gói của họ hết hạn.",
+    "promo_label": "Mã giảm giá",
+    "promo_hint": "Nhập mã nếu có",
+    "promo_apply": "Áp dụng",
+    "promo_remove": "Bỏ mã",
+    "promo_saved": "Giảm {amount}",
+    "promo_invalid": "Mã không dùng được cho gói này"
   },
   "privacy": {
     "body_1": "TripMate chỉ thu thập dữ liệu cần thiết để chạy ứng dụng (hồ sơ, ",
@@ -1286,7 +1307,10 @@
     "friend_code_hint": "Mã của bạn bè (ví dụ: SELF)",
     "list_title": "Danh sách đã giới thiệu ({n})",
     "share_intro": "Gửi link này cho bạn thân của cưng. Khi họ tải ứng dụng và tham gia squad, cưng sẽ nhận ngay 1 dấu mốc Elite!",
-    "steps": "1. Chia sẻ link giới thiệu độc quyền của cưng cho 3 đứa bạn.\\n\\n2. Họ tải app và kết nối tài khoản.\\n\\n3. Mở khóa TRỌN ĐỜI gói TripMate Elite cực VIP, miễn phí hoàn toàn!"
+    "steps": "1. Chia sẻ link giới thiệu độc quyền của cưng cho 3 đứa bạn.\\n\\n2. Họ tải app và kết nối tài khoản.\\n\\n3. Mở khóa TRỌN ĐỜI gói TripMate Elite cực VIP, miễn phí hoàn toàn!",
+    "joined_on": "Tham gia {when}",
+    "already_referred": "Cưng đã nhập mã của {name} rồi. Mỗi người chỉ nhập được một lần thôi nha!",
+    "reward_note": "Mỗi bạn tham gia bằng link của cưng = +{xp} XP cho cưng."
   },
   "reservations": {
     "add": "Thêm đặt chỗ",
@@ -1636,5 +1660,32 @@
     "theme_store": "Chợ giao diện 🎨",
     "to_next": "còn {} XP nữa lên cấp",
     "wallet": "Ví XP"
+  },
+  "trial": {
+    "days_left": "Còn {n} ngày dùng thử",
+    "hours_left": "Còn {n} giờ dùng thử",
+    "minutes_left": "Còn {n} phút dùng thử",
+    "ends_on": "Kết thúc {when}",
+    "badge": "Đang dùng thử miễn phí",
+    "cta": "Dùng thử {n} ngày miễn phí",
+    "terms_no_charge": "Miễn phí {n} ngày, không cần thẻ và không tự trừ tiền. Hết {n} ngày tự về bản Free — muốn dùng tiếp thì cưng chủ động mua, {price}/tháng. Dừng bất cứ lúc nào trong mục Gói cước.",
+    "terms_autocharge": "Miễn phí {n} ngày, sau đó tự động thu {price}/tháng. Huỷ bất cứ lúc nào trước khi hết {n} ngày trong mục Gói cước thì không mất đồng nào.",
+    "start_failed": "Chưa bật được bản dùng thử. Cưng thử lại sau nhé!",
+    "cancel_cta": "Dừng dùng thử",
+    "cancel_title": "Dừng dùng thử?",
+    "cancel_body": "Cưng sẽ về bản Free ngay bây giờ và không bật lại bản dùng thử được nữa. Mọi thứ đã lưu vẫn còn nguyên.",
+    "cancel_keep": "Dùng tiếp",
+    "cancel_confirm": "Dừng",
+    "settings_notice": "Cưng đang dùng thử miễn phí, chưa mất đồng nào và sẽ không bị tự trừ tiền. Hết hạn là tự về bản Free."
+  },
+  "creator": {
+    "title": "Chợ nhà sáng tạo",
+    "not_open_title": "Chợ chưa mở",
+    "not_open_body": "TripMate chưa có chỗ để cưng đăng bán theme hay sticker do mình làm, nên cũng chưa có doanh thu nào để chia. Khi nào mở, chỗ này sẽ là nơi theo dõi.",
+    "my_store_title": "Cửa hàng XP của cưng",
+    "my_store_body": "Theme và sticker hiện đổi bằng XP, không phải bằng tiền. Đây là những gì cưng đã sắm.",
+    "stickers_owned": "Sticker đang có",
+    "themes_owned": "Theme đã mở",
+    "xp_spent": "XP đã tiêu trong cửa hàng"
   }
 }

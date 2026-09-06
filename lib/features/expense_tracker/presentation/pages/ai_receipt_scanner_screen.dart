@@ -362,7 +362,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                           _selectedReceiptName ?? 'SCANNING...',
                           style: AppFonts.mono(
                             color: Colors.white,
-                            fontSize: 10,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

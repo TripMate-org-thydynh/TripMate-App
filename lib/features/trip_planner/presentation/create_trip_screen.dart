@@ -1193,9 +1193,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                       Text(
                         'trips.or_share_link'.tr(),
                         style: AppFonts.body(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 1.5,
+                          letterSpacing: 1.2,
                           color: textSecondary.withValues(alpha: 0.5),
                         ),
                       ),

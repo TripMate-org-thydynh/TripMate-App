@@ -401,7 +401,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 positive
                     ? 'expense.is_owed'.tr()
                     : 'expense.owes'.tr(),
-                style: AppFonts.body(fontSize: 11, color: _textSec),
+                style: AppFonts.body(fontSize: 12, color: _textSec),
               ),
               Text(
                 formatMoney(b.balance.abs(), locale: context.locale.languageCode),
