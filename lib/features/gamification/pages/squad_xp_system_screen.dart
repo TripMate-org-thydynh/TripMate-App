@@ -103,7 +103,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                         Text(
                           'games.level_short'.tr(),
                           style: AppFonts.mono(
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: Colors.white.withValues(alpha: 0.85),
                           ),

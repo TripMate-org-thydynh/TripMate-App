@@ -205,7 +205,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                                 Text(
                                   tr('errors.no_signal'),
                                   style: AppFonts.heading(
-                                    fontSize: 9,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.redAccent,
                                   ),
@@ -276,7 +276,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               Text(
                                 tr('errors.offline'),
                                 style: AppFonts.body(
-                                  fontSize: 10.5,
+                                  fontSize: 12,
                                   color: textSecondary,
                                 ),
                               ),
@@ -317,7 +317,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               Text(
                                 'Saved locally',
                                 style: AppFonts.body(
-                                  fontSize: 10.5,
+                                  fontSize: 12,
                                   color: textSecondary,
                                 ),
                               ),

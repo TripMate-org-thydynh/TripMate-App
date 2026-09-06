@@ -123,7 +123,7 @@ class ChallengeListScreen extends ConsumerWidget {
                 child: Text(
                   'games.reward_xp'.tr(namedArgs: {'xp': '${c.rewardXP}'}),
                   style: AppFonts.mono(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: GenZTokens.ink,
                   ),

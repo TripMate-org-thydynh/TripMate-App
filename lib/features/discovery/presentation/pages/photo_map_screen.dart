@@ -209,7 +209,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                       'dd/MM/yyyy HH:mm',
                                     ).format(_selectedMoment!.createdAt),
                                     style: AppFonts.mono(
-                                      fontSize: 10,
+                                      fontSize: 12,
                                       color: widget.isDarkMode
                                           ? GenZTokens.inkSoftDark
                                           : GenZTokens.inkSoft,
@@ -287,7 +287,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppFonts.mono(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                   color: widget.isDarkMode
                                       ? GenZTokens.inkSoftDark

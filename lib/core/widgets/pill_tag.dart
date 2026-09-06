@@ -58,9 +58,9 @@ class PillTag extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppFonts.mono(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
+                letterSpacing: 0.4,
                 color: textIconColor,
                 shadows: bg == GenZTokens.yellow
                     ? GenZTokens.textOutline(

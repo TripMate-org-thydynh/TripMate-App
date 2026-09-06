@@ -221,11 +221,11 @@ class TripMateTheme {
         selectedItemColor: ink,
         unselectedItemColor: inkSoft,
         selectedLabelStyle: AppFonts.heading(
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.w700,
         ),
         unselectedLabelStyle: AppFonts.body(
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
         showSelectedLabels: true,

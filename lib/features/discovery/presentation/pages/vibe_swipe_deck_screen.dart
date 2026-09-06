@@ -415,7 +415,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                     Text(
                       '${place.match}% SQUAD MATCH',
                       style: AppFonts.mono(
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF141210),
                       ),
@@ -476,7 +476,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                     child: Text(
                       place.tags.toUpperCase(),
                       style: AppFonts.mono(
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF141210),
                       ),

@@ -12,6 +12,7 @@ import '../../../../core/services/media_uploader.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../profile/data/xp_repository.dart';
+import '../../../premium/presentation/paywall_sheet.dart';
 import '../../application/moments_providers.dart';
 import '../../data/moments_repository.dart';
 
@@ -104,6 +105,10 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
+      // Chuyến đã đầy 100 khoảnh khắc: mở paywall nói đúng con số vừa chạm,
+      // thay vì một lỗi 403 trần trụi.
+      if (await PaywallSheet.maybeShow(context, e)) return;
+      if (!mounted) return;
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,

@@ -159,7 +159,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                     child: SelectableText(
                       jsonString,
                       style: GoogleFonts.spaceMono(
-                        fontSize: 11,
+                        fontSize: 12,
                         color: const Color(0xFF56B6C2), // Teal color
                       ),
                     ),

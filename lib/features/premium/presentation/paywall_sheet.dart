@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/format/money.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/network/api_exception.dart';
 import '../data/entitlement_provider.dart';
+import '../data/trial_provider.dart';
 
 /// Paywall hiện khi người dùng vừa chạm đúng một giới hạn.
 ///
@@ -38,6 +40,24 @@ class PaywallSheet extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => PaywallSheet(quota: quota, limit: limit),
     );
+  }
+
+  /// Mở paywall nếu `error` là lỗi vượt hạn mức; ngược lại trả `false` để nơi
+  /// gọi xử lý như lỗi thường.
+  ///
+  /// Gom vào một chỗ vì chốt chặn hạn mức nằm rải ở bốn luồng khác nhau (tạo
+  /// chuyến, vào chuyến, đăng moment, gọi AI). Chép tay bốn lần thì sớm muộn
+  /// cũng có luồng quên, và người dùng ở luồng đó nhận một lỗi 403 trần trụi
+  /// thay vì lời mời nâng cấp.
+  static Future<bool> maybeShow(BuildContext context, Object error) async {
+    if (error is! ApiException || !error.isQuotaExceeded) return false;
+    if (!context.mounted) return false;
+    await show(
+      context,
+      quota: quotaFromName(error.details['quota'] as String?),
+      limit: (error.details['limit'] as num?)?.toInt(),
+    );
+    return true;
   }
 
   /// Dòng tiêu đề gắn với đúng thứ vừa bị chặn.
@@ -139,6 +159,14 @@ class PaywallSheet extends ConsumerWidget {
             ),
 
             const SizedBox(height: 18),
+
+            // Mời dùng thử — chỉ hiện với người chưa từng dùng.
+            //
+            // Đặt TRƯỚC nút mua và nói đủ điều khoản ngay tại đây: bao nhiêu
+            // ngày, hết hạn thì sao, sau đó giá bao nhiêu, dừng ở đâu. Người
+            // dùng phải biết trọn vẹn thứ mình đang bấm vào trước khi bấm.
+            _TrialOffer(ink: ink, accent: accent, locale: locale),
+
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -247,6 +275,94 @@ class _PlanCard extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.w900,
               color: ink,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Khối mời dùng thử 3 ngày.
+///
+/// Chỉ hiện khi người dùng thật sự còn dùng thử được — mời rồi báo "bạn đã
+/// dùng rồi" là một lần bấm vô ích và một lần thất vọng.
+class _TrialOffer extends ConsumerWidget {
+  final Color ink;
+  final Color accent;
+  final String locale;
+
+  const _TrialOffer({
+    required this.ink,
+    required this.accent,
+    required this.locale,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final status = ref.watch(trialStatusProvider).valueOrNull;
+    if (status == null || !status.canStart) return const SizedBox.shrink();
+
+    final t = status.terms;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            height: 52,
+            child: OutlinedButton(
+              onPressed: () async {
+                try {
+                  await ref.read(trialActionsProvider).start();
+                  if (context.mounted) Navigator.of(context).pop(true);
+                } catch (_) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('trial.start_failed'.tr())),
+                  );
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: ink,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+                ),
+              ),
+              child: Text(
+                'trial.cta'.tr(namedArgs: {'n': '${t.days}'}),
+                style: AppFonts.heading(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: ink,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Điều khoản đặt ngay dưới nút, cùng cỡ chữ đọc được — không phải
+          // một dòng xám nhạt ở cuối màn.
+          Text(
+            t.autoCharge
+                ? 'trial.terms_autocharge'.tr(
+                    namedArgs: {
+                      'n': '${t.days}',
+                      'price': formatMoney(t.priceAfter, locale: locale),
+                    },
+                  )
+                : 'trial.terms_no_charge'.tr(
+                    namedArgs: {
+                      'n': '${t.days}',
+                      'price': formatMoney(t.priceAfter, locale: locale),
+                    },
+                  ),
+            textAlign: TextAlign.center,
+            style: AppFonts.body(
+              fontSize: 12,
+              height: 1.4,
+              color: ink.withValues(alpha: 0.75),
             ),
           ),
         ],

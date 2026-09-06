@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../premium/presentation/paywall_sheet.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../application/trips_providers.dart';
@@ -104,6 +105,13 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
         ),
       );
     } on ApiException catch (e) {
+      if (!mounted) return;
+      // Chuyến đã đầy thành viên: đó là hạn mức của gói, không phải mã mời sai.
+      // Nói nhầm thành "mã không hợp lệ" khiến người dùng thử lại vô ích.
+      if (await PaywallSheet.maybeShow(context, e)) {
+        if (mounted) setState(() => _submitting = false);
+        return;
+      }
       if (!mounted) return;
       setState(() => _error = _friendly(e));
     } catch (_) {

@@ -618,7 +618,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                         ? entry.authorName[0].toUpperCase()
                                         : '?',
                                     style: TextStyle(
-                                      fontSize: 10,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                       color: moodColor,
                                     ),

@@ -223,7 +223,7 @@ class TripReservationsScreen extends ConsumerWidget {
                       meta.$1,
                       style: AppFonts.body(
                         fontWeight: FontWeight.w700,
-                        fontSize: 11,
+                        fontSize: 12,
                         color: meta.$3,
                       ),
                     ),
