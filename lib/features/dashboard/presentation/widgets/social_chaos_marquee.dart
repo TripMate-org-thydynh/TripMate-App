@@ -102,13 +102,13 @@ class _MarqueeStripState extends State<_MarqueeStrip> {
                     item.toUpperCase(),
                     style: AppFonts.mono(
                       fontWeight: FontWeight.w700,
-                      fontSize: 11,
+                      fontSize: 12,
                       letterSpacing: 0.5,
                       color: GenZTokens.ink,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Icon(Icons.star, size: 10, color: GenZTokens.ink),
+                  const Icon(Icons.star, size: 12, color: GenZTokens.ink),
                 ],
               ),
             );

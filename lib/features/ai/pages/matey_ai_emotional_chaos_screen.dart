@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/network/api_exception.dart';
+import '../../premium/presentation/paywall_sheet.dart';
 import '../../gamification/data/games_repository.dart';
 import '../data/ai_repository.dart';
 
@@ -96,6 +97,10 @@ class _MateyAiEmotionalChaosScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isThinking = false);
+      // Hết lượt AI trong tháng → paywall nêu đúng con số, không phải một lỗi
+      // 403 mà người dùng không hiểu vì sao.
+      if (await PaywallSheet.maybeShow(context, e)) return;
+      if (!mounted) return;
       // Nói rõ AI đang bận thay vì im lặng hoặc bịa câu trả lời.
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
@@ -378,7 +383,7 @@ class _MateyAiEmotionalChaosScreenState
               child: Text(
                 (msg['time'] as String).toUpperCase(),
                 style: AppFonts.mono(
-                  fontSize: 9,
+                  fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: textSecondary,
                 ),
@@ -439,7 +444,7 @@ class _MateyAiEmotionalChaosScreenState
             Text(
               (msg['time'] as String).toUpperCase(),
               style: AppFonts.mono(
-                fontSize: 9,
+                fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: _isDarkMode
                     ? GenZTokens.inkSoftDark

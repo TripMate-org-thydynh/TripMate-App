@@ -534,7 +534,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                 child: Text(
                                   'Day $day',
                                   style: AppFonts.heading(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: isSelected
                                         ? primaryColor
@@ -595,7 +595,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                 child: Text(
                                   time,
                                   style: AppFonts.heading(
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: isSelected
                                         ? secondaryColor
@@ -628,12 +628,12 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: TextField(
                         controller: _notesController,
-                        style: AppFonts.body(fontSize: 11, color: textColor),
+                        style: AppFonts.body(fontSize: 13, color: textColor),
                         decoration: InputDecoration(
                           hintText: 'itinerary.notes_hint'.tr(),
                           hintStyle: const TextStyle(
                             color: Colors.grey,
-                            fontSize: 11,
+                            fontSize: 13,
                           ),
                           border: InputBorder.none,
                           isDense: true,

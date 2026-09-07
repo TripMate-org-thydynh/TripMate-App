@@ -209,7 +209,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: AppFonts.heading(
-                                            fontSize: 11,
+                                            fontSize: 12,
                                             color: textSecondary,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -490,13 +490,13 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.location_on, color: color, size: 10),
+            Icon(Icons.location_on, color: color, size: 12),
             const SizedBox(width: 2),
             Text(
               label.replaceAll("location_on ", ""),
               style: AppFonts.heading(
                 color: Colors.black87,
-                fontSize: 9,
+                fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -592,7 +592,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                         color: isDark
                                             ? const Color(0xFF64748B)
                                             : const Color(0xFFB8AE9C),
-                                        fontSize: 9,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -691,7 +691,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                       : "REC $videoDuration",
                                   style: GoogleFonts.shareTechMono(
                                     color: Colors.white,
-                                    fontSize: 8,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -717,7 +717,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             time,
                             style: GoogleFonts.shareTechMono(
                               color: const Color(0xFFFFB300),
-                              fontSize: 8,
+                              fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -1054,7 +1054,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                   Text(
                     title,
                     style: AppFonts.body(
-                      fontSize: 11,
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
                       color: textPrimary,
                     ),
@@ -1063,7 +1063,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                   ),
                   Text(
                     desc,
-                    style: AppFonts.heading(fontSize: 8, color: textSecondary),
+                    style: AppFonts.heading(fontSize: 11, color: textSecondary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

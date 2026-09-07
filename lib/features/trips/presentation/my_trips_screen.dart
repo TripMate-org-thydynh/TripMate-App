@@ -436,7 +436,7 @@ class MyTripsScreen extends ConsumerWidget {
                                   Text(
                                     v.label,
                                     style: AppFonts.heading(
-                                      fontSize: 11,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w800,
                                       color: _textPri,
                                     ),

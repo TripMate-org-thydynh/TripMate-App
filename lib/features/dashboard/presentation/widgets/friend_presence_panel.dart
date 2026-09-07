@@ -292,7 +292,7 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                             Text(
                               friend['name'] as String,
                               style: AppFonts.heading(
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: isDark
                                     ? GenZTokens.inkDark

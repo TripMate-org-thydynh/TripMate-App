@@ -11,6 +11,7 @@ import '../domain/trip_vibe.dart';
 import 'edit_trip_sheet.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
 import '../../expense_tracker/presentation/pages/trip_balances_screen.dart';
+import '../../fund/presentation/trip_fund_screen.dart';
 import '../../social/presentation/pages/trip_polls_screen.dart';
 import '../../trip_planner/presentation/trip_wishlist_screen.dart';
 import '../../trip_planner/presentation/trip_itinerary_screen.dart';
@@ -292,6 +293,17 @@ class TripHubScreen extends StatelessWidget {
                       ),
                       _tile(
                         context,
+                        PhosphorIcons.piggyBank(PhosphorIconsStyle.fill),
+                        'fund.title'.tr(),
+                        'hub.fund_sub'.tr(),
+                        const Color(0xFF10B981),
+                        () => TripFundScreen(
+                          tripId: trip.id,
+                          isDarkMode: isDarkMode,
+                        ),
+                      ),
+                      _tile(
+                        context,
                         PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
                         'hub.polls'.tr(),
                         'hub.polls_sub'.tr(),
@@ -517,7 +529,7 @@ class TripHubScreen extends StatelessWidget {
                       color: _textPri,
                     ),
             ),
-            Text(label, style: AppFonts.body(fontSize: 11, color: _textSec)),
+            Text(label, style: AppFonts.body(fontSize: 12, color: _textSec)),
           ],
         ),
       ),
@@ -592,7 +604,7 @@ class TripHubScreen extends StatelessWidget {
                   sub,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppFonts.body(fontSize: 11, color: _textSec),
+                  style: AppFonts.body(fontSize: 12, color: _textSec),
                 ),
               ],
             ),

@@ -25,6 +25,7 @@ import '../../../trips/domain/trip.dart';
 import '../../../trips/domain/trip_vibe.dart';
 import '../../../trips/presentation/trip_hub_screen.dart';
 import '../../../trips/presentation/create_trip_sheet.dart';
+import '../../../premium/presentation/trial_banner.dart';
 
 class HomeDashboardPage extends ConsumerStatefulWidget {
   final VoidCallback onNavigateToLiveMode;
@@ -124,12 +125,14 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         // ── 1. HEADER ──
         SliverToBoxAdapter(child: _buildHeader(context)),
 
-        // ── 2. SOCIAL CHAOS MARQUEE ──
-        const SliverToBoxAdapter(
-          child: Column(children: [SocialChaosMarquee(), SizedBox(height: 20)]),
-        ),
+        // ── 2. TRIP COVER CARD (PRIMARY FOCUS) ──
+        // Đồng hồ đếm ngược dùng thử, ngay đầu màn chính.
+        //
+        // Đặt ở đây chứ không giấu trong mục cài đặt: người dùng phải thấy
+        // mình còn bao nhiêu ngày mà không cần đi tìm. Tự ẩn khi không có lần
+        // dùng thử nào đang chạy.
+        const SliverToBoxAdapter(child: TrialBanner()),
 
-        // ── 3. TRIP COVER CARD ──
         SliverToBoxAdapter(
           child: Column(
             children: [
@@ -139,7 +142,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ),
         ),
 
-        // ── 4. QUICK ACTIONS 2×2 ──
+        // ── 3. QUICK ACTIONS 2×2 ──
         SliverToBoxAdapter(
           child: Column(
             children: [
@@ -158,7 +161,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ),
         ),
 
-        // ── 5. SQUAD FRIEND PRESENCE ──
+        // ── 4. SQUAD FRIEND PRESENCE ──
         SliverToBoxAdapter(
           child: Column(
             children: [
@@ -177,7 +180,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ),
         ),
 
-        // ── 6. WEATHER & UP NEXT GRID ──
+        // ── 5. WEATHER & UP NEXT GRID ──
         SliverToBoxAdapter(
           child: Column(
             children: [
@@ -193,7 +196,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ),
         ),
 
-        // ── 6b. VÉ SẮP TỚI (feed liên chuyến) ──
+        // ── 6. VÉ SẮP TỚI (feed liên chuyến) ──
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -201,7 +204,25 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ),
         ),
 
-        // ── 7. THE ROAST PANEL ──
+        // ── 7. DAILY RECAP ──
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: const DailyRecapWidget(),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+
+        // ── 8. SOCIAL CHAOS MARQUEE (Below fold) ──
+        const SliverToBoxAdapter(
+          child: Column(children: [SocialChaosMarquee(), SizedBox(height: 20)]),
+        ),
+
+        // ── 9. THE ROAST PANEL (Below fold) ──
         SliverToBoxAdapter(
           child: Column(
             children: [
@@ -211,24 +232,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: _buildRoastPanel(context),
                 ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-
-        // Đã gỡ 2 khối "Squad Mood" và "Emergency SOS": cả hai không có nguồn dữ
-        // liệu nào ở backend — Squad Mood luôn hiện "CHAOTIC 85%" cứng, còn SOS
-        // quảng cáo phát toạ độ GPS cố định trong khi app không xin quyền vị trí.
-        // Khôi phục khi có API thật đằng sau.
-
-        // ── 9. DAILY RECAP ──
-        SliverToBoxAdapter(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: const DailyRecapWidget(),
               ),
               const SizedBox(height: 24),
             ],
@@ -270,6 +273,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             child: HardShadowBox(
               color: _paper,
               padding: const EdgeInsets.all(16),
+              borderWidth: GenZTokens.borderWidthThin,
+              showShadow: false,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -308,7 +313,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                     ? _weatherData!.details
                                     : 'weather.unavailable'.tr()),
                           style: AppFonts.body(
-                            fontSize: 10,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: _inkSoft,
                           ),
@@ -361,6 +366,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
               return HardShadowBox(
                 color: _paper,
                 padding: const EdgeInsets.all(16),
+                borderWidth: GenZTokens.borderWidthThin,
+                showShadow: false,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -371,7 +378,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                           child: Text(
                             'dashboard.up_next'.tr(),
                             style: AppFonts.mono(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 0.5,
                               color: _inkSoft,
@@ -408,7 +415,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                       ),
                       error: (_, _) => Text(
                         'errors.load_failed'.tr(),
-                        style: AppFonts.body(fontSize: 11, color: _inkSoft),
+                        style: AppFonts.body(fontSize: 12, color: _inkSoft),
                       ),
                       data: (item) => item == null
                           ? Column(
@@ -426,7 +433,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                 Text(
                                   'dashboard.up_next_empty_body'.tr(),
                                   style: AppFonts.body(
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                     color: _inkSoft,
                                   ),
@@ -476,7 +483,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: AppFonts.body(
-                                            fontSize: 10,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                             color: _inkSoft,
                                           ),
@@ -491,7 +498,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppFonts.mono(
-                                    fontSize: 9,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w700,
                                     color: _inkSoft,
                                   ),
@@ -605,7 +612,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               child: Text(
                                 unread > 9 ? '9+' : '$unread',
                                 style: AppFonts.mono(
-                                  fontSize: 9,
+                                  fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                   color: GenZTokens.paper,
                                 ),
@@ -703,7 +710,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                       child: Text(
                         '+$overflow',
                         style: AppFonts.mono(
-                          fontSize: 9,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: GenZTokens.ink,
                         ),
@@ -1289,13 +1296,13 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.location_on, size: 10, color: GenZTokens.red),
+              const Icon(Icons.location_on, size: 12, color: GenZTokens.red),
               const SizedBox(width: 2),
               Expanded(
                 child: Text(
                   location.toUpperCase(),
                   style: AppFonts.mono(
-                    fontSize: 8,
+                    fontSize: 11,
                     color: _inkSoft,
                     fontWeight: FontWeight.w700,
                   ),

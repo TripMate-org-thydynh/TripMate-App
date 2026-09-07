@@ -334,9 +334,9 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
                             'recap.paused'.tr(),
                             style: AppFonts.body(
                               color: Colors.white,
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 1.4,
+                              letterSpacing: 1.2,
                             ),
                           ),
                         ],
@@ -1532,9 +1532,9 @@ class _MiniStat extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppFonts.body(
                   color: Colors.white.withValues(alpha: 0.72),
-                  fontSize: 9.5,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 1.1,
+                  letterSpacing: 0.8,
                 ),
               ),
             ],

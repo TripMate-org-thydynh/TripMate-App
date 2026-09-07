@@ -17,17 +17,25 @@ class Entitlement {
   /// `FREE`, `PLUS` hoặc `SQUAD`.
   final String plan;
 
-  /// `own` = gói của chính mình, `seat` = ghế người khác cấp, `none` = chưa trả.
+  /// `own` = gói của chính mình, `seat` = ghế người khác cấp,
+  /// `trial` = đang dùng thử, `none` = chưa có gì.
   final String via;
 
   final DateTime? activeUntil;
   final Map<String, int> limits;
+
+  /// Quyền đang đến từ 3 ngày dùng thử, không phải từ tiền.
+  ///
+  /// Cần tách bạch để banner nói đúng chuyện: người đang dùng thử cần thấy
+  /// đồng hồ đếm ngược, người đã trả tiền thì không.
+  final bool isTrial;
 
   const Entitlement({
     required this.plan,
     required this.via,
     required this.activeUntil,
     required this.limits,
+    this.isTrial = false,
   });
 
   /// Mặc định khi chưa gọi được API.
@@ -54,7 +62,8 @@ class Entitlement {
   factory Entitlement.fromJson(Map<String, dynamic> j) => Entitlement(
     plan: j['plan'] as String? ?? 'FREE',
     via: j['via'] as String? ?? 'none',
-    activeUntil: DateTime.tryParse(j['activeUntil'] as String? ?? ''),
+    activeUntil: DateTime.tryParse(j['activeUntil'] as String? ?? '')?.toUtc(),
+    isTrial: j['isTrial'] as bool? ?? false,
     limits:
         (j['limits'] as Map?)?.map(
           (k, v) => MapEntry(k.toString(), (v as num).toInt()),

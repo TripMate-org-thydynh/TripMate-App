@@ -9,6 +9,7 @@ import '../../../../core/theme/theme.dart';
 import '../../../core/network/api_exception.dart';
 import '../../trips/application/trips_providers.dart';
 import '../../trips/presentation/join_trip_screen.dart';
+import '../../premium/presentation/paywall_sheet.dart';
 
 class CreateTripScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -219,6 +220,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       });
       widget.onTripCreated?.call();
     } on ApiException catch (e) {
+      if (!mounted) return;
+      if (await PaywallSheet.maybeShow(context, e)) {
+        if (mounted) setState(() => _busy = false);
+        return;
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1193,9 +1199,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                       Text(
                         'trips.or_share_link'.tr(),
                         style: AppFonts.body(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: 1.5,
+                          letterSpacing: 1.2,
                           color: textSecondary.withValues(alpha: 0.5),
                         ),
                       ),

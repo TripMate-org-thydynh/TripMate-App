@@ -504,7 +504,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                             child: Text(
                               'profile.theme_selected'.tr(),
                               style: AppFonts.body(
-                                fontSize: 10,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: themeAccent,
                               ),
@@ -571,7 +571,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                                 Text(
                                   'profile.preview_sample_sub'.tr(),
                                   style: AppFonts.body(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     color: Colors.white.withValues(alpha: 0.5),
                                   ),
                                 ),
@@ -590,7 +590,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                             child: Text(
                               '+XP',
                               style: AppFonts.body(
-                                fontSize: 10,
+                                fontSize: 11.5,
                                 fontWeight: FontWeight.w700,
                                 color: themeAccent,
                               ),
@@ -616,14 +616,14 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                           Text(
                             'Squad Energy 72%',
                             style: AppFonts.body(
-                              fontSize: 10,
+                              fontSize: 11.5,
                               color: Colors.white.withValues(alpha: 0.55),
                             ),
                           ),
                           Text(
                             'profile.preview_sample_badge'.tr(),
                             style: AppFonts.body(
-                              fontSize: 10,
+                              fontSize: 11.5,
                               color: themeAccent,
                               fontWeight: FontWeight.w600,
                             ),

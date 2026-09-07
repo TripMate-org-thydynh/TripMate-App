@@ -277,7 +277,7 @@ class GamificationScreen extends StatelessWidget {
                   style: AppFonts.body(
                     color: GenZTokens.paper,
                     fontWeight: FontWeight.w600,
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -342,7 +342,7 @@ class GamificationScreen extends StatelessWidget {
           subtitle: Text(
             desc,
             style: AppFonts.body(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
               color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
             ),

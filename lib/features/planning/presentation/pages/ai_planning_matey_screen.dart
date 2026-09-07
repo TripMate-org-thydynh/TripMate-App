@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../premium/presentation/paywall_sheet.dart';
 import '../../../ai/data/ai_repository.dart';
 import '../../../gamification/data/games_repository.dart';
 import '../../../trips/application/trips_providers.dart';
@@ -103,6 +104,10 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() => _isGenerating = false);
+      // Hết lượt AI trong tháng → paywall nêu đúng con số, không phải một lỗi
+      // 403 mà người dùng không hiểu vì sao.
+      if (await PaywallSheet.maybeShow(context, e)) return;
+      if (!mounted) return;
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,
@@ -561,7 +566,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   ) {
     return Row(
       children: [
-        Text(left, style: AppFonts.body(fontSize: 11, color: textMuted)),
+        Text(left, style: AppFonts.body(fontSize: 12, color: textMuted)),
         const SizedBox(width: 8),
         Expanded(
           child: Stack(
@@ -588,7 +593,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
           ),
         ),
         const SizedBox(width: 8),
-        Text(right, style: AppFonts.body(fontSize: 11, color: textMuted)),
+        Text(right, style: AppFonts.body(fontSize: 12, color: textMuted)),
       ],
     );
   }
@@ -691,7 +696,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: textMuted,
                           ),

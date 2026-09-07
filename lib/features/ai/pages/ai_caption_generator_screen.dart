@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../premium/presentation/paywall_sheet.dart';
 import '../../gamification/data/games_repository.dart';
 import '../data/ai_repository.dart';
 import '../../../core/app_messenger.dart';
@@ -110,6 +111,10 @@ class _AICaptionGeneratorScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isGenerating = false);
+      // Hết lượt AI trong tháng → paywall nêu đúng con số, không phải một lỗi
+      // 403 mà người dùng không hiểu vì sao.
+      if (await PaywallSheet.maybeShow(context, e)) return;
+      if (!mounted) return;
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,
@@ -253,9 +258,9 @@ class _AICaptionGeneratorScreenState
                           Text(
                             'ai.vibe_check'.tr(),
                             style: AppFonts.heading(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
-                              letterSpacing: 1.5,
+                              letterSpacing: 1.2,
                               color: textMuted,
                             ),
                           ),
@@ -381,7 +386,7 @@ class _AICaptionGeneratorScreenState
                                                 child: Text(
                                                   tag,
                                                   style: AppFonts.body(
-                                                    fontSize: 11,
+                                                    fontSize: 12,
                                                     color: primary,
                                                     fontWeight: FontWeight.bold,
                                                   ),
@@ -580,13 +585,13 @@ class _AICaptionGeneratorScreenState
                       Icon(
                         Icons.auto_awesome_rounded,
                         color: secondary,
-                        size: 12,
+                        size: 14,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'ai.analyzing'.tr(),
                         style: AppFonts.body(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           letterSpacing: 0.5,

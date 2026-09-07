@@ -161,7 +161,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   Text(
                     'profile.nomad_tag'.tr(),
                     style: AppFonts.body(
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: textSecondaryColor,
                       letterSpacing: 1.0,
@@ -309,9 +309,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         Text(
           label.toUpperCase(),
           style: AppFonts.body(
-            fontSize: 10,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
+            letterSpacing: 1.2,
             color: textPrimaryColor.withValues(alpha: 0.6),
           ),
         ),
@@ -379,7 +379,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               Text(
                 tier,
                 style: AppFonts.body(
-                  fontSize: 9,
+                  fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: sub,
                 ),
@@ -539,10 +539,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   Text(
                     time.toUpperCase(),
                     style: AppFonts.body(
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: primaryColor.withValues(alpha: 0.6),
-                      letterSpacing: 1.0,
+                      letterSpacing: 0.8,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -630,7 +630,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Text(
                               '+$extraFriends',
                               style: AppFonts.body(
-                                fontSize: 10,
+                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFF1FA85C),
                               ),
@@ -904,7 +904,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                 child: Text(
                                   context.locale.languageCode.toUpperCase(),
                                   style: AppFonts.body(
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w900,
                                     color: textPrimaryColor,
                                   ),
@@ -1378,7 +1378,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                   child: Text(
                                                     bio,
                                                     style: AppFonts.body(
-                                                      fontSize: 11,
+                                                      fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       color: textPrimaryColor,
@@ -1854,7 +1854,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         Text(
                                           'profile.lang_sub'.tr(),
                                           style: AppFonts.body(
-                                            fontSize: 11,
+                                            fontSize: 12,
                                             color: textSecondaryColor,
                                           ),
                                         ),
@@ -1957,7 +1957,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         Text(
                                           'profile.privacy_sub'.tr(),
                                           style: AppFonts.body(
-                                            fontSize: 11,
+                                            fontSize: 12,
                                             color: textSecondaryColor,
                                           ),
                                         ),
@@ -2037,7 +2037,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         Text(
                                           'profile.backup_title'.tr(),
                                           style: AppFonts.body(
-                                            fontSize: 11,
+                                            fontSize: 12,
                                             color: textSecondaryColor,
                                           ),
                                         ),
@@ -2117,7 +2117,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         Text(
                                           'profile.mcp_title'.tr(),
                                           style: AppFonts.body(
-                                            fontSize: 11,
+                                            fontSize: 12,
                                             color: textSecondaryColor,
                                           ),
                                         ),
@@ -2205,7 +2205,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       Text(
                         'profile.theme_and_color'.tr(),
                         style: AppFonts.body(
-                          fontSize: 11,
+                          fontSize: 12,
                           color: textSecondaryColor,
                         ),
                       ),
@@ -2374,7 +2374,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             Text(
                               accent.label,
                               style: AppFonts.body(
-                                fontSize: 10,
+                                fontSize: 12,
                                 fontWeight: selected
                                     ? FontWeight.w700
                                     : FontWeight.w500,
@@ -2613,7 +2613,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             Text(
               label,
               style: AppFonts.body(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 color: selected
                     ? primaryColor
@@ -2653,7 +2653,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         child: Text(
           label,
           style: AppFonts.body(
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
             color: isSelected
                 ? primaryColor

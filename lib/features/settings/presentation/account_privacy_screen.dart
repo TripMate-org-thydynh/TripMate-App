@@ -4,6 +4,7 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
@@ -12,6 +13,12 @@ import '../../../core/providers/auth_provider.dart';
 /// Quyền riêng tư & Tài khoản (PDPD - NĐ 13/2023).
 /// Gồm: tóm tắt chính sách, link điều khoản, và xoá tài khoản gọi BE thật.
 class AccountPrivacyScreen extends ConsumerStatefulWidget {
+  /// CHÚ Ý QUAN TRỌNG: Hai trang web này PHẢI tồn tại thật trước khi nộp Google Play,
+  /// nếu không tester của Google Play bấm vào sẽ ra trang lỗi (404/không tải được)
+  /// và ứng dụng sẽ bị từ chối phê duyệt (đánh trượt).
+  static const String privacyUrl = 'https://tripmate.app/privacy';
+  static const String termsUrl = 'https://tripmate.app/terms';
+
   final bool isDarkMode;
   const AccountPrivacyScreen({super.key, this.isDarkMode = false});
 
@@ -114,9 +121,21 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                 'privacy.body_2'.tr() +
                 'privacy.body_3'.tr(),
           ),
-          _linkTile(Icons.description_outlined, 'privacy.policy'.tr()),
-          _linkTile(Icons.gavel_outlined, 'privacy.terms'.tr()),
-          _linkTile(Icons.download_outlined, 'privacy.request_copy'.tr()),
+          _linkTile(
+            Icons.description_outlined,
+            'privacy.policy'.tr(),
+            AccountPrivacyScreen.privacyUrl,
+          ),
+          _linkTile(
+            Icons.gavel_outlined,
+            'privacy.terms'.tr(),
+            AccountPrivacyScreen.termsUrl,
+          ),
+          _linkTile(
+            Icons.download_outlined,
+            'privacy.request_copy'.tr(),
+            AccountPrivacyScreen.privacyUrl,
+          ),
           const SizedBox(height: 28),
 
           // Danger zone
@@ -247,15 +266,29 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
     );
   }
 
-  Widget _linkTile(IconData icon, String label) {
+  Future<void> _openUrl(String url) async {
+    HapticFeedback.selectionClick();
+    try {
+      final uri = Uri.parse(url);
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('errors.generic'.tr())),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('errors.generic'.tr())),
+        );
+      }
+    }
+  }
+
+  Widget _linkTile(IconData icon, String label, String url) {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
-      onTap: () {
-        HapticFeedback.selectionClick();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('privacy.opens_website'.tr(namedArgs: {'label': label}))),
-        );
-      },
+      onTap: () => _openUrl(url),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         margin: const EdgeInsets.only(bottom: 10),

@@ -136,7 +136,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
                   child: Text(
                     _countdown(r.startTime!.toLocal()),
                     style: AppFonts.mono(
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),

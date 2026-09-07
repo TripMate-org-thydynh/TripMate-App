@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../../core/widgets/state_views.dart';
+import '../../../premium/presentation/paywall_sheet.dart';
 import '../../../ai/data/ai_repository.dart';
 import '../../../gamification/data/games_repository.dart';
 import '../widgets/add_to_itinerary_sheet.dart';
@@ -66,6 +67,11 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
         _loading = false;
         _error = e;
       });
+      // Hết lượt AI trong tháng là chuyện của gói cước, không phải lỗi kỹ
+      // thuật — mở paywall thay vì để màn báo lỗi chung.
+      if (await PaywallSheet.maybeShow(context, e) && mounted) {
+        setState(() => _error = null);
+      }
     }
   }
 

@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NominatimService {
+  // Giữ nguyên header User-Agent theo quy định OpenStreetMap và thêm timeout 10 giây tránh treo ứng dụng khi mạng chập chờn.
   final Dio _dio = Dio(
-    BaseOptions(headers: {'User-Agent': 'TripMateApp/1.0 (com.tripmate.app)'}),
+    BaseOptions(
+      headers: {'User-Agent': 'TripMateApp/1.0 (com.tripmate.app)'},
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
   );
 
   Future<String?> reverseGeocode(double lat, double lng) async {

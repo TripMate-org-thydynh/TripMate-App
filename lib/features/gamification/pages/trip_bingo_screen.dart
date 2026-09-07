@@ -663,7 +663,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: AppFonts.heading(
-                        fontSize: 10,
+                        fontSize: 11.5,
                         fontWeight: state == 'completed'
                             ? FontWeight.w900
                             : FontWeight.bold,

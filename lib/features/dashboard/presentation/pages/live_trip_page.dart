@@ -216,7 +216,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                   Text(
                                     'live.vibe_energy'.tr(),
                                     style: AppFonts.body(
-                                      fontSize: 9,
+                                      fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                       color: textSecondary,
                                     ),
@@ -461,7 +461,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                 const SizedBox(height: 2),
                 Text(
                   time,
-                  style: AppFonts.body(fontSize: 10, color: textSecondary),
+                  style: AppFonts.body(fontSize: 12, color: textSecondary),
                 ),
               ],
             ),

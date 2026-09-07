@@ -1,10 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api_service.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/widgets/state_views.dart';
+import '../data/trial_provider.dart';
 
 /// Thiết lập gói cước.
 ///
@@ -15,20 +17,19 @@ import '../../../core/widgets/state_views.dart';
 ///
 /// Gói bán qua Google Play Billing nên việc đổi nguồn tiền, bật/tắt gia hạn và
 /// huỷ gói đều do Play quản lý — app không dựng lại các công tắc đó.
-class SubscriptionSettingsScreen extends StatefulWidget {
+class SubscriptionSettingsScreen extends ConsumerStatefulWidget {
   const SubscriptionSettingsScreen({super.key});
 
   @override
-  State<SubscriptionSettingsScreen> createState() =>
+  ConsumerState<SubscriptionSettingsScreen> createState() =>
       _SubscriptionSettingsScreenState();
 }
 
 class _SubscriptionSettingsScreenState
-    extends State<SubscriptionSettingsScreen> {
+    extends ConsumerState<SubscriptionSettingsScreen> {
   Map<String, dynamic>? _sub;
   bool _loading = true;
   bool _failed = false;
-  bool _cancelling = false;
 
   @override
   void initState() {
@@ -48,53 +49,6 @@ class _SubscriptionSettingsScreenState
       _failed = res == null;
       _loading = false;
     });
-  }
-
-  Future<void> _confirmCancel() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          'Huỷ gia hạn gói?',
-          style: AppFonts.heading(fontSize: 18, fontWeight: FontWeight.w800),
-        ),
-        content: Text(
-          'Bạn vẫn sẽ được hưởng đầy đủ quyền lợi của gói cho đến hết chu kỳ hiện tại. Sau thời hạn này, gói sẽ không tự động gia hạn.',
-          style: AppFonts.body(fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Giữ gói'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Xác nhận huỷ'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    setState(() => _cancelling = true);
-    final res = await ApiService.post('/premium/cancel', {});
-    if (!mounted) return;
-    setState(() => _cancelling = false);
-
-    if (res != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Đã huỷ gia hạn thành công. Gói vẫn có hiệu lực đến hết kỳ hạn.'),
-          backgroundColor: GenZTokens.success,
-        ),
-      );
-      _fetch();
-    }
   }
 
   @override
@@ -143,12 +97,13 @@ class _SubscriptionSettingsScreenState
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final price = (_sub?['price'] as num?)?.toInt() ?? 0;
-    final next = _parseDate((_sub?['nextBillingDate'] ?? _sub?['activeUntil']) as String?);
-    final isCancelled = _sub?['cancelAtPeriodEnd'] == true;
-    final isViaSeat = _sub?['via'] == 'seat';
-    final isOwner = !isViaSeat;
-    final planName = _sub?['plan'] == 'SQUAD' ? 'Squad Pass 👑' : 'TripMate+ ✨';
-    final benefits = (_sub?['benefits'] as List?)?.whereType<String>().toList();
+    // `activeUntil`, không phải `nextBillingDate`: backend chưa từng trả về
+    // trường đó, nên trước đây ngày hết hạn luôn null và dòng này không bao giờ
+    // hiện — kể cả với người đang có gói.
+    final next = _parseDate(_sub?['activeUntil'] as String?);
+    final plan = _sub?['plan'] as String? ?? 'PLUS';
+    final via = _sub?['via'] as String? ?? 'own';
+    final isTrial = _sub?['isTrial'] as bool? ?? false;
 
     return RefreshIndicator(
       onRefresh: _fetch,
@@ -168,136 +123,76 @@ class _SubscriptionSettingsScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      planName,
-                      style: AppFonts.heading(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                        color: GenZTokens.ink,
-                      ),
-                    ),
-                    if (isViaSeat)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: GenZTokens.ink.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-                        ),
-                        child: Text(
-                          'Ghế nhóm',
-                          style: AppFonts.body(fontSize: 11, fontWeight: FontWeight.w700, color: GenZTokens.ink),
-                        ),
-                      ),
-                  ],
+                Text(
+                  'premium.plan_$plan'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
+                    color: GenZTokens.ink,
+                  ),
                 ),
                 const SizedBox(height: GenZTokens.space2),
                 Text(
-                  'premium.price_monthly'.tr(args: [_money(price)]),
+                  // Đang dùng thử thì KHÔNG hiện "39.000đ/tháng" như thể đang
+                  // bị thu tiền — chưa đồng nào rời tài khoản của họ.
+                  isTrial
+                      ? 'trial.badge'.tr()
+                      : 'premium.price_monthly'.tr(args: [_money(price)]),
                   style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
                 ),
                 if (next != null) ...[
                   const SizedBox(height: 2),
                   Text(
-                    isCancelled
-                      ? 'Hết hạn vào: ${DateFormat.yMMMd(context.locale.toLanguageTag()).format(next)}'
-                      : 'premium.next_billing'.tr(
-                          args: [
-                            DateFormat.yMMMd(
-                              context.locale.toLanguageTag(),
-                            ).format(next),
-                          ],
-                        ),
+                    'premium.active_until'.tr(
+                      args: [
+                        DateFormat.yMMMd(
+                          context.locale.toLanguageTag(),
+                        ).format(next),
+                      ],
+                    ),
                     style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
                   ),
                 ],
               ],
             ),
           ),
-          if (isCancelled) ...[
+          if (isTrial) ...[
             const SizedBox(height: GenZTokens.space4),
-            Container(
-              padding: const EdgeInsets.all(GenZTokens.space4),
-              decoration: BoxDecoration(
-                color: Colors.amber.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                border: Border.all(color: Colors.amber.shade700, width: 1.5),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.warning_amber_rounded, color: Colors.amber.shade800),
-                  const SizedBox(width: GenZTokens.space3),
-                  Expanded(
-                    child: Text(
-                      'Gói đã huỷ gia hạn. Bạn vẫn được dùng toàn bộ tính năng đến hết hạn.',
-                      style: AppFonts.body(fontSize: 13, color: ink),
+            // Nút dừng đặt ngay đây, ngang hàng với thẻ gói.
+            //
+            // Chôn nó vào ba lớp menu chẳng giữ được ai: người muốn dừng sẽ
+            // dừng, chỉ là bằng cách gỡ app thay vì bấm nút. Ở đây họ dừng
+            // xong vẫn còn là người dùng.
+            SizedBox(
+              height: 48,
+              child: OutlinedButton(
+                onPressed: _cancelTrial,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: ink,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                    side: BorderSide(
+                      color: ink,
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
-                ],
-              ),
-            ),
-          ],
-          if (benefits != null && benefits.isNotEmpty) ...[
-            const SizedBox(height: GenZTokens.space5),
-            Text(
-              'premium.benefits'.tr(),
-              style: AppFonts.heading(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: ink,
-              ),
-            ),
-            const SizedBox(height: GenZTokens.space3),
-            for (final b in benefits)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.check, size: 16, color: GenZTokens.success),
-                    const SizedBox(width: GenZTokens.space2),
-                    Expanded(
-                      child: Text(
-                        b,
-                        style: AppFonts.body(fontSize: 13, color: ink),
-                      ),
-                    ),
-                  ],
+                ),
+                child: Text(
+                  'trial.cancel_cta'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: ink,
+                  ),
                 ),
               ),
+            ),
           ],
           const SizedBox(height: GenZTokens.space5),
-          if (isOwner && !isCancelled) ...[
-            OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red.shade600,
-                side: BorderSide(color: Colors.red.shade400, width: 1.5),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                ),
-              ),
-              onPressed: _cancelling ? null : _confirmCancel,
-              icon: _cancelling
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.cancel_outlined, size: 18),
-              label: Text(
-                _cancelling ? 'Đang xử lý...' : 'Huỷ tự động gia hạn',
-                style: AppFonts.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.red.shade600,
-                ),
-              ),
-            ),
-            const SizedBox(height: GenZTokens.space4),
-          ],
+          // Gói mua qua ví là trả một lần cho một kỳ, KHÔNG tự động gia hạn —
+          // ví Việt Nam không có cơ chế trừ tiền định kỳ. Nên ở đây không có
+          // nút huỷ: không có gì để huỷ. Nói thẳng điều đó thay vì dựng một
+          // công tắc "tự động gia hạn" không nối vào đâu, như bản trước.
           Container(
             padding: const EdgeInsets.all(GenZTokens.space4),
             decoration: BoxDecoration(
@@ -312,9 +207,11 @@ class _SubscriptionSettingsScreenState
                 const SizedBox(width: GenZTokens.space3),
                 Expanded(
                   child: Text(
-                    isViaSeat
-                      ? 'Bạn đang sử dụng ghế thành viên được mời bởi trưởng nhóm. Trưởng nhóm là người quản trị việc gia hạn hoặc thay đổi gói.'
-                      : 'Giao dịch qua MoMo / ZaloPay / Google Play được bảo mật theo tiêu chuẩn thanh toán quốc tế.',
+                    isTrial
+                        ? 'trial.settings_notice'.tr()
+                        : via == 'seat'
+                        ? 'premium.via_seat_notice'.tr()
+                        : 'premium.no_autorenew_notice'.tr(),
                     style: AppFonts.body(
                       fontSize: 13,
                       color: inkSoft,
@@ -328,6 +225,38 @@ class _SubscriptionSettingsScreenState
         ],
       ),
     );
+  }
+
+  /// Dừng dùng thử, có xác nhận một lần.
+  ///
+  /// Hỏi lại một câu vì thao tác này cắt quyền ngay lập tức và không lấy lại
+  /// được — nhưng chỉ một câu, và nút đồng ý không bị làm mờ đi.
+  Future<void> _cancelTrial() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('trial.cancel_title'.tr()),
+        content: Text('trial.cancel_body'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('trial.cancel_keep'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('trial.cancel_confirm'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+
+    try {
+      await ref.read(trialActionsProvider).cancel();
+    } catch (_) {
+      // ApiClient đã hiện lỗi; vẫn tải lại để màn không kẹt ở trạng thái cũ.
+    }
+    if (mounted) await _fetch();
   }
 
   static DateTime? _parseDate(String? raw) =>

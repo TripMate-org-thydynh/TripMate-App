@@ -118,7 +118,7 @@ class AiMoodDetectionScreen extends ConsumerWidget {
                     ),
                     Text(
                       'ai.mood_tension'.tr(),
-                      style: AppFonts.body(fontSize: 11, color: inkSoft),
+                      style: AppFonts.body(fontSize: 12, color: inkSoft),
                     ),
                   ],
                 ),

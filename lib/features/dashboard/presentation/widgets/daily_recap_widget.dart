@@ -184,7 +184,7 @@ class DailyRecapWidget extends ConsumerWidget {
                       Text(
                         'Wrapped Reel 🔥',
                         style: AppFonts.body(
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: GenZTokens.ink,
                         ),
@@ -252,7 +252,7 @@ class DailyRecapWidget extends ConsumerWidget {
                             Text(
                               'dashboard.recap_empty_sub'.tr(),
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: 11,
+                                fontSize: 12,
                                 color: isDark
                                     ? GenZTokens.inkSoftDark
                                     : GenZTokens.inkSoft,
@@ -307,7 +307,7 @@ class DailyRecapWidget extends ConsumerWidget {
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: AppFonts.mono(
-                                    fontSize: 9,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w700,
                                     color: isDark
                                         ? GenZTokens.inkSoftDark
@@ -333,7 +333,7 @@ class DailyRecapWidget extends ConsumerWidget {
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                fontSize: 11,
+                                fontSize: 12,
                               ),
                             ),
                           ),

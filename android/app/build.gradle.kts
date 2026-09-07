@@ -1,5 +1,6 @@
 import java.util.Properties
 import java.io.FileInputStream
+import org.gradle.api.GradleException
 
 plugins {
     id("com.android.application")
@@ -54,8 +55,20 @@ android {
             // Ký bằng keystore thật khi có android/key.properties; nếu không có
             // (máy dev chưa cấu hình) rơi về debug key để `flutter run --release`
             // vẫn chạy. Bản nộp Google Play BẮT BUỘC phải có key.properties.
+            // Chốt chặn bảo vệ: Nếu đang chạy task đóng gói bundle (.aab) để nộp store
+            // mà thiếu key.properties thì chặn ngay (throw GradleException) thay vì âm thầm
+            // ký bằng debug key khiến Play Console từ chối.
+            val isBuildingBundle = gradle.startParameter.taskNames.any {
+                it.contains("bundle", ignoreCase = true)
+            }
             signingConfig = if (keystoreProperties.isNotEmpty()) {
                 signingConfigs.getByName("release")
+            } else if (isBuildingBundle) {
+                throw GradleException(
+                    "Không tìm thấy android/key.properties để ký bản phát hành (bundle)! " +
+                    "Bản bundle (.aab) nộp lên Google Play Store bắt buộc phải được ký bằng khóa release thật. " +
+                    "Vui lòng tạo file android/key.properties trước khi build bundle."
+                )
             } else {
                 signingConfigs.getByName("debug")
             }

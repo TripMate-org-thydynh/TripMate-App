@@ -472,12 +472,12 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
               children: [
                 if (note.authorAvatarUrl != null)
                   CircleAvatar(
-                    radius: 10,
+                    radius: 12,
                     backgroundImage: NetworkImage(note.authorAvatarUrl!),
                   )
                 else
                   CircleAvatar(
-                    radius: 10,
+                    radius: 12,
                     backgroundColor: const Color(
                       0xFF141210,
                     ).withValues(alpha: 0.2),
@@ -486,20 +486,20 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                           ? note.authorName[0].toUpperCase()
                           : '?',
                       style: const TextStyle(
-                        fontSize: 8,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF141210),
                       ),
                     ),
                   ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 6),
                 Flexible(
                   child: Text(
                     note.authorName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppFonts.body(
-                      fontSize: 10,
+                      fontSize: 12,
                       color: const Color(0xFF141210).withValues(alpha: 0.6),
                     ),
                   ),

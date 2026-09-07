@@ -460,7 +460,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                   ? tr('vacay.leave')
                                   : tr('vacay.holiday'),
                               style: AppFonts.heading(
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: d.type == 'LEAVE'
                                     ? const Color(0xFF3D8BFF)
@@ -588,7 +588,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                         child: Text(
                                           tr('vacay.holidays.$h'),
                                           style: AppFonts.body(
-                                            fontSize: 10,
+                                            fontSize: 12,
                                             color: _ink,
                                           ),
                                         ),
@@ -626,7 +626,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
         Text(
           '$label ($unit)',
           style: AppFonts.body(
-            fontSize: 11,
+            fontSize: 12,
             color: Colors.white.withValues(alpha: 0.8),
           ),
         ),

@@ -139,7 +139,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.mono(
-                    fontSize: 11,
+                    fontSize: 12,
                     color: isPodium
                         ? GenZTokens.ink.withValues(alpha: 0.7)
                         : inkSoft,

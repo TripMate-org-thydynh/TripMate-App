@@ -1,10 +1,11 @@
 import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../profile/data/profile_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../core/api_service.dart';
 
@@ -21,19 +22,59 @@ class ReferralRewardsScreen extends ConsumerStatefulWidget {
 }
 
 class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
-  /// Ma gioi thieu = username THAT cua nguoi dung.
-  String get _code {
-    final u =
-        ref.watch(profileDataProvider).profile?['username'] as String? ?? '';
-    return u.isEmpty ? '—' : u.toUpperCase();
-  }
+  /// Mã giới thiệu THẬT, do server sinh và giữ.
+  ///
+  /// Trước đây mã được suy ra bằng cách viết hoa username. Cách đó có ba lỗi:
+  /// mã đổi theo username nên ai đổi tên là mọi mã đã chia sẻ thành vô hiệu;
+  /// username lộ ra ngoài; và **server không hề biết mã đó tồn tại**, nên
+  /// người nhập vào chỉ nhận một thông báo thành công trống rỗng.
+  String? _code;
+
+  /// Người mình đã mời được. Trước đây là danh sách rỗng cứng, và trước nữa là
+  /// hai cái tên bịa ("Hoàng Yến 🌸", "Phú Khang 🍕").
+  List<Map<String, dynamic>> _referrals = [];
+
+  /// Mình đã nhập mã của ai chưa — dùng để ẩn ô nhập thay vì để người dùng gõ
+  /// vào rồi nhận lỗi.
+  bool _canSubmit = true;
+  String? _referredBy;
+
+  bool _loading = true;
 
   final _codeController = TextEditingController();
   bool _isSubmitting = false;
 
-  // Rỗng: chưa có API danh sách người được giới thiệu. Trước đây liệt kê
-  // "Hoàng Yến 🌸" và "Phú Khang 🍕" như thể user đã mời được 2 người.
-  final List<Map<String, String>> _referrals = [];
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final results = await Future.wait([
+      ApiService.get('/premium/referrals/me'),
+      ApiService.get('/premium/referrals/status'),
+    ]);
+    if (!mounted) return;
+    final mine = results[0];
+    final status = results[1];
+    setState(() {
+      _loading = false;
+      if (mine is Map) {
+        _code = mine['code'] as String?;
+        _referrals = (mine['invited'] as List?)
+                ?.whereType<Map>()
+                .map((e) => e.cast<String, dynamic>())
+                .toList() ??
+            [];
+      }
+      if (status is Map) {
+        _canSubmit = status['canSubmit'] as bool? ?? true;
+        _referredBy =
+            (status['referredBy'] as Map?)?['name'] as String?;
+      }
+    });
+  }
 
   Future<void> _submitReferralCode() async {
     final text = _codeController.text.trim().toUpperCase();
@@ -60,6 +101,9 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
           (response is Map ? response['message'] : null) as String? ??
           'referral.code_valid'.tr();
       _codeController.clear();
+      // Tải lại: XP vừa đổi, và ô nhập phải biến mất vì mỗi người chỉ được
+      // giới thiệu một lần.
+      unawaited(_load());
 
       showDialog(
         context: context,
@@ -100,6 +144,16 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
   void dispose() {
     _codeController.dispose();
     super.dispose();
+  }
+
+  /// "Tham gia 6 thg 9, 2026" — ngày thật, theo giờ máy người dùng.
+  String _joinedLabel(String? iso) {
+    final t = DateTime.tryParse(iso ?? '')?.toLocal();
+    if (t == null) return '';
+    final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
+    return 'referral.joined_on'.tr(
+      namedArgs: {'when': DateFormat.yMMMd(locale).format(t)},
+    );
   }
 
   @override
@@ -171,7 +225,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                   ),
                   const SizedBox(height: 12),
                   SelectableText(
-                    _code,
+                    _code ?? '…',
                     style: AppFonts.heading(
                       color: Colors.white,
                       fontSize: 32,
@@ -192,12 +246,14 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: _code));
+                      final code = _code;
+                      if (code == null) return;
+                      await Clipboard.setData(ClipboardData(text: code));
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            'premium.code_copied'.tr(args: [_code]),
+                            'premium.code_copied'.tr(args: [_code ?? '']),
                           ),
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -221,6 +277,39 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
 
             const SizedBox(height: 28),
 
+            // Đã nhập mã của ai rồi thì không hiện ô nhập nữa.
+            //
+            // Mỗi người chỉ được giới thiệu một lần trong đời, nên để ô nhập
+            // ở đó chỉ dẫn tới một lần gõ và một thông báo lỗi.
+            if (!_canSubmit) ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: surfaceColor,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle_outline, color: primaryColor),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'referral.already_referred'.tr(
+                          namedArgs: {'name': _referredBy ?? ''},
+                        ),
+                        style: AppFonts.heading(
+                          fontSize: 13,
+                          color: isDark ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ] else ...[
             // Submit friend's code block
             Text(
               'premium.enter_code'.tr(),
@@ -282,6 +371,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                 ],
               ),
             ),
+            ],
 
             const SizedBox(height: 28),
 
@@ -297,7 +387,14 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
             ),
             const SizedBox(height: 12),
 
-            if (_referrals.isEmpty)
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else if (_referrals.isEmpty)
               // Chưa mời được ai thì để trống, không bịa 2 người như trước.
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
@@ -332,21 +429,21 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                           color: primaryColor,
                         ),
                         title: Text(
-                          ref['name']!,
+                          (ref['name'] as String?) ?? '—',
                           style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
                             fontSize: 13.5,
                           ),
                         ),
                         subtitle: Text(
-                          ref['status']!,
+                          _joinedLabel(ref['joinedAt'] as String?),
                           style: AppFonts.heading(
                             fontSize: 11.5,
                             color: Colors.grey,
                           ),
                         ),
                         trailing: Text(
-                          ref['xp']!,
+                          '+${ref['xp'] ?? 0} XP',
                           style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
                             color: Colors.green,

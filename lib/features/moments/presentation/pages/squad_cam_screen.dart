@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../premium/presentation/paywall_sheet.dart';
 import '../../../../core/services/media_uploader.dart';
 import '../../../../core/services/widget_sync.dart';
 import '../../../../core/theme/app_fonts.dart';
@@ -247,6 +248,9 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
     } catch (e) {
       if (!mounted) return;
       setState(() => _sending = false);
+      // Chuyến đã đầy 100 khoảnh khắc → paywall, không phải snackbar lỗi.
+      if (await PaywallSheet.maybeShow(context, e)) return;
+      if (!mounted) return;
       _showError(e);
     }
   }

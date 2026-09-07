@@ -160,10 +160,92 @@ class QuickActionsPanel extends StatelessWidget {
     }
   }
 
+  void _showAllActionsSheet(BuildContext context) {
+    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: paper,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'dashboard.quick_actions'.tr(),
+                      style: AppFonts.heading(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        color: ink,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close, color: ink, size: 20),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: _secondaryActions.map((action) {
+                    final type = action['type'] as String;
+                    return PressableCard(
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _handleTap(context, type);
+                      },
+                      color: paper,
+                      borderColor: ink,
+                      shadowColor: ink,
+                      borderWidth: GenZTokens.borderWidthThin,
+                      radius: GenZTokens.radiusPill,
+                      depth: 2,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(_secondaryIcon(type), size: 16, color: ink),
+                          const SizedBox(width: 8),
+                          Text(
+                            (action['labelKey'] as String).tr(),
+                            style: AppFonts.body(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: ink,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,6 +269,29 @@ class QuickActionsPanel extends StatelessWidget {
                 text: 'quick',
                 icon: PhosphorIcons.lightning(PhosphorIconsStyle.fill),
                 color: GenZTokens.yellow,
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => _showAllActionsSheet(context),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'common.more'.tr(),
+                      style: AppFonts.body(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: ink.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      PhosphorIcons.caretRight(),
+                      size: 14,
+                      color: ink.withValues(alpha: 0.6),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -267,51 +372,6 @@ class QuickActionsPanel extends StatelessWidget {
               ),
             );
           },
-        ),
-
-        const SizedBox(height: 14),
-
-        // ── Secondary actions horizontal row ─────────────────────────────────
-        SizedBox(
-          height: 52,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: _secondaryActions.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            itemBuilder: (context, index) {
-              final action = _secondaryActions[index];
-              final type = action['type'] as String;
-
-              return PressableCard(
-                onTap: () => _handleTap(context, type),
-                color: paper,
-                borderColor: ink,
-                shadowColor: ink,
-                borderWidth: GenZTokens.borderWidthThin,
-                radius: GenZTokens.radiusPill,
-                depth: 3,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(_secondaryIcon(type), size: 15, color: ink),
-                    const SizedBox(width: 6),
-                    Text(
-                      (action['labelKey'] as String).tr().toUpperCase(),
-                      style: AppFonts.mono(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: ink,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ),
       ],
     );

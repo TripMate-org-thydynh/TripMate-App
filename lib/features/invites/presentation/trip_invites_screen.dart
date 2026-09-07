@@ -403,7 +403,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           child: Text(
                             invite.statusLabel,
                             style: AppFonts.heading(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: statusColor,
                             ),

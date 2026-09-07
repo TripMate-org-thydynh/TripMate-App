@@ -240,7 +240,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                   child: Text(
                                     thm,
                                     style: AppFonts.heading(
-                                      fontSize: 11,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                       color: isNeon
                                           ? secondaryColor
@@ -519,7 +519,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: AppFonts.body(fontSize: 11, color: textSecondary),
+                  style: AppFonts.body(fontSize: 12, color: textSecondary),
                 ),
               ],
             ),
@@ -558,7 +558,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
         ),
         subtitle: Text(
           desc,
-          style: AppFonts.body(fontSize: 10, color: textSecondary),
+          style: AppFonts.body(fontSize: 12, color: textSecondary),
         ),
         trailing: const Icon(Icons.arrow_forward, size: 14, color: Colors.grey),
       ),

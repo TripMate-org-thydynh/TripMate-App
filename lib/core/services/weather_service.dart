@@ -42,7 +42,13 @@ class DailyForecast {
 }
 
 class WeatherService {
-  final Dio _dio = Dio();
+  // Giới hạn timeout 10 giây để tránh treo ứng dụng vô tận khi mạng không ổn định hoặc mất kết nối.
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
   /// `null` khi không lấy được thời tiết.
   ///
