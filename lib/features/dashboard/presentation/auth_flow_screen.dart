@@ -46,7 +46,7 @@ class AuthFlowScreen extends ConsumerStatefulWidget {
 class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     with TickerProviderStateMixin {
   int _currentStep =
-      0; // 0: Vibe Onboarding, 1: Auth/Forgot, 2: Verification, 3: Profile, 4: Permissions, 5: Success
+      0; // 0: Vibe Onboarding, 1: Auth/Forgot, 2: Verification, 3: Profile, 4: Success
 
   // State variables for inputs
   final TextEditingController _emailController = TextEditingController();
@@ -59,6 +59,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
   final List<String> _selectedVibes = [];
   bool _isForgotPasswordMode = false;
   bool _isEmailInput = false;
+  bool _isSubmitting = false;
 
   // serverClientId KHÔNG được hỗ trợ trên Web (client ID lấy từ meta tag
   // google-signin-client_id trong web/index.html). Chỉ truyền trên mobile.
@@ -212,7 +213,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: _currentStep > 0 && _currentStep < 5
+        leading: _currentStep > 0 && _currentStep < 4
             ? IconButton(
                 icon: Icon(
                   Icons.arrow_back_ios,
@@ -239,7 +240,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             : null,
         centerTitle: true,
         actions: [
-          if (_currentStep < 5)
+          if (_currentStep < 4)
             TextButton(
               onPressed: () {
                 // Skip vibe selection only — still need to sign in
@@ -314,8 +315,6 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
       case 3:
         return _buildProfileSetup(theme, primaryColor, secondaryColor);
       case 4:
-        return _buildPermissionsFlow(theme, primaryColor, secondaryColor);
-      case 5:
         return _buildWelcomeSuccess(theme, primaryColor, secondaryColor);
       default:
         return const SizedBox();
@@ -715,18 +714,21 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             ),
             child: ElevatedButton(
               onPressed: () async {
+                if (_isSubmitting) return;
                 if (_emailController.text.isNotEmpty) {
-                  final email = _emailController.text.trim();
                   setState(() {
+                    _isSubmitting = true;
                     _isEmailInput = true;
                   });
+                  try {
+                    final email = _emailController.text.trim();
 
-                  final sendRes = await ApiService.post('/auth/send-otp', {
-                    'phoneNumber': email,
-                  });
+                    final sendRes = await ApiService.post('/auth/send-otp', {
+                      'phoneNumber': email,
+                    });
 
-                  if (sendRes != null && sendRes['success'] == true) {
-                    if (mounted) {
+                    if (!mounted) return;
+                    if (sendRes != null && sendRes['success'] == true) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('auth.otp_sent_email'.tr(namedArgs: {'email': email})),
@@ -738,14 +740,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                         _nextStep(); // Goes to verification code screen
                       });
                     }
-                  } else {
+                  } finally {
                     if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('auth.otp_send_failed'.tr()),
-                          backgroundColor: Colors.redAccent,
-                        ),
-                      );
+                      setState(() => _isSubmitting = false);
                     }
                   }
                 }
@@ -885,18 +882,21 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               const SizedBox(width: 8),
               GestureDetector(
                 onTap: () async {
+                  if (_isSubmitting) return;
                   if (_emailController.text.isNotEmpty) {
-                    final input = _emailController.text.trim();
-                    final target = _isEmailInput
-                        ? input
-                        : _formatVnPhone(input);
+                    setState(() => _isSubmitting = true);
+                    try {
+                      final input = _emailController.text.trim();
+                      final target = _isEmailInput
+                          ? input
+                          : _formatVnPhone(input);
 
-                    final sendRes = await ApiService.post('/auth/send-otp', {
-                      'phoneNumber': target,
-                    });
+                      final sendRes = await ApiService.post('/auth/send-otp', {
+                        'phoneNumber': target,
+                      });
 
-                    if (sendRes != null && sendRes['success'] == true) {
-                      if (mounted) {
+                      if (!mounted) return;
+                      if (sendRes != null && sendRes['success'] == true) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -909,14 +909,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                         );
                         _nextStep();
                       }
-                    } else {
+                    } finally {
                       if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('auth.otp_send_failed'.tr()),
-                            backgroundColor: Colors.redAccent,
-                          ),
-                        );
+                        setState(() => _isSubmitting = false);
                       }
                     }
                   }
@@ -1211,56 +1206,61 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           ),
           child: ElevatedButton(
             onPressed: () async {
+              if (_isSubmitting) return;
               if (_otpController.text.length == 4) {
-                final input = _emailController.text.trim();
-                final target = _isEmailInput ? input : _formatVnPhone(input);
-                final code = _otpController.text.trim();
+                setState(() => _isSubmitting = true);
+                try {
+                  final input = _emailController.text.trim();
+                  final target = _isEmailInput ? input : _formatVnPhone(input);
+                  final code = _otpController.text.trim();
 
-                final verifyRes = await ApiService.post('/auth/verify-otp', {
-                  'phoneNumber': target,
-                  'code': code,
-                });
+                  final verifyRes = await ApiService.post('/auth/verify-otp', {
+                    'phoneNumber': target,
+                    'code': code,
+                  });
 
-                // Backend bọc response trong {success, data:{...}} → unwrap data.
-                final data = (verifyRes is Map && verifyRes['data'] is Map)
-                    ? (verifyRes['data'] as Map).cast<String, dynamic>()
-                    : (verifyRes is Map
-                          ? verifyRes.cast<String, dynamic>()
-                          : null);
-                if (data != null) {
-                  if (data['exists'] == true) {
-                    _tempAuthToken = data['token']?.toString();
-                    _tempUser = (data['user'] as Map?)?.cast<String, dynamic>();
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'auth.welcome_back'.tr(
-                              namedArgs: {
-                                'name': '${_tempUser?['name'] ?? ''}',
-                              },
+                  if (!mounted) return;
+
+                  // Backend bọc response trong {success, data:{...}} → unwrap data.
+                  final data = (verifyRes is Map && verifyRes['data'] is Map)
+                      ? (verifyRes['data'] as Map).cast<String, dynamic>()
+                      : (verifyRes is Map
+                            ? verifyRes.cast<String, dynamic>()
+                            : null);
+                  if (data != null) {
+                    if (data['exists'] == true) {
+                      _tempAuthToken = data['token']?.toString();
+                      _tempUser = (data['user'] as Map?)?.cast<String, dynamic>();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'auth.welcome_back'.tr(
+                                namedArgs: {
+                                  'name': '${_tempUser?['name'] ?? ''}',
+                                },
+                              ),
                             ),
+                            backgroundColor: secondaryColor,
                           ),
-                          backgroundColor: secondaryColor,
-                        ),
-                      );
-                      setState(() {
-                        _currentStep = 5;
-                      });
+                        );
+                        setState(() {
+                          _currentStep = 4;
+                        });
+                      }
+                    } else {
+                      _tempSupabaseId = data['supabaseId']?.toString();
+                      _tempEmail = data['email']?.toString();
+                      if (mounted) {
+                        _nextStep();
+                      }
                     }
-                  } else {
-                    _tempSupabaseId = data['supabaseId']?.toString();
-                    _tempEmail = data['email']?.toString();
-                    _nextStep();
                   }
-                } else {
+                  // Bỏ snackbar hardcode thứ hai khi verifyRes == null
+                  // vì ApiService.post đã tự hiện snackbar lỗi chính xác (429, 400,...)
+                } finally {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('auth.otp_invalid'.tr()),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                    );
+                    setState(() => _isSubmitting = false);
                   }
                 }
               }
@@ -1354,75 +1354,77 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           const SizedBox(height: 48),
           ElevatedButton(
             onPressed: () async {
+              if (_isSubmitting) return;
               if (_nameController.text.isNotEmpty &&
                   _usernameController.text.isNotEmpty) {
-                final rawInput = _emailController.text.trim();
-                final String email;
-                final String supabaseId;
+                setState(() => _isSubmitting = true);
+                try {
+                  final rawInput = _emailController.text.trim();
+                  final String email;
+                  final String supabaseId;
 
-                if (_tempEmail != null) {
-                  email = _tempEmail!;
-                } else if (_isEmailInput) {
-                  email = rawInput;
-                } else {
-                  final formattedPhone = _formatVnPhone(rawInput);
-                  email =
-                      '${formattedPhone.replaceAll('+', '')}@phone.tripmate.com';
-                }
-
-                if (_tempSupabaseId != null) {
-                  supabaseId = _tempSupabaseId!;
-                } else if (_isEmailInput) {
-                  supabaseId =
-                      'sb-email-${rawInput.replaceAll('@', '-').replaceAll('.', '-')}';
-                } else {
-                  final formattedPhone = _formatVnPhone(rawInput);
-                  supabaseId =
-                      'sb-${formattedPhone.replaceAll('+', '').replaceAll(' ', '')}';
-                }
-
-                // Call Register API on the NestJS backend
-                final regRes = await ApiService.post('/auth/register', {
-                  'email': email,
-                  'name': _nameController.text.trim(),
-                  'username': _usernameController.text.trim(),
-                  'supabaseId': supabaseId,
-                  // Avatar sinh theo tên (không gán ảnh stock giả).
-                  'avatarUrl':
-                      'https://ui-avatars.com/api/?name=${Uri.encodeComponent(_nameController.text.trim())}&background=FFD84D&color=141210&bold=true&size=256',
-                });
-
-                // Backend bọc response trong {success, data:{...}} → unwrap.
-                final regData = (regRes is Map && regRes['data'] is Map)
-                    ? (regRes['data'] as Map).cast<String, dynamic>()
-                    : (regRes is Map ? regRes.cast<String, dynamic>() : null);
-                if (regData != null && regData['token'] != null) {
-                  _tempAuthToken = regData['token'].toString();
-                  _tempUser = (regData['user'] as Map?)
-                      ?.cast<String, dynamic>();
-
-                  // If social clout handles were entered, also sync them
-                  if (_instaController.text.isNotEmpty ||
-                      _tiktokController.text.isNotEmpty) {
-                    await ApiService.patch('/users/me/social-links', {
-                      'instagram': _instaController.text.isNotEmpty
-                          ? 'https://instagram.com/${_instaController.text.trim()}'
-                          : null,
-                      'tiktok': _tiktokController.text.isNotEmpty
-                          ? 'https://tiktok.com/@${_tiktokController.text.trim()}'
-                          : null,
-                    });
+                  if (_tempEmail != null) {
+                    email = _tempEmail!;
+                  } else if (_isEmailInput) {
+                    email = rawInput;
+                  } else {
+                    final formattedPhone = _formatVnPhone(rawInput);
+                    email =
+                        '${formattedPhone.replaceAll('+', '')}@phone.tripmate.com';
                   }
 
-                  _nextStep();
-                } else {
+                  if (_tempSupabaseId != null) {
+                    supabaseId = _tempSupabaseId!;
+                  } else if (_isEmailInput) {
+                    supabaseId =
+                        'sb-email-${rawInput.replaceAll('@', '-').replaceAll('.', '-')}';
+                  } else {
+                    final formattedPhone = _formatVnPhone(rawInput);
+                    supabaseId =
+                        'sb-${formattedPhone.replaceAll('+', '').replaceAll(' ', '')}';
+                  }
+
+                  // Call Register API on the NestJS backend
+                  final regRes = await ApiService.post('/auth/register', {
+                    'email': email,
+                    'name': _nameController.text.trim(),
+                    'username': _usernameController.text.trim(),
+                    'supabaseId': supabaseId,
+                    // Avatar sinh theo tên (không gán ảnh stock giả).
+                    'avatarUrl':
+                        'https://ui-avatars.com/api/?name=${Uri.encodeComponent(_nameController.text.trim())}&background=FFD84D&color=141210&bold=true&size=256',
+                  });
+
+                  if (!mounted) return;
+
+                  // Backend bọc response trong {success, data:{...}} → unwrap.
+                  final regData = (regRes is Map && regRes['data'] is Map)
+                      ? (regRes['data'] as Map).cast<String, dynamic>()
+                      : (regRes is Map ? regRes.cast<String, dynamic>() : null);
+                  if (regData != null && regData['token'] != null) {
+                    _tempAuthToken = regData['token'].toString();
+                    _tempUser = (regData['user'] as Map?)
+                        ?.cast<String, dynamic>();
+
+                    // If social clout handles were entered, also sync them
+                    if (_instaController.text.isNotEmpty ||
+                        _tiktokController.text.isNotEmpty) {
+                      await ApiService.patch('/users/me/social-links', {
+                        'instagram': _instaController.text.isNotEmpty
+                            ? 'https://instagram.com/${_instaController.text.trim()}'
+                            : null,
+                        'tiktok': _tiktokController.text.isNotEmpty
+                            ? 'https://tiktok.com/@${_tiktokController.text.trim()}'
+                            : null,
+                      });
+                      if (!mounted) return;
+                    }
+
+                    _nextStep();
+                  }
+                } finally {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('auth.signup_failed'.tr()),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                    );
+                    setState(() => _isSubmitting = false);
                   }
                 }
               }
@@ -1452,74 +1454,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     );
   }
 
-  // --- STEP 4: PERMISSIONS FLOW (DON'T LOSE THE SQUAD 😭) ---
-  Widget _buildPermissionsFlow(
-    ThemeData theme,
-    Color primaryColor,
-    Color secondaryColor,
-  ) {
-    final ink = widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    final sub = widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    return Column(
-      key: const ValueKey('perms_step'),
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text('😭', style: TextStyle(fontSize: 84)),
-        const SizedBox(height: 24),
-        Text(
-          'auth.location_title'.tr(),
-          style: AppFonts.heading(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: ink,
-            letterSpacing: -1,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'auth.location_sub'.tr(),
-          style: AppFonts.body(color: sub, fontSize: 14, height: 1.5),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 64),
-        ElevatedButton.icon(
-          onPressed: _nextStep,
-          icon: Icon(Icons.location_on, color: GenZTokens.ink),
-          label: Text(
-            'auth.allow_location'.tr(),
-            style: AppFonts.heading(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: GenZTokens.ink,
-            ),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            foregroundColor: GenZTokens.ink,
-            elevation: 0,
-            shadowColor: Colors.transparent,
-            minimumSize: const Size(double.infinity, 56),
-            side: BorderSide(color: ink, width: GenZTokens.borderWidth),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextButton(
-          onPressed: _nextStep,
-          child: Text(
-            'auth.later'.tr(),
-            style: AppFonts.heading(color: sub, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // --- STEP 5: WELCOME SUCCESS SCREEN ---
+  // --- STEP 4: WELCOME SUCCESS SCREEN ---
   Widget _buildWelcomeSuccess(
     ThemeData theme,
     Color primaryColor,
@@ -1685,9 +1620,10 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     final messenger = ScaffoldMessenger.of(context);
     try {
       final account = await _googleSignIn.signIn();
-      if (account == null) return;
+      if (account == null || !mounted) return;
 
       final auth = await account.authentication;
+      if (!mounted) return;
       final idToken = auth.idToken;
 
       if (idToken == null) {
@@ -1707,6 +1643,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         'avatarUrl': account.photoUrl ?? '',
       });
 
+      if (!mounted) return;
+
       // Backend bọc response trong {success, data:{...}} → unwrap data.
       final data = (response is Map && response['data'] is Map)
           ? (response['data'] as Map).cast<String, dynamic>()
@@ -1725,7 +1663,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               backgroundColor: secondaryColor,
             ),
           );
-          if (mounted) setState(() => _currentStep = 5);
+          if (mounted) setState(() => _currentStep = 4);
         } else {
           _tempSupabaseId = data['supabaseId']?.toString();
           _tempEmail = data['email']?.toString() ?? account.email;
@@ -1735,21 +1673,16 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           // sang thẳng bước hồ sơ (step 3).
           if (mounted) setState(() => _currentStep = 3);
         }
-      } else {
+      }
+    } catch (e) {
+      if (mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('auth.google_failed'.tr()),
+            content: Text('auth.google_signin_failed'.tr(namedArgs: {'err': friendlyError(e)})),
             backgroundColor: Colors.redAccent,
           ),
         );
       }
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text('auth.google_signin_failed'.tr(namedArgs: {'err': friendlyError(e)})),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
     }
   }
 }

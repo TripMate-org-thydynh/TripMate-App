@@ -5,7 +5,6 @@
     <!-- CAMERA: Squad Cam (khung ngắm trực tiếp, chụp ảnh và quay clip ngắn),
          image_picker (chụp ảnh vị trí, quét vé). -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <!-- RECORD_AUDIO: quay clip ngắn CÓ TIẾNG ở Squad Cam (giữ nút chụp). -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- VIBRATE: HapticFeedback ở các thao tác chính. -->
@@ -17,14 +16,20 @@
     <!-- Đã gỡ (không có code nào dùng):
          ACCESS_FINE_LOCATION / ACCESS_COARSE_LOCATION — app lấy toạ độ từ EXIF
            ảnh và từ lịch trình, không đọc GPS thiết bị.
+         READ_MEDIA_IMAGES — app chỉ dùng ImagePicker (Photo Picker hệ thống Android 13+),
+           không cần quyền đọc media. Tránh bị Google Play từ chối.
          READ_MEDIA_VIDEO — chỉ chọn ảnh (pickImage), clip do app tự quay.
          RECEIVE_BOOT_COMPLETED — không có notification/alarm chạy nền.
          Thêm lại kèm code sử dụng khi làm tính năng tương ứng. -->
 
+    <!-- Tắt Auto Backup: app lưu giữ token phiên đăng nhập và dữ liệu chuyến đi nhạy cảm,
+         không nên để tự động sao lưu lên Google Drive. -->
     <application
         android:label="TripMate"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false">
         <activity
             android:name=".MainActivity"
             android:exported="true"

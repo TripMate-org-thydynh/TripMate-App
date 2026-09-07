@@ -11,6 +11,7 @@ import '../domain/trip_vibe.dart';
 import 'edit_trip_sheet.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
 import '../../expense_tracker/presentation/pages/trip_balances_screen.dart';
+import '../../fund/presentation/trip_fund_screen.dart';
 import '../../social/presentation/pages/trip_polls_screen.dart';
 import '../../trip_planner/presentation/trip_wishlist_screen.dart';
 import '../../trip_planner/presentation/trip_itinerary_screen.dart';
@@ -287,6 +288,17 @@ class TripHubScreen extends StatelessWidget {
                         () => TripBalancesScreen(
                           tripId: trip.id,
                           tripName: trip.name,
+                          isDarkMode: isDarkMode,
+                        ),
+                      ),
+                      _tile(
+                        context,
+                        PhosphorIcons.piggyBank(PhosphorIconsStyle.fill),
+                        'fund.title'.tr(),
+                        'hub.fund_sub'.tr(),
+                        const Color(0xFF10B981),
+                        () => TripFundScreen(
+                          tripId: trip.id,
                           isDarkMode: isDarkMode,
                         ),
                       ),

@@ -9,6 +9,7 @@ import '../../../../core/app_messenger.dart';
 import '../../../../core/format/money.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
+import '../../../premium/presentation/paywall_sheet.dart';
 import '../../data/expenses_repository.dart';
 
 class AiReceiptScannerScreen extends ConsumerStatefulWidget {
@@ -101,6 +102,12 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
       }
     } catch (e) {
       if (mounted) {
+        setState(() {
+          _isSelecting = true;
+          _isScanning = false;
+        });
+        if (await PaywallSheet.maybeShow(context, e)) return;
+        if (!mounted) return;
         // Hiện đúng lý do BE trả về (AI hết quota, ảnh mờ...) thay vì một câu
         // chung chung khiến người dùng cứ bấm lại mãi.
         showGlobalSnack(
@@ -109,10 +116,6 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
               : 'expense.scan_failed'.tr(),
           isError: true,
         );
-        setState(() {
-          _isSelecting = true;
-          _isScanning = false;
-        });
       }
     } finally {
       _scannerController.stop();
