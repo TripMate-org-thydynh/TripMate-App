@@ -28,6 +28,7 @@ class _SubscriptionSettingsScreenState
   Map<String, dynamic>? _sub;
   bool _loading = true;
   bool _failed = false;
+  bool _cancelling = false;
 
   @override
   void initState() {
@@ -47,6 +48,53 @@ class _SubscriptionSettingsScreenState
       _failed = res == null;
       _loading = false;
     });
+  }
+
+  Future<void> _confirmCancel() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          'Huỷ gia hạn gói?',
+          style: AppFonts.heading(fontSize: 18, fontWeight: FontWeight.w800),
+        ),
+        content: Text(
+          'Bạn vẫn sẽ được hưởng đầy đủ quyền lợi của gói cho đến hết chu kỳ hiện tại. Sau thời hạn này, gói sẽ không tự động gia hạn.',
+          style: AppFonts.body(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Giữ gói'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Xác nhận huỷ'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _cancelling = true);
+    final res = await ApiService.post('/premium/cancel', {});
+    if (!mounted) return;
+    setState(() => _cancelling = false);
+
+    if (res != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã huỷ gia hạn thành công. Gói vẫn có hiệu lực đến hết kỳ hạn.'),
+          backgroundColor: GenZTokens.success,
+        ),
+      );
+      _fetch();
+    }
   }
 
   @override
@@ -95,7 +143,11 @@ class _SubscriptionSettingsScreenState
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final price = (_sub?['price'] as num?)?.toInt() ?? 0;
-    final next = _parseDate(_sub?['nextBillingDate'] as String?);
+    final next = _parseDate((_sub?['nextBillingDate'] ?? _sub?['activeUntil']) as String?);
+    final isCancelled = _sub?['cancelAtPeriodEnd'] == true;
+    final isViaSeat = _sub?['via'] == 'seat';
+    final isOwner = !isViaSeat;
+    final planName = _sub?['plan'] == 'SQUAD' ? 'Squad Pass 👑' : 'TripMate+ ✨';
     final benefits = (_sub?['benefits'] as List?)?.whereType<String>().toList();
 
     return RefreshIndicator(
@@ -116,13 +168,30 @@ class _SubscriptionSettingsScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'premium.plan_elite'.tr(),
-                  style: AppFonts.heading(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w900,
-                    color: GenZTokens.ink,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      planName,
+                      style: AppFonts.heading(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                        color: GenZTokens.ink,
+                      ),
+                    ),
+                    if (isViaSeat)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: GenZTokens.ink.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                        ),
+                        child: Text(
+                          'Ghế nhóm',
+                          style: AppFonts.body(fontSize: 11, fontWeight: FontWeight.w700, color: GenZTokens.ink),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: GenZTokens.space2),
                 Text(
@@ -132,19 +201,44 @@ class _SubscriptionSettingsScreenState
                 if (next != null) ...[
                   const SizedBox(height: 2),
                   Text(
-                    'premium.next_billing'.tr(
-                      args: [
-                        DateFormat.yMMMd(
-                          context.locale.toLanguageTag(),
-                        ).format(next),
-                      ],
-                    ),
+                    isCancelled
+                      ? 'Hết hạn vào: ${DateFormat.yMMMd(context.locale.toLanguageTag()).format(next)}'
+                      : 'premium.next_billing'.tr(
+                          args: [
+                            DateFormat.yMMMd(
+                              context.locale.toLanguageTag(),
+                            ).format(next),
+                          ],
+                        ),
                     style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
                   ),
                 ],
               ],
             ),
           ),
+          if (isCancelled) ...[
+            const SizedBox(height: GenZTokens.space4),
+            Container(
+              padding: const EdgeInsets.all(GenZTokens.space4),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                border: Border.all(color: Colors.amber.shade700, width: 1.5),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: Colors.amber.shade800),
+                  const SizedBox(width: GenZTokens.space3),
+                  Expanded(
+                    child: Text(
+                      'Gói đã huỷ gia hạn. Bạn vẫn được dùng toàn bộ tính năng đến hết hạn.',
+                      style: AppFonts.body(fontSize: 13, color: ink),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           if (benefits != null && benefits.isNotEmpty) ...[
             const SizedBox(height: GenZTokens.space5),
             Text(
@@ -175,8 +269,35 @@ class _SubscriptionSettingsScreenState
               ),
           ],
           const SizedBox(height: GenZTokens.space5),
-          // Play Billing quản lý gia hạn/huỷ gói — app chỉ nói rõ chỗ làm,
-          // không dựng công tắc giả như trước.
+          if (isOwner && !isCancelled) ...[
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red.shade600,
+                side: BorderSide(color: Colors.red.shade400, width: 1.5),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                ),
+              ),
+              onPressed: _cancelling ? null : _confirmCancel,
+              icon: _cancelling
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.cancel_outlined, size: 18),
+              label: Text(
+                _cancelling ? 'Đang xử lý...' : 'Huỷ tự động gia hạn',
+                style: AppFonts.body(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.red.shade600,
+                ),
+              ),
+            ),
+            const SizedBox(height: GenZTokens.space4),
+          ],
           Container(
             padding: const EdgeInsets.all(GenZTokens.space4),
             decoration: BoxDecoration(
@@ -191,7 +312,9 @@ class _SubscriptionSettingsScreenState
                 const SizedBox(width: GenZTokens.space3),
                 Expanded(
                   child: Text(
-                    'premium.manage_in_play'.tr(),
+                    isViaSeat
+                      ? 'Bạn đang sử dụng ghế thành viên được mời bởi trưởng nhóm. Trưởng nhóm là người quản trị việc gia hạn hoặc thay đổi gói.'
+                      : 'Giao dịch qua MoMo / ZaloPay / Google Play được bảo mật theo tiêu chuẩn thanh toán quốc tế.',
                     style: AppFonts.body(
                       fontSize: 13,
                       color: inkSoft,

@@ -2,8 +2,10 @@ import '../../../core/theme/theme.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/api_service.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import '../presentation/vietqr_payment_sheet.dart';
 
 class SubscriptionCheckoutScreen extends StatefulWidget {
   const SubscriptionCheckoutScreen({super.key});
@@ -15,7 +17,7 @@ class SubscriptionCheckoutScreen extends StatefulWidget {
 
 class _SubscriptionCheckoutScreenState
     extends State<SubscriptionCheckoutScreen> {
-  String _selectedMethod = 'VISA'; // VISA, MOMO, TECHCOM
+  String _selectedMethod = 'SEPAY'; // SEPAY, MOMO, ZALOPAY, VISA
   bool _isProcessing = false;
   List<String> _benefits = [
     'premium.perk_recap'.tr(),
@@ -47,43 +49,82 @@ class _SubscriptionCheckoutScreenState
     Map<String, dynamic>? response;
     String? failureMessage;
 
-    try {
-      final InAppPurchase iap = InAppPurchase.instance;
-      final bool isAvailable = await iap.isAvailable();
-      if (!isAvailable) {
-        failureMessage =
-            'premium.billing_unavailable'.tr() +
-            'premium.billing_update_hint'.tr();
-      } else {
-        const Set<String> kIds = <String>{'elite_squad_monthly'};
-        final ProductDetailsResponse res = await iap.queryProductDetails(kIds);
-        if (res.productDetails.isEmpty) {
-          // Sản phẩm chưa được tạo trên Play Console → CHƯA mở bán.
-          // Tuyệt đối không fallback sang endpoint cấp Premium miễn phí:
-          // vừa thất thoát doanh thu, vừa vi phạm chính sách thanh toán của
-          // Google Play (hàng hoá số bắt buộc đi qua Play Billing).
-          failureMessage =
-              'premium.not_on_sale'.tr() +
-              'premium.not_on_sale_2'.tr();
-        } else {
-          final ProductDetails productDetails = res.productDetails.first;
-          final bool started = await iap.buyNonConsumable(
-            purchaseParam: PurchaseParam(productDetails: productDetails),
-          );
-          if (!started) {
-            failureMessage = 'premium.checkout_failed'.tr();
+    if (_selectedMethod == 'SEPAY' ||
+        _selectedMethod == 'MOMO' ||
+        _selectedMethod == 'ZALOPAY') {
+      try {
+        final res = await ApiService.post('/premium/checkout', {
+          'plan': 'SQUAD',
+          'tier': 'SQUAD',
+          'months': 1,
+          'paymentMethod': _selectedMethod,
+          'redirectUrl': 'tripmate://checkout/callback',
+        });
+        if (res is Map && res['payUrl'] != null) {
+          if (_selectedMethod == 'SEPAY') {
+            final orderCode =
+                res['orderCode'] as String? ?? res['orderId'] as String? ?? '';
+            final qrUrl =
+                res['vietqrUrl'] as String? ?? res['qrUrl'] as String? ?? '';
+            final amount = (res['amount'] as num?)?.toInt() ?? 10000;
+            final payUrl = res['payUrl'] as String?;
+            final bankInfo = res['bankInfo'] as Map<String, dynamic>?;
+
+            if (mounted) {
+              await VietQrPaymentSheet.show(
+                context,
+                orderCode: orderCode,
+                amount: amount,
+                qrUrl: qrUrl,
+                payUrl: payUrl,
+                bankInfo: bankInfo,
+              );
+            }
           } else {
-            // Biên lai thật do Play trả về qua purchaseStream; backend sẽ xác
-            // thực với Google trước khi kích hoạt Premium.
-            response = await ApiService.post('/premium/verify-google-play', {
-              'productId': 'elite_squad_monthly',
-            });
+            final uri = Uri.parse(res['payUrl'] as String);
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        } else {
+          failureMessage =
+              res?['message']?.toString() ?? 'Khởi tạo thanh toán thất bại';
+        }
+      } catch (e) {
+        debugPrint('Checkout error: $e');
+        failureMessage = 'Lỗi kết nối cổng thanh toán';
+      }
+    } else {
+      try {
+        final InAppPurchase iap = InAppPurchase.instance;
+        final bool isAvailable = await iap.isAvailable();
+        if (!isAvailable) {
+          failureMessage =
+              'premium.billing_unavailable'.tr() +
+              'premium.billing_update_hint'.tr();
+        } else {
+          const Set<String> kIds = <String>{'elite_squad_monthly'};
+          final ProductDetailsResponse res = await iap.queryProductDetails(kIds);
+          if (res.productDetails.isEmpty) {
+            failureMessage =
+                'premium.not_on_sale'.tr() +
+                'premium.not_on_sale_2'.tr();
+          } else {
+            final ProductDetails productDetails = res.productDetails.first;
+            final bool started = await iap.buyNonConsumable(
+              purchaseParam: PurchaseParam(productDetails: productDetails),
+            );
+            if (!started) {
+              failureMessage = 'premium.checkout_failed'.tr();
+            } else {
+              response = await ApiService.post('/premium/verify-google-play', {
+                'productId': 'elite_squad_monthly',
+              });
+            }
           }
         }
+      } catch (e) {
+        debugPrint('IAP Error: $e');
+        failureMessage = 'premium.payment_failed'.tr();
       }
-    } catch (e) {
-      debugPrint('IAP Error: $e');
-      failureMessage = 'premium.payment_failed'.tr();
     }
 
     if (!mounted) return;
@@ -358,18 +399,42 @@ class _SubscriptionCheckoutScreenState
               children: [
                 Expanded(
                   child: _buildMethodCard(
-                    'VISA',
-                    'Visa Card 💳',
+                    'SEPAY',
+                    'VietQR 🏦',
                     isDark,
                     primaryColor,
                     surfaceColor,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
                   child: _buildMethodCard(
                     'MOMO',
-                    'Momo Wallet 💸',
+                    'Ví MoMo 💸',
+                    isDark,
+                    primaryColor,
+                    surfaceColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMethodCard(
+                    'ZALOPAY',
+                    'Ví ZaloPay ⚡',
+                    isDark,
+                    primaryColor,
+                    surfaceColor,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildMethodCard(
+                    'VISA',
+                    'Google Play 💳',
                     isDark,
                     primaryColor,
                     surfaceColor,
