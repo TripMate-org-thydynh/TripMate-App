@@ -179,6 +179,13 @@ class _SubscriptionCheckoutScreenState
     });
 
     if (!mounted) return;
+
+    // Đơn 0 đồng được server hoàn tất ngay nên không có payUrl, không phải lỗi.
+    if (res is Map && res['paid'] == true) {
+      _handleSuccess();
+      return;
+    }
+
     if (res is! Map || res['payUrl'] == null) {
       // ApiService đã hiện snackbar lỗi từ server.
       setState(() => _processing = false);
@@ -204,37 +211,56 @@ class _SubscriptionCheckoutScreenState
   ///
   /// Người dùng gần như luôn quay lại app trước khi cổng kịp gọi webhook, nên
   /// không thể coi "vừa về từ ví" là "đã trả tiền" — chỉ server mới biết.
-  /// Bỏ cuộc sau 2 phút thay vì quay vòng mãi; đơn treo sẽ tự hết hạn ở server.
+  /// Giãn dần polling (5 lần đầu cách 3s, sau đó 6s, rồi 10s) để tránh chạm trần
+  /// 100 req/60s của backend; dừng sau khoảng 2 phút như cũ.
   void _watchOrder(String orderId) {
+    var attempts = 0;
     var elapsed = 0;
     _poll?.cancel();
-    _poll = Timer.periodic(const Duration(seconds: 3), (t) async {
-      elapsed += 3;
-      final res = await ApiService.get('/premium/orders/$orderId');
-      if (!mounted) {
-        t.cancel();
-        return;
-      }
-      final status = res is Map ? res['status'] as String? : null;
 
-      if (status == 'SUCCESS') {
-        t.cancel();
-        setState(() => _processing = false);
-        _showSuccess();
-      } else if (status == 'FAILED' || status == 'CANCELLED') {
-        t.cancel();
-        setState(() => _processing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('premium.payment_failed'.tr())),
-        );
-      } else if (elapsed >= 120) {
-        t.cancel();
-        setState(() => _processing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('premium.payment_pending'.tr())),
-        );
+    void schedulePoll() {
+      final int interval;
+      if (attempts < 5) {
+        interval = 3;
+      } else if (attempts < 15) {
+        interval = 6;
+      } else {
+        interval = 10;
       }
-    });
+
+      _poll = Timer(Duration(seconds: interval), () async {
+        attempts++;
+        elapsed += interval;
+        final res = await ApiService.get('/premium/orders/$orderId');
+        if (!mounted) return;
+        final status = res is Map ? res['status'] as String? : null;
+
+        if (status == 'SUCCESS') {
+          _handleSuccess();
+        } else if (status == 'FAILED' || status == 'CANCELLED') {
+          setState(() => _processing = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('premium.payment_failed'.tr())),
+          );
+        } else if (elapsed >= 120) {
+          setState(() => _processing = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('premium.payment_pending'.tr())),
+          );
+        } else {
+          schedulePoll();
+        }
+      });
+    }
+
+    schedulePoll();
+  }
+
+  void _handleSuccess() {
+    if (!mounted) return;
+    _poll?.cancel();
+    setState(() => _processing = false);
+    _showSuccess();
   }
 
   void _showSuccess() {

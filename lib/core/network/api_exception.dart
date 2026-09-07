@@ -35,6 +35,7 @@ class ApiException implements Exception {
   bool get isNetwork => statusCode == null;
   bool get isUnauthorized => statusCode == 401;
   bool get isForbidden => statusCode == 403;
+  bool get isRateLimited => statusCode == 429;
   bool get isServer => statusCode != null && statusCode! >= 500;
 
   factory ApiException.fromDio(DioException e) {
@@ -64,8 +65,25 @@ class ApiException implements Exception {
       details = data.cast<String, dynamic>();
     }
 
-    if (status == 401) message = 'errors.session_expired'.tr();
+    if (status == 401) {
+      final isDefaultOrEmpty = message.trim().isEmpty ||
+          message.trim().toLowerCase() == 'unauthorized' ||
+          message == 'errors.unknown_error'.tr();
+      if (isDefaultOrEmpty) {
+        message = 'errors.session_expired'.tr();
+      }
+    }
     if (status == 403) message = 'errors.unauthorized'.tr();
+    if (status == 429) {
+      final retryAfter = e.response?.headers.value('retry-after');
+      if (retryAfter != null && retryAfter.trim().isNotEmpty) {
+        message = 'errors.rate_limited_retry_after'.tr(
+          namedArgs: {'seconds': retryAfter.trim()},
+        );
+      } else {
+        message = 'errors.rate_limited'.tr();
+      }
+    }
     if (status != null && status >= 500) {
       message = 'errors.server_error'.tr();
     }

@@ -9,10 +9,16 @@ import 'network/envelope.dart';
 
 class ApiService {
   // Global Navigator Key for system-level redirection
+  // Lưu ý: Hiện tại main.dart sử dụng MaterialApp.router (routerConfig) nên không gắn
+  // navigatorKey này. Do đó currentState luôn null và _navigateToNoInternet() là no-op.
+  // Đường phản hồi thật khi gặp lỗi mạng/mất kết nối là showGlobalSnack qua rootMessengerKey.
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
   static bool _isOfflineScreenShowing = false;
 
+  /// Điều hướng sang NoInternetScreen khi mất kết nối.
+  /// Ghi chú: Hàm này hiện không chạy vì thiếu navigatorKey gắn trong MaterialApp.router.
+  /// SnackBar qua showGlobalSnack (dùng rootMessengerKey) là đường phản hồi thật cho người dùng.
   static void _navigateToNoInternet() {
     if (_isOfflineScreenShowing) return;
     final context = navigatorKey.currentState?.overlay?.context;
@@ -84,6 +90,8 @@ class ApiService {
             onError: (err, handler) {
               if (err.type == DioExceptionType.connectionTimeout ||
                   err.type == DioExceptionType.receiveTimeout ||
+                  err.type == DioExceptionType.sendTimeout ||
+                  err.type == DioExceptionType.connectionError ||
                   err.error is SocketException) {
                 _navigateToNoInternet();
               }
@@ -100,17 +108,20 @@ class ApiService {
   /// Giữ tương thích: nếu response không có envelope thì trả nguyên body.
   static dynamic _unwrap(dynamic body) => unwrapEnvelope(body);
 
-  /// Hiện thông báo lỗi từ server (4xx/5xx) cho người dùng, giữ hợp đồng trả null.
-  /// Lỗi mạng đã có NoInternetScreen nên bỏ qua ở đây (tránh trùng).
+  /// Hiện thông báo lỗi từ server (4xx/5xx) hoặc lỗi mạng cho người dùng, giữ hợp đồng trả null.
   static void _surfaceError(Object e, String method, String path) {
     debugPrint('ApiService $method $path exception: $e');
     if (e is! DioException) return;
     final isNetwork =
         e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
         e.type == DioExceptionType.connectionError ||
         e.error is SocketException;
-    if (isNetwork) return;
+    if (isNetwork) {
+      showGlobalSnack('errors.connection_lost'.tr(), isError: true);
+      return;
+    }
     // 401 khi ĐANG có phiên = phiên hết hạn, `_handleUnauthorized()` đã báo rồi
     // nên bỏ qua để không hiện hai snackbar.
     //
@@ -120,6 +131,21 @@ class ApiService {
     // nhánh cùng im lặng: người dùng bấm "Đăng nhập" và không thấy gì xảy ra
     // (BUG-001). Phải để lỗi này đi tiếp xuống snackbar.
     if (e.response?.statusCode == 401 && authToken != null) return;
+
+    // 429: Rate Limited
+    if (e.response?.statusCode == 429) {
+      final retryAfter = e.response?.headers.value('retry-after');
+      if (retryAfter != null && retryAfter.trim().isNotEmpty) {
+        showGlobalSnack(
+          'errors.rate_limited_retry_after'.tr(namedArgs: {'seconds': retryAfter.trim()}),
+          isError: true,
+        );
+      } else {
+        showGlobalSnack('errors.rate_limited'.tr(), isError: true);
+      }
+      return;
+    }
+
     String? msg;
     final data = e.response?.data;
     if (data is Map && data['message'] != null) {
