@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/api_service.dart';
 import '../../../core/format/money.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/entitlement_provider.dart';
@@ -45,6 +46,25 @@ class PaywallSheet extends ConsumerStatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => PaywallSheet(quota: quota, limit: limit),
     );
+  }
+
+  /// Mở paywall nếu [error] là lỗi vượt hạn mức ([ApiException.isQuotaExceeded]).
+  ///
+  /// Trả `false` nếu lỗi không phải vượt hạn mức hoặc context không còn mounted.
+  /// Trả `true` nếu đã hiện paywall.
+  static Future<bool> maybeShow(BuildContext context, Object error) async {
+    if (error is! ApiException || !error.isQuotaExceeded) return false;
+    if (!context.mounted) return false;
+
+    final quotaRaw = error.details['quota'];
+    final limitRaw = error.details['limit'];
+
+    await show(
+      context,
+      quota: quotaFromName(quotaRaw is String ? quotaRaw : null),
+      limit: limitRaw is num ? limitRaw.toInt() : null,
+    );
+    return true;
   }
 
   @override

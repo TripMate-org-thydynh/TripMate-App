@@ -706,6 +706,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              tooltip: 'Xoá khoản đóng góp',
               onPressed: () => _confirmDelete(context, item),
             ),
           ],
@@ -888,6 +889,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
               const Spacer(),
               IconButton(
                 icon: Icon(Icons.close, color: _textSec),
+                tooltip: 'Đóng',
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -1202,6 +1204,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
               const Spacer(),
               IconButton(
                 icon: Icon(Icons.close, color: _textSec),
+                tooltip: 'Đóng',
                 onPressed: () => Navigator.pop(context),
               ),
             ],

@@ -678,11 +678,13 @@ class _ReelFrame extends StatelessWidget {
     // Dao động theo khung, không theo thời gian thực: nhấp nháy phải trùng
     // nhịp đổi ảnh thì mới ra chất phim, lệch nhịp sẽ thành lỗi hiển thị.
     final jitter = flicker * 0.22 * (url.hashCode % 7 - 3) / 3;
-    return Opacity(
-      opacity: (1 - flicker * 0.18 + jitter).clamp(0.55, 1.0),
-      child: Transform.scale(
-        scale: 1.14 - 0.14 * settle,
-        child: _NetworkOrAssetImage(url: url, fit: BoxFit.cover),
+    return ExcludeSemantics(
+      child: Opacity(
+        opacity: (1 - flicker * 0.18 + jitter).clamp(0.55, 1.0),
+        child: Transform.scale(
+          scale: 1.14 - 0.14 * settle,
+          child: _NetworkOrAssetImage(url: url, fit: BoxFit.cover),
+        ),
       ),
     );
   }
@@ -924,6 +926,9 @@ class _TiltedShots extends StatelessWidget {
                               child: _NetworkOrAssetImage(
                                 url: shots[i].posterUrl,
                                 fit: BoxFit.cover,
+                                semanticLabel: shots[i].caption?.trim().isNotEmpty == true
+                                    ? 'Ảnh khoảnh khắc của ${shots[i].authorName}: ${shots[i].caption!.trim()}'
+                                    : 'Ảnh khoảnh khắc của ${shots[i].authorName}',
                               ),
                             ),
                           ),
@@ -982,6 +987,7 @@ class _MvpSlide extends StatelessWidget {
                   name: slide.title,
                   size: 138,
                   borderWidth: 4,
+                  excludeFromSemantics: true,
                 ),
                 Positioned(
                   right: -12,
@@ -1134,25 +1140,27 @@ class _BackgroundMedia extends StatelessWidget {
     // Ken Burns: anh nen phong cham suot slide cho do tinh.
     final t = _EnterScope.maybeOf(context);
     final image = _NetworkOrAssetImage(url: url, fit: BoxFit.cover);
-    return Opacity(
-      // Ảnh nền để RÕ hẳn, không còn mờ tịt.
-      //
-      // Mức 0.13 cũ vừa không nhìn thấy gì vừa làm nền đục — tệ hơn cả không
-      // có ảnh. Nay bảng màu đã tối xuyên suốt nên chữ trắng vẫn nổi, và người
-      // xem thực sự thấy được chuyến của mình phía sau con số.
-      opacity: switch (slide.type) {
-        _SlideType.stat => 0.42,
-        _SlideType.gallery => 0.30,
-        _ => 0.46,
-      },
-      child: t == null
-          ? image
-          : AnimatedBuilder(
-              animation: t,
-              builder: (context, child) =>
-                  Transform.scale(scale: 1.06 + 0.10 * t.value, child: child),
-              child: image,
-            ),
+    return ExcludeSemantics(
+      child: Opacity(
+        // Ảnh nền để RÕ hẳn, không còn mờ tịt.
+        //
+        // Mức 0.13 cũ vừa không nhìn thấy gì vừa làm nền đục — tệ hơn cả không
+        // có ảnh. Nay bảng màu đã tối xuyên suốt nên chữ trắng vẫn nổi, và người
+        // xem thực sự thấy được chuyến của mình phía sau con số.
+        opacity: switch (slide.type) {
+          _SlideType.stat => 0.42,
+          _SlideType.gallery => 0.30,
+          _ => 0.46,
+        },
+        child: t == null
+            ? image
+            : AnimatedBuilder(
+                animation: t,
+                builder: (context, child) =>
+                    Transform.scale(scale: 1.06 + 0.10 * t.value, child: child),
+                child: image,
+              ),
+      ),
     );
   }
 }
@@ -1274,7 +1282,13 @@ class _PhotoCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            _NetworkOrAssetImage(url: moment.posterUrl, fit: BoxFit.cover),
+            _NetworkOrAssetImage(
+              url: moment.posterUrl,
+              fit: BoxFit.cover,
+              semanticLabel: moment.caption?.trim().isNotEmpty == true
+                  ? 'Ảnh khoảnh khắc của ${moment.authorName}: ${moment.caption!.trim()}'
+                  : 'Ảnh khoảnh khắc của ${moment.authorName}',
+            ),
             if (moment.type == 'VIDEO')
               Center(
                 child: Icon(
@@ -1325,6 +1339,9 @@ class _MomentStrip extends StatelessWidget {
                 child: _NetworkOrAssetImage(
                   url: shown[i].posterUrl,
                   fit: BoxFit.cover,
+                  semanticLabel: shown[i].caption?.trim().isNotEmpty == true
+                      ? 'Ảnh kỷ niệm của ${shown[i].authorName}: ${shown[i].caption!.trim()}'
+                      : 'Ảnh kỷ niệm của ${shown[i].authorName}',
                 ),
               ),
             ),
@@ -1345,7 +1362,9 @@ class _AssetTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: Image.asset(asset, fit: BoxFit.cover),
+      child: ExcludeSemantics(
+        child: Image.asset(asset, fit: BoxFit.cover),
+      ),
     );
   }
 }
@@ -1400,17 +1419,22 @@ class _AvatarBubble extends StatelessWidget {
   final String name;
   final double size;
   final double borderWidth;
+  final bool excludeFromSemantics;
 
   const _AvatarBubble({
     required this.url,
     required this.name,
     required this.size,
     required this.borderWidth,
+    this.excludeFromSemantics = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final initial = name.trim().isEmpty ? 'T' : name.trim()[0].toUpperCase();
+    final semanticLabel = name.trim().isNotEmpty
+        ? 'Ảnh đại diện của ${name.trim()}'
+        : 'Ảnh đại diện';
     return Container(
       width: size,
       height: size,
@@ -1421,14 +1445,25 @@ class _AvatarBubble extends StatelessWidget {
       ),
       child: ClipOval(
         child: url?.trim().isNotEmpty == true
-            ? _NetworkOrAssetImage(url: url!.trim(), fit: BoxFit.cover)
-            : Center(
-                child: Text(
-                  initial,
-                  style: AppFonts.heading(
-                    fontSize: size * 0.42,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
+            ? _NetworkOrAssetImage(
+                url: url!.trim(),
+                fit: BoxFit.cover,
+                semanticLabel: semanticLabel,
+                excludeFromSemantics: excludeFromSemantics,
+              )
+            : ExcludeSemantics(
+                excluding: excludeFromSemantics,
+                child: Semantics(
+                  label: semanticLabel,
+                  child: Center(
+                    child: Text(
+                      initial,
+                      style: AppFonts.heading(
+                        fontSize: size * 0.42,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -1589,6 +1624,7 @@ class _TopChrome extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               IconButton(
+                tooltip: 'Đóng',
                 icon: const Icon(Icons.close, color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
@@ -1860,11 +1896,32 @@ class _Pill extends StatelessWidget {
 class _NetworkOrAssetImage extends StatelessWidget {
   final String url;
   final BoxFit fit;
+  final String? semanticLabel;
+  final bool excludeFromSemantics;
 
-  const _NetworkOrAssetImage({required this.url, required this.fit});
+  const _NetworkOrAssetImage({
+    required this.url,
+    required this.fit,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (excludeFromSemantics) {
+      return ExcludeSemantics(child: _buildImage(context));
+    }
+    if (semanticLabel != null && semanticLabel!.isNotEmpty) {
+      return Semantics(
+        label: semanticLabel,
+        image: true,
+        child: _buildImage(context),
+      );
+    }
+    return _buildImage(context);
+  }
+
+  Widget _buildImage(BuildContext context) {
     if (url.startsWith('assets/')) {
       return Image.asset(url, fit: fit);
     }
@@ -1874,13 +1931,16 @@ class _NetworkOrAssetImage extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: url,
       fit: fit,
-      placeholder: (context, _) =>
-          Container(color: Colors.black.withValues(alpha: 0.14)),
-      errorWidget: (context, _, _) => Container(
-        color: Colors.black.withValues(alpha: 0.18),
-        child: Icon(
-          Icons.image_not_supported_outlined,
-          color: Colors.white.withValues(alpha: 0.65),
+      placeholder: (context, _) => ExcludeSemantics(
+        child: Container(color: Colors.black.withValues(alpha: 0.14)),
+      ),
+      errorWidget: (context, _, _) => ExcludeSemantics(
+        child: Container(
+          color: Colors.black.withValues(alpha: 0.18),
+          child: Icon(
+            Icons.image_not_supported_outlined,
+            color: Colors.white.withValues(alpha: 0.65),
+          ),
         ),
       ),
     );

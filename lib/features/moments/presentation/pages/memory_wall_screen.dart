@@ -85,6 +85,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
           // Chọn từ thư viện — đường chậm hơn, cho ảnh đã chụp sẵn.
           FloatingActionButton(
             heroTag: 'pick',
+            tooltip: 'Chọn ảnh từ thư viện',
             onPressed: () => _openWithTrip(
               context,
               (tripId) => PostMomentScreen(tripId: tripId, isDarkMode: isDark),
@@ -98,6 +99,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
           // Squad Cam — đường nhanh: mở là khung ngắm đã chạy.
           FloatingActionButton.extended(
             heroTag: 'cam',
+            tooltip: 'moments.cam_title'.tr(),
             onPressed: () => _openWithTrip(
               context,
               (tripId) => SquadCamScreen(tripId: tripId, isDarkMode: isDark),
@@ -138,32 +140,36 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                         Expanded(
                           child: Row(
                             children: [
-                              GestureDetector(
-                                onTap: () => Navigator.pop(context),
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: surfaceColor,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: textPrimary,
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.05,
-                                        ),
-                                        blurRadius: 0,
-                                        offset: const Offset(0, 4),
+                              Semantics(
+                                button: true,
+                                label: 'Quay lại',
+                                child: GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: surfaceColor,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: textPrimary,
+                                        width: 2,
                                       ),
-                                    ],
-                                  ),
-                                  child: Icon(
-                                    Icons.arrow_back_ios_new,
-                                    color: textPrimary,
-                                    size: 16,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          blurRadius: 0,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Icon(
+                                      Icons.arrow_back_ios_new,
+                                      color: textPrimary,
+                                      size: 16,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -228,41 +234,51 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                         // nen cuon den dau la de len caption den do. Menu thuoc
                         // ve thanh dieu huong tren cung, khong phai vat noi giua
                         // noi dung.
-                        GestureDetector(
-                          onTap: () => _showHubMenu(context),
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: surfaceColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: textPrimary, width: 2),
-                            ),
-                            child: Icon(
-                              Icons.auto_awesome_mosaic_outlined,
-                              color: textPrimary,
-                              size: 20,
+                        Semantics(
+                          button: true,
+                          label: 'Menu tính năng',
+                          child: GestureDetector(
+                            onTap: () => _showHubMenu(context),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: surfaceColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: textPrimary, width: 2),
+                              ),
+                              child: Icon(
+                                Icons.auto_awesome_mosaic_outlined,
+                                color: textPrimary,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ),
                         // Dark/Light Theme Toggle
-                        GestureDetector(
-                          onTap: widget.onThemeToggle,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: surfaceColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: textPrimary, width: 2),
-                            ),
-                            child: Icon(
-                              isDark
-                                  ? Icons.light_mode_outlined
-                                  : Icons.dark_mode_outlined,
-                              color: textPrimary,
-                              size: 20,
+                        Semantics(
+                          button: true,
+                          label: isDark
+                              ? 'Chuyển sang chế độ sáng'
+                              : 'Chuyển sang chế độ tối',
+                          child: GestureDetector(
+                            onTap: widget.onThemeToggle,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: surfaceColor,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: textPrimary, width: 2),
+                              ),
+                              child: Icon(
+                                isDark
+                                    ? Icons.light_mode_outlined
+                                    : Icons.dark_mode_outlined,
+                                color: textPrimary,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ),
@@ -560,81 +576,83 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          imageUrl,
-                          height: 156,
-                          width: 156,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 156,
-                              width: 156,
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF262019)
-                                    : const Color(0xFFE2E8F0),
-                              ),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.image_not_supported_outlined,
-                                      color: isDark
-                                          ? const Color(0xFF64748B)
-                                          : const Color(0xFFB8AE9C),
-                                      size: 28,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      "general.load_image_failed".tr(),
-                                      style: AppFonts.heading(
+                        child: ExcludeSemantics(
+                          child: Image.network(
+                            imageUrl,
+                            height: 156,
+                            width: 156,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 156,
+                                width: 156,
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(0xFF262019)
+                                      : const Color(0xFFE2E8F0),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image_not_supported_outlined,
                                         color: isDark
                                             ? const Color(0xFF64748B)
                                             : const Color(0xFFB8AE9C),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
+                                        size: 28,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        "general.load_image_failed".tr(),
+                                        style: AppFonts.heading(
+                                          color: isDark
+                                              ? const Color(0xFF64748B)
+                                              : const Color(0xFFB8AE9C),
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              height: 156,
-                              width: 156,
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(
-                                        0xFF262019,
-                                      ).withValues(alpha: 0.5)
-                                    : const Color(0xFFFDF6D3),
-                              ),
-                              child: Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    value:
-                                        loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress
-                                                  .expectedTotalBytes!
-                                        : null,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).colorScheme.primary,
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                height: 156,
+                                width: 156,
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(
+                                          0xFF262019,
+                                        ).withValues(alpha: 0.5)
+                                      : const Color(0xFFFDF6D3),
+                                ),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                    .cumulativeBytesLoaded /
+                                                loadingProgress
+                                                    .expectedTotalBytes!
+                                          : null,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Theme.of(context).colorScheme.primary,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
                       // Video player overlay

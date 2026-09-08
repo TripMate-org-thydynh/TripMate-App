@@ -16,11 +16,19 @@ class TripCoverImage extends StatelessWidget {
   /// Màu nền khi không có ảnh / ảnh lỗi.
   final Color fallbackColor;
 
+  /// Nhãn ngữ nghĩa cho trình đọc màn hình (ví dụ: 'Ảnh bìa chuyến đi Đà Lạt').
+  final String? semanticLabel;
+
+  /// Nếu là true, bỏ qua ngữ nghĩa hoàn toàn (dùng khi ảnh chỉ mang tính trang trí hoặc đã có tiêu đề bên cạnh).
+  final bool excludeSemantics;
+
   const TripCoverImage({
     super.key,
     required this.source,
     this.fit = BoxFit.cover,
     this.fallbackColor = GenZTokens.green,
+    this.semanticLabel,
+    this.excludeSemantics = false,
   });
 
   bool get _isAsset => source != null && source!.startsWith('assets/');
@@ -32,27 +40,36 @@ class TripCoverImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final src = source;
     if (src == null || src.isEmpty) {
-      return ColoredBox(color: fallbackColor);
+      return ExcludeSemantics(child: ColoredBox(color: fallbackColor));
     }
 
+    Widget content;
     if (_isAsset) {
-      return Image.asset(
+      content = Image.asset(
         src,
         fit: fit,
         errorBuilder: (_, _, _) => ColoredBox(color: fallbackColor),
       );
-    }
-
-    if (_isUrl) {
-      return CachedNetworkImage(
+    } else if (_isUrl) {
+      content = CachedNetworkImage(
         imageUrl: src,
         fit: fit,
         placeholder: (_, _) => ColoredBox(color: fallbackColor),
         errorWidget: (_, _, _) => ColoredBox(color: fallbackColor),
       );
+    } else {
+      // Giá trị lạ (BE trả khoá nội bộ chẳng hạn) — không đoán, dùng nền màu.
+      return ExcludeSemantics(child: ColoredBox(color: fallbackColor));
     }
 
-    // Giá trị lạ (BE trả khoá nội bộ chẳng hạn) — không đoán, dùng nền màu.
-    return ColoredBox(color: fallbackColor);
+    if (excludeSemantics || semanticLabel == null) {
+      return ExcludeSemantics(child: content);
+    }
+
+    return Semantics(
+      label: semanticLabel,
+      image: true,
+      child: content,
+    );
   }
 }

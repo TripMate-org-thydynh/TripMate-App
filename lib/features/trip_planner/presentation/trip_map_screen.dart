@@ -159,21 +159,25 @@ class TripMapScreen extends ConsumerWidget {
                             point: LatLng(m.latitude!, m.longitude!),
                             width: 34,
                             height: 34,
-                            child: GestureDetector(
-                              onTap: () => _showMoment(context, m),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD6248C),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2,
+                            child: Semantics(
+                              button: true,
+                              label: 'Khoảnh khắc: ${m.authorName}',
+                              child: GestureDetector(
+                                onTap: () => _showMoment(context, m),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFD6248C),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
                                   ),
-                                ),
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  size: 16,
-                                  color: Colors.white,
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
@@ -190,35 +194,40 @@ class TripMapScreen extends ConsumerWidget {
                             ),
                             width: 40,
                             height: 40,
-                            child: GestureDetector(
-                              onTap: () => _showStop(
-                                context,
-                                filteredPoints[i].item,
-                                filteredPoints[i].day,
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: _dayColor(filteredPoints[i].day),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2.5,
-                                  ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black26,
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
+                            child: Semantics(
+                              button: true,
+                              label:
+                                  'Điểm dừng: ${filteredPoints[i].item.placeName}',
+                              child: GestureDetector(
+                                onTap: () => _showStop(
+                                  context,
+                                  filteredPoints[i].item,
+                                  filteredPoints[i].day,
                                 ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${filteredPoints[i].day}',
-                                  style: GoogleFonts.spaceMono(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: _dayColor(filteredPoints[i].day),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2.5,
+                                    ),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    '${filteredPoints[i].day}',
+                                    style: GoogleFonts.spaceMono(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -442,14 +451,16 @@ class TripMapScreen extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 14,
-                    backgroundImage: m.authorAvatar != null
-                        ? NetworkImage(m.authorAvatar!)
-                        : null,
-                    child: m.authorAvatar == null
-                        ? Text(m.authorName[0].toUpperCase())
-                        : null,
+                  ExcludeSemantics(
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundImage: m.authorAvatar != null
+                          ? NetworkImage(m.authorAvatar!)
+                          : null,
+                      child: m.authorAvatar == null
+                          ? Text(m.authorName[0].toUpperCase())
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -486,6 +497,9 @@ class TripMapScreen extends ConsumerWidget {
                   height: 180,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  semanticLabel: m.caption != null && m.caption!.isNotEmpty
+                      ? 'Ảnh khoảnh khắc: ${m.caption}'
+                      : 'Ảnh khoảnh khắc của ${m.authorName}',
                 ),
               ),
               const SizedBox(height: 10),

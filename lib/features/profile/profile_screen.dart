@@ -420,24 +420,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               borderRadius: BorderRadius.circular(8),
               child: AspectRatio(
                 aspectRatio: 1.0,
-                child: imageUrl.startsWith('assets/')
-                    ? Image.asset(imageUrl, fit: BoxFit.cover)
-                    : CachedNetworkImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          child: const Center(
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                child: ExcludeSemantics(
+                  child: imageUrl.startsWith('assets/')
+                      ? Image.asset(imageUrl, fit: BoxFit.cover)
+                      : CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            child: const Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
                             ),
                           ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.broken_image),
                         ),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.broken_image),
-                      ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -582,27 +584,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(99),
-                                    child:
-                                        friendAvatars[idx].startsWith('assets/')
-                                        ? Image.asset(
-                                            friendAvatars[idx],
-                                            fit: BoxFit.cover,
-                                          )
-                                        : CachedNetworkImage(
-                                            imageUrl: friendAvatars[idx],
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) =>
-                                                Container(
-                                                  color: Colors.black
-                                                      .withValues(alpha: 0.1),
-                                                ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(
-                                                      Icons.person,
-                                                      size: 16,
-                                                    ),
-                                          ),
+                                    child: ExcludeSemantics(
+                                      child:
+                                          friendAvatars[idx].startsWith('assets/')
+                                          ? Image.asset(
+                                              friendAvatars[idx],
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: friendAvatars[idx],
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Container(
+                                                    color: Colors.black
+                                                        .withValues(alpha: 0.1),
+                                                  ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      const Icon(
+                                                        Icons.person,
+                                                        size: 16,
+                                                      ),
+                                            ),
+                                    ),
                                   ),
                                 ),
                               );
@@ -772,14 +776,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
           // 2. Cinematic Karst Landscape Backdrop
           Positioned.fill(
-            child: Opacity(
-              opacity: 0.08,
-              child: CachedNetworkImage(
-                imageUrl:
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const SizedBox(),
-                errorWidget: (context, url, error) => const SizedBox(),
+            child: ExcludeSemantics(
+              child: Opacity(
+                opacity: 0.08,
+                child: CachedNetworkImage(
+                  imageUrl:
+                      'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const SizedBox(),
+                  errorWidget: (context, url, error) => const SizedBox(),
+                ),
               ),
             ),
           ),
@@ -815,23 +821,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           // Nếu màn được push (có thể pop) → nút Back để quay lại;
                           // nếu là tab (không pop được) → avatar như cũ.
                           child: Navigator.canPop(context)
-                              ? GestureDetector(
-                                  onTap: () => Navigator.pop(context),
-                                  child: Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: surfaceColor,
-                                      border: Border.all(
-                                        color: textPrimaryColor,
-                                        width: 2.5,
+                              ? Semantics(
+                                  button: true,
+                                  label: 'Quay lại',
+                                  child: GestureDetector(
+                                    onTap: () => Navigator.pop(context),
+                                    child: Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: surfaceColor,
+                                        border: Border.all(
+                                          color: textPrimaryColor,
+                                          width: 2.5,
+                                        ),
                                       ),
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_back_rounded,
-                                      color: textPrimaryColor,
-                                      size: 22,
+                                      child: Icon(
+                                        Icons.arrow_back_rounded,
+                                        color: textPrimaryColor,
+                                        size: 22,
+                                      ),
                                     ),
                                   ),
                                 )
@@ -847,16 +857,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(99),
-                                    child: CachedNetworkImage(
-                                      imageUrl: avatarUrl,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => Container(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.1,
+                                    child: ExcludeSemantics(
+                                      child: CachedNetworkImage(
+                                        imageUrl: avatarUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => Container(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.1,
+                                          ),
                                         ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.person),
                                       ),
-                                      errorWidget: (context, url, error) =>
-                                          const Icon(Icons.person),
                                     ),
                                   ),
                                 ),
@@ -917,20 +929,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         if (widget.onThemeToggleWithPosition != null)
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
-                            child: GestureDetector(
-                              onTapDown: (details) {
-                                widget.onThemeToggleWithPosition!(
-                                  details.globalPosition,
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(6.0),
-                                child: Icon(
-                                  isDark
-                                      ? Icons.light_mode_outlined
-                                      : Icons.dark_mode_outlined,
-                                  color: textPrimaryColor,
-                                  size: 22,
+                            child: Semantics(
+                              button: true,
+                              label: isDark
+                                  ? 'Chuyển sang chế độ sáng'
+                                  : 'Chuyển sang chế độ tối',
+                              child: GestureDetector(
+                                onTapDown: (details) {
+                                  widget.onThemeToggleWithPosition!(
+                                    details.globalPosition,
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(
+                                    isDark
+                                        ? Icons.light_mode_outlined
+                                        : Icons.dark_mode_outlined,
+                                    color: textPrimaryColor,
+                                    size: 22,
+                                  ),
                                 ),
                               ),
                             ),
@@ -939,6 +957,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           padding: const EdgeInsets.only(right: 2.0, top: 12.0),
                           child: Center(
                             child: IconButton(
+                              tooltip: 'Chợ giao diện',
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(
                                 minWidth: 34,
@@ -968,6 +987,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           ),
                           child: Center(
                             child: IconButton(
+                              tooltip: 'Kho nhãn dán',
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(
                                 minWidth: 34,
@@ -1310,22 +1330,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(99),
-                                                child: CachedNetworkImage(
-                                                  imageUrl: avatarUrl,
-                                                  fit: BoxFit.cover,
-                                                  placeholder: (context, url) =>
-                                                      Container(
-                                                        color: Colors.black
-                                                            .withValues(
-                                                              alpha: 0.1,
-                                                            ),
-                                                      ),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          const Icon(
-                                                            Icons.person,
-                                                            size: 40,
+                                                child: Semantics(
+                                                  label: 'Ảnh đại diện của $name',
+                                                  image: true,
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: avatarUrl,
+                                                    fit: BoxFit.cover,
+                                                    placeholder: (
+                                                      context,
+                                                      url,
+                                                    ) => Container(
+                                                      color: Colors.black
+                                                          .withValues(
+                                                            alpha: 0.1,
                                                           ),
+                                                    ),
+                                                    errorWidget: (
+                                                      context,
+                                                      url,
+                                                      error,
+                                                    ) => const Icon(
+                                                      Icons.person,
+                                                      size: 40,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             );
