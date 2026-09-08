@@ -748,74 +748,80 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                           _selectedCoverId = cover['id']!;
                         });
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: AnimatedBuilder(
-                          animation: _glowController,
-                          builder: (context, child) {
-                            return Container(
-                              width: 160,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24),
-                                border: isSelected
-                                    ? Border.all(
-                                        color: secondaryColor,
-                                        width: 2.0,
-                                      )
-                                    : Border.all(
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.08,
-                                              )
-                                            : Colors.black,
-                                        width: 2,
-                                      ),
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                          color: secondaryColor.withValues(
-                                            alpha: 0.35,
-                                          ),
-                                          blurRadius: 0,
-                                          spreadRadius: 1,
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: child,
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(22),
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: cover['image']!.startsWith('assets/')
-                                      ? Image.asset(
-                                          cover['image']!,
-                                          fit: BoxFit.cover,
+                      child: Semantics(
+                        button: true,
+                        selected: isSelected,
+                        label: 'Ảnh bìa ${cover['title']}',
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 16),
+                          child: AnimatedBuilder(
+                            animation: _glowController,
+                            builder: (context, child) {
+                              return Container(
+                                width: 160,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: isSelected
+                                      ? Border.all(
+                                          color: secondaryColor,
+                                          width: 2.0,
                                         )
-                                      : CachedNetworkImage(
-                                          imageUrl: cover['image']!,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) =>
-                                              Container(
-                                                color: Colors.black12,
-                                                child: const Center(
-                                                  child: SizedBox(
-                                                    width: 20,
-                                                    height: 20,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                          strokeWidth: 2,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ),
-                                          errorWidget: (context, url, error) =>
-                                              Container(color: Colors.black38),
+                                      : Border.all(
+                                          color: isDark
+                                              ? Colors.white.withValues(
+                                                  alpha: 0.08,
+                                                )
+                                              : Colors.black,
+                                          width: 2,
                                         ),
+                                  boxShadow: isSelected
+                                      ? [
+                                          BoxShadow(
+                                            color: secondaryColor.withValues(
+                                              alpha: 0.35,
+                                            ),
+                                            blurRadius: 0,
+                                            spreadRadius: 1,
+                                          ),
+                                        ]
+                                      : null,
                                 ),
+                                child: child,
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(22),
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: ExcludeSemantics(
+                                      child: cover['image']!.startsWith('assets/')
+                                          ? Image.asset(
+                                              cover['image']!,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: cover['image']!,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Container(
+                                                    color: Colors.black12,
+                                                    child: const Center(
+                                                      child: SizedBox(
+                                                        width: 20,
+                                                        height: 20,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                              strokeWidth: 2,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                              errorWidget: (context, url, error) =>
+                                                  Container(color: Colors.black38),
+                                            ),
+                                    ),
+                                  ),
                                 Positioned.fill(
                                   child: Container(
                                     decoration: const BoxDecoration(
@@ -858,7 +864,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                           ),
                         ),
                       ),
-                    );
+                    ),
+                  );
                   },
                 ),
               ),
@@ -1070,25 +1077,30 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(22),
-                                      child:
-                                          'assets/images/avatar_minh_nhat.webp'
-                                              .startsWith('assets/')
-                                          ? Image.asset(
-                                              'assets/images/avatar_minh_nhat.webp',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : CachedNetworkImage(
-                                              imageUrl:
-                                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                    color: Colors.black12,
-                                                  ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(Icons.person),
-                                            ),
+                                      child: Semantics(
+                                        label: 'Ảnh đại diện thành viên Minh Nhật',
+                                        image: true,
+                                        child: 'assets/images/avatar_minh_nhat.webp'
+                                                .startsWith('assets/')
+                                            ? Image.asset(
+                                                'assets/images/avatar_minh_nhat.webp',
+                                                fit: BoxFit.cover,
+                                              )
+                                            : CachedNetworkImage(
+                                                imageUrl:
+                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
+                                                fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    ExcludeSemantics(
+                                                      child: Container(
+                                                        color: Colors.black12,
+                                                      ),
+                                                    ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.person),
+                                              ),
+                                      ),
                                     ),
                                   ),
                                 );
@@ -1125,25 +1137,30 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(25),
-                                      child:
-                                          'assets/images/avatar_thao_ly.webp'
-                                              .startsWith('assets/')
-                                          ? Image.asset(
-                                              'assets/images/avatar_thao_ly.webp',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : CachedNetworkImage(
-                                              imageUrl:
-                                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                    color: Colors.black12,
-                                                  ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      const Icon(Icons.person),
-                                            ),
+                                      child: Semantics(
+                                        label: 'Ảnh đại diện thành viên Thảo Ly',
+                                        image: true,
+                                        child: 'assets/images/avatar_thao_ly.webp'
+                                                .startsWith('assets/')
+                                            ? Image.asset(
+                                                'assets/images/avatar_thao_ly.webp',
+                                                fit: BoxFit.cover,
+                                              )
+                                            : CachedNetworkImage(
+                                                imageUrl:
+                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
+                                                fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    ExcludeSemantics(
+                                                      child: Container(
+                                                        color: Colors.black12,
+                                                      ),
+                                                    ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.person),
+                                              ),
+                                      ),
                                     ),
                                   ),
                                 );
@@ -1183,6 +1200,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                       child: Image.asset(
                                         'assets/images/avatar_user.webp',
                                         fit: BoxFit.cover,
+                                        semanticLabel: 'Ảnh đại diện của bạn',
                                         errorBuilder:
                                             (context, error, stackTrace) =>
                                                 const Icon(Icons.person),
@@ -1308,6 +1326,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                 child: Image.asset(
                   'assets/images/avatar_user.webp',
                   fit: BoxFit.cover,
+                  semanticLabel: 'Ảnh đại diện của bạn',
                   errorBuilder: (context, error, stackTrace) =>
                       const Icon(Icons.trip_origin),
                 ),
@@ -1328,6 +1347,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
             Row(
               children: [
                 IconButton(
+                  tooltip: isDark
+                      ? 'Chuyển sang giao diện sáng'
+                      : 'Chuyển sang giao diện tối',
                   icon: Icon(
                     isDark ? Icons.light_mode : Icons.dark_mode,
                     color: isDark

@@ -136,6 +136,7 @@ class _ReferralCampaignScreenState
                   const SizedBox(width: 12),
                   IconButton(
                     icon: const Icon(Icons.copy),
+                    tooltip: 'Sao chép mã giới thiệu',
                     onPressed: () async {
                       await Clipboard.setData(ClipboardData(text: _inviteLink));
                       if (!context.mounted) return;
@@ -257,6 +258,7 @@ class _ReferralCampaignScreenState
                           children: [
                             IconButton(
                               icon: Icon(Icons.arrow_back, color: textPrimary),
+                              tooltip: 'Đóng',
                               onPressed: () => Navigator.pop(context),
                             ),
                             const SizedBox(width: 4),
@@ -280,6 +282,9 @@ class _ReferralCampaignScreenState
                                     : Icons.dark_mode_outlined,
                                 color: primaryColor,
                               ),
+                              tooltip: isDark
+                                  ? 'Chuyển sang giao diện sáng'
+                                  : 'Chuyển sang giao diện tối',
                               onPressed: widget.onThemeToggle,
                             ),
                             const SizedBox(width: 8),
@@ -293,6 +298,7 @@ class _ReferralCampaignScreenState
                                   Icons.notifications_none,
                                   color: textPrimary,
                                 ),
+                                tooltip: 'Thông báo',
                                 onPressed: () => showGlobalSnack(
                                   'common.feature_wip2'.tr(),
                                 ),
@@ -422,41 +428,45 @@ class _ReferralCampaignScreenState
                   const Spacer(),
 
                   // CTA share invite button
-                  GestureDetector(
-                    onTap: _shareLink,
-                    child: Container(
-                      width: double.infinity,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(999),
-                        color: primaryColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: primaryColor.withValues(alpha: 0.35),
-                            blurRadius: 0,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.ios_share,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'premium.share_invite'.tr(),
-                              style: AppFonts.heading(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
+                  Semantics(
+                    button: true,
+                    label: 'Chia sẻ mã',
+                    child: GestureDetector(
+                      onTap: _shareLink,
+                      child: Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          color: primaryColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.35),
+                              blurRadius: 0,
+                              offset: const Offset(0, 5),
                             ),
                           ],
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.ios_share,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'premium.share_invite'.tr(),
+                                style: AppFonts.heading(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

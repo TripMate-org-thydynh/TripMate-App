@@ -29,7 +29,7 @@ class VietQrPaymentSheet extends ConsumerStatefulWidget {
     this.bankInfo,
   });
 
-  static Future<void> show(
+  static Future<bool?> show(
     BuildContext context, {
     required String orderCode,
     required int amount,
@@ -37,7 +37,7 @@ class VietQrPaymentSheet extends ConsumerStatefulWidget {
     String? payUrl,
     Map<String, dynamic>? bankInfo,
   }) {
-    return showModalBottomSheet(
+    return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

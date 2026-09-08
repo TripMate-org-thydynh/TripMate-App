@@ -313,6 +313,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
             children: [
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                tooltip: 'Đóng',
                 onPressed: () => Navigator.pop(context),
               ),
               const Spacer(),
@@ -370,20 +371,24 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
             children: [
               const SizedBox(width: 56),
               // Bấm = ảnh, giữ = video.
-              GestureDetector(
-                onTap: _capture,
-                onLongPressStart: (_) => _startRecording(),
-                onLongPressEnd: (_) => _stopRecording(),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  width: _recording ? 92 : 82,
-                  height: _recording ? 92 : 82,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _recording
-                        ? GenZTokens.danger
-                        : Colors.white.withValues(alpha: 0.25),
-                    border: Border.all(color: Colors.white, width: 5),
+              Semantics(
+                button: true,
+                label: 'Chụp ảnh',
+                child: GestureDetector(
+                  onTap: _capture,
+                  onLongPressStart: (_) => _startRecording(),
+                  onLongPressEnd: (_) => _stopRecording(),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: _recording ? 92 : 82,
+                    height: _recording ? 92 : 82,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _recording
+                          ? GenZTokens.danger
+                          : Colors.white.withValues(alpha: 0.25),
+                      border: Border.all(color: Colors.white, width: 5),
+                    ),
                   ),
                 ),
               ),
@@ -396,6 +401,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                           color: Colors.white,
                           size: 30,
                         ),
+                        tooltip: 'Đổi camera',
                         onPressed: _flip,
                       )
                     : null,
@@ -425,13 +431,18 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                     ),
                   ),
                 )
-              : Image.file(_shot!, fit: BoxFit.cover),
+              : Image.file(
+                  _shot!,
+                  fit: BoxFit.cover,
+                  semanticLabel: 'Ảnh vừa chụp',
+                ),
         ),
         Positioned(
           top: 8,
           left: 8,
           child: IconButton(
             icon: const Icon(Icons.close, color: Colors.white, size: 28),
+            tooltip: 'Đóng',
             onPressed: _sending
                 ? null
                 : () => setState(() {

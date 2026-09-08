@@ -411,7 +411,7 @@ class _AICaptionGeneratorScreenState
                                               _copyToClipboard(optionText),
                                           constraints: const BoxConstraints(),
                                           padding: EdgeInsets.zero,
-                                          tooltip: 'common.copy'.tr(),
+                                          tooltip: 'Sao chép chú thích',
                                         ),
                                       ),
                                     ],
@@ -460,7 +460,7 @@ class _AICaptionGeneratorScreenState
               size: 20,
             ),
             onPressed: () => Navigator.maybePop(context),
-            tooltip: 'common.back'.tr(),
+            tooltip: 'Đóng',
           ),
           Text(
             'trip.mate',
@@ -483,7 +483,9 @@ class _AICaptionGeneratorScreenState
                     size: 20,
                   ),
                   onPressed: widget.onThemeToggle,
-                  tooltip: 'theme.toggle'.tr(),
+                  tooltip: widget.isDarkMode
+                      ? 'Chuyển sang giao diện sáng'
+                      : 'Chuyển sang giao diện tối',
                 ),
               IconButton(
                 icon: _isGenerating
@@ -722,27 +724,31 @@ class _AICaptionGeneratorScreenState
                     ),
                   ),
                 ),
-                GestureDetector(
-                  // Truoc day nut nay chi hien thong bao "da nghi caption moi"
-                  // ma khong he goi AI. Nay chay dung ham sinh caption that.
-                  onTap: _isGenerating ? null : _generate,
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: primary,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: primary.withValues(alpha: 0.3),
-                          blurRadius: 0,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.refresh_rounded,
-                      color: Colors.white,
-                      size: 20,
+                Semantics(
+                  button: true,
+                  label: 'Tạo lại',
+                  child: GestureDetector(
+                    // Truoc day nut nay chi hien thong bao "da nghi caption moi"
+                    // ma khong he goi AI. Nay chay dung ham sinh caption that.
+                    onTap: _isGenerating ? null : _generate,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: primary,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: primary.withValues(alpha: 0.3),
+                            blurRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.refresh_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),

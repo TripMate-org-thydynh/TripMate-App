@@ -69,9 +69,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    // Khối màu full-bleed theo accent đã chọn; chữ/viền luôn là ink.
+    // Khối màu full-bleed theo accent đã chọn; thích ứng Dark/Light theme
     final accent = ref.watch(accentProvider);
-    final blockColor = accent.accent;
+    final isDark = widget.isDarkMode;
+    final blockColor = isDark ? const Color(0xFF141210) : accent.accent;
+    final cardColor = isDark ? const Color(0xFF1E1B18) : GenZTokens.paper;
+    final cardBorder = isDark ? GenZTokens.yellow : GenZTokens.ink;
+    final cardShadow = isDark ? const Color(0x80000000) : GenZTokens.ink;
+    final textColor = isDark ? GenZTokens.paper : GenZTokens.ink;
 
     return Scaffold(
       backgroundColor: blockColor,
@@ -90,39 +95,49 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 scale: _scaleAnimation,
                 child: _WiggleSticker(
                   child: HardShadowBox(
-                    color: GenZTokens.paper,
-                    borderColor: GenZTokens.ink,
-                    shadowColor: GenZTokens.ink,
+                    color: cardColor,
+                    borderColor: cardBorder,
+                    shadowColor: cardShadow,
                     radius: GenZTokens.radiusCard,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 28,
+                      horizontal: 36,
+                      vertical: 24,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Official TripMate Logo Mark
+                        Image.asset(
+                          isDark
+                              ? 'assets/images/symbol_dark.png'
+                              : 'assets/images/symbol_light.png',
+                          width: screenWidth > 360 ? 84 : 70,
+                          height: screenWidth > 360 ? 72 : 60,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: GenZTokens.space2),
                         Text(
                           'trip.mate',
                           style: AppFonts.heading(
-                            fontSize: screenWidth > 360 ? 46 : 38,
+                            fontSize: screenWidth > 360 ? 40 : 32,
                             fontWeight: FontWeight.w800,
-                            letterSpacing: -2,
+                            letterSpacing: -1.5,
                             height: 1.05,
-                            color: GenZTokens.ink,
+                            color: textColor,
                           ),
                         ),
-                        const SizedBox(height: GenZTokens.space3),
+                        const SizedBox(height: GenZTokens.space2),
                         // Gạch chân accent viền ink
                         Container(
-                          width: 64,
-                          height: 8,
+                          width: 52,
+                          height: 6,
                           decoration: BoxDecoration(
-                            color: accent.pair,
+                            color: isDark ? GenZTokens.yellow : accent.pair,
                             borderRadius: BorderRadius.circular(
                               GenZTokens.radiusPill,
                             ),
                             border: Border.all(
-                              color: GenZTokens.ink,
+                              color: isDark ? GenZTokens.yellow : GenZTokens.ink,
                               width: GenZTokens.borderWidthThin,
                             ),
                           ),
@@ -148,7 +163,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   spacing: GenZTokens.space2,
                   runSpacing: GenZTokens.space2,
                   children: [
-                    PillTag(text: 'plan chill', color: GenZTokens.paper),
+                    PillTag(
+                      text: 'plan chill',
+                      color: isDark ? const Color(0xFF1E1B18) : GenZTokens.paper,
+                    ),
                     PillTag(text: 'splash.tag_split'.tr(), color: GenZTokens.lilac),
                     PillTag(text: 'splash.tag_moments'.tr(), color: GenZTokens.pink),
                   ],
@@ -165,10 +183,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               opacity: _fadeAnimation,
               child: Container(
                 decoration: BoxDecoration(
-                  color: GenZTokens.paper,
+                  color: isDark ? const Color(0xFF1E1B18) : GenZTokens.paper,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: GenZTokens.ink,
+                    color: isDark ? GenZTokens.yellow : GenZTokens.ink,
                     width: GenZTokens.borderWidthThin,
                   ),
                   boxShadow: GenZTokens.hardShadow(),
@@ -176,7 +194,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 child: IconButton(
                   icon: Icon(
                     widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                    color: GenZTokens.ink,
+                    color: isDark ? GenZTokens.yellow : GenZTokens.ink,
                   ),
                   onPressed: widget.onThemeToggle,
                 ),

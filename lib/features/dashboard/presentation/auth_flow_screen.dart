@@ -798,6 +798,16 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
       key: const ValueKey('auth_step'),
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Official TripMate Logo Mark
+        Image.asset(
+          isDark
+              ? 'assets/images/symbol_dark.png'
+              : 'assets/images/symbol_light.png',
+          width: 72,
+          height: 62,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(height: 12),
         // Display title đen đậm
         Text(
           'trip.mate',

@@ -217,6 +217,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
       child: Row(
         children: [
           IconButton(
+            tooltip: 'Quay lại',
             icon: Icon(Icons.arrow_back, color: _textPri),
             onPressed: () => Navigator.pop(context),
           ),
@@ -259,9 +260,11 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
         children: [
           // Next card peeking behind
           if (_index + 1 < _places.length)
-            Transform.scale(
-              scale: 0.94,
-              child: _card(_places[_index + 1], behind: true),
+            ExcludeSemantics(
+              child: Transform.scale(
+                scale: 0.94,
+                child: _card(_places[_index + 1], behind: true),
+              ),
             ),
           // Active card
           _buildDraggableCard(_places[_index]),
@@ -372,12 +375,14 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 ),
               ),
             ),
-            Image.network(
-              place.image,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => const SizedBox.shrink(),
-              loadingBuilder: (context, child, progress) =>
-                  progress == null ? child : const SizedBox.shrink(),
+            ExcludeSemantics(
+              child: Image.network(
+                place.image,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stack) => const SizedBox.shrink(),
+                loadingBuilder: (context, child, progress) =>
+                    progress == null ? child : const SizedBox.shrink(),
+              ),
             ),
             // Scrim
             Container(
@@ -501,6 +506,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             icon: Icons.close,
             color: const Color(0xFFD8422B),
             size: 64,
+            label: 'Bỏ qua',
             onTap: () => _swipe(false),
           ),
           const SizedBox(width: 28),
@@ -508,6 +514,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             icon: Icons.favorite,
             color: const Color(0xFF1FA85C),
             size: 72,
+            label: 'Thích',
             onTap: () => _swipe(true),
           ),
         ],
@@ -520,31 +527,36 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
     required Color color,
     required double size,
     required VoidCallback onTap,
+    required String label,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-          border: Border.all(
-            color: widget.isDarkMode
-                ? const Color(0xFFFDF6D3)
-                : const Color(0xFF141210),
-            width: 2.5,
-          ),
-          boxShadow: [
-            BoxShadow(
+    return Semantics(
+      button: true,
+      label: label,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+            border: Border.all(
               color: widget.isDarkMode
                   ? const Color(0xFFFDF6D3)
                   : const Color(0xFF141210),
-              offset: const Offset(0, 4),
+              width: 2.5,
             ),
-          ],
+            boxShadow: [
+              BoxShadow(
+                color: widget.isDarkMode
+                  ? const Color(0xFFFDF6D3)
+                  : const Color(0xFF141210),
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Icon(icon, color: Colors.white, size: size * 0.42),
         ),
-        child: Icon(icon, color: Colors.white, size: size * 0.42),
       ),
     );
   }
