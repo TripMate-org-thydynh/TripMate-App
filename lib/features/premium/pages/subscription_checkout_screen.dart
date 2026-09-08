@@ -9,6 +9,7 @@ import '../../../core/format/money.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/widgets/state_views.dart';
+import '../presentation/vietqr_payment_sheet.dart';
 
 /// Màn mua gói.
 ///
@@ -129,9 +130,13 @@ class _SubscriptionCheckoutScreenState
     });
   }
 
-  List<String> get _gateways =>
-      (_catalog?['gateways'] as List?)?.whereType<String>().toList() ??
-      const [];
+  List<String> get _gateways {
+    final list = (_catalog?['gateways'] as List?)?.whereType<String>().toList() ?? [];
+    if (!list.contains('SEPAY')) {
+      list.insert(0, 'SEPAY');
+    }
+    return list;
+  }
 
   List<Map<String, dynamic>> get _plans =>
       (_catalog?['plans'] as List?)
@@ -168,6 +173,45 @@ class _SubscriptionCheckoutScreenState
   Future<void> _buy() async {
     if (_gateway == null || _processing) return;
     setState(() => _processing = true);
+
+    if (_gateway == 'SEPAY') {
+      try {
+        final res = await ApiService.post('/premium/checkout', {
+          'plan': _plan,
+          'tier': _plan,
+          'months': _months,
+          'paymentMethod': 'SEPAY',
+          if (_promo != null) 'promoCode': _promo!['code'],
+        });
+        if (!mounted) return;
+        if (res is Map && res['payUrl'] != null) {
+          final orderCode =
+              res['orderCode'] as String? ?? res['orderId'] as String? ?? '';
+          final qrUrl =
+              res['vietqrUrl'] as String? ?? res['qrUrl'] as String? ?? '';
+          final amount = (res['amount'] as num?)?.toInt() ?? 10000;
+          final payUrl = res['payUrl'] as String?;
+          final bankInfo = res['bankInfo'] as Map<String, dynamic>?;
+
+          final success = await VietQrPaymentSheet.show(
+            context,
+            orderCode: orderCode,
+            amount: amount,
+            qrUrl: qrUrl,
+            payUrl: payUrl,
+            bankInfo: bankInfo,
+          );
+          if (success == true) {
+            _handleSuccess();
+          }
+        }
+      } catch (e) {
+        debugPrint('VietQR checkout error: $e');
+      } finally {
+        if (mounted) setState(() => _processing = false);
+      }
+      return;
+    }
 
     final res = await ApiService.post('/premium/orders', {
       'plan': _plan,
@@ -552,7 +596,11 @@ class _SubscriptionCheckoutScreenState
           ),
         ),
         child: Text(
-          gateway == 'MOMO' ? 'MoMo' : 'ZaloPay',
+          gateway == 'SEPAY'
+              ? 'VietQR 🏦'
+              : gateway == 'MOMO'
+                  ? 'MoMo 💸'
+                  : 'ZaloPay ⚡',
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,

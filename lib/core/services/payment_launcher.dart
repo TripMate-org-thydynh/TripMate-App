@@ -74,7 +74,7 @@ class PaymentLauncher {
   static Future<bool> _tryLaunch(Uri uri) async {
     try {
       if (await canLaunchUrl(uri)) {
-        return launchUrl(uri, mode: LaunchMode.externalApplication);
+        return await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     } catch (_) {
       // nuốt lỗi, để caller xử lý fallback
