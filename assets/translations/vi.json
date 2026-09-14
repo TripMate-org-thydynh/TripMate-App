@@ -1179,7 +1179,13 @@
     "promo_apply": "Áp dụng",
     "promo_remove": "Bỏ mã",
     "promo_saved": "Giảm {amount}",
-    "promo_invalid": "Mã không dùng được cho gói này"
+    "promo_invalid": "Mã không dùng được cho gói này",
+    "play_unavailable": "Không kết nối được CH Play. Hãy kiểm tra ứng dụng CH Play rồi thử lại.",
+    "play_busy": "Đang có một giao dịch chưa xong. Chờ một chút rồi thử lại nhé.",
+    "play_product_missing": "Gói này chưa mở bán trên CH Play.",
+    "play_launch_failed": "Không mở được cửa sổ thanh toán của Google.",
+    "play_failed": "Thanh toán không thành công. Bạn chưa bị trừ tiền.",
+    "play_pending_verification": "Đã thanh toán xong nhưng chưa xác nhận được. Bạn KHÔNG mất tiền — mở lại màn hình này sau ít phút để nhận gói."
   },
   "privacy": {
     "body_1": "TripMate chỉ thu thập dữ liệu cần thiết để chạy ứng dụng (hồ sơ, ",

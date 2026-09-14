@@ -5,6 +5,7 @@ import 'envelope.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'api_exception.dart';
 import 'interceptors/auth_interceptor.dart';
+import '../distribution_channel.dart';
 
 class ApiClient {
   final Dio dio;
@@ -151,6 +152,8 @@ final dioProvider = Provider<Dio>((ref) {
     InterceptorsWrapper(
       onRequest: (options, handler) {
         options.headers['Accept-Language'] = ApiClient.currentLanguage;
+        // Server dua vao day de biet nen bay Play Billing hay VietQR.
+        options.headers['X-Client-Channel'] = kDistributionChannel.wire;
         // Goi AI di qua Gemini nen thuong 15-40s. Voi timeout chung 15s thi
         // moi lan nho AI viet caption deu bi huy giua chung ma nguoi dung
         // khong hieu vi sao.

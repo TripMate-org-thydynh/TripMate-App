@@ -1179,7 +1179,13 @@
     "promo_apply": "Apply",
     "promo_remove": "Remove code",
     "promo_saved": "Saves {amount}",
-    "promo_invalid": "This code does not work for this plan"
+    "promo_invalid": "This code does not work for this plan",
+    "play_unavailable": "Can’t reach Google Play. Check the Play Store app and try again.",
+    "play_busy": "A purchase is still in progress. Give it a moment and try again.",
+    "play_product_missing": "This plan isn’t available on Google Play yet.",
+    "play_launch_failed": "Couldn’t open Google’s payment sheet.",
+    "play_failed": "Payment didn’t go through. You haven’t been charged.",
+    "play_pending_verification": "Payment went through but we couldn’t confirm it yet. You have NOT lost your money — reopen this screen in a few minutes to get your plan."
   },
   "privacy": {
     "body_1": "TripMate only collects what the app needs to run (profile, ",
