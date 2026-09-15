@@ -9,6 +9,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/trips_providers.dart';
 
 /// Bottom sheet: Tạo chuyến mới hoặc Tham gia bằng mã mời — wired vào BE thật.
@@ -84,17 +85,17 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      _dark ? GenZTokens.paperDark : GenZTokens.paper;
 
   /// Accent lay tu theme dang chon.
   ///
   /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*.
   /// Day la State nen doc thang `context` duoc.
   Color get _primary => Theme.of(context).colorScheme.primary;
-  Color get _ink => _dark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+  Color get _ink => _dark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
   Color get _textSec =>
-      _dark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   void dispose() {
@@ -166,7 +167,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         }
         await ref
             .read(tripsProvider.notifier)
-            .join(_code.text.trim().toUpperCase());
+            .joinByAnyCode(_code.text.trim());
         if (mounted) Navigator.pop(context);
       }
     } on ApiException catch (e) {
@@ -197,7 +198,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: error ? Colors.redAccent : _primary,
+        backgroundColor: error ? GenZTokens.danger : _primary,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -239,7 +240,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                 children: [
                   _tabBtn('trips.create'.tr(), 0),
                   const SizedBox(width: 10),
-                  _tabBtn('Tham gia', 1),
+                  _tabBtn('trips.join_tab'.tr(), 1),
                 ],
               ),
               const SizedBox(height: 20),
@@ -263,8 +264,8 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                   ),
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFD84D),
-                      foregroundColor: const Color(0xFF141210),
+                      backgroundColor: GenZTokens.yellow,
+                      foregroundColor: GenZTokens.ink,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(11),
@@ -277,11 +278,13 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFF141210),
+                              color: GenZTokens.ink,
                             ),
                           )
                         : Text(
-                            _tab == 0 ? 'trips.create'.tr() : 'Tham gia',
+                            _tab == 0
+                                ? 'trips.create'.tr()
+                                : 'trips.join_tab'.tr(),
                             style: AppFonts.heading(
                               fontWeight: FontWeight.w800,
                               fontSize: 15,
@@ -317,7 +320,12 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _label('trips.invite_code_label'.tr()),
-        _field(_code, 'vd: ABC123', PhosphorIcons.ticket(), caps: true),
+        _field(
+          _code,
+          'trips.join_code_example'.tr(),
+          PhosphorIcons.ticket(),
+          caps: true,
+        ),
         const SizedBox(height: 6),
         Text(
           'trips.ask_for_code'.tr(),
@@ -408,7 +416,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                       ),
                     ),
                     child: Text(
-                      c['title']!,
+                      'trips.cover_${c['id']!.replaceAll('-', '_')}'.tr(),
                       style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -429,6 +437,9 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
           runSpacing: 8,
           children: _vibes.map((v) {
             final sel = _vibe == v.$1;
+            final onSel = _primary.computeLuminance() > 0.5
+                ? GenZTokens.ink
+                : Colors.white;
             return GestureDetector(
               onTap: () => setState(() => _vibe = sel ? null : v.$1),
               child: Container(
@@ -444,14 +455,14 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(v.$3, size: 15, color: sel ? Colors.white : _textSec),
+                    Icon(v.$3, size: 15, color: sel ? onSel : _textSec),
                     const SizedBox(width: 6),
                     Text(
                       v.$2.tr(),
                       style: AppFonts.heading(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: sel ? Colors.white : _textPri,
+                        color: sel ? onSel : _textPri,
                       ),
                     ),
                   ],
@@ -579,7 +590,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 11),
           decoration: BoxDecoration(
-            color: sel ? const Color(0xFFFFD84D) : _surface,
+            color: sel ? GenZTokens.yellow : _surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: _ink, width: 2),
             boxShadow: sel
@@ -592,7 +603,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
               style: AppFonts.heading(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: sel ? const Color(0xFF141210) : _textSec,
+                color: sel ? GenZTokens.ink : _textSec,
               ),
             ),
           ),

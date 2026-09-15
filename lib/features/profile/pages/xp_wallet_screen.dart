@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -18,7 +19,7 @@ class XpWalletScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode;
+    final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
@@ -37,7 +38,7 @@ class XpWalletScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: ink),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
             onPressed: () => ref.invalidate(xpWalletProvider),
           ),
         ],
@@ -174,7 +175,7 @@ class XpWalletScreen extends ConsumerWidget {
       child: Row(
         children: [
           Icon(
-            e.isEarn ? Icons.add_circle_outline : Icons.remove_circle_outline,
+            e.isEarn ? PhosphorIcons.plusCircle() : PhosphorIcons.minusCircle(),
             size: 18,
             color: e.isEarn ? GenZTokens.success : GenZTokens.orange,
           ),

@@ -1,6 +1,8 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/services/widget_pin.dart';
 import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:tripmate/core/theme/gen_z_tokens.dart';
 import 'package:flutter/material.dart';
 import '../../data/moments_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,17 +62,11 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
 
     // TripMate color tokens
     final bgGradStart = Theme.of(context).scaffoldBackgroundColor;
-    final textPrimary = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
-    final textSecondary = isDark
-        ? const Color(0xFFB8AE9C)
-        : const Color(0xFF4A453E);
-    final surfaceColor = isDark
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
-    final mintColor = const Color(0xFF1FA85C);
+    final mintColor = GenZTokens.green;
 
     return Scaffold(
       // Nút đăng khoảnh khắc — trước đây app KHÔNG có đường nào đưa ảnh lên,
@@ -85,15 +81,15 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
           // Chọn từ thư viện — đường chậm hơn, cho ảnh đã chụp sẵn.
           FloatingActionButton(
             heroTag: 'pick',
-            tooltip: 'Chọn ảnh từ thư viện',
+            tooltip: 'moments.pick_from_gallery'.tr(),
             onPressed: () => _openWithTrip(
               context,
               (tripId) => PostMomentScreen(tripId: tripId, isDarkMode: isDark),
               pop: false,
             ),
-            backgroundColor: Colors.white,
-            foregroundColor: const Color(0xFF141210),
-            child: const Icon(Icons.photo_library_outlined),
+            backgroundColor: surfaceColor,
+            foregroundColor: textPrimary,
+            child: Icon(PhosphorIcons.image()),
           ),
           const SizedBox(width: 12),
           // Squad Cam — đường nhanh: mở là khung ngắm đã chạy.
@@ -105,12 +101,18 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
               (tripId) => SquadCamScreen(tripId: tripId, isDarkMode: isDark),
               pop: false,
             ),
-            backgroundColor: const Color(0xFF1FA85C),
-            foregroundColor: Colors.white,
-            icon: const Icon(Icons.camera_alt_rounded),
+            backgroundColor: GenZTokens.green,
+            foregroundColor: GenZTokens.ink,
+            icon: Icon(
+              PhosphorIcons.camera(PhosphorIconsStyle.fill),
+              color: GenZTokens.ink,
+            ),
             label: Text(
               'moments.cam_title'.tr(),
-              style: AppFonts.heading(fontWeight: FontWeight.w800),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.w800,
+                color: GenZTokens.ink,
+              ),
             ),
           ),
         ],
@@ -142,7 +144,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             children: [
                               Semantics(
                                 button: true,
-                                label: 'Quay lại',
+                                label: 'common.back'.tr(),
                                 child: GestureDetector(
                                   onTap: () => Navigator.pop(context),
                                   child: Container(
@@ -166,7 +168,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                       ],
                                     ),
                                     child: Icon(
-                                      Icons.arrow_back_ios_new,
+                                      PhosphorIcons.caretLeft(),
                                       color: textPrimary,
                                       size: 16,
                                     ),
@@ -236,7 +238,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                         // noi dung.
                         Semantics(
                           button: true,
-                          label: 'Menu tính năng',
+                          label: 'moments.menu_features'.tr(),
                           child: GestureDetector(
                             onTap: () => _showHubMenu(context),
                             child: Container(
@@ -246,10 +248,13 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               decoration: BoxDecoration(
                                 color: surfaceColor,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: textPrimary, width: 2),
+                                border: Border.all(
+                                  color: textPrimary,
+                                  width: 2,
+                                ),
                               ),
                               child: Icon(
-                                Icons.auto_awesome_mosaic_outlined,
+                                PhosphorIcons.squaresFour(),
                                 color: textPrimary,
                                 size: 20,
                               ),
@@ -260,8 +265,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                         Semantics(
                           button: true,
                           label: isDark
-                              ? 'Chuyển sang chế độ sáng'
-                              : 'Chuyển sang chế độ tối',
+                              ? 'theme.switch_light'.tr()
+                              : 'theme.switch_dark'.tr(),
                           child: GestureDetector(
                             onTap: widget.onThemeToggle,
                             child: Container(
@@ -270,12 +275,15 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               decoration: BoxDecoration(
                                 color: surfaceColor,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: textPrimary, width: 2),
+                                border: Border.all(
+                                  color: textPrimary,
+                                  width: 2,
+                                ),
                               ),
                               child: Icon(
                                 isDark
-                                    ? Icons.light_mode_outlined
-                                    : Icons.dark_mode_outlined,
+                                    ? PhosphorIcons.sun()
+                                    : PhosphorIcons.moon(),
                                 color: textPrimary,
                                 size: 20,
                               ),
@@ -357,7 +365,6 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
 
               // Floating Emojis overlay stack
               ..._floatingEmojis,
-
             ],
           ),
         ),
@@ -373,14 +380,14 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     VoidCallback? onRetry,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = isDark ? Colors.white70 : Colors.black54;
+    final color = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.photo_camera_outlined, size: 40, color: color),
+            Icon(PhosphorIcons.camera(), size: 40, color: color),
             const SizedBox(height: 12),
             Text(
               message,
@@ -391,8 +398,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
               const SizedBox(height: 16),
               TextButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh, size: 18),
-                label: Text(tr('general.retry')),
+                icon: Icon(PhosphorIcons.arrowsClockwise(), size: 18),
+                label: Text('common.retry'.tr()),
               ),
             ],
           ],
@@ -453,9 +460,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                 style: AppFonts.heading(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: isDark
-                      ? const Color(0xFFFDF6D3)
-                      : const Color(0xFF141210),
+                  color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                 ),
               ),
               const SizedBox(height: 20),
@@ -487,12 +492,15 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
 
   // Floating Location sticker inside a polaroid or canvas
   Widget _buildStickerBadge(String label, Color color) {
+    final isDark = widget.isDarkMode;
     return Transform.rotate(
       angle: 0.08,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
+          color: isDark
+              ? GenZTokens.paperDark
+              : Colors.white.withValues(alpha: 0.95),
           borderRadius: BorderRadius.circular(4),
           boxShadow: [
             BoxShadow(
@@ -506,12 +514,16 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.location_on, color: color, size: 12),
+            Icon(
+              PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
+              color: color,
+              size: 12,
+            ),
             const SizedBox(width: 2),
             Text(
               label.replaceAll("location_on ", ""),
               style: AppFonts.heading(
-                color: Colors.black87,
+                color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),
@@ -535,12 +547,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     VoidCallback? onTap,
   }) {
     final isDark = widget.isDarkMode;
-    final frameColor = isDark
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
-    final textColor = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
+    final frameColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final textColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Transform.rotate(
       angle: rotation,
@@ -556,7 +564,9 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                 color: frameColor,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : textColor.withValues(alpha: 0.4),
                   width: 1,
                 ),
                 boxShadow: [
@@ -588,18 +598,18 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                 width: 156,
                                 decoration: BoxDecoration(
                                   color: isDark
-                                      ? const Color(0xFF262019)
-                                      : const Color(0xFFE2E8F0),
+                                      ? GenZTokens.paperDark
+                                      : GenZTokens.cream,
                                 ),
                                 child: Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
-                                        Icons.image_not_supported_outlined,
+                                        PhosphorIcons.imageBroken(),
                                         color: isDark
-                                            ? const Color(0xFF64748B)
-                                            : const Color(0xFFB8AE9C),
+                                            ? GenZTokens.inkSoftDark
+                                            : GenZTokens.inkSoft,
                                         size: 28,
                                       ),
                                       const SizedBox(height: 6),
@@ -607,8 +617,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                         "general.load_image_failed".tr(),
                                         style: AppFonts.heading(
                                           color: isDark
-                                              ? const Color(0xFF64748B)
-                                              : const Color(0xFFB8AE9C),
+                                              ? GenZTokens.inkSoftDark
+                                              : GenZTokens.inkSoft,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -625,10 +635,10 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                 width: 156,
                                 decoration: BoxDecoration(
                                   color: isDark
-                                      ? const Color(
-                                          0xFF262019,
-                                        ).withValues(alpha: 0.5)
-                                      : const Color(0xFFFDF6D3),
+                                      ? GenZTokens.paperDark.withValues(
+                                          alpha: 0.5,
+                                        )
+                                      : GenZTokens.cream,
                                 ),
                                 child: Center(
                                   child: SizedBox(
@@ -667,8 +677,10 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                   color: Colors.black.withValues(alpha: 0.65),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
-                                  Icons.play_circle_fill_rounded,
+                                child: Icon(
+                                  PhosphorIcons.playCircle(
+                                    PhosphorIconsStyle.fill,
+                                  ),
                                   color: Colors.white,
                                   size: 24,
                                 ),
@@ -686,9 +698,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(
-                                0xFFD8422B,
-                              ).withValues(alpha: 0.85),
+                              color: GenZTokens.danger.withValues(alpha: 0.85),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Row(
@@ -734,7 +744,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                           child: Text(
                             time,
                             style: GoogleFonts.shareTechMono(
-                              color: const Color(0xFFFFB300),
+                              color: GenZTokens.yellow,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
@@ -778,10 +788,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
   // Frosted bottom sheet Hub menu
   void _showHubMenu(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final textPrimary = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -837,10 +845,10 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Color(0xFF8B4DE8),
+                      color: GenZTokens.purple,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFF5822B).withValues(alpha: 0.3),
+                          color: GenZTokens.orange.withValues(alpha: 0.3),
                           blurRadius: 0,
                           offset: const Offset(0, 6),
                         ),
@@ -854,8 +862,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: const Icon(
-                            Icons.auto_awesome,
+                          child: Icon(
+                            PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                             color: Colors.white,
                             size: 24,
                           ),
@@ -885,8 +893,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             ],
                           ),
                         ),
-                        const Icon(
-                          Icons.arrow_forward,
+                        Icon(
+                          PhosphorIcons.arrowRight(),
                           color: Colors.white,
                           size: 16,
                         ),
@@ -905,10 +913,10 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                   children: [
                     _buildFeatureTile(
                       context,
-                      icon: Icons.auto_awesome_outlined,
+                      icon: PhosphorIcons.sparkle(),
                       title: 'moments.caption_studio'.tr(),
                       desc: 'moments.caption_studio_sub'.tr(),
-                      color: const Color(0xFFFFB300),
+                      color: GenZTokens.yellow,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -924,7 +932,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     ),
                     _buildFeatureTile(
                       context,
-                      icon: Icons.auto_mode_outlined,
+                      icon: PhosphorIcons.magicWand(),
                       title: 'moments.auto_sorter'.tr(),
                       desc: 'moments.auto_sorter_sub'.tr(),
                       color: Colors.tealAccent,
@@ -943,10 +951,10 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     ),
                     _buildFeatureTile(
                       context,
-                      icon: Icons.map_outlined,
+                      icon: PhosphorIcons.mapTrifold(),
                       title: 'moments.photo_map'.tr(),
                       desc: 'moments.photo_map_sub'.tr(),
-                      color: Colors.orangeAccent,
+                      color: GenZTokens.orange,
                       // Trước đây mở Photo Map bằng id bịa
                       // 'hagiang-loop-123' — chuyến không tồn tại nên màn
                       // bản đồ luôn trắng/lỗi.
@@ -963,10 +971,10 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     // không ai thấy.
                     _buildFeatureTile(
                       context,
-                      icon: Icons.widgets_outlined,
+                      icon: PhosphorIcons.appWindow(),
                       title: 'moments.pin_widget'.tr(),
                       desc: 'moments.pin_widget_sub'.tr(),
-                      color: const Color(0xFF8B4DE8),
+                      color: GenZTokens.purple,
                       onTap: () => _pinWidget(context),
                     ),
                   ],
@@ -1009,17 +1017,14 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
   }) {
     final container = ProviderScope.containerOf(context, listen: false);
     final activeId = container.read(activeTripIdProvider);
-    final trips = container.read(tripsProvider).maybeWhen(
-      data: (list) => list,
-      orElse: () => const [],
-    );
+    final trips = container
+        .read(tripsProvider)
+        .maybeWhen(data: (list) => list, orElse: () => const []);
     final tripId = activeId ?? (trips.isNotEmpty ? trips.first.id : null);
     if (tripId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('trips.none_yet_cta'.tr()),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('trips.none_yet_cta'.tr())));
       return;
     }
     if (pop) Navigator.pop(context);
@@ -1036,13 +1041,9 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     required VoidCallback onTap,
   }) {
     final isDark = widget.isDarkMode;
-    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final textPrimary = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
-    final textSecondary = isDark
-        ? const Color(0xFFB8AE9C)
-        : const Color(0xFF4A453E);
+    final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return GestureDetector(
       onTap: onTap,

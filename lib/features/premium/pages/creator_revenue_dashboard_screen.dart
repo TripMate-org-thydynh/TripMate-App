@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/api_service.dart';
 import '../../../core/theme/app_fonts.dart';
@@ -102,15 +103,15 @@ class _CreatorRevenueDashboardScreenState
                 color: GenZTokens.lilac,
                 borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                 border: Border.all(
-                  color: GenZTokens.ink,
+                  color: ink,
                   width: GenZTokens.borderWidth,
                 ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.storefront_outlined,
+                  Icon(
+                    PhosphorIcons.storefront(),
                     size: 28,
                     color: GenZTokens.ink,
                   ),

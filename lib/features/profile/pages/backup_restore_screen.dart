@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/app_messenger.dart';
@@ -172,7 +173,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _busy ? null : _share,
-                  icon: const Icon(Icons.ios_share, size: 18),
+                  icon: Icon(PhosphorIcons.shareNetwork(), size: 18),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: GenZTokens.yellow,
                     foregroundColor: GenZTokens.ink,
@@ -200,7 +201,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : _copy,
-                  icon: const Icon(Icons.copy_rounded, size: 18),
+                  icon: Icon(PhosphorIcons.copy(), size: 18),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: ink,
                     padding: const EdgeInsets.symmetric(vertical: 14),

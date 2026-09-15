@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../data/games_repository.dart';
 import '../widgets/challenge_list_view.dart';
@@ -11,7 +12,7 @@ class SeasonalEventsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChallengeListScreen(
       titleKey: 'games.seasonal_title',
-      emptyIcon: Icons.local_florist_outlined,
+      emptyIcon: PhosphorIcons.plant(),
       provider: seasonalEventsProvider,
     );
   }

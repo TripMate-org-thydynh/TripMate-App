@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/app_messenger.dart';
 import '../../../../core/services/media_uploader.dart';
@@ -105,12 +106,13 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -123,11 +125,24 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
             color: ink,
           ),
         ),
+        actions: [
+          if (widget.onThemeToggle != null)
+            IconButton(
+              onPressed: widget.onThemeToggle,
+              icon: Icon(
+                isDark ? PhosphorIcons.sun() : PhosphorIcons.moon(),
+                color: ink,
+              ),
+              tooltip: isDark
+                  ? 'theme.switch_light'.tr()
+                  : 'theme.switch_dark'.tr(),
+            ),
+        ],
       ),
       body: tripId == null
           ? AppEmptyState(
               isDark: isDark,
-              icon: Icons.auto_awesome_outlined,
+              icon: PhosphorIcons.sparkle(),
               title: 'games.need_trip_title'.tr(),
               body: 'games.need_trip_body'.tr(),
             )
@@ -154,7 +169,7 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                     if (pending.isEmpty) {
                       return AppEmptyState(
                         isDark: isDark,
-                        icon: Icons.check_circle_outline,
+                        icon: PhosphorIcons.checkCircle(),
                         title: 'moments.sorting_title'.tr(),
                         body: 'moments.sorting_empty'.tr(),
                       );
@@ -254,7 +269,10 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Icon(Icons.auto_awesome, size: 16),
+                            : Icon(
+                                PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                                size: 16,
+                              ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: ink,
                           side: BorderSide(
@@ -285,7 +303,7 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                         onPressed: suggestion == null || busy
                             ? null
                             : () => _save(tripId, m),
-                        icon: const Icon(Icons.check, size: 16),
+                        icon: Icon(PhosphorIcons.check(), size: 16),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: GenZTokens.green,
                           foregroundColor: GenZTokens.ink,

@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -21,7 +22,7 @@ class StickerInventoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode;
+    final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
@@ -52,7 +53,7 @@ class StickerInventoryScreen extends ConsumerWidget {
         ),
         backgroundColor: GenZTokens.yellow,
         foregroundColor: GenZTokens.ink,
-        icon: const Icon(Icons.storefront_outlined),
+        icon: Icon(PhosphorIcons.storefront()),
         label: Text(
           'xp.open_store'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -72,7 +73,7 @@ class StickerInventoryScreen extends ConsumerWidget {
               if (items.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.emoji_emotions_outlined,
+                  icon: PhosphorIcons.smiley(),
                   title: 'xp.my_stickers'.tr(),
                   body: 'xp.inventory_empty'.tr(),
                 );

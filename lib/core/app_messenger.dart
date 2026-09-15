@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'theme/gen_z_tokens.dart';
 
@@ -31,13 +32,13 @@ void showGlobalSnack(
         content: Row(
           children: [
             Icon(
-              isError ? Icons.error_outline : Icons.check_circle_outline,
-              color: Colors.white,
+              isError ? PhosphorIcons.warningCircle() : PhosphorIcons.checkCircle(),
+              color: GenZTokens.inkDark,
               size: 20,
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(message, style: const TextStyle(color: Colors.white)),
+              child: Text(message, style: const TextStyle(color: GenZTokens.inkDark)),
             ),
           ],
         ),
@@ -49,7 +50,7 @@ void showGlobalSnack(
             ? null
             : SnackBarAction(
                 label: label,
-                textColor: Colors.white,
+                textColor: GenZTokens.inkDark,
                 onPressed: onRetry,
               ),
       ),

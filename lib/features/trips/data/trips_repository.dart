@@ -114,6 +114,8 @@ class TripsRepository {
 
   Future<void> leaveTrip(String id) => _client.deleteData('/trips/$id/leave');
 
+  Future<void> deleteTrip(String id) => _client.deleteData('/trips/$id');
+
   String _date(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 }

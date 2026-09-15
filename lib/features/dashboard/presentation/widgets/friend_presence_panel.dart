@@ -157,7 +157,12 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
               ),
               const SizedBox(width: 8),
               if (!_isLoading)
-                PillTag(text: "$_activeCount active", color: GenZTokens.green),
+                PillTag(
+                  text: 'dashboard.active_count'.tr(
+                    namedArgs: {'count': '$_activeCount'},
+                  ),
+                  color: GenZTokens.green,
+                ),
             ],
           ),
         ),

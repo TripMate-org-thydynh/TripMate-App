@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -20,9 +21,10 @@ class AiGenerationQueueScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -37,8 +39,9 @@ class AiGenerationQueueScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: ink),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
             onPressed: () => ref.invalidate(aiQueueProvider),
+            tooltip: 'common.refresh'.tr(),
           ),
         ],
       ),
@@ -56,7 +59,7 @@ class AiGenerationQueueScreen extends ConsumerWidget {
               if (items.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.auto_awesome_outlined,
+                  icon: PhosphorIcons.sparkle(),
                   title: 'ai.queue_title'.tr(),
                   body: 'ai_hub.empty_queue'.tr(),
                 );
@@ -92,6 +95,7 @@ class AiGenerationQueueScreen extends ConsumerWidget {
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,10 +104,10 @@ class AiGenerationQueueScreen extends ConsumerWidget {
             children: [
               Icon(
                 item.isFailed
-                    ? Icons.error_outline
+                    ? PhosphorIcons.warningCircle(PhosphorIconsStyle.fill)
                     : item.isDone
-                    ? Icons.check_circle_outline
-                    : Icons.hourglass_top,
+                    ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.hourglass(PhosphorIconsStyle.fill),
                 size: 18,
                 color: color,
               ),

@@ -1,9 +1,11 @@
-import '../../../core/format/money.dart';
-import '../../../core/theme/theme.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+
 import '../../../core/api_service.dart';
+import '../../../core/format/money.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 
 class BillingHistoryScreen extends StatefulWidget {
   const BillingHistoryScreen({super.key});
@@ -63,16 +65,13 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Brand Tokens
-    final primaryColor = isDark
-        ? TripMateTheme.darkPrimary
-        : TripMateTheme.lightPrimary;
-    final backgroundColor = isDark
-        ? TripMateTheme.darkBackground
-        : TripMateTheme.lightBackground;
-    final surfaceColor = isDark
-        ? TripMateTheme.darkSurface
-        : TripMateTheme.lightSurface;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final backgroundColor =
+        isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surfaceColor =
+        isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final accentColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -81,8 +80,8 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black87,
+            PhosphorIcons.arrowLeft(),
+            color: ink,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -90,19 +89,25 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
           'premium.billing_history'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
+            color: ink,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(
+              PhosphorIcons.arrowsClockwise(),
+              color: ink,
+            ),
             onPressed: _fetchBillingHistory,
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Colors.purpleAccent),
+          ? Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: accentColor,
+              ),
             )
           : _invoices.isEmpty
           // Chưa mua gì thì nói thẳng, thay vì hiện hoá đơn bịa như trước.
@@ -113,9 +118,9 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.receipt_long_outlined,
+                      PhosphorIcons.receipt(),
                       size: 40,
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: inkSoft,
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -123,7 +128,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                       textAlign: TextAlign.center,
                       style: AppFonts.body(
                         fontSize: 14,
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: inkSoft,
                       ),
                     ),
                   ],
@@ -142,7 +147,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                     color: surfaceColor,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+                      color: ink.withValues(alpha: 0.15),
                     ),
                   ),
                   child: ListTile(
@@ -159,7 +164,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                             style: AppFonts.heading(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: isDark ? Colors.white : Colors.black87,
+                              color: ink,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -170,7 +175,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                           style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
-                            color: primaryColor,
+                            color: accentColor,
                           ),
                         ),
                       ],
@@ -188,7 +193,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                           ),
                           style: AppFonts.heading(
                             fontSize: 11.5,
-                            color: Colors.grey,
+                            color: inkSoft,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -198,15 +203,15 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                           ),
                           style: AppFonts.heading(
                             fontSize: 11.5,
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                            color: inkSoft,
                           ),
                         ),
                       ],
                     ),
                     trailing: IconButton(
                       icon: Icon(
-                        Icons.download_for_offline_outlined,
-                        color: primaryColor,
+                        PhosphorIcons.downloadSimple(),
+                        color: accentColor,
                       ),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(

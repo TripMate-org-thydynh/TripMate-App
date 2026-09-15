@@ -1,25 +1,23 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../core/widgets/gen_z_widgets.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
-// Pages
-import 'pages/matey_ai_emotional_chaos_screen.dart';
-import 'pages/ai_budget_assistant_screen.dart';
+import '../../core/widgets/gen_z_widgets.dart';
+import '../discovery/presentation/pages/ai_vibe_match_screen.dart';
 import '../gamification/data/games_repository.dart';
 import '../moments/presentation/pages/trip_recap_reel_screen.dart';
+import '../planning/presentation/pages/ai_planning_matey_screen.dart';
+import 'pages/ai_budget_assistant_screen.dart';
+import 'pages/ai_caption_generator_screen.dart';
 import 'pages/ai_chat_history_screen.dart';
-import 'pages/ai_personality_analysis_screen.dart';
+import 'pages/ai_generation_queue_screen.dart';
 import 'pages/ai_mood_detection_screen.dart';
+import 'pages/ai_personality_analysis_screen.dart';
 import 'pages/ai_recommendation_timeline_screen.dart';
 import 'pages/ai_saved_prompts_screen.dart';
-import 'pages/ai_generation_queue_screen.dart';
-
-// External cross-links
-import '../discovery/presentation/pages/ai_vibe_match_screen.dart';
-import '../planning/presentation/pages/ai_planning_matey_screen.dart';
+import 'pages/matey_ai_emotional_chaos_screen.dart';
 
 class AiHubScreen extends StatelessWidget {
   const AiHubScreen({super.key});
@@ -29,7 +27,6 @@ class AiHubScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Token Gen Z Neo-Brutalist
     const primaryColor = GenZTokens.purple;
     const secondaryColor = GenZTokens.yellow;
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
@@ -41,7 +38,6 @@ class AiHubScreen extends StatelessWidget {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // Elegant Glowing AI Header
           SliverAppBar(
             expandedHeight: 220.0,
             floating: false,
@@ -49,8 +45,12 @@ class AiHubScreen extends StatelessWidget {
             backgroundColor: backgroundColor,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: ink),
+              icon: Icon(
+                PhosphorIcons.arrowLeft(PhosphorIconsStyle.bold),
+                color: ink,
+              ),
               onPressed: () => Navigator.pop(context),
+              tooltip: 'common.back'.tr(),
             ),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
@@ -68,7 +68,6 @@ class AiHubScreen extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Khối sticker màu đặc trang trí
                     Positioned(
                       right: -20,
                       top: 20,
@@ -108,7 +107,6 @@ class AiHubScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 40),
-                        // Icon robot — khối tím viền ink hard shadow
                         Container(
                           padding: const EdgeInsets.all(18),
                           decoration: BoxDecoration(
@@ -136,12 +134,10 @@ class AiHubScreen extends StatelessWidget {
             ),
           ),
 
-          // Main body content
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                // Matey AI companion intro card
                 Padding(
                   padding: const EdgeInsets.only(bottom: 28),
                   child: HardShadowBox(
@@ -156,8 +152,11 @@ class AiHubScreen extends StatelessWidget {
                               text: 'ai.companion_mode'.tr(),
                               color: GenZTokens.lilac,
                             ),
-                            Spacer(),
-                            PillTag(text: 'Online', color: GenZTokens.green),
+                            const Spacer(),
+                            PillTag(
+                              text: 'ai.online'.tr(),
+                              color: GenZTokens.green,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -193,9 +192,8 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'ai.matey_title'.tr(),
-                  subtitle:
-                      'ai.chat_sub'.tr(),
-                  icon: Icons.chat_bubble_outline,
+                  subtitle: 'ai.chat_sub'.tr(),
+                  icon: PhosphorIcons.chatCircleDots(PhosphorIconsStyle.bold),
                   color: primaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -209,9 +207,8 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'ai.vibe_matcher_title'.tr(),
-                  subtitle:
-                      'ai.vibe_match_sub'.tr(),
-                  icon: Icons.favorite_border,
+                  subtitle: 'ai.vibe_match_sub'.tr(),
+                  icon: PhosphorIcons.heart(PhosphorIconsStyle.bold),
                   color: GenZTokens.magenta,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -228,9 +225,8 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'ai.planner_title'.tr(),
-                  subtitle:
-                      'ai.planner_sub'.tr(),
-                  icon: Icons.auto_awesome_motion,
+                  subtitle: 'ai.planner_sub'.tr(),
+                  icon: PhosphorIcons.sparkle(PhosphorIconsStyle.bold),
                   color: secondaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -244,6 +240,23 @@ class AiHubScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                _buildHubCard(
+                  context: context,
+                  title: 'ai.generate_captions'.tr(),
+                  subtitle: 'ai.caption_tagline'.tr(),
+                  icon: PhosphorIcons.textT(PhosphorIconsStyle.bold),
+                  color: GenZTokens.lilac,
+                  isDark: isDark,
+                  surfaceColor: surfaceColor,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AICaptionGeneratorScreen(
+                        isDarkMode: isDark,
+                      ),
+                    ),
+                  ),
+                ),
 
                 const SizedBox(height: 24),
 
@@ -253,9 +266,10 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'ai.budget_title'.tr(),
-                  subtitle:
-                      'ai.budget_sub'.tr(),
-                  icon: Icons.monetization_on_outlined,
+                  subtitle: 'ai.budget_sub'.tr(),
+                  icon: PhosphorIcons.currencyCircleDollar(
+                    PhosphorIconsStyle.bold,
+                  ),
                   color: GenZTokens.green,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -269,9 +283,8 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'ai.personality_title'.tr(),
-                  subtitle:
-                      'ai.personality_sub'.tr(),
-                  icon: Icons.psychology_outlined,
+                  subtitle: 'ai.personality_sub'.tr(),
+                  icon: PhosphorIcons.brain(PhosphorIconsStyle.bold),
                   color: GenZTokens.orange,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -285,9 +298,8 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'ai.mood_title'.tr(),
-                  subtitle:
-                      'ai.drama_sub'.tr(),
-                  icon: Icons.mood_bad_outlined,
+                  subtitle: 'ai.drama_sub'.tr(),
+                  icon: PhosphorIcons.smileyMeh(PhosphorIconsStyle.bold),
                   color: GenZTokens.red,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -302,7 +314,7 @@ class AiHubScreen extends StatelessWidget {
                   context: context,
                   title: 'ai.timeline_title'.tr(),
                   subtitle: 'ai.hub_route_sub'.tr(),
-                  icon: Icons.timeline_outlined,
+                  icon: PhosphorIcons.path(PhosphorIconsStyle.bold),
                   color: GenZTokens.blue,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -314,15 +326,11 @@ class AiHubScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Trước đây tile này mở AiTripSummaryScreen — một màn 925 dòng
-                // in cứng "842 khoảnh khắc", nhân vật "Alex"/"Thảo Ly" và ảnh
-                // Unsplash, không gọi API nào. Trip Wrapped làm đúng việc đó
-                // trên số liệu thật nên trỏ thẳng sang đấy.
                 _buildHubCard(
                   context: context,
                   title: 'ai.wrapped_title'.tr(),
                   subtitle: 'ai.hub_recap_sub'.tr(),
-                  icon: Icons.auto_awesome,
+                  icon: PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                   color: secondaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -357,9 +365,8 @@ class AiHubScreen extends StatelessWidget {
                 _buildHubCard(
                   context: context,
                   title: 'ai.queue_title'.tr(),
-                  subtitle:
-                      'ai.workspace_sub'.tr(),
-                  icon: Icons.queue_play_next,
+                  subtitle: 'ai.workspace_sub'.tr(),
+                  icon: PhosphorIcons.queue(PhosphorIconsStyle.bold),
                   color: GenZTokens.magenta,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -374,7 +381,7 @@ class AiHubScreen extends StatelessWidget {
                   context: context,
                   title: 'ai.prompts_title'.tr(),
                   subtitle: 'ai.hub_prompts_sub'.tr(),
-                  icon: Icons.bookmark_outline,
+                  icon: PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.bold),
                   color: GenZTokens.green,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -389,7 +396,9 @@ class AiHubScreen extends StatelessWidget {
                   context: context,
                   title: 'ai.history_title'.tr(),
                   subtitle: 'ai.hub_history_sub'.tr(),
-                  icon: Icons.history_edu,
+                  icon: PhosphorIcons.clockCounterClockwise(
+                    PhosphorIconsStyle.bold,
+                  ),
                   color: primaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
@@ -445,7 +454,6 @@ class AiHubScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            // Ô icon vuông màu accent đặc, viền ink
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -460,7 +468,6 @@ class AiHubScreen extends StatelessWidget {
             ),
             const SizedBox(width: 16),
 
-            // Texts
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,9 +496,8 @@ class AiHubScreen extends StatelessWidget {
               ),
             ),
 
-            // Arrow forward
             Icon(
-              Icons.arrow_forward,
+              PhosphorIcons.arrowRight(PhosphorIconsStyle.bold),
               color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
               size: 18,
             ),

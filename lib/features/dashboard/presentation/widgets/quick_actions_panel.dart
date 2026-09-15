@@ -190,7 +190,7 @@ class QuickActionsPanel extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close, color: ink, size: 20),
+                      icon: Icon(PhosphorIcons.x(), color: ink, size: 20),
                       onPressed: () => Navigator.pop(ctx),
                     ),
                   ],
@@ -266,7 +266,7 @@ class QuickActionsPanel extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               PillTag(
-                text: 'quick',
+                text: 'dashboard.quick_tag'.tr(),
                 icon: PhosphorIcons.lightning(PhosphorIconsStyle.fill),
                 color: GenZTokens.yellow,
               ),

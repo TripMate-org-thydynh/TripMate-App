@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/network/api_exception.dart';
@@ -64,7 +65,7 @@ class _ThemeMarketplaceScreenState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
@@ -100,7 +101,7 @@ class _ThemeMarketplaceScreenState
               if (items.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.palette_outlined,
+                  icon: PhosphorIcons.palette(),
                   title: 'xp.theme_store'.tr(),
                   body: 'xp.store_empty'.tr(),
                 );
@@ -173,7 +174,7 @@ class _ThemeMarketplaceScreenState
                 ),
                 const SizedBox(width: GenZTokens.space3),
                 if (isActive)
-                  Icon(Icons.check_circle, color: GenZTokens.success, size: 26)
+                  Icon(PhosphorIcons.checkCircle(PhosphorIconsStyle.fill), color: GenZTokens.success, size: 26)
                 else
                   ElevatedButton(
                     onPressed: busy

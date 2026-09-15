@@ -28,13 +28,14 @@ class ChallengeListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
@@ -90,6 +91,7 @@ class ChallengeListScreen extends ConsumerWidget {
         color: c.completed ? GenZTokens.green : surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

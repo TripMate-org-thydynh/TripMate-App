@@ -64,7 +64,7 @@ class PillTag extends StatelessWidget {
                 color: textIconColor,
                 shadows: bg == GenZTokens.yellow
                     ? GenZTokens.textOutline(
-                        Colors.black.withValues(alpha: 0.2),
+                        GenZTokens.ink.withValues(alpha: 0.2),
                       )
                     : null,
               ),

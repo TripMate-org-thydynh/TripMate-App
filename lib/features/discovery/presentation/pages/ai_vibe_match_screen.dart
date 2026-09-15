@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
@@ -126,7 +127,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
           else
             AppEmptyState(
               isDark: isDark,
-              icon: Icons.favorite_border,
+              icon: PhosphorIcons.heart(),
               title: 'ai.vibe_title'.tr(),
               body: 'ai.vibe_hint'.tr(),
             ),
@@ -185,7 +186,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
               borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
             ),
           ),
-          child: const Icon(Icons.auto_awesome, size: 20),
+          child: Icon(PhosphorIcons.sparkle(PhosphorIconsStyle.fill), size: 20),
         ),
       ],
     );
@@ -248,7 +249,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
                       : GenZTokens.orange,
                   borderRadius: BorderRadius.circular(999),
                   border: Border.all(
-                    color: GenZTokens.ink,
+                    color: ink,
                     width: GenZTokens.borderWidthThin,
                   ),
                 ),
@@ -279,7 +280,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
                       color: GenZTokens.lilac,
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(
-                        color: GenZTokens.ink,
+                        color: ink,
                         width: GenZTokens.borderWidthThin,
                       ),
                     ),
@@ -303,7 +304,7 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _addToItinerary(m),
-              icon: const Icon(Icons.add, size: 18),
+              icon: Icon(PhosphorIcons.plus(), size: 18),
               style: ElevatedButton.styleFrom(
                 backgroundColor: GenZTokens.yellow,
                 foregroundColor: GenZTokens.ink,

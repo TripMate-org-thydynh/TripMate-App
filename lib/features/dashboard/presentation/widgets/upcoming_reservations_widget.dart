@@ -18,27 +18,26 @@ class UpcomingReservationsWidget extends ConsumerWidget {
   Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   static const _meta = <ReservationType, (IconData, Color)>{
-    ReservationType.flight: (PhosphorIconsFill.airplaneTilt, Color(0xFF3D8BFF)),
-    ReservationType.train: (PhosphorIconsFill.train, Color(0xFF06B6D4)),
-    ReservationType.bus: (PhosphorIconsFill.bus, Color(0xFF1FA85C)),
-    ReservationType.hotel: (PhosphorIconsFill.buildings, Color(0xFF8B4DE8)),
+    ReservationType.flight: (PhosphorIconsFill.airplaneTilt, GenZTokens.blue),
+    ReservationType.train: (PhosphorIconsFill.train, GenZTokens.info),
+    ReservationType.bus: (PhosphorIconsFill.bus, GenZTokens.green),
+    ReservationType.hotel: (PhosphorIconsFill.buildings, GenZTokens.purple),
     ReservationType.restaurant: (
       PhosphorIconsFill.forkKnife,
-      Color(0xFFF5822B),
+      GenZTokens.orange,
     ),
-    ReservationType.car: (PhosphorIconsFill.car, Color(0xFFD6248C)),
-    ReservationType.event: (PhosphorIconsFill.ticket, Color(0xFFFFB020)),
-    ReservationType.attraction: (PhosphorIconsFill.mapPin, Color(0xFFEF4444)),
+    ReservationType.car: (PhosphorIconsFill.car, GenZTokens.magenta),
+    ReservationType.event: (PhosphorIconsFill.ticket, GenZTokens.yellow),
+    ReservationType.attraction: (PhosphorIconsFill.mapPin, GenZTokens.red),
     ReservationType.other: (
       PhosphorIconsFill.bookmarkSimple,
-      Color(0xFF64748B),
+      GenZTokens.lilac,
     ),
   };
 
   (IconData, Color) _typeMeta(ReservationType t) =>
       _meta[t] ?? _meta[ReservationType.other]!;
 
-  static const _months = 'Th1 Th2 Th3 Th4 Th5 Th6 Th7 Th8 Th9 Th10 Th11 Th12';
   String _countdown(DateTime d) {
     final diff = d.difference(DateTime.now());
     if (diff.inDays >= 1) {
@@ -53,11 +52,8 @@ class UpcomingReservationsWidget extends ConsumerWidget {
     return 'reservations.upcoming'.tr();
   }
 
-  String _fmt(DateTime d) {
-    final m = _months.split(' ')[d.month - 1];
-    final hh = d.hour.toString().padLeft(2, '0');
-    final mm = d.minute.toString().padLeft(2, '0');
-    return '$m ${d.day} · $hh:$mm';
+  String _fmt(BuildContext context, DateTime d) {
+    return DateFormat('d MMM · HH:mm', context.locale.languageCode).format(d);
   }
 
   @override
@@ -92,14 +88,14 @@ class UpcomingReservationsWidget extends ConsumerWidget {
             physics: const BouncingScrollPhysics(),
             itemCount: items.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
-            itemBuilder: (context, i) => _card(items[i]),
+            itemBuilder: (context, i) => _card(context, items[i]),
           ),
         ),
       ],
     );
   }
 
-  Widget _card(Reservation r) {
+  Widget _card(BuildContext context, Reservation r) {
     final meta = _typeMeta(r.type);
     return Container(
       width: 250,
@@ -138,7 +134,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
                     style: AppFonts.mono(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ),
@@ -158,7 +154,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             [
-              if (r.startTime != null) _fmt(r.startTime!.toLocal()),
+              if (r.startTime != null) _fmt(context, r.startTime!.toLocal()),
               if (r.tripName != null && r.tripName!.isNotEmpty) r.tripName!,
             ].join(' · '),
             maxLines: 1,

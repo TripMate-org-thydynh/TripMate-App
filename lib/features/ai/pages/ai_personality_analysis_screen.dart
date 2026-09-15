@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -28,10 +29,11 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -47,15 +49,16 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
         actions: [
           if (tripId != null)
             IconButton(
-              icon: Icon(Icons.refresh, color: ink),
+              icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
               onPressed: () => ref.invalidate(squadPersonalityProvider(tripId)),
+              tooltip: 'common.refresh'.tr(),
             ),
         ],
       ),
       body: tripId == null
           ? AppEmptyState(
               isDark: isDark,
-              icon: Icons.theater_comedy_outlined,
+              icon: PhosphorIcons.maskHappy(),
               title: 'games.need_trip_title'.tr(),
               body: 'games.need_trip_body'.tr(),
             )
@@ -75,7 +78,7 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
                     if (roasts.isEmpty) {
                       return AppEmptyState(
                         isDark: isDark,
-                        icon: Icons.theater_comedy_outlined,
+                        icon: PhosphorIcons.maskHappy(),
                         title: 'ai.personality_title'.tr(),
                         body: 'ai.personality_empty'.tr(),
                       );
@@ -107,6 +110,7 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
           color: GenZTokens.ink,
           width: GenZTokens.borderWidth,
         ),
+        boxShadow: GenZTokens.hardShadow(GenZTokens.ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

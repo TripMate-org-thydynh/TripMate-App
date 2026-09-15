@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../moments/application/moments_providers.dart';
 import '../../../moments/domain/moment.dart';
@@ -76,7 +77,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
           if (displayMoments.isEmpty) {
             return AppEmptyState(
               isDark: widget.isDarkMode,
-              icon: Icons.map_outlined,
+              icon: PhosphorIcons.mapTrifold(),
               title: 'moments.photo_map_empty_title'.tr(),
               body: 'moments.photo_map_empty_body'.tr(),
             );
@@ -140,7 +141,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                 errorWidget: (context, url, err) => Container(
                                   color: GenZTokens.lilac,
                                   child: Icon(
-                                    Icons.photo_outlined,
+                                    PhosphorIcons.image(),
                                     color: _ink,
                                   ),
                                 ),
@@ -188,7 +189,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                   : null,
                               backgroundColor: GenZTokens.lilac,
                               child: _selectedMoment!.authorAvatar == null
-                                  ? const Icon(Icons.person, size: 18)
+                                  ? Icon(PhosphorIcons.user(), size: 18, color: GenZTokens.ink)
                                   : null,
                             ),
                             const SizedBox(width: 10),
@@ -219,7 +220,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.close),
+                              icon: Icon(PhosphorIcons.x()),
                               onPressed: () {
                                 setState(() {
                                   _selectedMoment = null;
@@ -264,8 +265,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                         // GPS location name/address
                         Row(
                           children: [
-                            const Icon(
-                              Icons.location_on,
+                            Icon(
+                              PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                               color: GenZTokens.red,
                               size: 16,
                             ),

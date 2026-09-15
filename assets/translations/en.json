@@ -110,7 +110,24 @@
     "vibe_placeholder": "e.g. hillside coffee shop in Da Lat",
     "vibe_title": "Vibe Match ✨",
     "workspace_sub": "Recap renders and receipt parsing running in the background",
-    "wrapped_title": "Trip Wrapped"
+    "wrapped_title": "Trip Wrapped",
+    "param_weekend_trip": "3-Day Weekend Trip",
+    "param_deep_chill": "Deep Chill",
+    "param_high_energy": "High Energy",
+    "param_nature_focus": "Nature Focus",
+    "param_city_exploration": "City Exploration",
+    "custom_vibe_title": "Add Itinerary Criterion",
+    "custom_vibe_hint": "Enter new criterion (e.g. Street food...)",
+    "custom_vibe_add": "Add criterion",
+    "just_now": "Just now",
+    "matey_greeting": "Hey, I'm Matey!",
+    "online": "Online",
+    "send": "Send",
+    "suggested_prompts_title": "Suggested Prompts",
+    "vibe_aesthetic": "Aesthetic",
+    "vibe_chaotic_genz": "Chaotic Gen Z",
+    "vibe_cinematic": "Cinematic",
+    "vibe_funny": "Funny"
   },
   "ai_hub": {
     "boost": "Boost ⚡",
@@ -225,7 +242,10 @@
     "vibe_party": "Bùi Viện nights and rooftop bars in Saigon.",
     "welcome": "welcome to the squad.",
     "welcome_back": "Welcome back, {name}!",
-    "your_email": "Your email"
+    "your_email": "Your email",
+    "instagram_hint": "Instagram username",
+    "tiktok_hint": "TikTok username",
+    "vibe_adventure": "Ha Giang loop and exploring Son Doong cave."
   },
   "banks": {
     "acct_holder": "Account holder name",
@@ -248,7 +268,9 @@
     "empty": "No messages yet",
     "empty_sub": "Start chatting with the squad!",
     "input_hint": "Say something...",
-    "load_failed": "Couldn't load messages"
+    "load_failed": "Couldn't load messages",
+    "title": "Squad Chat",
+    "live": "live"
   },
   "checkins": {
     "empty": "Nobody has checked in for this day",
@@ -296,7 +318,9 @@
     "unknown": "Unknown",
     "unlimited": "Unlimited",
     "unnamed": "Unnamed",
-    "update": "Update"
+    "update": "Update",
+    "more": "More",
+    "refresh": "Refresh"
   },
   "dares": {
     "d1": "Down this whole drink in 5 seconds!",
@@ -382,7 +406,11 @@
     "vibe_updated": "Updated your vibe to {mood}!",
     "weather": "Weather",
     "weather_checking": "Checking weather...",
-    "weather_saving_vibe": "saving the vibe"
+    "weather_saving_vibe": "saving the vibe",
+    "active_count": "{count} active",
+    "quick_tag": "Quick",
+    "wrapped_reel": "Wrapped Reel",
+    "currency_tr": "M"
   },
   "discovery": {
     "add_to_trip": "Add to Trip",
@@ -456,7 +484,11 @@
     "session_expired_long": "Your session has expired. Please sign in again.",
     "unauthorized": "You are not authorized to perform this action.",
     "unknown_error": "An error occurred, try again later.",
-    "viewing_offline": "VIEWING OFFLINE 📶🚫"
+    "viewing_offline": "VIEWING OFFLINE 📶🚫",
+    "internet_died": "No internet connection",
+    "saved_locally": "Saved locally",
+    "reconnect": "Reconnect",
+    "still_offline": "Still offline, please check your network"
   },
   "expense": {
     "add": "Add expense",
@@ -575,7 +607,8 @@
     "target_amount_invalid": "Please enter a valid target amount (min 1)",
     "target_hint": "Enter target (e.g. 5,000,000)",
     "title": "Trip Fund",
-    "total_collected": "Collected"
+    "total_collected": "Collected",
+    "delete_contribution": "Delete contribution"
   },
   "games": {
     "accept_fate": "Accept your fate 💸",
@@ -685,7 +718,25 @@
     "xp_source_poll": "Polls",
     "xp_title": "Squad XP system 🚀",
     "xp_to_next": "{xp} XP to the next level",
-    "xp_zero": "No XP yet. Add itinerary stops, log expenses or post moments to start earning."
+    "xp_zero": "No XP yet. Add itinerary stops, log expenses or post moments to start earning.",
+    "bingo_lines_completed": "Bingo! {count} lines completed",
+    "bingo_no_lines": "No bingo line yet",
+    "bingo_remaining": "Chaos level increasing. {count} more for Bingo!",
+    "bingo_tile_cafe": "Cafe at 2AM",
+    "bingo_tile_karaoke": "Public karaoke",
+    "bingo_tile_lost": "Lost with squad",
+    "bingo_tile_meal": "Eat 4th meal",
+    "bingo_tile_overspend": "Overspend budget",
+    "bingo_tile_photo": "Accidental film photo",
+    "bingo_tile_rain": "Survive random rain",
+    "bingo_tile_sunrise": "Stay up til sunrise",
+    "bingo_tile_train": "Miss a train",
+    "bingo_tiles_count": "{done}/{total} tiles checked",
+    "bingo_unleashed": "Bingo achieved! Complete chaos unleashed!",
+    "dare_level_chaos": "Chaos",
+    "dare_level_chill": "Chill",
+    "dare_level_extreme": "Extreme",
+    "trip_bingo_title": "Trip Bingo"
   },
   "gamification": {
     "achievements_accumulated": "See accumulated cup achievements",
@@ -882,7 +933,16 @@
     "tuyen_lam_sunset_title": "Tuyen Lam Lake Sunset",
     "undo": "Undo",
     "view_route": "View Route",
-    "wishlist_add_place": "Add place"
+    "wishlist_add_place": "Add place",
+    "added_success": "Added to Trip!",
+    "scheduled_desc": "{place} scheduled for Day {day} at {time}.",
+    "map_moment_label": "Moment: {author}",
+    "map_stop_label": "Stop: {place}",
+    "map_moment_caption": "Moment photo: {caption}",
+    "map_moment_photo": "Moment photo of {author}",
+    "delete_stop": "Delete stop",
+    "delete_stop_confirm": "Are you sure you want to delete this stop from your itinerary?",
+    "deleted_success": "Stop deleted from itinerary"
   },
   "journal": {
     "body_hint": "What happened today? Tell the squad...",
@@ -969,7 +1029,11 @@
     "wall": "Memory wall",
     "wall_empty": "Your memory wall is empty. Post your first moment from a trip!",
     "wall_hub": "Memory wall menu",
-    "wall_sub": "Squad album"
+    "wall_sub": "Squad album",
+    "menu_features": "Feature menu",
+    "pick_from_gallery": "Pick photo from gallery",
+    "captured_photo": "Captured photo",
+    "flip_camera": "Flip camera"
   },
   "nav": {
     "create": "New trip",
@@ -1185,7 +1249,40 @@
     "play_product_missing": "This plan isn’t available on Google Play yet.",
     "play_launch_failed": "Couldn’t open Google’s payment sheet.",
     "play_failed": "Payment didn’t go through. You haven’t been charged.",
-    "play_pending_verification": "Payment went through but we couldn’t confirm it yet. You have NOT lost your money — reopen this screen in a few minutes to get your plan."
+    "play_pending_verification": "Payment went through but we couldn’t confirm it yet. You have NOT lost your money — reopen this screen in a few minutes to get your plan.",
+    "referral_slogan": "Bring the squad.\nUnlock elite vibes.",
+    "feat_identity_title": "Premium Identity",
+    "feat_identity_desc": "Stand out with glowing squad tags and profile highlights.",
+    "feat_spots_title": "Hidden Travel Spots",
+    "feat_spots_desc": "Unlock exclusive geolocated pins and secret local viewpoints.",
+    "feat_reactions_title": "Exclusive Reactions",
+    "feat_reactions_desc": "Express yourself with custom reactions for your squad.",
+    "feat_storage_title": "Infinite High-Res Storage",
+    "feat_storage_desc": "Keep original raw frames and cinematic highlights forever.",
+    "sub_settings_title": "Subscription Settings",
+    "sub_settings_desc": "Manage payment methods and subscription status",
+    "invoices_title": "Invoices History",
+    "invoices_desc": "View and track your billing payment history",
+    "referral_rewards_title": "Referral Rewards",
+    "referral_rewards_desc": "Invite squad mates and receive bonus rewards",
+    "referral_campaign_title": "Referral Campaign",
+    "referral_campaign_desc": "Bring your squad and enjoy TripMate together",
+    "creator_shop_title": "Creative Shop Revenue",
+    "creator_shop_desc": "Track creator store status and sticker packs",
+    "vietqr_title": "Scan VietQR to pay",
+    "vietqr_sub": "Transfer the exact amount and note to activate automatically",
+    "vietqr_bank": "Bank",
+    "vietqr_account_number": "Account number",
+    "vietqr_account_name": "Account holder",
+    "vietqr_amount": "Amount",
+    "vietqr_content": "Transfer note",
+    "vietqr_waiting": "Waiting for bank confirmation...",
+    "vietqr_waiting_sub": "Your subscription will be activated automatically upon receiving payment",
+    "vietqr_success_title": "Payment successful!",
+    "vietqr_success_desc": "Payment confirmed. Your subscription is active!",
+    "vietqr_open_gateway": "Open SePay Gateway",
+    "vietqr_copied": "Copied {label}: {value}",
+    "vietqr_error_image": "Unable to load QR image"
   },
   "privacy": {
     "body_1": "TripMate only collects what the app needs to run (profile, ",
@@ -1310,7 +1407,13 @@
     "update_failed": "❌ Could not update the profile, or that username is taken.",
     "updated": "🎉 Profile updated!",
     "view_gallery": "VIEW GALLERY",
-    "xp_points": "XP points"
+    "xp_points": "XP points",
+    "username": "Username",
+    "theme_subtitle": "choose your squad's aesthetic.",
+    "theme_applied": "{name} applied!",
+    "travel_atlas_title": "Travel Atlas",
+    "bucket_list_tab": "Bucket List",
+    "mcp_inactive": "MCP Connection Status: INACTIVE"
   },
   "recap": {
     "cap_days": "That many days, {} people, nobody bailed.",
@@ -1348,7 +1451,13 @@
     "unit_days": "days",
     "unit_moments": "moments",
     "unit_places": "places",
-    "your_trip": "Your trip"
+    "your_trip": "Your trip",
+    "avatar": "Avatar",
+    "avatar_of": "Avatar of {name}",
+    "memory_photo": "Memory photo by {author}",
+    "memory_photo_caption": "Memory photo by {author}: {caption}",
+    "moment_photo": "Moment photo by {author}",
+    "moment_photo_caption": "Moment photo by {author}: {caption}"
   },
   "referral": {
     "code_intro": "Share this code. Every time a friend signs up with it, you both get 500 XP.",
@@ -1424,6 +1533,7 @@
   },
   "splash": {
     "tag_moments": "save moments",
+    "tag_plan": "chill plans",
     "tag_split": "easy splits"
   },
   "system_phases": {
@@ -1466,7 +1576,9 @@
     "font_handwriting": "Handwritten Character ✍️",
     "font_modern": "Modern Gen Z 🚀",
     "font_playful": "Playful Gen Z 🎈",
-    "toggle": "Toggle theme"
+    "toggle": "Toggle theme",
+    "switch_dark": "Switch to dark mode",
+    "switch_light": "Switch to light mode"
   },
   "todos": {
     "add": "Add a to-do",
@@ -1583,7 +1695,23 @@
     "vibe_culture": "Culture",
     "vibe_foodie": "Foodie",
     "vibe_party": "Party",
-    "where_to_next_form": "where to next?"
+    "where_to_next_form": "where to next?",
+    "cover_cover_1": "Tokyo Drift",
+    "cover_cover_2": "Island Time",
+    "cover_cover_3": "Alpine Glow",
+    "delete_trip": "Delete trip",
+    "delete_trip_confirm": "Are you sure you want to delete this trip? This action cannot be undone.",
+    "hub_squad_chat": "Squad Chat",
+    "hub_wishlist": "Wishlist",
+    "join_code_example": "e.g. ABC123",
+    "join_now": "Join now",
+    "join_tab": "Join",
+    "trip_deleted": "Trip deleted",
+    "vibe_display": "Vibe: {vibe}",
+    "cover_accessibility": "Cover image {title}",
+    "avatar_minh_nhat": "Avatar of member Minh Nhat",
+    "avatar_thao_ly": "Avatar of member Thao Ly",
+    "avatar_user": "Your avatar"
   },
   "vacay": {
     "add_short": "Add day",
@@ -1636,7 +1764,8 @@
     "squad_done": "Your squad has picked!",
     "title": "Vibe Match",
     "type_food": "Food",
-    "type_place": "Place"
+    "type_place": "Place",
+    "squad_match": "{pct}% SQUAD MATCH"
   },
   "weather": {
     "clear": "Clear",
@@ -1660,7 +1789,10 @@
     "empty": "Wishlist is empty",
     "empty_sub": "Drop the places your group wants to visit here!",
     "load_failed": "Couldn't load the wishlist",
-    "title": "Group wishlist"
+    "title": "Group wishlist",
+    "delete_item": "Delete place",
+    "delete_item_confirm": "Are you sure you want to delete this place from the wishlist?",
+    "deleted_success": "Deleted from wishlist"
   },
   "xp": {
     "balance": "XP left",

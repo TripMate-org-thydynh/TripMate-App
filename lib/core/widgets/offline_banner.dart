@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/offline_provider.dart';
@@ -16,10 +17,9 @@ class OfflineBanner extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final bgColor = isDark
-        ? const Color(0xFFC2410C)
-        : const Color(0xFFF97316); // Orange accent
-    final textInk = GenZTokens.ink;
+    const bgColor = GenZTokens.orange;
+    final borderInk = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    const textInk = GenZTokens.ink;
 
     return Container(
       width: double.infinity,
@@ -28,12 +28,12 @@ class OfflineBanner extends ConsumerWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: textInk, width: 2),
-        boxShadow: GenZTokens.hardShadow(textInk),
+        border: Border.all(color: borderInk, width: 2),
+        boxShadow: GenZTokens.hardShadow(borderInk),
       ),
       child: Row(
         children: [
-          const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 20),
+          Icon(PhosphorIcons.wifiSlash(), color: textInk, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -43,7 +43,7 @@ class OfflineBanner extends ConsumerWidget {
                 Text(
                   'errors.viewing_offline'.tr(),
                   style: AppFonts.heading(
-                    color: Colors.white,
+                    color: textInk,
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
                     letterSpacing: 0.3,
@@ -52,7 +52,7 @@ class OfflineBanner extends ConsumerWidget {
                 Text(
                   'errors.offline_cache'.tr(),
                   style: AppFonts.body(
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: textInk.withValues(alpha: 0.85),
                     fontSize: 12,
                   ),
                 ),

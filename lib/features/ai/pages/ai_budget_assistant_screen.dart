@@ -1,18 +1,18 @@
-import '../../../core/format/money.dart';
 import 'dart:math' as math;
-import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
-import '../../../core/theme/gen_z_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
-import '../../gamification/data/games_repository.dart';
-import '../data/ai_repository.dart';
-import '../../moments/data/trip_recap_repository.dart';
+import '../../../core/format/money.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../../expense_tracker/application/expenses_providers.dart';
 import '../../expense_tracker/domain/expense.dart';
+import '../../gamification/data/games_repository.dart';
+import '../../moments/data/trip_recap_repository.dart';
 import '../../trips/application/trips_providers.dart';
+import '../data/ai_repository.dart';
 
 /// Trợ lý ngân sách.
 ///
@@ -73,25 +73,16 @@ class _AiBudgetAssistantScreenState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
-    final bg = Theme.of(context).scaffoldBackgroundColor;
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final surfaceHigh = isDark
-        ? const Color(0xFF222A3D)
-        : const Color(0xFFEDE7F6);
-    final primary = isDark ? const Color(0xFFC9B8FF) : const Color(0xFF6D3BD7);
-    final secondary = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFF00BD85);
-    final textPrimary = isDark
-        ? const Color(0xFFDAE2FD)
-        : const Color(0xFF141210);
-    final textMuted = isDark
-        ? const Color(0xFFCBC3D7)
-        : const Color(0xFF4A453E);
-    final errorColor = isDark
-        ? const Color(0xFFFFB4AB)
-        : const Color(0xFFE53935);
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final surfaceHigh = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final primary = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final secondary = GenZTokens.green;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textMuted = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final errorColor = GenZTokens.danger;
 
     return Scaffold(
       backgroundColor: bg,
@@ -187,8 +178,6 @@ class _AiBudgetAssistantScreenState
   }
 
   /// % ngân sách đã dùng — 0 khi chuyến chưa đặt ngân sách.
-  ///
-  /// Trước đây vòng tròn này luôn đứng ở 75% "Chaos Incurred" bất kể chi bao nhiêu.
   int get _budgetUsedPct {
     final id = ref.watch(activeTripIdProvider);
     if (id == null) return 0;
@@ -218,9 +207,6 @@ class _AiBudgetAssistantScreenState
   }
 
   /// Hạng mục chi nhiều nhất của chuyến: (tên, số tiền, % trên tổng).
-  ///
-  /// Trước đây thẻ "CRITICAL INSIGHT" in cứng "you spent 62% of your budget on
-  /// cafes" cho mọi tài khoản, kể cả người chưa ghi khoản chi nào.
   (String, double, int)? get _topCategory {
     final id = ref.watch(activeTripIdProvider);
     if (id == null) return null;
@@ -299,11 +285,6 @@ class _AiBudgetAssistantScreenState
     return k == null ? key : k.tr();
   }
 
-  /// 6020000 -> "6.020.000 đ" (VND) hoặc "6,020.00" cho ngoại tệ.
-  ///
-  /// Trước đây hàm này tự chèn dấu chấm bằng vòng lặp `StringBuffer`. Nay dùng
-  /// `formatMoney` chung để mọi nơi hiển thị tiền theo cùng một quy tắc và
-  /// đúng locale đang chọn.
   String _money(double v) {
     if (_currency != 'VND') return v.toStringAsFixed(2);
     return formatMoney(v, locale: context.locale.languageCode);
@@ -315,6 +296,7 @@ class _AiBudgetAssistantScreenState
     Color secondary,
     bool isDark,
   ) {
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
@@ -325,10 +307,17 @@ class _AiBudgetAssistantScreenState
             height: 36,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDark ? const Color(0xFF262019) : Colors.white,
-              border: Border.all(color: Colors.white, width: 2),
+              color: surface,
+              border: Border.all(
+                color: textPrimary,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
-            child: Icon(Icons.group_rounded, color: primary, size: 18),
+            child: Icon(
+              PhosphorIcons.users(PhosphorIconsStyle.bold),
+              color: primary,
+              size: 18,
+            ),
           ),
           ShaderMask(
             shaderCallback: (bounds) =>
@@ -339,7 +328,7 @@ class _AiBudgetAssistantScreenState
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -1.0,
-                color: Colors.white,
+                color: textPrimary,
               ),
             ),
           ),
@@ -348,23 +337,33 @@ class _AiBudgetAssistantScreenState
               if (widget.onThemeToggle != null)
                 IconButton(
                   icon: Icon(
-                    widget.isDarkMode
-                        ? Icons.light_mode_rounded
-                        : Icons.dark_mode_rounded,
+                    isDark
+                        ? PhosphorIcons.sun(PhosphorIconsStyle.bold)
+                        : PhosphorIcons.moon(PhosphorIconsStyle.bold),
                     color: textPrimary.withValues(alpha: 0.6),
                     size: 20,
                   ),
                   onPressed: widget.onThemeToggle,
+                  tooltip: isDark
+                      ? 'theme.switch_light'.tr()
+                      : 'theme.switch_dark'.tr(),
                 ),
               Container(
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF262019) : Colors.white,
-                  border: Border.all(color: Colors.white, width: 2),
+                  color: surface,
+                  border: Border.all(
+                    color: textPrimary,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
-                child: Icon(Icons.bolt_rounded, color: primary, size: 20),
+                child: Icon(
+                  PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+                  color: primary,
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -394,19 +393,16 @@ class _AiBudgetAssistantScreenState
                 height: 96,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFA078FF),
-                  border: Border.all(color: const Color(0xFFE9DDFF), width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primary.withValues(alpha: 0.4),
-                      blurRadius: 0,
-                      spreadRadius: 4,
-                    ),
-                  ],
+                  color: primary,
+                  border: Border.all(
+                    color: textPrimary,
+                    width: GenZTokens.borderWidth,
+                  ),
+                  boxShadow: GenZTokens.hardShadow(textPrimary),
                 ),
-                child: const Icon(
-                  Icons.smart_toy_rounded,
-                  color: Colors.white,
+                child: Icon(
+                  PhosphorIcons.robot(PhosphorIconsStyle.fill),
+                  color: GenZTokens.paper,
                   size: 48,
                 ),
               ),
@@ -421,16 +417,19 @@ class _AiBudgetAssistantScreenState
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF93000A),
+                      color: GenZTokens.danger,
                       borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: errorColor, width: 2),
+                      border: Border.all(
+                        color: textPrimary,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                     child: Text(
                       'ai.judging_you'.tr(),
                       style: AppFonts.body(
                         fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFFFFDAD6),
+                        fontWeight: FontWeight.w700,
+                        color: GenZTokens.paper,
                       ),
                     ),
                   ),
@@ -461,7 +460,7 @@ class _AiBudgetAssistantScreenState
               style: AppFonts.heading(
                 fontSize: 36,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFFE9DDFF),
+                color: primary,
               ),
             ),
             Text(
@@ -470,7 +469,6 @@ class _AiBudgetAssistantScreenState
                 fontSize: 52,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -2,
-                // Truoc day chu trang tren nen sang -> gan nhu khong doc duoc.
                 color: textPrimary,
                 shadows: [
                   Shadow(color: primary.withValues(alpha: 0.6), blurRadius: 0),
@@ -489,36 +487,32 @@ class _AiBudgetAssistantScreenState
     Color surface,
     bool isDark,
   ) {
-    // Chữ chạy = roast THẬT do AI viết cho chuyến này. Trước đây là 3 câu in
-    // cứng, nhắc cả một người tên "sarah" vốn không tồn tại trong app.
     final tickerText = '${_roast!}  •  ';
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Container(
         height: 52,
         decoration: BoxDecoration(
-          color: isDark
-              ? const Color(0xFF1FA85C).withValues(alpha: 0.05)
-              : secondary.withValues(alpha: 0.08),
+          color: surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: secondary, width: 2),
+          border: Border.all(
+            color: secondary,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
         child: Row(
           children: [
             // Label
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    isDark ? const Color(0xFF1A1712) : Colors.white,
-                    Colors.transparent,
-                  ],
-                ),
-              ),
+              color: surface,
               child: Row(
                 children: [
-                  Icon(Icons.campaign_rounded, color: secondary, size: 16),
+                  Icon(
+                    PhosphorIcons.megaphone(PhosphorIconsStyle.fill),
+                    color: secondary,
+                    size: 16,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     'ai.matey_says'.tr(),
@@ -589,7 +583,7 @@ class _AiBudgetAssistantScreenState
                 Row(
                   children: [
                     Icon(
-                      Icons.local_fire_department_rounded,
+                      PhosphorIcons.flame(PhosphorIconsStyle.fill),
                       color: errorColor,
                       size: 20,
                     ),
@@ -689,9 +683,9 @@ class _AiBudgetAssistantScreenState
                               _progressController.value *
                               (_budgetUsedPct / 100),
                           trackColor: isDark
-                              ? const Color(0xFF2D3449)
-                              : Colors.grey.shade200,
-                          progressColor: const Color(0xFF68FCBF),
+                              ? GenZTokens.paperDark
+                              : GenZTokens.cream,
+                          progressColor: GenZTokens.green,
                         ),
                         child: Center(
                           child: Column(
@@ -712,7 +706,7 @@ class _AiBudgetAssistantScreenState
                                 style: AppFonts.body(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF68FCBF),
+                                  color: GenZTokens.green,
                                 ),
                               ),
                             ],
@@ -753,9 +747,9 @@ class _AiBudgetAssistantScreenState
                         Row(
                           children: [
                             Icon(
-                              Icons.trending_up_rounded,
+                              PhosphorIcons.trendUp(PhosphorIconsStyle.bold),
                               size: 14,
-                              color: const Color(0xFFFFB4AB),
+                              color: errorColor,
                             ),
                             const SizedBox(width: 2),
                             Text(
@@ -763,7 +757,7 @@ class _AiBudgetAssistantScreenState
                               style: AppFonts.body(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFFFFB4AB),
+                                color: errorColor,
                               ),
                             ),
                           ],
@@ -780,10 +774,6 @@ class _AiBudgetAssistantScreenState
     );
   }
 
-  /// The thong tin — dung dung style the cua app (nen surface + vien day)
-  /// thay vi "glass" nua voi: ban glass cu ghep BackdropFilter blur sigma 0,
-  /// vien 4 canh khac mau va nen trang alpha 0.7 nen tren may noi dung khong
-  /// he duoc ve ra, chi con lai mot o trong.
   Widget _glassCard({
     required bool isDark,
     required Widget child,
@@ -823,27 +813,25 @@ class _AuroraPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final p1 = Paint()
-      ..shader =
-          RadialGradient(
-            colors: [primary.withValues(alpha: 0.15), Colors.transparent],
-          ).createShader(
-            Rect.fromCircle(
-              center: Offset(size.width * 0.15, size.height * 0.3),
-              radius: size.width * 0.6,
-            ),
-          );
+      ..shader = RadialGradient(
+        colors: [primary.withValues(alpha: 0.15), Colors.transparent],
+      ).createShader(
+        Rect.fromCircle(
+          center: Offset(size.width * 0.15, size.height * 0.3),
+          radius: size.width * 0.6,
+        ),
+      );
     canvas.drawRect(Offset.zero & size, p1);
 
     final p2 = Paint()
-      ..shader =
-          RadialGradient(
-            colors: [secondary.withValues(alpha: 0.1), Colors.transparent],
-          ).createShader(
-            Rect.fromCircle(
-              center: Offset(size.width * 0.85, size.height * 0.7),
-              radius: size.width * 0.6,
-            ),
-          );
+      ..shader = RadialGradient(
+        colors: [secondary.withValues(alpha: 0.1), Colors.transparent],
+      ).createShader(
+        Rect.fromCircle(
+          center: Offset(size.width * 0.85, size.height * 0.7),
+          radius: size.width * 0.6,
+        ),
+      );
     canvas.drawRect(Offset.zero & size, p2);
   }
 

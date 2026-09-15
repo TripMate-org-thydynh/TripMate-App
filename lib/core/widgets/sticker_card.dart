@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import '../theme/gen_z_tokens.dart';
 import 'hard_shadow_box.dart';
@@ -117,7 +118,7 @@ class _StickerCardState extends State<StickerCard>
                     width: GenZTokens.borderWidthThin,
                   ),
                 ),
-                child: const Icon(Icons.check, size: 16, color: GenZTokens.ink),
+                child: Icon(PhosphorIcons.check(PhosphorIconsStyle.bold), size: 16, color: GenZTokens.ink),
               ),
             ),
           ),

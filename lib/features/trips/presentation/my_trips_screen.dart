@@ -34,10 +34,10 @@ class MyTripsScreen extends ConsumerWidget {
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
   Color get _ink =>
-      isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,8 +52,8 @@ class MyTripsScreen extends ConsumerWidget {
           boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 4))],
         ),
         child: FloatingActionButton.extended(
-          backgroundColor: const Color(0xFFFFD84D),
-          foregroundColor: const Color(0xFF141210),
+          backgroundColor: GenZTokens.yellow,
+          foregroundColor: GenZTokens.ink,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -62,7 +62,7 @@ class MyTripsScreen extends ConsumerWidget {
             HapticFeedback.mediumImpact();
             CreateTripSheet.show(context, isDarkMode);
           },
-          icon: const Icon(Icons.add),
+          icon: Icon(PhosphorIcons.plus()),
           label: Text(
             'trips.new'.tr(),
             style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -108,7 +108,7 @@ class MyTripsScreen extends ConsumerWidget {
         height: 120,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+          color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: _ink, width: 2),
         ),
@@ -129,15 +129,15 @@ class MyTripsScreen extends ConsumerWidget {
                 height: 72,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFD8422B),
+                  color: GenZTokens.danger,
                   border: Border.all(color: _ink, width: 2.5),
                   boxShadow: [
                     BoxShadow(color: _ink, offset: const Offset(0, 4)),
                   ],
                 ),
-                child: const Icon(
-                  Icons.cloud_off_rounded,
-                  color: Color(0xFFFFFDF5),
+                child: Icon(
+                  PhosphorIcons.cloudSlash(),
+                  color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
                   size: 34,
                 ),
               ),
@@ -168,7 +168,7 @@ class MyTripsScreen extends ConsumerWidget {
                   HapticFeedback.mediumImpact();
                   ref.read(tripsProvider.notifier).refresh();
                 },
-                icon: const Icon(Icons.refresh),
+                icon: Icon(PhosphorIcons.arrowsClockwise()),
                 label: Text('general.retry'.tr()),
               ),
             ],
@@ -191,7 +191,7 @@ class MyTripsScreen extends ConsumerWidget {
                 height: 84,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFC9B8FF),
+                  color: GenZTokens.lilac,
                   border: Border.all(color: _ink, width: 2.5),
                   boxShadow: [
                     BoxShadow(color: _ink, offset: const Offset(0, 4)),
@@ -199,7 +199,7 @@ class MyTripsScreen extends ConsumerWidget {
                 ),
                 child: Icon(
                   PhosphorIcons.airplaneTilt(PhosphorIconsStyle.fill),
-                  color: const Color(0xFF141210),
+                  color: GenZTokens.ink,
                   size: 40,
                 ),
               ),
@@ -294,27 +294,38 @@ class MyTripsScreen extends ConsumerWidget {
             color: selected
                 ? _primaryOf(context)
                 : (isDarkMode
-                      ? const Color(0xFF262019)
-                      : const Color(0xFFFFFDF5)),
+                      ? GenZTokens.paperDark
+                      : GenZTokens.paper),
             borderRadius: BorderRadius.circular(99),
             border: Border.all(color: _ink, width: 2),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: 15, color: selected ? Colors.white : _textSec),
-                const SizedBox(width: 6),
-              ],
-              Text(
-                label,
-                style: AppFonts.heading(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: selected ? Colors.white : _textPri,
-                ),
-              ),
-            ],
+          child: Builder(
+            builder: (context) {
+              final onSelected = _primaryOf(context).computeLuminance() > 0.5
+                  ? GenZTokens.ink
+                  : Colors.white;
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Icon(
+                      icon,
+                      size: 15,
+                      color: selected ? onSelected : _textSec,
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  Text(
+                    label,
+                    style: AppFonts.heading(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: selected ? onSelected : _textPri,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -357,7 +368,7 @@ class MyTripsScreen extends ConsumerWidget {
             ),
           );
         },
-        color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+        color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
         radius: 20,
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -372,13 +383,13 @@ class MyTripsScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(14),
                     color: _primaryOf(context),
                     border: Border.all(
-                      color: const Color(0xFF141210),
+                      color: _ink,
                       width: 2,
                     ),
                   ),
                   child: Icon(
                     PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-                    color: const Color(0xFFFFFDF5),
+                    color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
                     size: 24,
                   ),
                 ),
@@ -456,10 +467,10 @@ class MyTripsScreen extends ConsumerWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFD84D),
+                    color: GenZTokens.yellow,
                     borderRadius: BorderRadius.circular(99),
                     border: Border.all(
-                      color: const Color(0xFF141210),
+                      color: _ink,
                       width: 2,
                     ),
                   ),
@@ -468,7 +479,7 @@ class MyTripsScreen extends ConsumerWidget {
                     style: AppFonts.mono(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF141210),
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ),

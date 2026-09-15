@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/theme/gen_z_tokens.dart';
 import '../data/itinerary_repository.dart';
 import '../domain/itinerary_item.dart';
 import '../../../core/widgets/offline_banner.dart';
@@ -26,18 +27,12 @@ class TripItineraryScreen extends ConsumerWidget {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  /// Accent lấy từ theme đang chọn.
-  ///
-  /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
-  /// nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
-  /// Nguoi dung o mint (vang) van thay man nay mau cam, va doi theme khong
-  /// an. Doc tu `colorScheme` de mau di theo lua chon that.
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
+  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   Future<void> _addItem(BuildContext context, WidgetRef ref) async {
     final dayCtrl = TextEditingController(text: '1');
@@ -188,6 +183,71 @@ class TripItineraryScreen extends ConsumerWidget {
     invalidateHomeAggregatesFrom(ref);
   }
 
+  Future<void> _deleteItem(
+    BuildContext context,
+    WidgetRef ref,
+    ItineraryItem item,
+  ) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'itinerary.delete_stop'.tr(),
+          style: AppFonts.heading(
+            fontWeight: FontWeight.w800,
+            color: _textPri,
+          ),
+        ),
+        content: Text(
+          'itinerary.delete_stop_confirm'.tr(namedArgs: {'name': item.placeName}),
+          style: AppFonts.body(color: _textSec),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: GenZTokens.danger),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('general.delete'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    HapticFeedback.mediumImpact();
+    try {
+      await ref.read(itineraryRepositoryProvider).delete(tripId, item.id);
+      ref.invalidate(tripItineraryProvider(tripId));
+      invalidateHomeAggregatesFrom(ref);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('itinerary.deleted_success'.tr()),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(tripItineraryProvider(tripId));
@@ -197,7 +257,7 @@ class TripItineraryScreen extends ConsumerWidget {
         backgroundColor: _primaryOf(context),
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () => _addItem(context, ref),
-        icon: const Icon(Icons.add),
+        icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'itinerary.add_place'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -238,7 +298,7 @@ class TripItineraryScreen extends ConsumerWidget {
                       for (final day in days) ...[
                         _dayHeader(context, day, grouped[day]!),
                         const SizedBox(height: 12),
-                        ...grouped[day]!.map((it) => _itemCard(context, it)),
+                        ...grouped[day]!.map((it) => _itemCard(context, ref, it)),
                         const SizedBox(height: 20),
                       ],
                     ],
@@ -406,7 +466,7 @@ class TripItineraryScreen extends ConsumerWidget {
     return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
   }
 
-  Widget _itemCard(BuildContext context, ItineraryItem it) {
+  Widget _itemCard(BuildContext context, WidgetRef ref, ItineraryItem it) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -415,8 +475,8 @@ class TripItineraryScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.black,
+              ? GenZTokens.inkDark.withValues(alpha: 0.12)
+              : GenZTokens.ink,
           width: 2,
         ),
       ),
@@ -449,24 +509,53 @@ class TripItineraryScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${_categoryEmoji(it.category)} ${it.placeName}',
-                  style: AppFonts.heading(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: _textPri,
-                  ),
+                Row(
+                  children: [
+                    Icon(
+                      _categoryIcon(it.category),
+                      size: 16,
+                      color: _primaryOf(context),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        it.placeName,
+                        style: AppFonts.heading(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: _textPri,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        PhosphorIcons.trash(),
+                        size: 18,
+                        color: _textSec,
+                      ),
+                      tooltip: 'general.delete'.tr(),
+                      onPressed: () => _deleteItem(context, ref, it),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
                 ),
                 if (it.placeAddress != null)
-                  Text(
-                    it.placeAddress!,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      it.placeAddress!,
+                      style: AppFonts.body(fontSize: 12, color: _textSec),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    'itinerary.minutes'.tr(
+                      namedArgs: {'n': '${it.durationMinutes}'},
+                    ),
                     style: AppFonts.body(fontSize: 12, color: _textSec),
                   ),
-                Text(
-                  'itinerary.minutes'.tr(
-                    namedArgs: {'n': '${it.durationMinutes}'},
-                  ),
-                  style: AppFonts.body(fontSize: 12, color: _textSec),
                 ),
               ],
             ),
@@ -476,18 +565,18 @@ class TripItineraryScreen extends ConsumerWidget {
     );
   }
 
-  String _categoryEmoji(String? cat) {
+  PhosphorIconData _categoryIcon(String? cat) {
     switch (cat?.toUpperCase()) {
       case 'FOOD':
-        return '🍔';
+        return PhosphorIcons.forkKnife();
       case 'ACTIVITIES':
-        return '🎭';
+        return PhosphorIcons.ticket();
       case 'ACCOMMODATION':
-        return '🏨';
+        return PhosphorIcons.buildings();
       case 'COFFEE':
-        return '☕';
+        return PhosphorIcons.coffee();
       default:
-        return '📍';
+        return PhosphorIcons.mapPin();
     }
   }
 
@@ -500,8 +589,8 @@ class TripItineraryScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.04),
+              ? GenZTokens.inkDark.withValues(alpha: 0.04)
+              : GenZTokens.ink.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(16),
         ),
       ),
@@ -514,9 +603,9 @@ class TripItineraryScreen extends ConsumerWidget {
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -531,7 +620,7 @@ class TripItineraryScreen extends ConsumerWidget {
             FilledButton.icon(
               style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
               onPressed: () => ref.invalidate(tripItineraryProvider(tripId)),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text('general.retry'.tr()),
             ),
           ],

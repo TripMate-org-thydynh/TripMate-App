@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+
 import '../../core/theme/gen_z_tokens.dart';
 import 'pages/achievement_unlock_screen.dart';
 import 'pages/chaos_challenges_screen.dart';
@@ -21,12 +23,13 @@ class GamificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
         title: Text(
           'gamification.hub_title'.tr(),
@@ -49,7 +52,7 @@ class GamificationScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                color: GenZTokens.magenta,
+                color: GenZTokens.yellow,
                 border: Border.all(color: ink, width: GenZTokens.borderWidth),
                 boxShadow: GenZTokens.hardShadow(ink),
               ),
@@ -59,7 +62,7 @@ class GamificationScreen extends StatelessWidget {
                   Text(
                     'games.hub_kicker'.tr(),
                     style: AppFonts.heading(
-                      color: GenZTokens.paper,
+                      color: GenZTokens.ink,
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
@@ -70,7 +73,7 @@ class GamificationScreen extends StatelessWidget {
                   Text(
                     'gamification.hub_desc'.tr(),
                     style: AppFonts.body(
-                      color: GenZTokens.paper,
+                      color: GenZTokens.ink.withValues(alpha: 0.85),
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                       height: 1.4,
@@ -102,32 +105,36 @@ class GamificationScreen extends StatelessWidget {
               children: [
                 _buildGameCard(
                   context,
-                  'Who Pays Wheel',
+                  'games.who_pays_title'.tr(),
                   'gamification.chaotic_wheel'.tr(),
+                  PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
                   const WhoPaysWheelScreen(),
                   isDark,
                   GenZTokens.red,
                 ),
                 _buildGameCard(
                   context,
-                  'Random Dare',
+                  'games.dare_title'.tr(),
                   'gamification.random_challenge'.tr(),
-                  RandomDareGeneratorScreen(),
+                  PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+                  const RandomDareGeneratorScreen(),
                   isDark,
                   GenZTokens.orange,
                 ),
                 _buildGameCard(
                   context,
-                  'Trip Bingo',
+                  'games.trip_bingo_title'.tr(),
                   'gamification.bingo_board'.tr(),
+                  PhosphorIcons.gridFour(PhosphorIconsStyle.fill),
                   const TripBingoScreen(),
                   isDark,
                   GenZTokens.green,
                 ),
                 _buildGameCard(
                   context,
-                  'Chaos Challenges',
+                  'games.chaos_title'.tr(),
                   'gamification.crazy_challenges'.tr(),
+                  PhosphorIcons.fire(PhosphorIconsStyle.fill),
                   const ChaosChallengesScreen(),
                   isDark,
                   GenZTokens.purple,
@@ -150,7 +157,7 @@ class GamificationScreen extends StatelessWidget {
 
             _buildListAction(
               context,
-              Icons.leaderboard_outlined,
+              PhosphorIcons.ranking(PhosphorIconsStyle.fill),
               'gamification.squad_rankings'.tr(),
               'gamification.squad_rankings_desc'.tr(),
               const SquadLeaderboardScreen(),
@@ -158,7 +165,7 @@ class GamificationScreen extends StatelessWidget {
             ),
             _buildListAction(
               context,
-              Icons.bolt_outlined,
+              PhosphorIcons.rocketLaunch(PhosphorIconsStyle.fill),
               'gamification.xp_system'.tr(),
               'gamification.xp_system_desc'.tr(),
               const SquadXpSystemScreen(),
@@ -166,23 +173,23 @@ class GamificationScreen extends StatelessWidget {
             ),
             _buildListAction(
               context,
-              Icons.emoji_events_outlined,
-              'Achievement Unlocked',
+              PhosphorIcons.trophy(PhosphorIconsStyle.fill),
+              'games.badges_title'.tr(),
               'gamification.achievements_accumulated'.tr(),
               const AchievementUnlockScreen(),
               isDark,
             ),
             _buildListAction(
               context,
-              Icons.card_giftcard_outlined,
-              'End Trip Awards',
+              PhosphorIcons.gift(PhosphorIconsStyle.fill),
+              'games.awards_title'.tr(),
               'gamification.end_awards'.tr(),
               const EndTripAwardsScreen(),
               isDark,
             ),
             _buildListAction(
               context,
-              Icons.task_alt_outlined,
+              PhosphorIcons.calendarCheck(PhosphorIconsStyle.fill),
               'gamification.daily_missions'.tr(),
               'gamification.daily_missions_desc'.tr(),
               const DailySquadMissionsScreen(),
@@ -190,7 +197,7 @@ class GamificationScreen extends StatelessWidget {
             ),
             _buildListAction(
               context,
-              Icons.calendar_month_outlined,
+              PhosphorIcons.plant(PhosphorIconsStyle.fill),
               'gamification.season_events'.tr(),
               'gamification.season_events_desc'.tr(),
               const SeasonalEventsScreen(),
@@ -198,7 +205,7 @@ class GamificationScreen extends StatelessWidget {
             ),
             _buildListAction(
               context,
-              Icons.workspace_premium_outlined,
+              PhosphorIcons.lightning(PhosphorIconsStyle.fill),
               'gamification.weekly_challenges'.tr(),
               'gamification.weekly_challenges_desc'.tr(),
               const WeeklyChallengesScreen(),
@@ -214,10 +221,13 @@ class GamificationScreen extends StatelessWidget {
     BuildContext context,
     String title,
     String sub,
+    IconData icon,
     Widget target,
     bool isDark,
     Color accentColor,
   ) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -231,12 +241,10 @@ class GamificationScreen extends StatelessWidget {
           color: accentColor,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            color: ink,
             width: GenZTokens.borderWidth,
           ),
-          boxShadow: GenZTokens.hardShadow(
-            isDark ? GenZTokens.inkDark : GenZTokens.ink,
-          ),
+          boxShadow: GenZTokens.hardShadow(ink),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,8 +260,8 @@ class GamificationScreen extends StatelessWidget {
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
-              child: const Icon(
-                Icons.sports_esports,
+              child: Icon(
+                icon,
                 color: GenZTokens.ink,
                 size: 24,
               ),
@@ -266,7 +274,7 @@ class GamificationScreen extends StatelessWidget {
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
-                    color: GenZTokens.paper,
+                    color: GenZTokens.ink,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -275,7 +283,7 @@ class GamificationScreen extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.body(
-                    color: GenZTokens.paper,
+                    color: GenZTokens.ink.withValues(alpha: 0.8),
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -296,6 +304,8 @@ class GamificationScreen extends StatelessWidget {
     Widget target,
     bool isDark,
   ) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Container(
@@ -303,15 +313,10 @@ class GamificationScreen extends StatelessWidget {
           color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            color: ink,
             width: GenZTokens.borderWidthThin,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          boxShadow: GenZTokens.hardShadow(ink),
         ),
         child: ListTile(
           onTap: () {
@@ -336,7 +341,7 @@ class GamificationScreen extends StatelessWidget {
             title,
             style: AppFonts.heading(
               fontWeight: FontWeight.w700,
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+              color: ink,
             ),
           ),
           subtitle: Text(
@@ -348,9 +353,9 @@ class GamificationScreen extends StatelessWidget {
             ),
           ),
           trailing: Icon(
-            Icons.arrow_forward,
+            PhosphorIcons.caretRight(),
             size: 16,
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            color: ink,
           ),
         ),
       ),

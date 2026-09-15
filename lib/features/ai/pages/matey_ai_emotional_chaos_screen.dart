@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/network/api_exception.dart';
-import '../../premium/presentation/paywall_sheet.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../../gamification/data/games_repository.dart';
+import '../../premium/presentation/paywall_sheet.dart';
 import '../data/ai_repository.dart';
-
-import 'package:tripmate/core/theme/app_fonts.dart';
-import '../../../core/widgets/gen_z_widgets.dart';
 
 class MateyAiEmotionalChaosScreen extends ConsumerStatefulWidget {
   const MateyAiEmotionalChaosScreen({super.key});
@@ -27,21 +27,10 @@ class _MateyAiEmotionalChaosScreenState
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  /// Theo đúng chế độ sáng/tối của app.
-  ///
-  /// Trước đây màn này giữ cờ riêng `_isDarkMode = true` cùng một nút bật/tắt
-  /// chỉ đổi màu trong màn này, nên chữ luôn vẽ màu kem — đặt trên nền sáng
-  /// của theme thì gần như không đọc được.
   bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
 
-  /// Hội thoại bắt đầu rỗng.
-  ///
-  /// Trước đây danh sách này dựng sẵn 5 tin nhắn về Tokyo/Shibuya/omakase —
-  /// cùng "vibe match 98%" cho Neon Light Cafe — nên ai mở Matey AI cũng thấy
-  /// một cuộc trò chuyện mình chưa từng có, về một chuyến không tồn tại.
   final List<Map<String, dynamic>> _messages = [];
 
-  /// Đang chờ AI trả lời — dùng để hiện chấm gõ phím và khoá nút gửi.
   bool _isThinking = false;
 
   @override
@@ -71,15 +60,17 @@ class _MateyAiEmotionalChaosScreenState
     final text = _textController.text.trim();
     if (text.isEmpty || _isThinking) return;
     setState(() {
-      _messages.add({'type': 'user', 'text': text, 'time': 'just now'});
+      _messages.add({
+        'type': 'user',
+        'text': text,
+        'time': 'ai.just_now'.tr(),
+      });
       _textController.clear();
       _isThinking = true;
     });
     _scrollToBottom();
 
     try {
-      // Gọi AI thật. Trước đây chỗ này chỉ `Future.delayed(1s)` rồi thêm một
-      // câu trả lời in cứng — Matey "trả lời" y hệt nhau bất kể hỏi gì.
       final tripId = ref.read(activeTripIdProvider);
       final reply = await ref
           .read(mateyChatProvider)
@@ -89,7 +80,7 @@ class _MateyAiEmotionalChaosScreenState
         _messages.add({
           'type': 'ai',
           'text': reply,
-          'time': 'just now',
+          'time': 'ai.just_now'.tr(),
           'likes': 0,
         });
         _isThinking = false;
@@ -97,11 +88,8 @@ class _MateyAiEmotionalChaosScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isThinking = false);
-      // Hết lượt AI trong tháng → paywall nêu đúng con số, không phải một lỗi
-      // 403 mà người dùng không hiểu vì sao.
       if (await PaywallSheet.maybeShow(context, e)) return;
       if (!mounted) return;
-      // Nói rõ AI đang bận thay vì im lặng hoặc bịa câu trả lời.
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,
@@ -121,30 +109,156 @@ class _MateyAiEmotionalChaosScreenState
     });
   }
 
+  void _showPromptPicker(BuildContext context) {
+    final isDark = _isDarkMode;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Consumer(
+          builder: (context, ref, _) {
+            final promptsAsync = ref.watch(suggestedPromptsProvider);
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'ai.suggested_prompts_title'.tr(),
+                          style: AppFonts.heading(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: ink,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(PhosphorIcons.x(), color: ink, size: 20),
+                          onPressed: () => Navigator.pop(ctx),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    promptsAsync.when(
+                      loading: () => const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(24),
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      error: (err, _) => Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            'errors.load_failed'.tr(),
+                            style: AppFonts.body(color: GenZTokens.danger),
+                          ),
+                        ),
+                      ),
+                      data: (prompts) {
+                        if (prompts.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                'ai.prompts_empty'.tr(),
+                                style: AppFonts.body(color: inkSoft),
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: prompts.length,
+                          separatorBuilder: (_, _) => const SizedBox(height: 8),
+                          itemBuilder: (_, index) {
+                            final p = prompts[index];
+                            return ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(
+                                  color: ink.withValues(alpha: 0.15),
+                                ),
+                              ),
+                              leading: Icon(
+                                PhosphorIcons.lightbulb(
+                                  PhosphorIconsStyle.fill,
+                                ),
+                                color: GenZTokens.yellow,
+                                size: 20,
+                              ),
+                              title: Text(
+                                p.title,
+                                style: AppFonts.heading(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: ink,
+                                ),
+                              ),
+                              subtitle: Text(
+                                p.prompt,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppFonts.body(
+                                  fontSize: 12,
+                                  color: inkSoft,
+                                ),
+                              ),
+                              onTap: () {
+                                _textController.text = p.prompt;
+                                Navigator.pop(ctx);
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Token Gen Z Neo-Brutalist — nền cream phẳng, viền/chữ ink
-    const primaryColor = GenZTokens.purple;
+    final isDark = _isDarkMode;
+    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
     const secondaryColor = GenZTokens.green;
 
-    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
-    final textPrimary = _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    final textSecondary = _isDarkMode
-        ? GenZTokens.inkSoftDark
-        : GenZTokens.inkSoft;
+    final backgroundColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
-    final glassBg = _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+    final glassBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final glassBorder = textPrimary;
 
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(
         children: [
-          // 1. Custom Scroll View accommodating Hero & Chat bubbles
           SafeArea(
             child: Column(
               children: [
-                // Top Custom Header App Bar
                 _buildHeader(primaryColor, glassBg, glassBorder, textPrimary),
 
                 Expanded(
@@ -154,7 +268,6 @@ class _MateyAiEmotionalChaosScreenState
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        // Orb Hero section
                         _buildOrbHero(
                           primaryColor,
                           secondaryColor,
@@ -165,9 +278,6 @@ class _MateyAiEmotionalChaosScreenState
 
                         const SizedBox(height: 16),
 
-                        // Lời mời mở đầu khi chưa hỏi gì — trước đây chỗ này
-                        // là 5 tin nhắn dựng sẵn về một chuyến Tokyo không có
-                        // thật.
                         if (_messages.isEmpty)
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 32),
@@ -182,7 +292,6 @@ class _MateyAiEmotionalChaosScreenState
                             ),
                           ),
 
-                        // Chat Flow list
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -206,8 +315,6 @@ class _MateyAiEmotionalChaosScreenState
                           },
                         ),
 
-                        // Chấm gõ phím chỉ hiện khi ĐANG chờ AI — trước đây
-                        // nó chạy vĩnh viễn, làm như Matey luôn sắp trả lời.
                         if (_isThinking)
                           _buildTypingIndicator(
                             glassBg,
@@ -215,7 +322,7 @@ class _MateyAiEmotionalChaosScreenState
                             primaryColor,
                           ),
 
-                        const SizedBox(height: 120), // Bottom input spacing
+                        const SizedBox(height: 120),
                       ],
                     ),
                   ),
@@ -224,7 +331,6 @@ class _MateyAiEmotionalChaosScreenState
             ),
           ),
 
-          // 3. Floating Bottom Message Input Bar
           Positioned(
             bottom: 96,
             left: 20,
@@ -241,7 +347,6 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  // Header App Bar
   Widget _buildHeader(
     Color primaryColor,
     Color glassBg,
@@ -259,8 +364,13 @@ class _MateyAiEmotionalChaosScreenState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 20),
+            icon: Icon(
+              PhosphorIcons.caretLeft(PhosphorIconsStyle.bold),
+              color: textPrimary,
+              size: 20,
+            ),
             onPressed: () => Navigator.pop(context),
+            tooltip: 'common.back'.tr(),
           ),
           Text(
             'trip.mate',
@@ -276,7 +386,6 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  // Floating Animated AI Orb Hero
   Widget _buildOrbHero(
     Color primaryColor,
     Color secondaryColor,
@@ -293,7 +402,6 @@ class _MateyAiEmotionalChaosScreenState
             final dy = _orbFloatController.value * -12.0;
             return Transform.translate(offset: Offset(0, dy), child: child);
           },
-          // Orb sticker brutalist: khối tím viền ink + hard shadow
           child: Container(
             width: 110,
             height: 110,
@@ -308,9 +416,9 @@ class _MateyAiEmotionalChaosScreenState
                 _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
               ),
             ),
-            child: const Center(
+            child: Center(
               child: Icon(
-                Icons.auto_awesome,
+                PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                 size: 48,
                 color: GenZTokens.paper,
               ),
@@ -319,7 +427,7 @@ class _MateyAiEmotionalChaosScreenState
         ),
         const SizedBox(height: 12),
         Text(
-          'hey, i\'m matey ✧',
+          'ai.matey_greeting'.tr(),
           style: AppFonts.heading(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -333,7 +441,6 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  // AI Advice Bubble
   Widget _buildAiBubble(
     Map<String, dynamic> msg,
     Color glassBg,
@@ -395,11 +502,6 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  // Broke Alert Card — khối đỏ sticker, viền ink, hard shadow
-
-  // Weather Savior Card
-
-  // User message bubble
   Widget _buildUserBubble(Map<String, dynamic> msg, Color primaryColor) {
     return Align(
       alignment: Alignment.centerRight,
@@ -411,7 +513,6 @@ class _MateyAiEmotionalChaosScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            // Bubble user: nền VÀNG, chữ ink, viền ink + hard shadow (spec)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -457,9 +558,6 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  // Custom Vibe Match Cafe Card
-
-  // Typing indicator dots
   Widget _buildTypingIndicator(
     Color glassBg,
     Color glassBorder,
@@ -508,7 +606,6 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  // Thanh nhập tin nhắn brutalist: nền paper, viền ink dày, hard shadow
   Widget _buildMessageInput(
     Color glassBg,
     Color glassBorder,
@@ -527,9 +624,12 @@ class _MateyAiEmotionalChaosScreenState
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.add, color: textPrimary),
-            onPressed: () =>
-                showGlobalSnack('common.feature_wip'.tr()),
+            icon: Icon(
+              PhosphorIcons.lightbulb(PhosphorIconsStyle.bold),
+              color: textPrimary,
+            ),
+            onPressed: () => _showPromptPicker(context),
+            tooltip: 'ai.suggested_prompts_title'.tr(),
           ),
           Expanded(
             child: TextField(
@@ -564,16 +664,19 @@ class _MateyAiEmotionalChaosScreenState
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: const Icon(Icons.send, color: GenZTokens.ink, size: 18),
+              icon: Icon(
+                PhosphorIcons.paperPlaneRight(PhosphorIconsStyle.fill),
+                color: GenZTokens.ink,
+                size: 18,
+              ),
               onPressed: _sendMessage,
+              tooltip: 'ai.send'.tr(),
             ),
           ),
         ],
       ),
     );
   }
-
-  // Floating Glass bottom navigation bar
 
   Color surfaceColorBorderGuard() {
     return _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;

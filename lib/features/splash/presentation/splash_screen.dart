@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
@@ -72,19 +73,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Khối màu full-bleed theo accent đã chọn; thích ứng Dark/Light theme
     final accent = ref.watch(accentProvider);
     final isDark = widget.isDarkMode;
-    final blockColor = isDark ? const Color(0xFF141210) : accent.accent;
-    final cardColor = isDark ? const Color(0xFF1E1B18) : GenZTokens.paper;
+    final blockColor = isDark ? GenZTokens.creamDark : accent.accent;
+    final cardColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final cardBorder = isDark ? GenZTokens.yellow : GenZTokens.ink;
-    final cardShadow = isDark ? const Color(0x80000000) : GenZTokens.ink;
-    final textColor = isDark ? GenZTokens.paper : GenZTokens.ink;
+    final cardShadow = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
       backgroundColor: blockColor,
       body: Stack(
         children: [
           // Doodle sparkle rải nền, opacity thấp
-          const Positioned.fill(
-            child: CustomPaint(painter: _SplashDoodlePainter()),
+          Positioned.fill(
+            child: CustomPaint(painter: _SplashDoodlePainter(isDark: isDark)),
           ),
 
           // Logo card brutalist ở giữa
@@ -114,6 +115,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           width: screenWidth > 360 ? 84 : 70,
                           height: screenWidth > 360 ? 72 : 60,
                           fit: BoxFit.contain,
+                          excludeFromSemantics: true,
                         ),
                         const SizedBox(height: GenZTokens.space2),
                         Text(
@@ -137,7 +139,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               GenZTokens.radiusPill,
                             ),
                             border: Border.all(
-                              color: isDark ? GenZTokens.yellow : GenZTokens.ink,
+                              color: isDark
+                                  ? GenZTokens.yellow
+                                  : GenZTokens.ink,
                               width: GenZTokens.borderWidthThin,
                             ),
                           ),
@@ -164,11 +168,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   runSpacing: GenZTokens.space2,
                   children: [
                     PillTag(
-                      text: 'plan chill',
-                      color: isDark ? const Color(0xFF1E1B18) : GenZTokens.paper,
+                      text: 'splash.tag_plan'.tr(),
+                      color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
                     ),
-                    PillTag(text: 'splash.tag_split'.tr(), color: GenZTokens.lilac),
-                    PillTag(text: 'splash.tag_moments'.tr(), color: GenZTokens.pink),
+                    PillTag(
+                      text: 'splash.tag_split'.tr(),
+                      color: GenZTokens.lilac,
+                    ),
+                    PillTag(
+                      text: 'splash.tag_moments'.tr(),
+                      color: GenZTokens.pink,
+                    ),
                   ],
                 ),
               ),
@@ -183,17 +193,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               opacity: _fadeAnimation,
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1B18) : GenZTokens.paper,
+                  color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isDark ? GenZTokens.yellow : GenZTokens.ink,
                     width: GenZTokens.borderWidthThin,
                   ),
-                  boxShadow: GenZTokens.hardShadow(),
+                  boxShadow: GenZTokens.hardShadow(
+                    isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                  ),
                 ),
                 child: IconButton(
+                  tooltip: 'theme.toggle'.tr(),
                   icon: Icon(
-                    widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                    widget.isDarkMode
+                        ? PhosphorIcons.sun(PhosphorIconsStyle.fill)
+                        : PhosphorIcons.moon(PhosphorIconsStyle.fill),
                     color: isDark ? GenZTokens.yellow : GenZTokens.ink,
                   ),
                   onPressed: widget.onThemeToggle,
@@ -246,12 +261,15 @@ class _WiggleStickerState extends State<_WiggleSticker>
 
 /// Sparkle ✦ + dấu + rải trên khối màu, dùng ink opacity thấp.
 class _SplashDoodlePainter extends CustomPainter {
-  const _SplashDoodlePainter();
+  final bool isDark;
+  const _SplashDoodlePainter({this.isDark = false});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = GenZTokens.ink.withValues(alpha: 0.10)
+      ..color = (isDark ? GenZTokens.inkDark : GenZTokens.ink).withValues(
+        alpha: 0.10,
+      )
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round;
@@ -271,5 +289,6 @@ class _SplashDoodlePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _SplashDoodlePainter oldDelegate) => false;
+  bool shouldRepaint(covariant _SplashDoodlePainter oldDelegate) =>
+      oldDelegate.isDark != isDark;
 }

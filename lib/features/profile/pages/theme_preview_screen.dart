@@ -1,6 +1,7 @@
-import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
 class ThemePreviewScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -36,7 +37,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
           'Electric cyberpunk nights. Neon-soaked streets and infinite vibes.',
       'gradient': [Color(0xFF7B2FF7), Color(0xFFFF007F), Color(0xFF00F0FF)],
       'accent': Color(0xFFFF007F),
-      'preview': 'Tokyo Bound ✈️',
+      'preview': 'Tokyo Bound',
     },
     {
       'emoji': '🌧',
@@ -44,7 +45,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
       'desc': 'Emerald fog rolling over pine forests. Cozy highland energy.',
       'gradient': [Color(0xFF134E4A), Color(0xFF1FA85C), Color(0xFF6EE7B7)],
       'accent': Color(0xFF1FA85C),
-      'preview': 'Mountain Escape 🍃',
+      'preview': 'Mountain Escape',
     },
     {
       'emoji': '🏖',
@@ -52,7 +53,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
       'desc': 'Salt air and golden hour. Pure Gen-Z summer chaos energy.',
       'gradient': [Color(0xFFFB923C), Color(0xFF3D8BFF), Color(0xFFFF6B6B)],
       'accent': Color(0xFFFB923C),
-      'preview': 'Sun & Chaos 🌊',
+      'preview': 'Sun & Chaos',
     },
     {
       'emoji': '📼',
@@ -60,7 +61,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
       'desc': 'Lo-fi nostalgia. Grainy filters and late-night analog dreams.',
       'gradient': [Color(0xFF92400E), Color(0xFFF5822B), Color(0xFFD8422B)],
       'accent': Color(0xFFF5822B),
-      'preview': 'Rewind Mode 📼',
+      'preview': 'Rewind Mode',
     },
     {
       'emoji': '⚡',
@@ -68,7 +69,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
       'desc': 'Hard-edged neon and midnight chrome. The future is chaotic.',
       'gradient': [Color(0xFF141210), Color(0xFF1FA85C), Color(0xFF7B2FF7)],
       'accent': Color(0xFF1FA85C),
-      'preview': 'System Override ⚡',
+      'preview': 'System Override',
     },
   ];
 
@@ -119,7 +120,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final currentTheme = _current;
     final List<Color> grad = currentTheme['gradient'] as List<Color>;
     final Color accent = currentTheme['accent'] as Color;
@@ -192,7 +193,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                     child: Row(
                       children: [
                         _buildGlassButton(
-                          icon: Icons.close,
+                          icon: PhosphorIcons.x(),
                           onTap: () => Navigator.pop(context),
                           isDark: isDark,
                           color: Colors.white,
@@ -224,8 +225,8 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         const Spacer(),
                         _buildGlassButton(
                           icon: isDark
-                              ? Icons.light_mode_outlined
-                              : Icons.dark_mode_outlined,
+                              ? PhosphorIcons.sun()
+                              : PhosphorIcons.moon(),
                           onTap: widget.onThemeToggle ?? () {},
                           isDark: isDark,
                           color: Colors.white,
@@ -249,7 +250,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "choose your squad's aesthetic.",
+                          'profile.theme_subtitle'.tr(),
                           style: AppFonts.heading(
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
@@ -347,20 +348,20 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: const [
-                            Icon(Icons.flight, color: Colors.white54, size: 22),
+                          children: [
+                            Icon(PhosphorIcons.airplane(), color: Colors.white54, size: 22),
                             Icon(
-                              Icons.explore,
+                              PhosphorIcons.compass(),
                               color: Colors.white54,
                               size: 22,
                             ),
                             Icon(
-                              Icons.map_outlined,
+                              PhosphorIcons.mapTrifold(),
                               color: Colors.white54,
                               size: 22,
                             ),
                             Icon(
-                              Icons.person_outlined,
+                              PhosphorIcons.user(),
                               color: Colors.white54,
                               size: 22,
                             ),
@@ -399,7 +400,11 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    '✨ ${_current['name']} applied!',
+                                    'profile.theme_applied'.tr(
+                                      namedArgs: {
+                                        'name': _current['name'] as String,
+                                      },
+                                    ),
                                   ),
                                   behavior: SnackBarBehavior.floating,
                                   backgroundColor: accent,
@@ -551,8 +556,12 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                               shape: BoxShape.circle,
                               color: themeGrad[0],
                             ),
-                            child: const Center(
-                              child: Text('✈️', style: TextStyle(fontSize: 14)),
+                            child: Center(
+                              child: Icon(
+                                PhosphorIcons.airplane(),
+                                size: 16,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 10),

@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:math';
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../trips/application/trips_providers.dart';
+import '../data/games_repository.dart';
 
 class RandomDareGeneratorScreen extends ConsumerStatefulWidget {
   const RandomDareGeneratorScreen({super.key});
@@ -23,21 +27,21 @@ class _RandomDareGeneratorScreenState
   /// một lần nên sẽ giữ nguyên bản dịch của ngôn ngữ lúc mở app đầu tiên —
   /// người dùng đổi VI/EN thì danh sách vẫn kẹt ở ngôn ngữ cũ.
   Map<String, List<String>> get _daresByLevel => {
-    'Chill 🥤': [
+    'chill': [
       'dares.d1'.tr(),
       'dares.d2'.tr(),
       'dares.d3'.tr(),
       'dares.d4'.tr(),
       'dares.d5'.tr(),
     ],
-    'Chaos ⚡': [
+    'chaos': [
       'dares.d6'.tr(),
       'dares.d7'.tr(),
       'dares.d8'.tr(),
       'dares.d9'.tr(),
       'dares.d10'.tr(),
     ],
-    'Extreme 💀': [
+    'extreme': [
       'dares.d11'.tr(),
       'dares.d12'.tr(),
       'dares.d13'.tr(),
@@ -46,7 +50,7 @@ class _RandomDareGeneratorScreenState
     ],
   };
 
-  String _selectedLevel = 'Chill 🥤';
+  String _selectedLevel = 'chill';
   late String _currentDare = 'games.dare_press_red'.tr();
   bool _isGenerating = false;
   double _shakeX = 0.0;
@@ -111,6 +115,23 @@ class _RandomDareGeneratorScreenState
       _shakeX = 0.0;
       _shakeY = 0.0;
     });
+
+    final tripId = ref.read(activeTripIdProvider);
+    if (tripId != null) {
+      unawaited(
+        ref
+            .read(gamesRepositoryProvider)
+            .createSession(
+              tripId,
+              gameType: 'TRUTH_OR_DARE',
+              state: {'dare': _currentDare, 'level': _selectedLevel},
+            )
+            .then((_) {
+              ref.invalidate(squadXpProvider(tripId));
+            })
+            .catchError((_) {}),
+      );
+    }
   }
 
   @override
@@ -118,14 +139,12 @@ class _RandomDareGeneratorScreenState
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final Color bgColor = isDark
-        ? const Color(0xFF1A1712)
-        : const Color(0xFFFDF6D3);
+    final Color bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final Color inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final Color surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final Color activeColor = _selectedLevel == 'Chill 🥤'
+    final Color activeColor = _selectedLevel == 'chill'
         ? GenZTokens.green
-        : _selectedLevel == 'Chaos ⚡'
+        : _selectedLevel == 'chaos'
         ? GenZTokens.orange
         : GenZTokens.red;
 
@@ -142,7 +161,7 @@ class _RandomDareGeneratorScreenState
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back, color: inkColor),
+                    icon: Icon(PhosphorIcons.arrowLeft(), color: inkColor),
                     style: IconButton.styleFrom(
                       backgroundColor: surfaceColor.withValues(
                         alpha: isDark ? 0.3 : 0.8,
@@ -191,9 +210,16 @@ class _RandomDareGeneratorScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: _daresByLevel.keys.map((level) {
                   final isSelected = _selectedLevel == level;
-                  Color levelColor = GenZTokens.green;
-                  if (level == 'Chaos ⚡') levelColor = GenZTokens.orange;
-                  if (level == 'Extreme 💀') levelColor = GenZTokens.red;
+                  final levelColor = level == 'chill'
+                      ? GenZTokens.green
+                      : level == 'chaos'
+                      ? GenZTokens.orange
+                      : GenZTokens.red;
+                  final levelIcon = level == 'chill'
+                      ? PhosphorIcons.smiley()
+                      : level == 'chaos'
+                      ? PhosphorIcons.lightning(PhosphorIconsStyle.fill)
+                      : PhosphorIcons.skull(PhosphorIconsStyle.fill);
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -204,13 +230,12 @@ class _RandomDareGeneratorScreenState
                               HapticFeedback.mediumImpact();
                               setState(() {
                                 _selectedLevel = level;
-                                _currentDare =
-                                    'games.dare_press'.tr();
+                                _currentDare = 'games.dare_press'.tr();
                               });
                             },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
+                          horizontal: 14,
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
@@ -226,13 +251,24 @@ class _RandomDareGeneratorScreenState
                                 ]
                               : null,
                         ),
-                        child: Text(
-                          level,
-                          style: AppFonts.heading(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: isSelected ? GenZTokens.ink : inkColor,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              levelIcon,
+                              size: 16,
+                              color: isSelected ? GenZTokens.ink : inkColor,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'games.dare_level_$level'.tr(),
+                              style: AppFonts.heading(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                                color: isSelected ? GenZTokens.ink : inkColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -256,19 +292,19 @@ class _RandomDareGeneratorScreenState
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      _selectedLevel == 'Chill 🥤'
-                          ? Icons.check_circle_outline
-                          : _selectedLevel == 'Chaos ⚡'
-                          ? Icons.warning_amber_rounded
-                          : Icons.dangerous_outlined,
+                      _selectedLevel == 'chill'
+                          ? PhosphorIcons.checkCircle()
+                          : _selectedLevel == 'chaos'
+                          ? PhosphorIcons.warning()
+                          : PhosphorIcons.warningOctagon(),
                       color: activeColor,
                       size: 18,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _selectedLevel == 'Chill 🥤'
+                      _selectedLevel == 'chill'
                           ? 'games.mode_light'.tr()
-                          : _selectedLevel == 'Chaos ⚡'
+                          : _selectedLevel == 'chaos'
                           ? 'games.mode_chaos'.tr()
                           : 'games.mode_extreme'.tr(),
                       style: AppFonts.heading(
@@ -301,11 +337,11 @@ class _RandomDareGeneratorScreenState
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          _selectedLevel == 'Chill 🥤'
-                              ? Icons.emoji_emotions_outlined
-                              : _selectedLevel == 'Chaos ⚡'
-                              ? Icons.bolt
-                              : Icons.dangerous_outlined,
+                          _selectedLevel == 'chill'
+                              ? PhosphorIcons.smiley()
+                              : _selectedLevel == 'chaos'
+                              ? PhosphorIcons.lightning(PhosphorIconsStyle.fill)
+                              : PhosphorIcons.skull(PhosphorIconsStyle.fill),
                           color: activeColor,
                           size: 64,
                         ),
@@ -360,10 +396,16 @@ class _RandomDareGeneratorScreenState
                           ),
                         )
                       else
-                        Icon(Icons.casino, color: GenZTokens.ink, size: 24),
+                        Icon(
+                          PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
+                          color: GenZTokens.ink,
+                          size: 24,
+                        ),
                       const SizedBox(width: 10),
                       Text(
-                        _isGenerating ? 'games.dare_drawing'.tr() : 'games.dare_draw_now'.tr(),
+                        _isGenerating
+                            ? 'games.dare_drawing'.tr()
+                            : 'games.dare_draw_now'.tr(),
                         style: AppFonts.heading(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/notes_providers.dart';
 import '../data/notes_repository.dart';
 
@@ -37,11 +38,11 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
-      widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _card =>
-      widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   Color _parseHex(String hex) {
     final h = hex.replaceFirst('#', '');
@@ -121,7 +122,9 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: const Color(0xFFF5822B),
+                          color: widget.isDarkMode
+                              ? GenZTokens.purple
+                              : GenZTokens.orange,
                           width: 2,
                         ),
                       ),
@@ -148,7 +151,9 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: const Color(0xFFF5822B),
+                          color: widget.isDarkMode
+                              ? GenZTokens.purple
+                              : GenZTokens.orange,
                           width: 2,
                         ),
                       ),
@@ -212,13 +217,15 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFF5822B),
-                        foregroundColor: Colors.white,
+                        backgroundColor: widget.isDarkMode
+                            ? GenZTokens.purple
+                            : GenZTokens.orange,
+                        foregroundColor: GenZTokens.ink,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                           side: const BorderSide(
-                            color: Color(0xFF141210),
+                            color: GenZTokens.ink,
                             width: 2,
                           ),
                         ),
@@ -252,11 +259,13 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                         setState(() => _selectedColorIndex = colorIndex);
                       },
                       child: Text(
-                        editing == null ? 'notes.save'.tr() : 'common.update'.tr(),
+                        editing == null
+                            ? 'notes.save'.tr()
+                            : 'common.update'.tr(),
                         style: AppFonts.heading(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
-                          color: Colors.white,
+                          color: GenZTokens.ink,
                         ),
                       ),
                     ),
@@ -301,27 +310,27 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
           HapticFeedback.selectionClick();
           _showAddDialog();
         },
-        backgroundColor: const Color(0xFFF5822B),
-        foregroundColor: Colors.white,
+        backgroundColor: GenZTokens.orange,
+        foregroundColor: GenZTokens.ink,
         icon: Icon(PhosphorIcons.note(PhosphorIconsStyle.fill)),
         label: Text(
           'notes.add'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: GenZTokens.ink,
           ),
         ),
       ),
       body: notesAsync.when(
         loading: () => Center(
-          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+          child: CircularProgressIndicator(color: GenZTokens.orange),
         ),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(PhosphorIcons.warningCircle(), size: 48, color: Colors.red),
+              Icon(PhosphorIcons.warningCircle(), size: 48, color: GenZTokens.danger),
               const SizedBox(height: 12),
               Text(
                 'notes.load_error'.tr(),
@@ -407,7 +416,9 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                   'general.cancel'.tr(),
                   style: AppFonts.body(
                     fontSize: 14,
-                    color: const Color(0xFFF5822B),
+                    color: widget.isDarkMode
+                        ? GenZTokens.purple
+                        : GenZTokens.orange,
                   ),
                 ),
               ),
@@ -420,7 +431,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                 },
                 child: Text(
                   'general.delete'.tr(),
-                  style: AppFonts.body(fontSize: 14, color: Colors.red),
+                  style: AppFonts.body(fontSize: 14, color: GenZTokens.danger),
                 ),
               ),
             ],
@@ -431,11 +442,11 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
         decoration: BoxDecoration(
           color: noteColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF141210), width: 2),
-          boxShadow: const [
+          border: Border.all(color: _ink, width: 2),
+          boxShadow: [
             BoxShadow(
-              color: Color(0xFF141210),
-              offset: Offset(3, 3),
+              color: _ink,
+              offset: const Offset(3, 3),
               blurRadius: 0,
             ),
           ],
@@ -452,7 +463,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                 style: AppFonts.heading(
                   fontSize: 13,
                   fontWeight: FontWeight.w900,
-                  color: const Color(0xFF141210),
+                  color: GenZTokens.ink,
                 ),
               ),
               const SizedBox(height: 6),
@@ -463,7 +474,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                 overflow: TextOverflow.fade,
                 style: AppFonts.body(
                   fontSize: 13,
-                  color: const Color(0xFF141210).withValues(alpha: 0.85),
+                  color: GenZTokens.ink.withValues(alpha: 0.85),
                 ),
               ),
             ),
@@ -478,9 +489,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                 else
                   CircleAvatar(
                     radius: 12,
-                    backgroundColor: const Color(
-                      0xFF141210,
-                    ).withValues(alpha: 0.2),
+                    backgroundColor: GenZTokens.ink.withValues(alpha: 0.2),
                     child: Text(
                       note.authorName.isNotEmpty
                           ? note.authorName[0].toUpperCase()
@@ -488,7 +497,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF141210),
+                        color: GenZTokens.ink,
                       ),
                     ),
                   ),
@@ -500,7 +509,7 @@ class _TripNotesScreenState extends ConsumerState<TripNotesScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: AppFonts.body(
                       fontSize: 12,
-                      color: const Color(0xFF141210).withValues(alpha: 0.6),
+                      color: GenZTokens.ink.withValues(alpha: 0.6),
                     ),
                   ),
                 ),

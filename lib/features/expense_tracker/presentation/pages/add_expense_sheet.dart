@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../application/expenses_providers.dart';
 import '../../data/expenses_repository.dart';
 import 'ai_receipt_scanner_screen.dart';
@@ -63,12 +64,11 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary =>
-      _dark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
-  Color get _textPri => _dark ? Colors.white : const Color(0xFF141210);
+      _dark ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _primary => GenZTokens.orange;
+  Color get _textPri => _dark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      _dark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   void dispose() {
@@ -125,7 +125,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: error ? Colors.redAccent : _primary,
+        backgroundColor: error ? GenZTokens.danger : _primary,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -146,7 +146,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: Container(
+                 child: Container(
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
@@ -205,8 +205,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.qr_code_scanner_rounded,
+                      Icon(
+                        PhosphorIcons.qrCode(),
                         color: GenZTokens.ink,
                         size: 20,
                       ),
@@ -317,8 +317,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                           color: sel
                               ? _primary
                               : (_dark
-                                    ? Colors.white.withValues(alpha: 0.08)
-                                    : Colors.black.withValues(alpha: 0.08)),
+                                    ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                                    : GenZTokens.ink.withValues(alpha: 0.12)),
                         ),
                       ),
                       child: Text(
@@ -326,7 +326,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                         style: AppFonts.body(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: sel ? Colors.white : _textPri,
+                          color: sel ? GenZTokens.ink : _textPri,
                         ),
                       ),
                     ),
@@ -352,7 +352,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
+                            color: GenZTokens.ink,
                           ),
                         )
                       : Text(
@@ -360,6 +360,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                           style: AppFonts.heading(
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
+                            color: GenZTokens.ink,
                           ),
                         ),
                 ),
@@ -375,7 +376,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
     color: _surface,
     borderRadius: BorderRadius.circular(14),
     border: Border.all(
-      color: _dark ? Colors.white.withValues(alpha: 0.06) : Colors.black,
+      color: _dark ? GenZTokens.inkDark.withValues(alpha: 0.15) : GenZTokens.ink,
       width: 2,
     ),
   );

@@ -1,17 +1,18 @@
-import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../core/network/api_exception.dart';
-import '../../premium/presentation/paywall_sheet.dart';
-import '../../gamification/data/games_repository.dart';
-import '../data/ai_repository.dart';
-import '../../../core/app_messenger.dart';
 import 'package:flutter/services.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
+import '../../../core/app_messenger.dart';
+import '../../../core/network/api_exception.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../gamification/data/games_repository.dart';
 import '../../moments/data/moments_repository.dart';
+import '../../premium/presentation/paywall_sheet.dart';
+import '../data/ai_repository.dart';
 
 class AICaptionGeneratorScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -34,27 +35,25 @@ class _AICaptionGeneratorScreenState
   late AnimationController _auroraController;
   late AnimationController _pulseController;
 
-  String _selectedVibe = 'Chaotic Gen Z';
+  String _selectedVibeKey = 'ai.vibe_chaotic_genz';
   int _selectedOptionIndex = 0;
   final TextEditingController _editorController = TextEditingController();
 
-  final List<String> _vibes = [
-    'Funny',
-    'Chaotic Gen Z',
-    'Cinematic',
-    'Aesthetic',
+  final List<String> _vibes = const [
+    'ai.vibe_chaotic_genz',
+    'ai.vibe_funny',
+    'ai.vibe_cinematic',
+    'ai.vibe_aesthetic',
   ];
 
   @override
   void initState() {
     super.initState();
-    // Aurora glow oscillation animation
     _auroraController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 8),
     )..repeat(reverse: true);
 
-    // Pulse animation
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
@@ -73,36 +72,30 @@ class _AICaptionGeneratorScreenState
   final Map<String, List<Map<String, dynamic>>> _aiOptions = {};
   bool _isGenerating = false;
 
-  /// Caption cho vibe dang chon — chi co khi AI da sinh.
-  ///
-  /// Truoc day man nay tra ve mot danh muc caption tieng Anh viet san
-  /// ("financially ruined. emotionally healed.") nen nhin nhu AI da chay
-  /// trong khi chua goi gi ca.
+  /// Caption cho vibe đang chọn — chỉ có khi AI đã sinh.
   List<Map<String, dynamic>> get _currentOptions =>
-      _aiOptions[_selectedVibe] ?? const [];
+      _aiOptions[_selectedVibeKey] ?? const [];
 
   /// Gọi AI sinh caption thật cho vibe đang chọn.
-  ///
-  /// Trước đây màn "AI Caption Studio" chỉ đọc một danh mục viết sẵn trong
-  /// app — không có lời gọi AI nào, dù tên màn nói ngược lại.
   Future<void> _generate() async {
     if (_isGenerating) return;
     setState(() => _isGenerating = true);
     try {
       final tripId = ref.read(activeTripIdProvider);
+      final vibeName = _selectedVibeKey.tr();
       final lines =
           (await ref
                   .read(mateyChatProvider)
                   .captions(
                     prompt:
-                        'Ảnh du lịch theo vibe "$_selectedVibe", kèm 2 hashtag mỗi caption.',
+                        'Ảnh du lịch theo vibe "$vibeName", kèm 2 hashtag mỗi caption.',
                     tripId: tripId,
                   ))
               .take(5)
               .toList();
       if (!mounted) return;
       setState(() {
-        _aiOptions[_selectedVibe] = lines
+        _aiOptions[_selectedVibeKey] = lines
             .map((l) => {'text': l, 'tags': const <String>[]})
             .toList();
         _selectedOptionIndex = 0;
@@ -111,8 +104,6 @@ class _AICaptionGeneratorScreenState
     } catch (e) {
       if (!mounted) return;
       setState(() => _isGenerating = false);
-      // Hết lượt AI trong tháng → paywall nêu đúng con số, không phải một lỗi
-      // 403 mà người dùng không hiểu vì sao.
       if (await PaywallSheet.maybeShow(context, e)) return;
       if (!mounted) return;
       showGlobalSnack(
@@ -128,11 +119,17 @@ class _AICaptionGeneratorScreenState
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+            Icon(
+              PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+              color: GenZTokens.paper,
+            ),
             const SizedBox(width: 8),
             Text(
               'common.copied'.tr(),
-              style: AppFonts.body(fontWeight: FontWeight.bold),
+              style: AppFonts.body(
+                fontWeight: FontWeight.bold,
+                color: GenZTokens.paper,
+              ),
             ),
           ],
         ),
@@ -144,23 +141,17 @@ class _AICaptionGeneratorScreenState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
 
     // Theme Tokens
-    final bgStart = Theme.of(context).scaffoldBackgroundColor;
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
-    // va viet cung accent cua preset *grape*, nen doi theme khong an.
-    final primary = Theme.of(context).colorScheme.primary;
-    final secondary = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFFFFD84D);
-    final textPrimary = isDark
-        ? const Color(0xFFDAE2FD)
-        : const Color(0xFF141210);
-    final textMuted = isDark
-        ? const Color(0xFFCBC3D7)
-        : const Color(0xFF4A453E);
+    final bgStart = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final primary = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final secondary = GenZTokens.yellow;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textMuted = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final border = textPrimary;
 
     final currentOptions = _currentOptions;
 
@@ -169,7 +160,7 @@ class _AICaptionGeneratorScreenState
         decoration: BoxDecoration(color: bgStart),
         child: Stack(
           children: [
-            // ── Dynamic Aurora Glow Orb ─────────────────────────────────────
+            // Dynamic Aurora Glow Orb
             AnimatedBuilder(
               animation: _auroraController,
               builder: (context, child) {
@@ -185,7 +176,7 @@ class _AICaptionGeneratorScreenState
                       angle: rotation,
                       child: Container(
                         height: 320,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.transparent,
                           shape: BoxShape.circle,
                         ),
@@ -200,8 +191,7 @@ class _AICaptionGeneratorScreenState
               bottom: false,
               child: Column(
                 children: [
-                  // ── Custom Top Header Bar ─────────────────────────────────
-                  _buildTopBar(textPrimary, primary),
+                  _buildTopBar(textPrimary, primary, isDark),
 
                   Expanded(
                     child: SingleChildScrollView(
@@ -212,20 +202,19 @@ class _AICaptionGeneratorScreenState
                         children: [
                           const SizedBox(height: 12),
 
-                          // ── Social Photo Preview Container ─────────────────
                           Center(
                             child: _buildPhotoMockup(
                               surface,
                               secondary,
                               textPrimary,
                               primary,
+                              border,
                               isDark,
                             ),
                           ),
 
                           const SizedBox(height: 24),
 
-                          // ── Heading & Tagline ──────────────────────────────
                           Center(
                             child: Column(
                               children: [
@@ -254,7 +243,6 @@ class _AICaptionGeneratorScreenState
 
                           const SizedBox(height: 28),
 
-                          // ── Vibe Selectors (Horizontal list) ───────────────
                           Text(
                             'ai.vibe_check'.tr(),
                             style: AppFonts.heading(
@@ -270,24 +258,21 @@ class _AICaptionGeneratorScreenState
                             textPrimary,
                             textMuted,
                             surface,
+                            border,
+                            isDark,
                           ),
 
                           const SizedBox(height: 24),
 
-                          // ── Bento-ish Caption Selection Bento Grid ────────
                           if (currentOptions.isEmpty)
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: surface.withValues(
-                                  alpha: isDark ? 0.45 : 0.75,
-                                ),
+                                color: surface,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: isDark
-                                      ? Colors.white10
-                                      : Colors.black12,
+                                  color: border.withValues(alpha: 0.25),
                                 ),
                               ),
                               child: Text(
@@ -315,8 +300,11 @@ class _AICaptionGeneratorScreenState
                                 onTap: () {
                                   setState(() {
                                     _selectedOptionIndex = index;
+                                    final tagsStr = optionTags.isEmpty
+                                        ? ''
+                                        : ' ${optionTags.join(" ")}';
                                     _editorController.text =
-                                        '$optionText ${optionTags.join(" ")} ✨';
+                                        '$optionText$tagsStr';
                                   });
                                 },
                                 child: Container(
@@ -325,17 +313,15 @@ class _AICaptionGeneratorScreenState
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? primary.withValues(alpha: 0.15)
-                                        : surface.withValues(
-                                            alpha: isDark ? 0.45 : 0.75,
-                                          ),
+                                        : surface,
                                     borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
                                       color: isSelected
                                           ? primary
-                                          : (isDark
-                                                ? Colors.white10
-                                                : Colors.black12),
-                                      width: isSelected ? 1.5 : 1,
+                                          : border.withValues(alpha: 0.25),
+                                      width: isSelected
+                                          ? GenZTokens.borderWidth
+                                          : GenZTokens.borderWidthThin,
                                     ),
                                     boxShadow: [
                                       if (isSelected)
@@ -364,36 +350,41 @@ class _AICaptionGeneratorScreenState
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(height: 10),
-                                          Row(
-                                            children: optionTags.map((tag) {
-                                              return Container(
-                                                margin: const EdgeInsets.only(
-                                                  right: 8,
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4,
+                                          if (optionTags.isNotEmpty) ...[
+                                            const SizedBox(height: 10),
+                                            Row(
+                                              children: optionTags.map((tag) {
+                                                return Container(
+                                                  margin: const EdgeInsets.only(
+                                                    right: 8,
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 4,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: primary.withValues(
+                                                      alpha: 0.1,
                                                     ),
-                                                decoration: BoxDecoration(
-                                                  color: primary.withValues(
-                                                    alpha: 0.1,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
                                                   ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                ),
-                                                child: Text(
-                                                  tag,
-                                                  style: AppFonts.body(
-                                                    fontSize: 12,
-                                                    color: primary,
-                                                    fontWeight: FontWeight.bold,
+                                                  child: Text(
+                                                    tag,
+                                                    style: AppFonts.body(
+                                                      fontSize: 12,
+                                                      color: primary,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ],
                                         ],
                                       ),
                                       Positioned(
@@ -401,7 +392,7 @@ class _AICaptionGeneratorScreenState
                                         right: 0,
                                         child: IconButton(
                                           icon: Icon(
-                                            Icons.content_copy_rounded,
+                                            PhosphorIcons.copy(),
                                             size: 18,
                                             color: isSelected
                                                 ? primary
@@ -411,7 +402,7 @@ class _AICaptionGeneratorScreenState
                                               _copyToClipboard(optionText),
                                           constraints: const BoxConstraints(),
                                           padding: EdgeInsets.zero,
-                                          tooltip: 'Sao chép chú thích',
+                                          tooltip: 'common.copy'.tr(),
                                         ),
                                       ),
                                     ],
@@ -423,13 +414,13 @@ class _AICaptionGeneratorScreenState
 
                           const SizedBox(height: 20),
 
-                          // ── Interactive Editor Panel ──────────────────────
                           _buildEditorPanel(
                             surface,
                             primary,
                             secondary,
                             textPrimary,
                             textMuted,
+                            border,
                             isDark,
                           ),
 
@@ -447,7 +438,7 @@ class _AICaptionGeneratorScreenState
     );
   }
 
-  Widget _buildTopBar(Color textPrimary, Color primary) {
+  Widget _buildTopBar(Color textPrimary, Color primary, bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -455,12 +446,12 @@ class _AICaptionGeneratorScreenState
         children: [
           IconButton(
             icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
+              PhosphorIcons.caretLeft(PhosphorIconsStyle.bold),
               color: textPrimary,
               size: 20,
             ),
             onPressed: () => Navigator.maybePop(context),
-            tooltip: 'Đóng',
+            tooltip: 'common.back'.tr(),
           ),
           Text(
             'trip.mate',
@@ -476,16 +467,16 @@ class _AICaptionGeneratorScreenState
               if (widget.onThemeToggle != null)
                 IconButton(
                   icon: Icon(
-                    widget.isDarkMode
-                        ? Icons.light_mode_rounded
-                        : Icons.dark_mode_rounded,
+                    isDark
+                        ? PhosphorIcons.sun(PhosphorIconsStyle.bold)
+                        : PhosphorIcons.moon(PhosphorIconsStyle.bold),
                     color: textPrimary.withValues(alpha: 0.6),
                     size: 20,
                   ),
                   onPressed: widget.onThemeToggle,
-                  tooltip: widget.isDarkMode
-                      ? 'Chuyển sang giao diện sáng'
-                      : 'Chuyển sang giao diện tối',
+                  tooltip: isDark
+                      ? 'theme.switch_light'.tr()
+                      : 'theme.switch_dark'.tr(),
                 ),
               IconButton(
                 icon: _isGenerating
@@ -494,7 +485,11 @@ class _AICaptionGeneratorScreenState
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Icon(Icons.auto_awesome, color: textPrimary, size: 24),
+                    : Icon(
+                        PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                        color: textPrimary,
+                        size: 24,
+                      ),
                 onPressed: _isGenerating ? null : _generate,
                 tooltip: 'ai.generate_captions'.tr(),
               ),
@@ -510,32 +505,24 @@ class _AICaptionGeneratorScreenState
     Color secondary,
     Color textPrimary,
     Color primary,
+    Color border,
     bool isDark,
   ) {
     return Container(
       width: 240,
       height: 300,
       decoration: BoxDecoration(
-        color: surface.withValues(alpha: isDark ? 0.3 : 0.8),
+        color: surface,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(
-          color: (isDark ? Colors.white : Colors.black),
-          width: 2,
+          color: border,
+          width: GenZTokens.borderWidth,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 0,
-            offset: const Offset(0, 15),
-          ),
-        ],
+        boxShadow: GenZTokens.hardShadow(border),
       ),
       padding: const EdgeInsets.all(8),
       child: Stack(
         children: [
-          // Anh xem truoc: lay khoanh khac moi nhat cua chinh user.
-          // Truoc day day la mot URL Unsplash in cung da 404, Flutter ve nguyen
-          // hop loi do kem ca duong dan len giua man.
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
@@ -552,7 +539,7 @@ class _AICaptionGeneratorScreenState
                       color: primary.withValues(alpha: 0.15),
                       alignment: Alignment.center,
                       child: Icon(
-                        Icons.photo_camera_back_outlined,
+                        PhosphorIcons.image(),
                         size: 40,
                         color: primary,
                       ),
@@ -581,12 +568,18 @@ class _AICaptionGeneratorScreenState
                     horizontal: 10,
                     vertical: 6,
                   ),
-                  color: Colors.black54,
+                  decoration: BoxDecoration(
+                    color: surface,
+                    border: Border.all(
+                      color: border,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                  ),
                   child: Row(
                     children: [
                       Icon(
-                        Icons.auto_awesome_rounded,
-                        color: secondary,
+                        PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                        color: GenZTokens.purple,
                         size: 14,
                       ),
                       const SizedBox(width: 4),
@@ -595,7 +588,7 @@ class _AICaptionGeneratorScreenState
                         style: AppFonts.body(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: textPrimary,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -614,23 +607,24 @@ class _AICaptionGeneratorScreenState
     Color textPrimary,
     Color textMuted,
     Color surface,
+    Color border,
+    bool isDark,
   ) {
-    final isDark = widget.isDarkMode;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
       child: Row(
-        children: _vibes.map((vibe) {
-          final isSelected = _selectedVibe == vibe;
+        children: _vibes.map((vibeKey) {
+          final isSelected = _selectedVibeKey == vibeKey;
           return GestureDetector(
             onTap: () {
               setState(() {
-                _selectedVibe = vibe;
+                _selectedVibeKey = vibeKey;
                 _selectedOptionIndex = 0;
                 final opts = _currentOptions;
                 _editorController.text = opts.isEmpty
                     ? ''
-                    : '${opts.first["text"]} ${List<String>.from(opts.first["tags"] ?? []).join(" ")} ✨';
+                    : '${opts.first["text"]} ${List<String>.from(opts.first["tags"] ?? []).join(" ")}';
               });
             },
             child: Container(
@@ -638,14 +632,14 @@ class _AICaptionGeneratorScreenState
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? primary.withValues(alpha: 0.15)
-                    : surface.withValues(alpha: isDark ? 0.45 : 0.75),
+                    ? primary.withValues(alpha: 0.2)
+                    : surface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected
-                      ? primary
-                      : (isDark ? Colors.white10 : Colors.black12),
-                  width: isSelected ? 1.5 : 1,
+                  color: isSelected ? primary : border.withValues(alpha: 0.3),
+                  width: isSelected
+                      ? GenZTokens.borderWidth
+                      : GenZTokens.borderWidthThin,
                 ),
                 boxShadow: [
                   if (isSelected)
@@ -656,7 +650,7 @@ class _AICaptionGeneratorScreenState
                 ],
               ),
               child: Text(
-                vibe,
+                vibeKey.tr(),
                 style: AppFonts.body(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -676,32 +670,27 @@ class _AICaptionGeneratorScreenState
     Color secondary,
     Color textPrimary,
     Color textMuted,
+    Color border,
     bool isDark,
   ) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
       child: Container(
         decoration: BoxDecoration(
-          color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
+          color: surface,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: (isDark ? Colors.white : Colors.black),
-            width: 2,
+            color: border,
+            width: GenZTokens.borderWidth,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
-              blurRadius: 0,
-            ),
-          ],
+          boxShadow: GenZTokens.hardShadow(border),
         ),
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Audio Suggestion row
             const SizedBox(height: 14),
-            const Divider(color: Colors.white10),
+            Divider(color: textMuted.withValues(alpha: 0.2)),
             const SizedBox(height: 14),
 
             // Textarea Editor
@@ -726,10 +715,8 @@ class _AICaptionGeneratorScreenState
                 ),
                 Semantics(
                   button: true,
-                  label: 'Tạo lại',
+                  label: 'common.refresh'.tr(),
                   child: GestureDetector(
-                    // Truoc day nut nay chi hien thong bao "da nghi caption moi"
-                    // ma khong he goi AI. Nay chay dung ham sinh caption that.
                     onTap: _isGenerating ? null : _generate,
                     child: Container(
                       width: 44,
@@ -744,9 +731,9 @@ class _AICaptionGeneratorScreenState
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.refresh_rounded,
-                        color: Colors.white,
+                      child: Icon(
+                        PhosphorIcons.arrowsClockwise(),
+                        color: GenZTokens.paper,
                         size: 20,
                       ),
                     ),

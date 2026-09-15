@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../gamification/data/games_repository.dart';
 import '../../../trips/application/trips_providers.dart';
 import '../../data/home_feed_repository.dart';
@@ -62,6 +64,17 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
 
     // Generate falling color particle sparks
     _particles.clear();
+    const sparkColors = [
+      GenZTokens.yellow,
+      GenZTokens.orange,
+      GenZTokens.green,
+      GenZTokens.magenta,
+      GenZTokens.purple,
+      GenZTokens.red,
+      GenZTokens.lilac,
+      GenZTokens.blue,
+      GenZTokens.pink,
+    ];
     for (int i = 0; i < 40; i++) {
       _particles.add(
         Particle(
@@ -69,7 +82,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
           y: 80 + _random.nextDouble() * 50,
           vx: (_random.nextDouble() - 0.5) * 10,
           vy: (_random.nextDouble() - 0.5) * 8 - 4,
-          color: Colors.primaries[_random.nextInt(Colors.primaries.length)],
+          color: sparkColors[_random.nextInt(sparkColors.length)],
           size: _random.nextDouble() * 6 + 3,
         ),
       );
@@ -93,17 +106,17 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
     // va viet cung accent cua preset *grape*, nen doi theme khong an.
     final primaryColor = Theme.of(context).colorScheme.primary;
     final secondaryColor = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFFFFD84D);
+        ? GenZTokens.green
+        : GenZTokens.yellow;
 
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
-    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final textPrimary = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
+        ? GenZTokens.inkDark
+        : GenZTokens.ink;
     final textSecondary = isDark
-        ? const Color(0xFFB8AE9C)
-        : const Color(0xFF4A453E);
+        ? GenZTokens.inkSoftDark
+        : GenZTokens.inkSoft;
     final glassBorder = textPrimary; // viền ink brutalist
 
     if (_particlesController.isAnimating) {
@@ -152,7 +165,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                               style: AppFonts.body(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? secondaryColor : const Color(0xFF1B8A4C),
+                                color: isDark ? secondaryColor : GenZTokens.green,
                               ),
                             ),
                           ],
@@ -198,8 +211,8 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                   progress: _vibeEnergy(),
                                   color: secondaryColor,
                                   backgroundColor: isDark
-                                      ? Colors.white10
-                                      : Colors.black12,
+                                      ? GenZTokens.inkDark.withValues(alpha: 0.1)
+                                      : GenZTokens.ink.withValues(alpha: 0.1),
                                 ),
                               ),
                               Column(
@@ -260,17 +273,17 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.vibration,
+                                  Icon(
+                                    PhosphorIcons.vibrate(),
                                     size: 40,
-                                    color: Colors.white,
+                                    color: GenZTokens.ink,
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
                                     'live.shake_hint'.tr(),
                                     textAlign: TextAlign.center,
                                     style: AppFonts.heading(
-                                      color: Colors.white,
+                                      color: GenZTokens.ink,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13,
                                     ),
@@ -339,7 +352,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                             children: [
                               for (final a in items.take(6))
                                 _buildLiveFeedItem(
-                                  _activityEmoji(a.type),
+                                  _activityIcon(a.type),
                                   a.label,
                                   a.tripName,
                                   cardBg,
@@ -396,36 +409,36 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
     return (base + _shakeBonus).clamp(0.0, 1.0);
   }
 
-  /// Emoji minh hoạ cho từng loại hoạt động trong feed.
-  static String _activityEmoji(String type) {
+  /// Icon minh hoạ cho từng loại hoạt động trong feed (PhosphorIcons).
+  static IconData _activityIcon(String type) {
     switch (type) {
       case 'EXPENSE_ADDED':
-        return '💸';
+        return PhosphorIcons.money(PhosphorIconsStyle.fill);
       case 'MOMENT_SHARED':
-        return '📸';
+        return PhosphorIcons.camera(PhosphorIconsStyle.fill);
       case 'ITINERARY_ADDED':
-        return '🗺️';
+        return PhosphorIcons.mapPin(PhosphorIconsStyle.fill);
       case 'CHAT_SENT':
-        return '💬';
+        return PhosphorIcons.chatCircle(PhosphorIconsStyle.fill);
       case 'GAME_STARTED':
-        return '🎮';
+        return PhosphorIcons.gameController(PhosphorIconsStyle.fill);
       case 'POLL_CREATED':
-        return '🗳️';
+        return PhosphorIcons.chartBar(PhosphorIconsStyle.fill);
       case 'MEMBER_JOINED':
-        return '👋';
+        return PhosphorIcons.handWaving(PhosphorIconsStyle.fill);
       case 'JOURNAL_WRITTEN':
-        return '📔';
+        return PhosphorIcons.bookOpen(PhosphorIconsStyle.fill);
       case 'NOTE_ADDED':
-        return '📝';
+        return PhosphorIcons.note(PhosphorIconsStyle.fill);
       case 'DOCUMENT_UPLOADED':
-        return '📎';
+        return PhosphorIcons.paperclip(PhosphorIconsStyle.fill);
       default:
-        return '✨';
+        return PhosphorIcons.sparkle(PhosphorIconsStyle.fill);
     }
   }
 
   Widget _buildLiveFeedItem(
-    String emoji,
+    IconData icon,
     String title,
     String time,
     Color cardBg,
@@ -444,7 +457,14 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: GenZTokens.yellow.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 20, color: textPrimary),
+          ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -573,10 +593,9 @@ class MiniMapGridPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final gridPaint = Paint()
-      ..color = isDark
-          ? Colors.white.withValues(alpha: 0.02)
-          : Colors.black.withValues(alpha: 0.02)
+      ..color = ink.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
 
     for (double i = 0; i < size.width; i += 30) {
@@ -587,9 +606,7 @@ class MiniMapGridPainter extends CustomPainter {
     }
 
     final roadPaint = Paint()
-      ..color = isDark
-          ? Colors.white.withValues(alpha: 0.05)
-          : Colors.black.withValues(alpha: 0.04)
+      ..color = ink.withValues(alpha: isDark ? 0.05 : 0.04)
       ..strokeWidth = 6.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;

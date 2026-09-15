@@ -149,7 +149,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
         // Mở từ deep link thì stack rỗng — back phải về dashboard chứ không
         // để người dùng kẹt ở màn này.
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(PhosphorIcons.arrowLeft()),
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -318,7 +318,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                         ),
                       )
                     : Text(
-                        'Tham gia ngay',
+                        'trips.join_now'.tr(),
                         style: AppFonts.heading(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,

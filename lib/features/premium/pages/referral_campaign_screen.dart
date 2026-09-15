@@ -1,15 +1,15 @@
-import '../../../core/theme/theme.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'package:easy_localization/easy_localization.dart';
-
-import '../../../core/api_service.dart';
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
+import '../../../core/api_service.dart';
 import '../../../core/app_messenger.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 
 /// Man gioi thieu ban be.
 ///
@@ -71,6 +71,13 @@ class _ReferralCampaignScreenState
   }
 
   void _shareLink() {
+    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final borderCol = ink.withValues(alpha: 0.15);
+    final accent = isDark ? GenZTokens.lilac : GenZTokens.purple;
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -79,9 +86,7 @@ class _ReferralCampaignScreenState
           topRight: Radius.circular(28),
         ),
       ),
-      backgroundColor: widget.isDarkMode
-          ? TripMateTheme.darkSurface
-          : Colors.white,
+      backgroundColor: surfaceColor,
       builder: (context) => Padding(
         padding: const EdgeInsets.all(28.0),
         child: Column(
@@ -93,7 +98,7 @@ class _ReferralCampaignScreenState
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-                color: widget.isDarkMode ? Colors.white : Colors.black87,
+                color: ink,
               ),
             ),
             const SizedBox(height: 8),
@@ -101,7 +106,7 @@ class _ReferralCampaignScreenState
               'referral.share_intro'.tr(),
               style: AppFonts.body(
                 fontSize: 12.5,
-                color: Colors.grey,
+                color: inkSoft,
                 height: 1.4,
               ),
             ),
@@ -109,25 +114,20 @@ class _ReferralCampaignScreenState
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: (widget.isDarkMode ? Colors.white : Colors.black)
-                    .withValues(alpha: 0.05),
+                color: isDark ? GenZTokens.creamDark : GenZTokens.cream,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: widget.isDarkMode ? Colors.white10 : Colors.black12,
-                ),
+                border: Border.all(color: borderCol),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.link, color: Colors.blueAccent),
+                  Icon(PhosphorIcons.link(), color: accent),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       _inviteLink,
                       style: AppFonts.body(
                         fontSize: 13,
-                        color: widget.isDarkMode
-                            ? Colors.white
-                            : Colors.black87,
+                        color: ink,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -135,8 +135,8 @@ class _ReferralCampaignScreenState
                   ),
                   const SizedBox(width: 12),
                   IconButton(
-                    icon: const Icon(Icons.copy),
-                    tooltip: 'Sao chép mã giới thiệu',
+                    icon: Icon(PhosphorIcons.copy(), color: ink),
+                    tooltip: 'premium.copy_code'.tr(),
                     onPressed: () async {
                       await Clipboard.setData(ClipboardData(text: _inviteLink));
                       if (!context.mounted) return;
@@ -165,27 +165,41 @@ class _ReferralCampaignScreenState
   }
 
   void _showInstruction() {
+    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final accent = isDark ? GenZTokens.lilac : GenZTokens.purple;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: widget.isDarkMode
-            ? TripMateTheme.darkSurface
-            : Colors.white,
+        backgroundColor: surfaceColor,
         title: Text(
           'premium.how_it_works'.tr(),
-          style: AppFonts.heading(fontWeight: FontWeight.bold),
+          style: AppFonts.heading(
+            fontWeight: FontWeight.bold,
+            color: ink,
+          ),
         ),
         content: Text(
           'referral.steps'.tr(),
-          style: AppFonts.body(fontSize: 13, height: 1.5),
+          style: AppFonts.body(
+            fontSize: 13,
+            height: 1.5,
+            color: inkSoft,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
               'common.got_it'.tr(),
-              style: AppFonts.heading(fontWeight: FontWeight.bold),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.bold,
+                color: accent,
+              ),
             ),
           ),
         ],
@@ -195,29 +209,17 @@ class _ReferralCampaignScreenState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
 
-    final primaryColor = isDark
-        ? TripMateTheme.darkPrimary
-        : TripMateTheme.lightPrimary;
-    final tertiaryColor = isDark
-        ? TripMateTheme.darkTertiary
-        : TripMateTheme.lightSecondary;
-    final bgColor = isDark
-        ? TripMateTheme.darkBackground
-        : TripMateTheme.lightBackground;
-    final surfaceColor = isDark
-        ? TripMateTheme.darkSurface
-        : TripMateTheme.lightSurface;
-    final textPrimary = isDark
-        ? TripMateTheme.darkTextPrimary
-        : TripMateTheme.lightTextPrimary;
-    final textSecondary = isDark
-        ? TripMateTheme.darkTextSecondary
-        : TripMateTheme.lightTextSecondary;
-    final borderCol = isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.08);
+    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final tertiaryColor = isDark ? GenZTokens.yellow : GenZTokens.orange;
+    final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary =
+        isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final borderCol = textPrimary.withValues(alpha: 0.15);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -257,13 +259,16 @@ class _ReferralCampaignScreenState
                         Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.arrow_back, color: textPrimary),
-                              tooltip: 'Đóng',
+                              icon: Icon(
+                                PhosphorIcons.arrowLeft(),
+                                color: textPrimary,
+                              ),
+                              tooltip: 'common.close'.tr(),
                               onPressed: () => Navigator.pop(context),
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'trip.mate',
+                              'TripMate',
                               style: AppFonts.body(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w900,
@@ -278,13 +283,13 @@ class _ReferralCampaignScreenState
                             IconButton(
                               icon: Icon(
                                 isDark
-                                    ? Icons.light_mode_outlined
-                                    : Icons.dark_mode_outlined,
+                                    ? PhosphorIcons.sun()
+                                    : PhosphorIcons.moon(),
                                 color: primaryColor,
                               ),
                               tooltip: isDark
-                                  ? 'Chuyển sang giao diện sáng'
-                                  : 'Chuyển sang giao diện tối',
+                                  ? 'theme.switch_light'.tr()
+                                  : 'theme.switch_dark'.tr(),
                               onPressed: widget.onThemeToggle,
                             ),
                             const SizedBox(width: 8),
@@ -295,10 +300,10 @@ class _ReferralCampaignScreenState
                               ),
                               child: IconButton(
                                 icon: Icon(
-                                  Icons.notifications_none,
+                                  PhosphorIcons.bell(),
                                   color: textPrimary,
                                 ),
-                                tooltip: 'Thông báo',
+                                tooltip: 'notifications.title'.tr(),
                                 onPressed: () => showGlobalSnack(
                                   'common.feature_wip2'.tr(),
                                 ),
@@ -326,7 +331,7 @@ class _ReferralCampaignScreenState
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.workspace_premium,
+                          PhosphorIcons.crown(PhosphorIconsStyle.fill),
                           color: tertiaryColor,
                           size: 14,
                         ),
@@ -347,7 +352,7 @@ class _ReferralCampaignScreenState
 
                   // Slogans
                   Text(
-                    'bring the squad.\nunlock elite vibes.',
+                    'premium.referral_slogan'.tr(),
                     style: AppFonts.heading(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
@@ -416,9 +421,9 @@ class _ReferralCampaignScreenState
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildProgressSpot(1, primaryColor),
-                            _buildProgressSpot(2, primaryColor),
-                            _buildProgressSpot(3, primaryColor),
+                            _buildProgressSpot(1, primaryColor, borderCol, textSecondary),
+                            _buildProgressSpot(2, primaryColor, borderCol, textSecondary),
+                            _buildProgressSpot(3, primaryColor, borderCol, textSecondary),
                           ],
                         ),
                       ],
@@ -430,7 +435,7 @@ class _ReferralCampaignScreenState
                   // CTA share invite button
                   Semantics(
                     button: true,
-                    label: 'Chia sẻ mã',
+                    label: 'premium.share_referral'.tr(),
                     child: GestureDetector(
                       onTap: _shareLink,
                       child: Container(
@@ -438,12 +443,16 @@ class _ReferralCampaignScreenState
                         height: 56,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(999),
-                          color: primaryColor,
+                          color: GenZTokens.yellow,
+                          border: Border.all(
+                            color: textPrimary,
+                            width: GenZTokens.borderWidth,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: primaryColor.withValues(alpha: 0.35),
+                              color: textPrimary.withValues(alpha: 0.35),
                               blurRadius: 0,
-                              offset: const Offset(0, 5),
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),
@@ -451,16 +460,16 @@ class _ReferralCampaignScreenState
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
-                                Icons.ios_share,
-                                color: Colors.white,
+                              Icon(
+                                PhosphorIcons.export(),
+                                color: GenZTokens.ink,
                                 size: 18,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 'premium.share_invite'.tr(),
                                 style: AppFonts.heading(
-                                  color: Colors.white,
+                                  color: GenZTokens.ink,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
                                 ),
@@ -499,7 +508,12 @@ class _ReferralCampaignScreenState
     );
   }
 
-  Widget _buildProgressSpot(int spotNum, Color color) {
+  Widget _buildProgressSpot(
+    int spotNum,
+    Color color,
+    Color borderColor,
+    Color emptyTextColor,
+  ) {
     final isFilled = _spotsFilled >= spotNum;
     return Container(
       width: 50,
@@ -507,16 +521,23 @@ class _ReferralCampaignScreenState
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isFilled ? color.withValues(alpha: 0.15) : Colors.transparent,
-        border: Border.all(color: isFilled ? color : Colors.grey, width: 2),
+        border: Border.all(
+          color: isFilled ? color : borderColor,
+          width: 2,
+        ),
       ),
       child: Center(
         child: isFilled
-            ? Icon(Icons.star, color: color, size: 24)
+            ? Icon(
+                PhosphorIcons.star(PhosphorIconsStyle.fill),
+                color: color,
+                size: 24,
+              )
             : Text(
                 '$spotNum',
                 style: AppFonts.body(
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  color: emptyTextColor,
                   fontSize: 16,
                 ),
               ),

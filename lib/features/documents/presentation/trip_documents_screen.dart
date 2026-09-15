@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/documents_providers.dart';
 import '../data/documents_repository.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,11 +29,11 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
-      widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _card =>
-      widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   IconData _mimeIcon(TripDocument doc) {
     if (doc.isImage) return PhosphorIcons.image(PhosphorIconsStyle.fill);
@@ -44,10 +45,10 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
   }
 
   Color _mimeColor(TripDocument doc) {
-    if (doc.isImage) return const Color(0xFF3D8BFF);
-    if (doc.isPdf) return const Color(0xFFFF4444);
-    if (doc.mimeType.contains('word')) return const Color(0xFF3D8BFF);
-    return const Color(0xFF8B4DE8);
+    if (doc.isImage) return GenZTokens.blue;
+    if (doc.isPdf) return GenZTokens.danger;
+    if (doc.mimeType.contains('word')) return GenZTokens.blue;
+    return GenZTokens.purple;
   }
 
   void _showAddDialog() {
@@ -107,8 +108,10 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFF5822B),
+                    borderSide: BorderSide(
+                      color: widget.isDarkMode
+                          ? GenZTokens.purple
+                          : GenZTokens.orange,
                       width: 2,
                     ),
                   ),
@@ -128,8 +131,10 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFF5822B),
+                    borderSide: BorderSide(
+                      color: widget.isDarkMode
+                          ? GenZTokens.purple
+                          : GenZTokens.orange,
                       width: 2,
                     ),
                   ),
@@ -142,13 +147,15 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF5822B),
-                    foregroundColor: Colors.white,
+                    backgroundColor: widget.isDarkMode
+                        ? GenZTokens.purple
+                        : GenZTokens.orange,
+                    foregroundColor: GenZTokens.ink,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                       side: const BorderSide(
-                        color: Color(0xFF141210),
+                        color: GenZTokens.ink,
                         width: 2,
                       ),
                     ),
@@ -179,7 +186,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                     style: AppFonts.heading(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ),
@@ -222,21 +229,24 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
           HapticFeedback.selectionClick();
           _showAddDialog();
         },
-        backgroundColor: const Color(0xFFF5822B),
-        foregroundColor: Colors.white,
+        backgroundColor:
+            widget.isDarkMode ? GenZTokens.purple : GenZTokens.orange,
+        foregroundColor: GenZTokens.ink,
         icon: Icon(PhosphorIcons.uploadSimple()),
         label: Text(
           'documents.add'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: GenZTokens.ink,
           ),
         ),
       ),
       body: docsAsync.when(
         loading: () => Center(
-          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+          child: CircularProgressIndicator(
+            color: widget.isDarkMode ? GenZTokens.purple : GenZTokens.orange,
+          ),
         ),
         error: (e, _) => Center(
           child: Text(
@@ -339,7 +349,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                       IconButton(
                         icon: Icon(
                           PhosphorIcons.arrowSquareOut(),
-                          color: const Color(0xFF3D8BFF),
+                          color: GenZTokens.blue,
                           size: 20,
                         ),
                         onPressed: () async {
@@ -355,7 +365,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                       IconButton(
                         icon: Icon(
                           PhosphorIcons.trash(),
-                          color: Colors.red,
+                          color: GenZTokens.danger,
                           size: 20,
                         ),
                         onPressed: () async {
@@ -378,7 +388,9 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                                     'general.cancel'.tr(),
                                     style: AppFonts.body(
                                       fontSize: 14,
-                                      color: const Color(0xFFF5822B),
+                                      color: widget.isDarkMode
+                                          ? GenZTokens.purple
+                                          : GenZTokens.orange,
                                     ),
                                   ),
                                 ),
@@ -388,7 +400,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                                     'general.delete'.tr(),
                                     style: AppFonts.body(
                                       fontSize: 14,
-                                      color: Colors.red,
+                                      color: GenZTokens.danger,
                                     ),
                                   ),
                                 ),
