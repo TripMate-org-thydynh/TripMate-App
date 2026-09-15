@@ -1,12 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+
 import '../../../../core/widgets/gen_z_widgets.dart';
-import '../data/travel_atlas_repository.dart';
 import '../data/bucket_list_repository.dart';
+import '../data/travel_atlas_repository.dart';
 import '../domain/travel_stats.dart';
 
 class TravelAtlasScreen extends ConsumerStatefulWidget {
@@ -22,10 +24,11 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  bool get _isDark =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+  Color get _ink => _isDark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _bg => Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _surface => _isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
   @override
   void initState() {
@@ -57,7 +60,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
           decoration: InputDecoration(
             hintText: 'profile.atlas_bucket_hint'.tr(),
             hintStyle: AppFonts.body(
-              color: widget.isDarkMode
+              color: _isDark
                   ? GenZTokens.inkSoftDark
                   : GenZTokens.inkSoft,
             ),
@@ -69,7 +72,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             child: Text(
               'general.cancel'.tr(),
               style: AppFonts.body(
-                color: widget.isDarkMode
+                color: _isDark
                     ? GenZTokens.inkSoftDark
                     : GenZTokens.inkSoft,
               ),
@@ -108,7 +111,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             child: Text(
               'general.cancel'.tr(),
               style: AppFonts.body(
-                color: widget.isDarkMode
+                color: _isDark
                     ? GenZTokens.inkSoftDark
                     : GenZTokens.inkSoft,
               ),
@@ -145,7 +148,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
               backgroundColor: GenZTokens.green,
               foregroundColor: Colors.white,
               onPressed: _addBucketItem,
-              icon: const Icon(Icons.add),
+              icon: Icon(PhosphorIcons.plus()),
               label: Text(
                 'packing.add'.tr(),
                 style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -157,7 +160,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
         title: Text(
-          'Travel Atlas 🌍✨',
+          'profile.travel_atlas_title'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.w900,
             fontSize: 22,
@@ -167,7 +170,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
         bottom: TabBar(
           controller: _tabController,
           labelColor: _ink,
-          unselectedLabelColor: widget.isDarkMode
+          unselectedLabelColor: _isDark
               ? GenZTokens.inkSoftDark
               : GenZTokens.inkSoft,
           indicatorColor: GenZTokens.yellow,
@@ -179,7 +182,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
           tabs: [
             Tab(text: 'profile.tab_map'.tr()),
             Tab(text: 'profile.tab_achievements'.tr()),
-            Tab(text: 'Bucket List 📝'),
+            Tab(text: 'profile.bucket_list_tab'.tr()),
           ],
         ),
       ),
@@ -206,7 +209,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
           ),
           children: [
             TileLayer(
-              urlTemplate: widget.isDarkMode
+              urlTemplate: _isDark
                   ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
                   : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.tripmate.app',
@@ -231,8 +234,8 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                       child: Center(
                         child: Icon(
                           place.isCheckIn
-                              ? Icons.camera_alt
-                              : Icons.location_on,
+                              ? PhosphorIcons.camera(PhosphorIconsStyle.fill)
+                              : PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                           color: GenZTokens.red,
                           size: 22,
                         ),
@@ -261,7 +264,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             ),
             child: Row(
               children: [
-                const Icon(Icons.stars, color: GenZTokens.yellow, size: 24),
+                Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), color: GenZTokens.yellow, size: 24),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -303,7 +306,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const Text('🔥', style: TextStyle(fontSize: 44)),
+                Icon(PhosphorIcons.fire(PhosphorIconsStyle.fill), color: GenZTokens.orange, size: 44),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -490,8 +493,8 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                                 : Colors.grey,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.military_tech,
+                          child: Icon(
+                            PhosphorIcons.medal(PhosphorIconsStyle.fill),
                             color: GenZTokens.ink,
                             size: 24,
                           ),
@@ -517,7 +520,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                               style: AppFonts.body(
                                 fontSize: 12,
                                 color: badge.isUnlocked
-                                    ? (widget.isDarkMode
+                                    ? (_isDark
                                           ? GenZTokens.inkSoftDark
                                           : GenZTokens.inkSoft)
                                     : Colors.grey,
@@ -527,7 +530,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                         ),
                       ),
                       if (!badge.isUnlocked)
-                        const Icon(Icons.lock, size: 16, color: Colors.grey),
+                        Icon(PhosphorIcons.lockKey(), size: 16, color: Colors.grey),
                     ],
                   ),
                 );
@@ -592,8 +595,8 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: item.isCompleted
-                            ? const Icon(
-                                Icons.check,
+                            ? Icon(
+                                PhosphorIcons.check(PhosphorIconsStyle.bold),
                                 size: 16,
                                 color: GenZTokens.ink,
                               )
@@ -629,7 +632,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
     padding: const EdgeInsets.all(28),
     children: [
       const SizedBox(height: 40),
-      const Icon(Icons.checklist_rtl, size: 60, color: GenZTokens.green),
+      Icon(PhosphorIcons.listChecks(), size: 60, color: GenZTokens.green),
       const SizedBox(height: 16),
       Text(
         'atlas.bucket_empty'.tr(),
@@ -646,7 +649,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
         textAlign: TextAlign.center,
         style: AppFonts.body(
           fontSize: 14,
-          color: widget.isDarkMode
+          color: _isDark
               ? GenZTokens.inkSoftDark
               : GenZTokens.inkSoft,
         ),
@@ -660,9 +663,9 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),

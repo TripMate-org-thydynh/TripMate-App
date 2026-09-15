@@ -78,6 +78,34 @@ class ItineraryRepository {
     return ItineraryItem.fromJson((data as Map).cast<String, dynamic>());
   }
 
+  Future<ItineraryItem> update(
+    String tripId,
+    String id, {
+    int? day,
+    String? startTime,
+    String? placeName,
+    String? placeAddress,
+    int? durationMinutes,
+    String? notes,
+    String? category,
+    double? latitude,
+    double? longitude,
+  }) async {
+    final payload = <String, dynamic>{};
+    if (day != null) payload['day'] = day;
+    if (startTime != null) payload['startTime'] = startTime;
+    if (placeName != null) payload['placeName'] = placeName;
+    if (placeAddress != null) payload['placeAddress'] = placeAddress;
+    if (durationMinutes != null) payload['durationMinutes'] = durationMinutes;
+    if (notes != null) payload['notes'] = notes;
+    if (category != null) payload['category'] = category;
+    if (latitude != null) payload['latitude'] = latitude;
+    if (longitude != null) payload['longitude'] = longitude;
+
+    final data = await _client.patchData('${_base(tripId)}/$id', payload);
+    return ItineraryItem.fromJson((data as Map).cast<String, dynamic>());
+  }
+
   Future<void> delete(String tripId, String id) =>
       _client.deleteData('${_base(tripId)}/$id');
 }

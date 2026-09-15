@@ -1,5 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../../core/theme/gen_z_tokens.dart';
 
 /// Metadata hiển thị cho vibe chuyến đi (code lưu ở BE: CHILL, PARTY...).
 class TripVibe {
@@ -20,38 +23,38 @@ class TripVibe {
     'CHILL': TripVibe(
       'CHILL',
       'trips.vibe_chill',
-      Icons.cloud_outlined,
-      Color(0xFF06B6D4),
+      PhosphorIconsFill.cloud,
+      GenZTokens.blue,
     ),
     'PARTY': TripVibe(
       'PARTY',
       'trips.vibe_party',
-      Icons.celebration_outlined,
-      Color(0xFFD6248C),
+      PhosphorIconsFill.confetti,
+      GenZTokens.magenta,
     ),
     'ADVENTURE': TripVibe(
       'ADVENTURE',
       'trips.vibe_adventure',
-      Icons.terrain_outlined,
-      Color(0xFF1FA85C),
+      PhosphorIconsFill.mountains,
+      GenZTokens.green,
     ),
     'FOODIE': TripVibe(
       'FOODIE',
       'trips.vibe_foodie',
-      Icons.restaurant_outlined,
-      Color(0xFFF5822B),
+      PhosphorIconsFill.forkKnife,
+      GenZTokens.orange,
     ),
     'CULTURE': TripVibe(
       'CULTURE',
       'trips.vibe_culture',
-      Icons.account_balance_outlined,
-      Color(0xFF8B4DE8),
+      PhosphorIconsFill.bank,
+      GenZTokens.purple,
     ),
     'AESTHETIC': TripVibe(
       'AESTHETIC',
       'trips.vibe_aesthetic',
-      Icons.camera_alt_outlined,
-      Color(0xFFFFB020),
+      PhosphorIconsFill.cameraPlus,
+      GenZTokens.yellow,
     ),
   };
 

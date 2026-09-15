@@ -1,10 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../trip_planner/data/itinerary_repository.dart';
 import '../../../gamification/data/games_repository.dart';
 import '../../../trips/application/trips_providers.dart';
@@ -184,18 +186,18 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
     // va viet cung accent cua preset *grape*, nen doi theme khong an.
     final primaryColor = Theme.of(context).colorScheme.primary;
     final secondaryColor = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFFFFD84D);
+        ? GenZTokens.success
+        : GenZTokens.yellow;
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
     final surfaceColor = isDark
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
+        ? GenZTokens.paperDark
+        : GenZTokens.paper;
     final textColor = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
+        ? GenZTokens.inkDark
+        : GenZTokens.ink;
     final subTextColor = isDark
-        ? const Color(0xFFB8AE9C)
-        : const Color(0xFF4A453E);
+        ? GenZTokens.inkSoftDark
+        : GenZTokens.inkSoft;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.88,
@@ -211,17 +213,13 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             ),
             border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black,
+                  ? GenZTokens.paperDark
+                  : GenZTokens.ink,
               width: 2,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
-                blurRadius: 0,
-                offset: const Offset(0, -10),
-              ),
-            ],
+            boxShadow: GenZTokens.hardShadow(
+              isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            ),
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
@@ -270,25 +268,25 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             height: 88,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF1FA85C).withValues(alpha: 0.15),
-              border: Border.all(color: const Color(0xFF1FA85C), width: 2),
+              color: GenZTokens.success.withValues(alpha: 0.15),
+              border: Border.all(color: GenZTokens.success, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF1FA85C).withValues(alpha: 0.25),
+                  color: GenZTokens.success.withValues(alpha: 0.25),
                   blurRadius: 0,
                 ),
               ],
             ),
-            child: const Icon(
-              Icons.check_circle,
-              color: Color(0xFF1FA85C),
+            child: Icon(
+              PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+              color: GenZTokens.success,
               size: 54,
             ),
           ),
         ),
         const SizedBox(height: 28),
         Text(
-          'Added to Trip! ✨',
+          'itinerary.added_success'.tr(),
           style: AppFonts.heading(
             fontSize: 24,
             fontWeight: FontWeight.w900,
@@ -297,7 +295,13 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
         ),
         const SizedBox(height: 10),
         Text(
-          '${widget.placeName} scheduled for Day $_selectedDay at $_selectedTime.',
+          'itinerary.scheduled_desc'.tr(
+            namedArgs: {
+              'place': widget.placeName,
+              'day': '$_selectedDay',
+              'time': _selectedTime,
+            },
+          ),
           textAlign: TextAlign.center,
           style: AppFonts.body(
             fontSize: 14,
@@ -360,7 +364,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                       : Colors.black.withValues(alpha: 0.05),
                 ),
                 child: Icon(
-                  Icons.close,
+                  PhosphorIcons.x(),
                   size: 16,
                   color: textColor.withValues(alpha: 0.8),
                 ),
@@ -382,8 +386,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black,
+                  ? GenZTokens.paperDark
+                  : GenZTokens.ink,
               width: 2,
             ),
             boxShadow: [
@@ -456,7 +460,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.map_outlined, color: subTextColor, size: 12),
+                        Icon(PhosphorIcons.mapPin(), color: subTextColor, size: 12),
                         const SizedBox(width: 4),
                         Text(
                           widget.placeAddress.isNotEmpty
@@ -532,7 +536,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                   ),
                                 ),
                                 child: Text(
-                                  'Day $day',
+                                  'common.day_n'.tr(namedArgs: {'n': '$day'}),
                                   style: AppFonts.heading(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -620,8 +624,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: isDark
-                              ? Colors.white.withValues(alpha: 0.05)
-                              : Colors.black,
+                              ? GenZTokens.paperDark
+                              : GenZTokens.ink,
                           width: 2,
                         ),
                       ),
@@ -631,8 +635,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                         style: AppFonts.body(fontSize: 13, color: textColor),
                         decoration: InputDecoration(
                           hintText: 'itinerary.notes_hint'.tr(),
-                          hintStyle: const TextStyle(
-                            color: Colors.grey,
+                          hintStyle: TextStyle(
+                            color: subTextColor,
                             fontSize: 13,
                           ),
                           border: InputBorder.none,
@@ -683,22 +687,22 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                                        GenZTokens.ink,
                                       ),
                                     ),
                                   )
                                 : Row(
                                     children: [
-                                      const Icon(
-                                        Icons.add_circle_outline,
-                                        color: Colors.white,
+                                      Icon(
+                                        PhosphorIcons.plusCircle(),
+                                        color: GenZTokens.ink,
                                         size: 14,
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
                                         'itinerary.add_to_trip'.tr(),
                                         style: AppFonts.heading(
-                                          color: Colors.white,
+                                          color: GenZTokens.ink,
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),

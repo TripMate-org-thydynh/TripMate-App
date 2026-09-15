@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -59,7 +60,7 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
               if (past.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.history,
+                  icon: PhosphorIcons.clockCounterClockwise(),
                   title: 'profile.trip_history_empty_title'.tr(),
                   body: 'profile.trip_history_empty_body'.tr(),
                 );

@@ -4,9 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/journal_providers.dart';
 
-/// Màn nhật ký du lịch — feed kiểu tạp chí với mood emoji.
+/// Màn nhật ký du lịch — feed kiểu tạp chí với mood icon.
 class TripJournalScreen extends ConsumerStatefulWidget {
   final String tripId;
   final bool isDarkMode;
@@ -31,14 +32,14 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
     'EXCITED',
     'ANNOYED',
   ];
-  static const _moodEmoji = {
-    'HAPPY': '😄',
-    'CHILL': '😌',
-    'TIRED': '😴',
-    'WOW': '🤩',
-    'SAD': '😢',
-    'EXCITED': '🥳',
-    'ANNOYED': '😤',
+  static final _moodIcons = {
+    'HAPPY': PhosphorIcons.smiley(PhosphorIconsStyle.fill),
+    'CHILL': PhosphorIcons.coffee(PhosphorIconsStyle.fill),
+    'TIRED': PhosphorIcons.moon(PhosphorIconsStyle.fill),
+    'WOW': PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+    'SAD': PhosphorIcons.smileySad(PhosphorIconsStyle.fill),
+    'EXCITED': PhosphorIcons.confetti(PhosphorIconsStyle.fill),
+    'ANNOYED': PhosphorIcons.smileyAngry(PhosphorIconsStyle.fill),
   };
   static const _moodLabel = {
     'HAPPY': 'journal.mood_happy',
@@ -49,24 +50,24 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
     'EXCITED': 'journal.mood_excited',
     'ANNOYED': 'journal.mood_annoyed',
   };
-  static const _moodColors = {
-    'HAPPY': Color(0xFFFFD84D),
-    'CHILL': Color(0xFF7EC8E3),
-    'TIRED': Color(0xFFB8AE9C),
-    'WOW': Color(0xFFF5822B),
-    'SAD': Color(0xFF7EE8A2),
-    'EXCITED': Color(0xFFCF9FFF),
-    'ANNOYED': Color(0xFFFF7E7E),
+  static final _moodColors = {
+    'HAPPY': GenZTokens.yellow,
+    'CHILL': GenZTokens.blue,
+    'TIRED': GenZTokens.inkSoft,
+    'WOW': GenZTokens.orange,
+    'SAD': GenZTokens.green,
+    'EXCITED': GenZTokens.purple,
+    'ANNOYED': GenZTokens.red,
   };
 
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
-      widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _card =>
-      widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   void _showAddDialog() {
     final bodyCtrl = TextEditingController();
@@ -130,8 +131,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           lastDate: DateTime(2030),
                           builder: (context, child) => Theme(
                             data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: Color(0xFFF5822B),
+                              colorScheme: ColorScheme.light(
+                                primary: GenZTokens.orange,
                               ),
                             ),
                             child: child!,
@@ -159,7 +160,9 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               PhosphorIcons.calendarBlank(
                                 PhosphorIconsStyle.fill,
                               ),
-                              color: const Color(0xFFF5822B),
+                              color: widget.isDarkMode
+                                  ? GenZTokens.purple
+                                  : GenZTokens.orange,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
@@ -188,8 +191,10 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFF5822B),
+                          borderSide: BorderSide(
+                            color: widget.isDarkMode
+                                ? GenZTokens.purple
+                                : GenZTokens.orange,
                             width: 2,
                           ),
                         ),
@@ -213,8 +218,10 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFF5822B),
+                          borderSide: BorderSide(
+                            color: widget.isDarkMode
+                                ? GenZTokens.purple
+                                : GenZTokens.orange,
                             width: 2,
                           ),
                         ),
@@ -239,7 +246,9 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       children: _moods.map((mood) {
                         final selected = mood == selectedMood;
                         final color =
-                            _moodColors[mood] ?? const Color(0xFFF5822B);
+                            _moodColors[mood] ?? GenZTokens.orange;
+                        final iconData =
+                            _moodIcons[mood] ?? PhosphorIcons.smiley();
                         return GestureDetector(
                           onTap: () => setModalState(() => selectedMood = mood),
                           child: AnimatedContainer(
@@ -251,28 +260,39 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                             decoration: BoxDecoration(
                               color: selected
                                   ? color
-                                  : color.withValues(alpha: 0.1),
+                                  : color.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(99),
                               border: Border.all(
                                 color: selected
-                                    ? color
-                                    : color.withValues(alpha: 0.3),
+                                    ? _ink
+                                    : _ink.withValues(alpha: 0.2),
                                 width: selected ? 2 : 1,
                               ),
                             ),
-                            child: Text(
-                              '${_moodEmoji[mood]} ${_moodLabel[mood]!.tr()}',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: selected
-                                    ? FontWeight.w800
-                                    : FontWeight.w500,
-                                color: selected
-                                    ? (color.computeLuminance() > 0.5
-                                          ? const Color(0xFF141210)
-                                          : Colors.white)
-                                    : color,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  iconData,
+                                  size: 15,
+                                  color: selected
+                                      ? GenZTokens.ink
+                                      : color,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  _moodLabel[mood]!.tr(),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: selected
+                                        ? FontWeight.w800
+                                        : FontWeight.w500,
+                                    color: selected
+                                        ? GenZTokens.ink
+                                        : color,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );
@@ -283,13 +303,13 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF5822B),
-                          foregroundColor: Colors.white,
+                          backgroundColor: GenZTokens.orange,
+                          foregroundColor: GenZTokens.ink,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
-                            side: const BorderSide(
-                              color: Color(0xFF141210),
+                            side: BorderSide(
+                              color: _ink,
                               width: 2,
                             ),
                           ),
@@ -317,7 +337,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           style: AppFonts.heading(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
-                            color: Colors.white,
+                            color: GenZTokens.ink,
                           ),
                         ),
                       ),
@@ -363,21 +383,21 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
           HapticFeedback.selectionClick();
           _showAddDialog();
         },
-        backgroundColor: const Color(0xFFF5822B),
-        foregroundColor: Colors.white,
+        backgroundColor: GenZTokens.orange,
+        foregroundColor: GenZTokens.ink,
         icon: Icon(PhosphorIcons.pencil()),
         label: Text(
           'journal.write_short'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: GenZTokens.ink,
           ),
         ),
       ),
       body: entriesAsync.when(
         loading: () => Center(
-          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+          child: CircularProgressIndicator(color: GenZTokens.orange),
         ),
         error: (e, _) => Center(
           child: Text(
@@ -425,7 +445,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
             itemBuilder: (context, i) {
               final entry = entries[i];
               final moodColor =
-                  _moodColors[entry.mood] ?? const Color(0xFFF5822B);
+                  _moodColors[entry.mood] ?? GenZTokens.orange;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
@@ -484,8 +504,15 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
+                              Icon(
+                                _moodIcons[entry.mood] ??
+                                    PhosphorIcons.smiley(),
+                                size: 16,
+                                color: moodColor,
+                              ),
+                              const SizedBox(width: 4),
                               Text(
-                                '${_moodEmoji[entry.mood]} ${_moodLabel[entry.mood]!.tr()}',
+                                _moodLabel[entry.mood]!.tr(),
                                 style: AppFonts.heading(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
@@ -496,7 +523,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               IconButton(
                                 icon: Icon(
                                   PhosphorIcons.trash(),
-                                  color: Colors.red.withValues(alpha: 0.7),
+                                  color: GenZTokens.danger,
                                   size: 18,
                                 ),
                                 padding: EdgeInsets.zero,
@@ -522,7 +549,9 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                             'general.cancel'.tr(),
                                             style: AppFonts.body(
                                               fontSize: 14,
-                                              color: const Color(0xFFF5822B),
+                                              color: widget.isDarkMode
+                                                  ? GenZTokens.purple
+                                                  : GenZTokens.orange,
                                             ),
                                           ),
                                         ),
@@ -533,7 +562,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                             'general.delete'.tr(),
                                             style: AppFonts.body(
                                               fontSize: 14,
-                                              color: Colors.red,
+                                              color: GenZTokens.danger,
                                             ),
                                           ),
                                         ),

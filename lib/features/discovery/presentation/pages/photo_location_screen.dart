@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/api_service.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
@@ -145,11 +146,11 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                             width: 54,
                             height: 54,
                             child: Icon(
-                              Icons.location_on,
+                              PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                               size: 54,
                               color: GenZTokens.red,
-                              shadows: const [
-                                Shadow(color: Colors.black45, blurRadius: 4),
+                              shadows: [
+                                Shadow(color: GenZTokens.ink.withValues(alpha: 0.45), blurRadius: 4),
                               ],
                             ),
                           ),
@@ -229,7 +230,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                   children: [
                     Expanded(
                       child: _pickBtn(
-                        icon: Icons.photo_library_rounded,
+                        icon: PhosphorIcons.image(),
                         label: 'common.gallery'.tr(),
                         color: GenZTokens.yellow,
                         onTap: () => _pick(ImageSource.gallery),
@@ -238,7 +239,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _pickBtn(
-                        icon: Icons.camera_alt_rounded,
+                        icon: PhosphorIcons.camera(),
                         label: 'general.capture'.tr(),
                         color: GenZTokens.lilac,
                         onTap: () => _pick(ImageSource.camera),

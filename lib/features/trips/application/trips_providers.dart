@@ -97,6 +97,18 @@ class TripsNotifier extends AsyncNotifier<List<Trip>> {
     ref.invalidate(tripDetailProvider(id));
     return trip;
   }
+
+  Future<void> deleteTrip(String id) async {
+    await ref.read(tripsRepositoryProvider).deleteTrip(id);
+    await refresh();
+    ref.invalidate(tripDetailProvider(id));
+  }
+
+  Future<void> leaveTrip(String id) async {
+    await ref.read(tripsRepositoryProvider).leaveTrip(id);
+    await refresh();
+    ref.invalidate(tripDetailProvider(id));
+  }
 }
 
 final tripsProvider = AsyncNotifierProvider<TripsNotifier, List<Trip>>(

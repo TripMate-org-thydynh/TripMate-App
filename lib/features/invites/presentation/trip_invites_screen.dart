@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/invites_providers.dart';
 import '../data/invites_repository.dart';
 
@@ -29,11 +30,11 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
-      widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _card =>
-      widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   void _showCreateDialog() {
     String? selectedExpiry; // null = no expiry, '1h', '24h', '7d'
@@ -159,13 +160,13 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF5822B),
-                      foregroundColor: Colors.white,
+                      backgroundColor: GenZTokens.orange,
+                      foregroundColor: GenZTokens.ink,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
-                        side: const BorderSide(
-                          color: Color(0xFF141210),
+                        side: BorderSide(
+                          color: _ink,
                           width: 2,
                         ),
                       ),
@@ -205,7 +206,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                       style: AppFonts.heading(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: GenZTokens.ink,
                       ),
                     ),
                   ),
@@ -226,13 +227,13 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? const Color(0xFFF5822B)
-              : const Color(0xFFF5822B).withValues(alpha: 0.1),
+              ? GenZTokens.orange
+              : GenZTokens.orange.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(99),
           border: Border.all(
             color: selected
-                ? const Color(0xFFF5822B)
-                : const Color(0xFFF5822B).withValues(alpha: 0.3),
+                ? _ink
+                : _ink.withValues(alpha: 0.2),
             width: selected ? 2 : 1,
           ),
         ),
@@ -241,7 +242,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-            color: selected ? Colors.white : const Color(0xFFF5822B),
+            color: selected ? GenZTokens.ink : _textSec,
           ),
         ),
       ),
@@ -289,21 +290,21 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
           HapticFeedback.selectionClick();
           _showCreateDialog();
         },
-        backgroundColor: const Color(0xFFF5822B),
-        foregroundColor: Colors.white,
+        backgroundColor: GenZTokens.orange,
+        foregroundColor: GenZTokens.ink,
         icon: Icon(PhosphorIcons.link()),
         label: Text(
           'invites.create_short'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: GenZTokens.ink,
           ),
         ),
       ),
       body: invitesAsync.when(
         loading: () => Center(
-          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+          child: CircularProgressIndicator(color: GenZTokens.orange),
         ),
         error: (e, _) => Center(
           child: Text(
@@ -353,8 +354,8 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
               final isValid =
                   invite.isActive && !invite.isExpired && !invite.isExhausted;
               final statusColor = isValid
-                  ? const Color(0xFF1FA85C)
-                  : Colors.red;
+                  ? GenZTokens.success
+                  : GenZTokens.danger;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
@@ -386,7 +387,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                             style: AppFonts.mono(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFF5822B),
+                              color: GenZTokens.orange,
                             ),
                           ),
                         ),
@@ -464,16 +465,16 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           Expanded(
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFF5822B),
-                                foregroundColor: Colors.white,
+                                backgroundColor: GenZTokens.orange,
+                                foregroundColor: GenZTokens.ink,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 10,
                                   horizontal: 16,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  side: const BorderSide(
-                                    color: Color(0xFF141210),
+                                  side: BorderSide(
+                                    color: _ink,
                                     width: 1.5,
                                   ),
                                 ),
@@ -489,7 +490,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                                 style: AppFonts.heading(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
-                                  color: Colors.white,
+                                  color: GenZTokens.ink,
                                 ),
                               ),
                             ),
@@ -517,7 +518,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                         IconButton(
                           icon: Icon(
                             PhosphorIcons.trash(),
-                            color: Colors.red,
+                            color: GenZTokens.danger,
                             size: 20,
                           ),
                           onPressed: () async {

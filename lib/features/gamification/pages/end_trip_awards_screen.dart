@@ -1,14 +1,15 @@
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'package:flutter/material.dart';
-
-import '../../../core/theme/gen_z_tokens.dart';
-import 'package:share_plus/share_plus.dart';
-import '../../../core/widgets/state_views.dart';
-import '../data/games_repository.dart';
-import '../../trips/application/trips_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+
 import '../../../core/app_messenger.dart';
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../../trips/application/trips_providers.dart';
+import '../data/games_repository.dart';
 
 class EndTripAwardsScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -43,7 +44,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       return;
     }
     final lines = awards
-        .map((a) => '${a['emoji']} ${a['label']}: ${a['winner']}')
+        .map((a) => '${a['label']}: ${a['winner']}')
         .join('\n');
     await Share.share(
       '${tr('games.awards_title')}\n$lines',
@@ -66,7 +67,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     final defs = <Map<String, dynamic>>[];
 
     void add(
-      String emoji,
+      IconData icon,
       String labelKey,
       String descKey,
       Color color,
@@ -75,7 +76,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     ) {
       if (winner == null) return;
       defs.add({
-        'emoji': emoji,
+        'icon': icon,
         'label': tr(labelKey),
         'winner': winner.name,
         'desc': tr(descKey, namedArgs: {'count': '$count'}),
@@ -85,40 +86,40 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
 
     final photographer = topBy((r) => r.moments);
     add(
-      '📸',
+      PhosphorIcons.camera(PhosphorIconsStyle.fill),
       'games.award_photographer',
       'games.award_photographer_desc',
-      const Color(0xFFC9B8FF),
+      GenZTokens.lilac,
       photographer,
       photographer?.moments ?? 0,
     );
 
     final sponsor = topBy((r) => r.expenses);
     add(
-      '💸',
+      PhosphorIcons.money(PhosphorIconsStyle.fill),
       'games.award_sponsor',
       'games.award_sponsor_desc',
-      const Color(0xFF1FA85C),
+      GenZTokens.green,
       sponsor,
       sponsor?.expenses ?? 0,
     );
 
     final planner = topBy((r) => r.plans);
     add(
-      '🗺️',
+      PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
       'games.award_planner',
       'games.award_planner_desc',
-      const Color(0xFFFFC107),
+      GenZTokens.yellow,
       planner,
       planner?.plans ?? 0,
     );
 
     final scribe = topBy((r) => r.notes);
     add(
-      '📝',
+      PhosphorIcons.notepad(PhosphorIconsStyle.fill),
       'games.award_scribe',
       'games.award_scribe_desc',
-      const Color(0xFF64B5F6),
+      GenZTokens.blue,
       scribe,
       scribe?.notes ?? 0,
     );
@@ -126,10 +127,10 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     // Giải chung cuộc cho người đóng góp nhiều XP nhất.
     final mvp = rows.first.xp > 0 ? rows.first : null;
     add(
-      '🏆',
+      PhosphorIcons.trophy(PhosphorIconsStyle.fill),
       'games.award_mvp',
       'games.award_mvp_desc',
-      const Color(0xFFFF6B6B),
+      GenZTokens.red,
       mvp,
       mvp?.xp ?? 0,
     );
@@ -213,32 +214,28 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     final awards = _buildAwards(rows);
     if (awards.isEmpty) {
       return Scaffold(
-        backgroundColor: isDark
-            ? const Color(0xFF0A0A1A)
-            : const Color(0xFFF0F0FF),
+        backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: IconThemeData(
-            color: isDark ? Colors.white : Colors.black87,
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
           ),
         ),
         body: AppEmptyState(
           isDark: isDark,
-          icon: Icons.emoji_events_outlined,
+          icon: PhosphorIcons.trophy(),
           title: tr('games.awards_empty_title'),
           body: tr('games.awards_empty_body'),
         ),
       );
     }
-    final bg = Theme.of(context).scaffoldBackgroundColor;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     // Nen the mo (trang alpha 0.7) tung lam noi dung the khong duoc ve ra
     // tren may — dung mau surface dac cua design token.
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A2E);
-    final textSecondary = isDark
-        ? Colors.white.withValues(alpha: 0.6)
-        : const Color(0xFF1A1A2E).withValues(alpha: 0.6);
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Scaffold(
       backgroundColor: bg,
@@ -251,7 +248,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
             child: Container(
               width: 350,
               height: 350,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.transparent,
               ),
@@ -263,7 +260,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
             child: Container(
               width: 280,
               height: 280,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.transparent,
               ),
@@ -282,15 +279,15 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                   child: Row(
                     children: [
                       _buildGlassButton(
-                        icon: Icons.arrow_back,
+                        icon: PhosphorIcons.arrowLeft(),
                         onTap: () => Navigator.pop(context),
                         isDark: isDark,
                       ),
                       const Spacer(),
                       _buildGlassButton(
                         icon: isDark
-                            ? Icons.light_mode_outlined
-                            : Icons.dark_mode_outlined,
+                            ? PhosphorIcons.sun()
+                            : PhosphorIcons.moon(),
                         onTap: widget.onThemeToggle ?? () {},
                         isDark: isDark,
                       ),
@@ -315,13 +312,10 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: const Color(
-                                0xFFC9B8FF,
-                              ).withValues(alpha: 0.5),
+                              color: GenZTokens.lilac.withValues(alpha: 0.5),
                             ),
-                            color: const Color(
-                              0xFFC9B8FF,
-                            ).withValues(alpha: isDark ? 0.1 : 0.2),
+                            color: GenZTokens.lilac
+                                .withValues(alpha: isDark ? 0.1 : 0.2),
                           ),
                           child: Text(
                             'games.trip_wrapped'.tr(),
@@ -329,7 +323,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                               fontSize: 12,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 2,
-                              color: const Color(0xFFC9B8FF),
+                              color: GenZTokens.lilac,
                             ),
                           ),
                         ),
@@ -348,19 +342,28 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                             height: 90,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Color(0xFFFFD700),
+                              color: GenZTokens.yellow,
+                              border: Border.all(
+                                color: isDark
+                                    ? GenZTokens.inkDark
+                                    : GenZTokens.ink,
+                                width: GenZTokens.borderWidthThin,
+                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(
-                                    0xFFFFD700,
-                                  ).withValues(alpha: 0.4),
+                                  color: GenZTokens.yellow
+                                      .withValues(alpha: 0.4),
                                   blurRadius: 0,
                                   spreadRadius: 5,
                                 ),
                               ],
                             ),
-                            child: const Center(
-                              child: Text('🏆', style: TextStyle(fontSize: 44)),
+                            child: Center(
+                              child: Icon(
+                                PhosphorIcons.trophy(PhosphorIconsStyle.fill),
+                                color: GenZTokens.ink,
+                                size: 44,
+                              ),
                             ),
                           ),
                         ),
@@ -416,14 +419,21 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                             height: 58,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(100),
-                              color: const Color(0xFFC9B8FF),
+                              color: GenZTokens.yellow,
+                              border: Border.all(
+                                color: isDark
+                                    ? GenZTokens.inkDark
+                                    : GenZTokens.ink,
+                                width: GenZTokens.borderWidthThin,
+                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(
-                                    0xFFC9B8FF,
-                                  ).withValues(alpha: 0.4),
+                                  color: (isDark
+                                          ? GenZTokens.inkDark
+                                          : GenZTokens.ink)
+                                      .withValues(alpha: 0.3),
                                   blurRadius: 0,
-                                  offset: const Offset(0, 6),
+                                  offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
@@ -438,9 +448,11 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const Icon(
-                                        Icons.share,
-                                        color: Colors.black87,
+                                      Icon(
+                                        PhosphorIcons.shareNetwork(
+                                          PhosphorIconsStyle.bold,
+                                        ),
+                                        color: GenZTokens.ink,
                                         size: 20,
                                       ),
                                       const SizedBox(width: 8),
@@ -449,7 +461,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                                         style: AppFonts.heading(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
-                                          color: Colors.black87,
+                                          color: GenZTokens.ink,
                                         ),
                                       ),
                                     ],
@@ -510,9 +522,10 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
                   ],
                 ),
                 child: Center(
-                  child: Text(
-                    award['emoji'] as String,
-                    style: const TextStyle(fontSize: 26),
+                  child: Icon(
+                    award['icon'] as IconData,
+                    color: accentColor,
+                    size: 26,
                   ),
                 ),
               ),
@@ -584,20 +597,16 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
           height: 42,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.08)
-                : Colors.black.withValues(alpha: 0.05),
+            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
             border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.12)
-                  : Colors.black,
-              width: 2,
+              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+              width: GenZTokens.borderWidthThin,
             ),
           ),
           child: Icon(
             icon,
             size: 20,
-            color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
           ),
         ),
       ),

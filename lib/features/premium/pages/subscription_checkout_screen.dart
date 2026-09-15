@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/api_service.dart';
@@ -428,10 +429,15 @@ class _SubscriptionCheckoutScreenState
   }
 
   void _showSuccess() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final accent = isDark ? GenZTokens.lilac : GenZTokens.purple;
+
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: isDark ? GenZTokens.paperDark : GenZTokens.paper,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -442,13 +448,21 @@ class _SubscriptionCheckoutScreenState
                 shape: BoxShape.circle,
                 color: GenZTokens.success,
               ),
-              child: const Icon(Icons.check, color: Colors.white, size: 40),
+              child: Icon(
+                PhosphorIcons.check(PhosphorIconsStyle.bold),
+                color: GenZTokens.ink,
+                size: 36,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
               'premium.joined_elite'.tr(),
               textAlign: TextAlign.center,
-              style: AppFonts.heading(fontSize: 18, fontWeight: FontWeight.w800),
+              style: AppFonts.heading(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: ink,
+              ),
             ),
           ],
         ),
@@ -458,7 +472,13 @@ class _SubscriptionCheckoutScreenState
               Navigator.pop(ctx);
               Navigator.pop(context, true);
             },
-            child: Text('common.got_it'.tr()),
+            child: Text(
+              'common.got_it'.tr(),
+              style: AppFonts.heading(
+                color: accent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -471,7 +491,7 @@ class _SubscriptionCheckoutScreenState
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -500,7 +520,7 @@ class _SubscriptionCheckoutScreenState
     if (_gateways.isEmpty) {
       return AppEmptyState(
         isDark: isDark,
-        icon: Icons.storefront_outlined,
+        icon: PhosphorIcons.storefront(),
         title: 'premium.not_on_sale'.tr(),
         body: 'premium.not_on_sale_2'.tr(),
       );
@@ -652,8 +672,8 @@ class _SubscriptionCheckoutScreenState
             children: [
               Icon(
                 selected
-                    ? Icons.radio_button_checked
-                    : Icons.radio_button_unchecked,
+                    ? PhosphorIcons.radioButton(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.circle(),
                 color: selected ? GenZTokens.ink : inkSoft,
                 size: 20,
               ),
@@ -717,10 +737,10 @@ class _SubscriptionCheckoutScreenState
         ),
         child: Text(
           switch (gateway) {
-            'SEPAY' => 'VietQR 🏦',
-            'MOMO' => 'MoMo 💸',
-            'ZALOPAY' => 'ZaloPay ⚡',
-            'GOOGLE_PLAY' => 'Google Play ▶️',
+            'SEPAY' => 'VietQR',
+            'MOMO' => 'MoMo',
+            'ZALOPAY' => 'ZaloPay',
+            'GOOGLE_PLAY' => 'Google Play',
             _ => gateway,
           },
           style: AppFonts.heading(
@@ -744,8 +764,13 @@ class _SubscriptionCheckoutScreenState
         child: ElevatedButton(
           onPressed: _processing || price == null ? null : _buy,
           style: ElevatedButton.styleFrom(
-            backgroundColor: GenZTokens.ink,
-            foregroundColor: GenZTokens.cream,
+            backgroundColor: GenZTokens.yellow,
+            foregroundColor: GenZTokens.ink,
+            elevation: 0,
+            side: BorderSide(
+              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+              width: GenZTokens.borderWidth,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
             ),
@@ -756,7 +781,7 @@ class _SubscriptionCheckoutScreenState
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: GenZTokens.cream,
+                    color: GenZTokens.ink,
                   ),
                 )
               : Text(
@@ -766,6 +791,7 @@ class _SubscriptionCheckoutScreenState
                   style: AppFonts.heading(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
+                    color: GenZTokens.ink,
                   ),
                 ),
         ),
@@ -778,8 +804,13 @@ class _SubscriptionCheckoutScreenState
       child: ElevatedButton(
         onPressed: _processing ? null : _buy,
         style: ElevatedButton.styleFrom(
-          backgroundColor: GenZTokens.ink,
-          foregroundColor: GenZTokens.cream,
+          backgroundColor: GenZTokens.yellow,
+          foregroundColor: GenZTokens.ink,
+          elevation: 0,
+          side: BorderSide(
+            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            width: GenZTokens.borderWidth,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
           ),
@@ -790,7 +821,7 @@ class _SubscriptionCheckoutScreenState
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: GenZTokens.cream,
+                  color: GenZTokens.ink,
                 ),
               )
             : Text(
@@ -800,6 +831,7 @@ class _SubscriptionCheckoutScreenState
                 style: AppFonts.heading(
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
+                  color: GenZTokens.ink,
                 ),
               ),
       ),
@@ -829,7 +861,11 @@ class _SubscriptionCheckoutScreenState
         ),
         child: Row(
           children: [
-            const Icon(Icons.local_offer, size: 18, color: GenZTokens.ink),
+            Icon(
+              PhosphorIcons.tag(PhosphorIconsStyle.fill),
+              size: 18,
+              color: GenZTokens.ink,
+            ),
             const SizedBox(width: GenZTokens.space3),
             Expanded(
               child: Column(
@@ -860,7 +896,7 @@ class _SubscriptionCheckoutScreenState
             // Gỡ mã phải dễ như áp mã.
             IconButton(
               onPressed: _clearPromo,
-              icon: const Icon(Icons.close, size: 18, color: GenZTokens.ink),
+              icon: Icon(PhosphorIcons.x(), size: 18, color: GenZTokens.ink),
               tooltip: 'premium.promo_remove'.tr(),
             ),
           ],

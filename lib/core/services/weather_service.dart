@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../theme/gen_z_tokens.dart';
 
 class WeatherData {
@@ -131,49 +132,57 @@ class WeatherService {
     if (code == 0) {
       return _WmoMapping(
         'weather.clear'.tr(),
-        Icons.wb_sunny_outlined,
+        PhosphorIcons.sun(),
         GenZTokens.yellow,
       );
     } else if ([1, 2, 3].contains(code)) {
       return _WmoMapping(
         'weather.cond_scattered_clouds'.tr(),
-        Icons.cloud_queue_outlined,
+        PhosphorIcons.cloud(),
         GenZTokens.lilac,
       );
     } else if ([45, 48].contains(code)) {
       return _WmoMapping(
         'weather.fog'.tr(),
-        Icons.filter_drama_outlined,
+        PhosphorIcons.cloudFog(),
         GenZTokens.lilac,
       );
     } else if ([51, 53, 55].contains(code)) {
       return _WmoMapping(
         'weather.drizzle'.tr(),
-        Icons.water_drop_outlined,
+        PhosphorIcons.drop(),
         GenZTokens.blue,
       );
     } else if ([61, 63, 65].contains(code)) {
       return _WmoMapping(
         'weather.cond_rain'.tr(),
-        Icons.umbrella_outlined,
+        PhosphorIcons.umbrella(),
         GenZTokens.blue,
       );
     } else if ([71, 73, 75, 77, 85, 86].contains(code)) {
       return _WmoMapping(
         'weather.cond_snow'.tr(),
-        Icons.ac_unit_outlined,
+        PhosphorIcons.snowflake(),
         GenZTokens.blue,
       );
     } else if ([80, 81, 82].contains(code)) {
       return _WmoMapping(
         'weather.cond_showers'.tr(),
-        Icons.thunderstorm_outlined,
+        PhosphorIcons.cloudRain(),
         GenZTokens.blue,
       );
     } else if ([95, 96, 99].contains(code)) {
-      return _WmoMapping('weather.thunderstorm'.tr(), Icons.thunderstorm, GenZTokens.red);
+      return _WmoMapping(
+        'weather.thunderstorm'.tr(),
+        PhosphorIcons.lightning(),
+        GenZTokens.red,
+      );
     }
-    return _WmoMapping('common.unknown'.tr(), Icons.help_outline, GenZTokens.lilac);
+    return _WmoMapping(
+      'common.unknown'.tr(),
+      PhosphorIcons.question(),
+      GenZTokens.lilac,
+    );
   }
 }
 

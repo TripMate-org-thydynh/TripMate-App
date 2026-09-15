@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../application/moments_providers.dart';
 import '../../domain/moment.dart';
 
@@ -19,21 +20,19 @@ class TripMomentsFeedScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
+  bool _isDark(BuildContext context) =>
+      isDarkMode || Theme.of(context).brightness == Brightness.dark;
+
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  /// Accent lấy từ theme đang chọn.
-  ///
-  /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
-  /// nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
-  /// Nguoi dung o mint (vang) van thay man nay mau cam, va doi theme khong
-  /// an. Doc tu `colorScheme` de mau di theo lua chon that.
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surfaceOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
-  Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+  Color _textPri(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSec(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   void _react(WidgetRef ref, String momentId) {
     HapticFeedback.mediumImpact();
@@ -53,7 +52,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
-            color: _textPri,
+            color: _textPri(context),
           ),
         ),
       ),
@@ -61,7 +60,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
         color: _primaryOf(context),
         onRefresh: () async => ref.invalidate(momentsProvider(tripId)),
         child: async.when(
-          loading: () => _skeleton(),
+          loading: () => _skeleton(context),
           error: (e, _) => _error(context, ref, e),
           data: (moments) => moments.isEmpty
               ? _empty(context)
@@ -75,7 +74,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
     );
   }
 
-  Widget _skeleton() => ListView(
+  Widget _skeleton(BuildContext context) => ListView(
     padding: const EdgeInsets.all(16),
     children: List.generate(
       3,
@@ -83,9 +82,8 @@ class TripMomentsFeedScreen extends ConsumerWidget {
         height: 280,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.04),
+          color: (_isDark(context) ? GenZTokens.inkDark : GenZTokens.ink)
+              .withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(20),
         ),
       ),
@@ -98,9 +96,9 @@ class TripMomentsFeedScreen extends ConsumerWidget {
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -108,14 +106,17 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               'moments.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
-                color: _textPri,
+                color: _textPri(context),
               ),
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
+              style: FilledButton.styleFrom(
+                backgroundColor: _primaryOf(context),
+                foregroundColor: GenZTokens.ink,
+              ),
               onPressed: () => ref.invalidate(momentsProvider(tripId)),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text('general.retry'.tr()),
             ),
           ],
@@ -149,13 +150,13 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w900,
-                color: _textPri,
+                color: _textPri(context),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'moments.empty_sub'.tr(),
-              style: AppFonts.body(fontSize: 14, color: _textSec),
+              style: AppFonts.body(fontSize: 14, color: _textSec(context)),
             ),
           ],
         ),
@@ -167,12 +168,12 @@ class TripMomentsFeedScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: _surface,
+        color: _surfaceOf(context),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.black,
+          color: _isDark(context)
+              ? GenZTokens.inkDark.withValues(alpha: 0.12)
+              : GenZTokens.ink,
           width: 2,
         ),
       ),
@@ -194,8 +195,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                       ? Text(
                           m.authorName.characters.first,
                           style: AppFonts.heading(
-                            // Accent chi hop lam nen; lam mau chu tren nen sang thi khong doc ra.
-                            color: _textPri,
+                            color: _textPri(context),
                             fontWeight: FontWeight.w800,
                           ),
                         )
@@ -208,12 +208,16 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                     style: AppFonts.heading(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: _textPri,
+                      color: _textPri(context),
                     ),
                   ),
                 ),
                 if (m.isGhost)
-                  Icon(PhosphorIcons.ghost(), size: 18, color: _textSec),
+                  Icon(
+                    PhosphorIcons.ghost(),
+                    size: 18,
+                    color: _textSec(context),
+                  ),
               ],
             ),
           ),
@@ -227,7 +231,11 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                   Container(color: _primaryOf(context).withValues(alpha: 0.08)),
               errorWidget: (c, url, err) => Container(
                 color: _primaryOf(context).withValues(alpha: 0.08),
-                child: Icon(PhosphorIcons.image(), color: _primaryOf(context), size: 40),
+                child: Icon(
+                  PhosphorIcons.image(),
+                  color: _primaryOf(context),
+                  size: 40,
+                ),
               ),
             ),
           ),
@@ -251,18 +259,22 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                         style: AppFonts.body(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: _textPri,
+                          color: _textPri(context),
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 18),
-                Icon(PhosphorIcons.chatCircle(), color: _textSec, size: 20),
+                Icon(
+                  PhosphorIcons.chatCircle(),
+                  color: _textSec(context),
+                  size: 20,
+                ),
                 const SizedBox(width: 5),
                 Text(
                   '${m.commentCount}',
-                  style: AppFonts.body(fontSize: 13, color: _textSec),
+                  style: AppFonts.body(fontSize: 13, color: _textSec(context)),
                 ),
               ],
             ),
@@ -274,7 +286,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                 m.caption!,
                 style: AppFonts.body(
                   fontSize: 14,
-                  color: _textPri,
+                  color: _textPri(context),
                   height: 1.3,
                 ),
               ),

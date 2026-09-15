@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -24,7 +25,8 @@ class BadgeDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = isDarkMode;
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
@@ -51,7 +53,9 @@ class BadgeDetailScreen extends StatelessWidget {
             child: Column(
               children: [
                 Icon(
-                  badge.unlocked ? Icons.emoji_events : Icons.lock_outline,
+                  badge.unlocked
+                      ? PhosphorIcons.trophy(PhosphorIconsStyle.fill)
+                      : PhosphorIcons.lockKey(),
                   size: 56,
                   color: badge.unlocked ? GenZTokens.ink : inkSoft,
                 ),

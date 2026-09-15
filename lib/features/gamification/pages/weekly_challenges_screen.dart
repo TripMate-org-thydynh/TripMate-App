@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../data/games_repository.dart';
 import '../widgets/challenge_list_view.dart';
@@ -11,7 +12,7 @@ class WeeklyChallengesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChallengeListScreen(
       titleKey: 'games.weekly_title',
-      emptyIcon: Icons.bolt_outlined,
+      emptyIcon: PhosphorIcons.lightning(),
       provider: weeklyChallengesProvider,
     );
   }

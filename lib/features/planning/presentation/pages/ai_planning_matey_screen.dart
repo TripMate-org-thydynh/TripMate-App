@@ -2,9 +2,11 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../premium/presentation/paywall_sheet.dart';
 import '../../../ai/data/ai_repository.dart';
 import '../../../gamification/data/games_repository.dart';
@@ -43,13 +45,44 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   late AnimationController _pulseController;
   late AnimationController _glowController;
 
-  final List<Map<String, String>> _allParams = [
-    {'name': '3-Day Weekend Trip', 'emoji': '📅'},
-    {'name': 'Deep Chill', 'emoji': '🌿'},
-    {'name': 'High Energy', 'emoji': '🔥'},
-    {'name': 'Nature Focus', 'emoji': '🏕'},
-    {'name': 'City Exploration', 'emoji': '🌃'},
+  final List<Map<String, dynamic>> _allParams = [
+    {
+      'name': '3-Day Weekend Trip',
+      'labelKey': 'ai.param_weekend_trip',
+      'icon': PhosphorIcons.calendarBlank(),
+    },
+    {
+      'name': 'Deep Chill',
+      'labelKey': 'ai.param_deep_chill',
+      'icon': PhosphorIcons.leaf(),
+    },
+    {
+      'name': 'High Energy',
+      'labelKey': 'ai.param_high_energy',
+      'icon': PhosphorIcons.fire(),
+    },
+    {
+      'name': 'Nature Focus',
+      'labelKey': 'ai.param_nature_focus',
+      'icon': PhosphorIcons.tent(),
+    },
+    {
+      'name': 'City Exploration',
+      'labelKey': 'ai.param_city_exploration',
+      'icon': PhosphorIcons.buildings(),
+    },
   ];
+
+  String _displayParamName(String name) {
+    final found = _allParams.firstWhere(
+      (p) => p['name'] == name,
+      orElse: () => {},
+    );
+    if (found.isNotEmpty && (found['labelKey'] as String? ?? '').isNotEmpty) {
+      return (found['labelKey'] as String).tr();
+    }
+    return name;
+  }
 
   /// Hoạt động do AI trả về — rỗng cho tới khi người dùng bấm nút.
   List<Map<String, dynamic>> _suggestions = [];
@@ -122,20 +155,138 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
     super.dispose();
   }
 
+  void _showAddCustomVibeDialog() {
+    final textCtrl = TextEditingController();
+    final isDark = widget.isDarkMode;
+    final inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final cardColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color: isDark
+                  ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                  : GenZTokens.ink.withValues(alpha: 0.12),
+              width: 1.5,
+            ),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'ai.custom_vibe_title'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: inkColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: textCtrl,
+                autofocus: true,
+                style: AppFonts.body(fontSize: 14, color: inkColor),
+                decoration: InputDecoration(
+                  hintText: 'ai.custom_vibe_hint'.tr(),
+                  hintStyle: AppFonts.body(
+                    fontSize: 14,
+                    color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: isDark ? GenZTokens.purple : GenZTokens.orange,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                onSubmitted: (value) {
+                  final trimmed = value.trim();
+                  if (trimmed.isNotEmpty) {
+                    setState(() {
+                      _allParams.add({
+                        'name': trimmed,
+                        'labelKey': '',
+                        'icon': PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                      });
+                      _selectedParams.add(trimmed);
+                    });
+                    Navigator.pop(ctx);
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        isDark ? GenZTokens.purple : GenZTokens.orange,
+                    foregroundColor: GenZTokens.ink,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: GenZTokens.ink, width: 1.5),
+                    ),
+                  ),
+                  onPressed: () {
+                    final trimmed = textCtrl.text.trim();
+                    if (trimmed.isNotEmpty) {
+                      setState(() {
+                        _allParams.add({
+                          'name': trimmed,
+                          'labelKey': '',
+                          'icon': PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                        });
+                        _selectedParams.add(trimmed);
+                      });
+                      Navigator.pop(ctx);
+                    }
+                  },
+                  child: Text(
+                    'ai.custom_vibe_add'.tr(),
+                    style: AppFonts.heading(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: GenZTokens.ink,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
     final primaryColor = isDark
-        ? const Color(0xFFC9B8FF)
-        : const Color(0xFFF5822B);
+        ? GenZTokens.purple
+        : GenZTokens.orange;
     final secondaryColor = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFF059669);
-    final bgColor = Theme.of(context).scaffoldBackgroundColor;
-    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final textPrimary = isDark ? Colors.white : const Color(0xFF141210);
-    final textMuted = isDark ? Colors.white60 : Colors.black54;
+        ? GenZTokens.green
+        : GenZTokens.success;
+    final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textMuted = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -216,14 +367,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('ai.plan_editing'.tr()),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
-                                },
+                                onTap: _showAddCustomVibeDialog,
                                 child: Text(
                                   'ai.plan_edit_params'.tr(),
                                   style: AppFonts.heading(
@@ -240,9 +384,20 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                             spacing: 10,
                             runSpacing: 10,
                             children: _allParams.map((param) {
+                              final paramName = param['name'] as String;
                               final isSelected = _selectedParams.contains(
-                                param['name'],
+                                paramName,
                               );
+                              final label =
+                                  ((param['labelKey'] as String?)?.isNotEmpty ??
+                                          false)
+                                      ? (param['labelKey'] as String).tr()
+                                      : paramName;
+                              final icon =
+                                  param['icon'] as PhosphorIconData? ??
+                                  PhosphorIcons.sparkle(
+                                    PhosphorIconsStyle.fill,
+                                  );
                               return GestureDetector(
                                 onTap: _isGenerating
                                     ? null
@@ -250,10 +405,10 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                         setState(() {
                                           if (isSelected) {
                                             _selectedParams.remove(
-                                              param['name']!,
+                                              paramName,
                                             );
                                           } else {
-                                            _selectedParams.add(param['name']!);
+                                            _selectedParams.add(paramName);
                                           }
                                         });
                                       },
@@ -272,8 +427,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                       color: isSelected
                                           ? primaryColor
                                           : (isDark
-                                                ? Colors.white12
-                                                : Colors.black12),
+                                                ? GenZTokens.inkDark.withValues(alpha: 0.15)
+                                                : GenZTokens.ink.withValues(alpha: 0.15)),
                                       width: isSelected ? 1.5 : 1.0,
                                     ),
                                     boxShadow: isSelected
@@ -290,13 +445,16 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text(
-                                        param['emoji']!,
-                                        style: const TextStyle(fontSize: 14),
+                                      Icon(
+                                        icon,
+                                        size: 14,
+                                        color: isSelected
+                                            ? primaryColor
+                                            : textMuted,
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        param['name']!,
+                                        label,
                                         style: AppFonts.heading(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w700,
@@ -432,12 +590,14 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
+          color: isDark
+              ? GenZTokens.paperDark.withValues(alpha: 0.85)
+              : GenZTokens.paper.withValues(alpha: 0.9),
           border: Border(
             bottom: BorderSide(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.05),
+                  ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                  : GenZTokens.ink.withValues(alpha: 0.08),
             ),
           ),
         ),
@@ -446,9 +606,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
           children: [
             IconButton(
               icon: Icon(
-                Icons.arrow_back_ios_new,
+                PhosphorIcons.caretLeft(),
                 color: textPrimary,
-                size: 18,
+                size: 20,
               ),
               onPressed: () => Navigator.pop(context),
             ),
@@ -462,7 +622,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                 letterSpacing: -1.2,
               ),
             ),
-            Icon(Icons.notifications_outlined, color: primaryColor, size: 24),
+            Icon(PhosphorIcons.bell(), color: primaryColor, size: 24),
           ],
         ),
       ),
@@ -483,7 +643,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
         color: cardBg,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+          color: isDark
+              ? GenZTokens.inkDark.withValues(alpha: 0.12)
+              : GenZTokens.ink,
           width: 2,
         ),
         boxShadow: [
@@ -520,12 +682,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.calendar_month, size: 14, color: textMuted),
+                  Icon(PhosphorIcons.calendarBlank(), size: 14, color: textMuted),
                   const SizedBox(width: 4),
                   Text(
                     _selectedParams.isEmpty
                         ? 'ai.plan_no_filter'.tr()
-                        : _selectedParams.first,
+                        : _displayParamName(_selectedParams.first),
                     style: AppFonts.body(fontSize: 13, color: textMuted),
                   ),
                 ],
@@ -536,16 +698,16 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
 
           // Vibe sliders
           _buildVibeSlider(
-            'Deep Chill',
-            'High Energy',
+            'ai.param_deep_chill'.tr(),
+            'ai.param_high_energy'.tr(),
             _selectedParams.contains('High Energy') ? 0.75 : 0.25,
             primaryColor,
             textMuted,
           ),
           const SizedBox(height: 8),
           _buildVibeSlider(
-            'Nature Focus',
-            'City Exploration',
+            'ai.param_nature_focus'.tr(),
+            'ai.param_city_exploration'.tr(),
             _selectedParams.contains('City Exploration') ? 0.75 : 0.25,
             secondaryColor,
             textMuted,
@@ -615,7 +777,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
         color: cardBg,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
+          color: isDark
+              ? GenZTokens.inkDark.withValues(alpha: 0.12)
+              : GenZTokens.ink,
           width: 2,
         ),
         boxShadow: [
@@ -628,7 +792,11 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
           // Drag indicator
           Column(
             children: [
-              const Icon(Icons.drag_indicator, color: Colors.grey, size: 20),
+              Icon(
+                PhosphorIcons.dotsSixVertical(),
+                color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+                size: 20,
+              ),
               const SizedBox(height: 4),
               // Time bubble
               Container(
@@ -687,8 +855,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                         ),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.white.withValues(alpha: 0.08)
-                              : Colors.black.withValues(alpha: 0.05),
+                              ? GenZTokens.inkDark.withValues(alpha: 0.08)
+                              : GenZTokens.ink.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -742,7 +910,11 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
         ),
         child: Row(
           children: [
-            const Icon(Icons.drag_indicator, color: Colors.grey, size: 20),
+            Icon(
+              PhosphorIcons.dotsSixVertical(),
+              color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+              size: 20,
+            ),
             const SizedBox(width: 14),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -751,7 +923,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                   width: 120,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white12 : Colors.black12,
+                    color: isDark
+                        ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                        : GenZTokens.ink.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(7),
                   ),
                 ),
@@ -761,8 +935,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                   height: 10,
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : Colors.black.withValues(alpha: 0.06),
+                        ? GenZTokens.inkDark.withValues(alpha: 0.06)
+                        : GenZTokens.ink.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
@@ -783,12 +957,14 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 36),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0x800B1326) : const Color(0x9EFFFFFF),
+          color: isDark
+              ? GenZTokens.paperDark.withValues(alpha: 0.85)
+              : GenZTokens.paper.withValues(alpha: 0.9),
           border: Border(
             top: BorderSide(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : Colors.black.withValues(alpha: 0.05),
+                  ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                  : GenZTokens.ink.withValues(alpha: 0.08),
             ),
           ),
         ),
@@ -814,7 +990,13 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.stop_circle, color: Colors.white, size: 20),
+                  Icon(
+                    _isGenerating
+                        ? PhosphorIcons.circleNotch()
+                        : PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                    color: GenZTokens.ink,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     _isGenerating
@@ -825,7 +1007,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                     style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ],

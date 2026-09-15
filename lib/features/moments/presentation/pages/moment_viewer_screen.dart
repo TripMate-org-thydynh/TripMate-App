@@ -3,9 +3,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/services/widget_sync.dart';
 import '../../../../core/theme/app_fonts.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/moments_repository.dart';
 
 /// Màn xem khoảnh khắc mở từ widget màn hình chính.
@@ -97,8 +99,8 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final bg = theme.scaffoldBackgroundColor;
-    final ink = theme.colorScheme.onSurface;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
       backgroundColor: bg,
@@ -118,7 +120,8 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
     child: Row(
       children: [
         IconButton(
-          icon: Icon(Icons.arrow_back, color: ink),
+          tooltip: 'common.back'.tr(),
+          icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         Text(
@@ -136,7 +139,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
   Widget _body(BuildContext context, bool isDark, Color ink) {
     if (_error != null) {
       return _centered(
-        icon: Icons.cloud_off_rounded,
+        icon: PhosphorIcons.cloudSlash(),
         title: 'moments.viewer_failed'.tr(),
         ink: ink,
         onRetry: () {
@@ -151,7 +154,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
     }
     if (items.isEmpty) {
       return _centered(
-        icon: Icons.photo_camera_outlined,
+        icon: PhosphorIcons.camera(),
         title: 'moments.viewer_empty'.tr(),
         ink: ink,
       );
@@ -199,7 +202,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
   );
 
   Widget _slide(WidgetMoment m, bool isDark, Color ink) {
-    final frame = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final frame = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
       child: Column(
@@ -229,13 +232,12 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
-                            placeholder: (_, _) => Container(
-                              color: ink.withValues(alpha: 0.06),
-                            ),
+                            placeholder: (_, _) =>
+                                Container(color: ink.withValues(alpha: 0.06)),
                             errorWidget: (_, _, _) => Container(
                               color: ink.withValues(alpha: 0.08),
                               child: Icon(
-                                Icons.broken_image_outlined,
+                                PhosphorIcons.imageBroken(),
                                 color: ink.withValues(alpha: 0.4),
                               ),
                             ),
@@ -278,7 +280,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: ink, width: 2),
       ),

@@ -29,6 +29,20 @@ class WishlistNotifier extends FamilyAsyncNotifier<List<WishlistItem>, String> {
       ref.invalidateSelf();
     }
   }
+
+  Future<void> deleteItem(String itemId) async {
+    final current = state.valueOrNull;
+    if (current != null) {
+      state = AsyncData(current.where((i) => i.id != itemId).toList());
+    }
+    try {
+      await ref.read(wishlistRepositoryProvider).delete(arg, itemId);
+      ref.invalidateSelf();
+    } catch (_) {
+      ref.invalidateSelf();
+      rethrow;
+    }
+  }
 }
 
 final wishlistProvider =

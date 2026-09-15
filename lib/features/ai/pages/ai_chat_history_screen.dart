@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -24,11 +25,13 @@ class AiChatHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode;
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -43,8 +46,9 @@ class AiChatHistoryScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: ink),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
             onPressed: () => ref.invalidate(aiHistoryProvider),
+            tooltip: 'common.refresh'.tr(),
           ),
         ],
       ),
@@ -62,7 +66,7 @@ class AiChatHistoryScreen extends ConsumerWidget {
               if (items.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.history_rounded,
+                  icon: PhosphorIcons.clockCounterClockwise(),
                   title: 'ai.history_title'.tr(),
                   body: 'ai.history_empty'.tr(),
                 );
@@ -94,6 +98,7 @@ class AiChatHistoryScreen extends ConsumerWidget {
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,10 +114,10 @@ class AiChatHistoryScreen extends ConsumerWidget {
             children: [
               Icon(
                 item.isFailed
-                    ? Icons.error_outline
+                    ? PhosphorIcons.warningCircle(PhosphorIconsStyle.fill)
                     : item.isDone
-                    ? Icons.check_circle_outline
-                    : Icons.hourglass_top,
+                    ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.hourglass(PhosphorIconsStyle.fill),
                 size: 14,
                 color: item.isFailed ? GenZTokens.danger : inkSoft,
               ),

@@ -45,10 +45,10 @@ class TripHubScreen extends StatelessWidget {
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
   Color get _ink =>
-      isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   // Rút gọn tiền: 3.000.000 → "3tr", 500000 → "500k".
   String _fmtMoney(double v) {
@@ -112,9 +112,9 @@ class TripHubScreen extends StatelessWidget {
               // để chữ tiêu đề luôn đọc được. Chưa chọn bìa thì về khối cam đặc
               // kèm hoạ tiết máy bay như cũ.
               background: DecoratedBox(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(color: Color(0xFF141210), width: 2.5),
+                    bottom: BorderSide(color: _ink, width: 2.5),
                   ),
                 ),
                 child: Stack(
@@ -131,9 +131,7 @@ class TripHubScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(20),
                           child: Icon(
                             PhosphorIcons.airplaneTilt(PhosphorIconsStyle.fill),
-                            color: const Color(
-                              0xFF141210,
-                            ).withValues(alpha: 0.25),
+                            color: _ink.withValues(alpha: 0.25),
                             size: 80,
                           ),
                         ),
@@ -192,7 +190,7 @@ class TripHubScreen extends StatelessWidget {
                           Icon(
                             PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                             size: 16,
-                            color: const Color(0xFFF5822B),
+                            color: GenZTokens.orange,
                           ),
                           const SizedBox(width: 4),
                           Flexible(
@@ -212,7 +210,7 @@ class TripHubScreen extends StatelessWidget {
                           Icon(
                             PhosphorIcons.wallet(PhosphorIconsStyle.fill),
                             size: 16,
-                            color: const Color(0xFF1FA85C),
+                            color: GenZTokens.green,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -248,7 +246,9 @@ class TripHubScreen extends StatelessWidget {
                               Icon(v.icon, size: 15, color: v.color),
                               const SizedBox(width: 6),
                               Text(
-                                'Vibe: ${v.label}',
+                                'trips.vibe_display'.tr(
+                                  namedArgs: {'vibe': v.label},
+                                ),
                                 style: AppFonts.heading(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
@@ -284,7 +284,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.scales(PhosphorIconsStyle.fill),
                         'expense.split_title'.tr(),
                         'hub.balances'.tr(),
-                        const Color(0xFFF5822B),
+                        GenZTokens.orange,
                         () => TripBalancesScreen(
                           tripId: trip.id,
                           tripName: trip.name,
@@ -296,7 +296,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.piggyBank(PhosphorIconsStyle.fill),
                         'fund.title'.tr(),
                         'hub.fund_sub'.tr(),
-                        const Color(0xFF10B981),
+                        GenZTokens.green,
                         () => TripFundScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -307,7 +307,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
                         'hub.polls'.tr(),
                         'hub.polls_sub'.tr(),
-                        const Color(0xFF8B4DE8),
+                        GenZTokens.purple,
                         () => TripPollsScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -316,9 +316,9 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.heart(PhosphorIconsStyle.fill),
-                        'Wishlist',
+                        'trips.hub_wishlist'.tr(),
                         'hub.wishlist_sub'.tr(),
-                        const Color(0xFF1FA85C),
+                        GenZTokens.green,
                         () => TripWishlistScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -329,7 +329,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
                         'itinerary.title'.tr(),
                         'hub.itinerary_sub'.tr(),
-                        const Color(0xFF3D8BFF),
+                        GenZTokens.blue,
                         () => TripItineraryScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -340,7 +340,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
                         'hub.map'.tr(),
                         'hub.map_sub'.tr(),
-                        const Color(0xFF1FA85C),
+                        GenZTokens.green,
                         () => TripMapScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -351,7 +351,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.camera(PhosphorIconsStyle.fill),
                         'moments.title'.tr(),
                         'hub.moments'.tr(),
-                        const Color(0xFFD6248C),
+                        GenZTokens.magenta,
                         () => TripMomentsFeedScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -360,9 +360,9 @@ class TripHubScreen extends StatelessWidget {
                       _tile(
                         context,
                         PhosphorIcons.chatCircle(PhosphorIconsStyle.fill),
-                        'Squad Chat',
+                        'trips.hub_squad_chat'.tr(),
                         'hub.chat_sub'.tr(),
-                        const Color(0xFF6366F1),
+                        GenZTokens.purple,
                         () => TripChatLiveScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -373,7 +373,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.suitcaseRolling(PhosphorIconsStyle.fill),
                         'packing.title'.tr(),
                         'hub.packing_sub'.tr(),
-                        const Color(0xFF06B6D4),
+                        GenZTokens.blue,
                         () => TripPackingScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -384,7 +384,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.listChecks(PhosphorIconsStyle.fill),
                         'hub.todos'.tr(),
                         'hub.todos_sub'.tr(),
-                        const Color(0xFF8B4DE8),
+                        GenZTokens.purple,
                         () => TripTodosScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -395,7 +395,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.ticket(PhosphorIconsStyle.fill),
                         'reservations.title'.tr(),
                         'hub.reservations_sub'.tr(),
-                        const Color(0xFF8B4DE8),
+                        GenZTokens.purple,
                         () => TripReservationsScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -406,7 +406,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.note(PhosphorIconsStyle.fill),
                         'hub.notes'.tr(),
                         'hub.notes_sub'.tr(),
-                        const Color(0xFFFFD84D),
+                        GenZTokens.yellow,
                         () => TripNotesScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -417,7 +417,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.checkSquare(PhosphorIconsStyle.fill),
                         'checkins.title'.tr(),
                         'hub.checkins_sub'.tr(),
-                        const Color(0xFF1FA85C),
+                        GenZTokens.green,
                         () => TripCheckinsScreen(
                           tripId: trip.id,
                           tripDays: trip.durationDays,
@@ -432,7 +432,7 @@ class TripHubScreen extends StatelessWidget {
                         // Booking") — do la phu de cua tile Dat cho, khong phai
                         // cua Tai lieu.
                         'hub.documents_sub'.tr(),
-                        const Color(0xFF3D8BFF),
+                        GenZTokens.blue,
                         () => TripDocumentsScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -445,7 +445,7 @@ class TripHubScreen extends StatelessWidget {
                         // Truoc day dung 'hub.moments_sub' ("Anh & Ky niem
                         // nhom") — phu de cua tile Khoanh khac.
                         'hub.journal_sub'.tr(),
-                        const Color(0xFFCF9FFF),
+                        GenZTokens.lilac,
                         () => TripJournalScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -456,7 +456,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.calendar(PhosphorIconsStyle.fill),
                         'trips.hub_leave_days'.tr(),
                         'hub.vacay'.tr(),
-                        const Color(0xFFF5822B),
+                        GenZTokens.orange,
                         () => VacayScreen(isDarkMode: isDarkMode),
                       ),
                       _tile(
@@ -464,7 +464,7 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.link(PhosphorIconsStyle.fill),
                         'invites.limited_code'.tr(),
                         'invites.manage'.tr(),
-                        const Color(0xFFFF7E7E),
+                        GenZTokens.red,
                         () => TripInvitesScreen(
                           tripId: trip.id,
                           tripName: trip.name,
@@ -478,7 +478,7 @@ class TripHubScreen extends StatelessWidget {
                         'trips.code_label'.tr(
                           namedArgs: {'code': trip.inviteCode},
                         ),
-                        const Color(0xFFFFD84D),
+                        GenZTokens.yellow,
                         null,
                       ),
                     ],
@@ -506,7 +506,7 @@ class TripHubScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+          color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: _ink, width: 2),
           boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 3))],
@@ -558,7 +558,7 @@ class TripHubScreen extends StatelessWidget {
         }
         Navigator.push(context, MaterialPageRoute(builder: (_) => builder()));
       },
-      color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+      color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
       radius: 18,
       borderWidth: 2,
       depth: 3,
@@ -572,14 +572,14 @@ class TripHubScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF141210), width: 2),
+              border: Border.all(color: _ink, width: 2),
             ),
             // Chữ/icon trên accent sáng (vàng, lilac) phải là ink
             child: Icon(
               icon,
               color: color.computeLuminance() > 0.5
-                  ? const Color(0xFF141210)
-                  : const Color(0xFFFFFDF5),
+                  ? GenZTokens.ink
+                  : (isDarkMode ? GenZTokens.inkDark : GenZTokens.paper),
               size: 20,
             ),
           ),

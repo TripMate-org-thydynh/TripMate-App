@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 
 import '../../data/notifications_repository.dart';
 
@@ -19,7 +20,7 @@ class NotificationsScreen extends ConsumerWidget {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   /// Accent lay tu theme dang chon.
   ///
@@ -28,10 +29,10 @@ class NotificationsScreen extends ConsumerWidget {
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
   Color get _ink =>
-      isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   IconData _iconFor(String type) {
     switch (type) {
@@ -69,7 +70,7 @@ class NotificationsScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.tune, color: _textPri),
+            icon: Icon(PhosphorIcons.slidersHorizontal(), color: _textPri),
             tooltip: 'notifications.settings_title'.tr(),
             onPressed: () => _showNotificationSettingsModal(context, ref),
           ),
@@ -119,7 +120,7 @@ class NotificationsScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: n.isRead ? _surface : const Color(0xFFFFD84D),
+          color: n.isRead ? _surface : GenZTokens.yellow,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: _ink, width: 2),
           boxShadow: n.isRead
@@ -135,11 +136,11 @@ class NotificationsScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: _primaryOf(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF141210), width: 2),
+                border: Border.all(color: _ink, width: 2),
               ),
               child: Icon(
                 _iconFor(n.type),
-                color: const Color(0xFFFFFDF5),
+                color: GenZTokens.ink,
                 size: 20,
               ),
             ),
@@ -153,7 +154,7 @@ class NotificationsScreen extends ConsumerWidget {
                     style: AppFonts.heading(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: n.isRead ? _textPri : const Color(0xFF141210),
+                      color: n.isRead ? _textPri : GenZTokens.ink,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -162,7 +163,7 @@ class NotificationsScreen extends ConsumerWidget {
                     style: AppFonts.body(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: n.isRead ? _textSec : const Color(0xFF4A453E),
+                      color: n.isRead ? _textSec : GenZTokens.inkSoft,
                       height: 1.3,
                     ),
                   ),
@@ -175,10 +176,10 @@ class NotificationsScreen extends ConsumerWidget {
                 height: 10,
                 margin: const EdgeInsets.only(top: 4, left: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD8422B),
+                  color: GenZTokens.danger,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF141210),
+                    color: _ink,
                     width: 1.5,
                   ),
                 ),
@@ -211,9 +212,9 @@ class NotificationsScreen extends ConsumerWidget {
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -230,7 +231,7 @@ class NotificationsScreen extends ConsumerWidget {
                 backgroundColor: _primaryOf(context),
               ),
               onPressed: () => ref.invalidate(notificationsProvider),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text('general.retry'.tr()),
             ),
           ],
@@ -250,13 +251,13 @@ class NotificationsScreen extends ConsumerWidget {
               height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFC9B8FF),
+                color: GenZTokens.lilac,
                 border: Border.all(color: _ink, width: 2.5),
                 boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 4))],
               ),
               child: Icon(
                 PhosphorIcons.bellSlash(PhosphorIconsStyle.fill),
-                color: const Color(0xFF141210),
+                color: GenZTokens.ink,
                 size: 38,
               ),
             ),
@@ -281,10 +282,10 @@ class NotificationsScreen extends ConsumerWidget {
   );
 
   void _showNotificationSettingsModal(BuildContext context, WidgetRef ref) {
-    final borderCol = isDarkMode ? Colors.white : const Color(0xFF141210);
+    final borderCol = isDarkMode ? GenZTokens.inkDark.withValues(alpha: 0.15) : GenZTokens.ink;
     final cardBgCol = isDarkMode
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
+        ? GenZTokens.paperDark
+        : GenZTokens.paper;
 
     showModalBottomSheet(
       context: context,
@@ -317,7 +318,7 @@ class NotificationsScreen extends ConsumerWidget {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.close, color: _textPri),
+                        icon: Icon(PhosphorIcons.x(), color: _textPri),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -414,7 +415,7 @@ class NotificationsScreen extends ConsumerWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: const Color(0xFFFFD84D),
+            activeThumbColor: GenZTokens.yellow,
             activeTrackColor: _primaryOf(context).withValues(alpha: 0.3),
             inactiveThumbColor: _textSec,
             inactiveTrackColor: Colors.transparent,

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/notifications_repository.dart';
 import '../pages/notifications_screen.dart';
 
@@ -16,9 +17,10 @@ class NotificationBell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final unread = ref.watch(unreadCountProvider);
     final iconColor =
-        color ?? (isDarkMode ? Colors.white : const Color(0xFF141210));
+        color ?? (isDark ? GenZTokens.inkDark : GenZTokens.ink);
 
     return Semantics(
       button: true,
@@ -35,7 +37,7 @@ class NotificationBell extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => NotificationsScreen(isDarkMode: isDarkMode),
+                  builder: (_) => NotificationsScreen(isDarkMode: isDark),
                 ),
               );
             },
@@ -48,7 +50,7 @@ class NotificationBell extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                 constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF5822B),
+                  color: GenZTokens.orange,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -57,7 +59,7 @@ class NotificationBell extends ConsumerWidget {
                     style: AppFonts.heading(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ),

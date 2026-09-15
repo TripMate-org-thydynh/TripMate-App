@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 
 /// Quyền riêng tư & Tài khoản (PDPD - NĐ 13/2023).
 /// Gồm: tóm tắt chính sách, link điều khoản, và xoá tài khoản gọi BE thật.
@@ -19,8 +20,8 @@ class AccountPrivacyScreen extends ConsumerStatefulWidget {
   static const String privacyUrl = 'https://tripmate.app/privacy';
   static const String termsUrl = 'https://tripmate.app/terms';
 
-  final bool isDarkMode;
-  const AccountPrivacyScreen({super.key, this.isDarkMode = false});
+  final bool? isDarkMode;
+  const AccountPrivacyScreen({super.key, this.isDarkMode});
 
   @override
   ConsumerState<AccountPrivacyScreen> createState() =>
@@ -30,21 +31,14 @@ class AccountPrivacyScreen extends ConsumerStatefulWidget {
 class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
   bool _deleting = false;
 
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _ink =>
-      widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
-  /// Accent lay tu theme dang chon.
-  ///
-  /// Truoc day la `widget.isDarkMode ? Color(0xFFF5822B) : Color(0xFFF5822B)` —
-  /// hai nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
-  /// Day la State nen doc thang `context` duoc.
+  bool get _isDark =>
+      widget.isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
+  Color get _bg => _isDark ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _surface => _isDark ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _ink => _isDark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _primary => Theme.of(context).colorScheme.primary;
   Color get _textPri => _ink;
-  Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+  Color get _textSec => _isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   Future<void> _confirmDelete() async {
     HapticFeedback.heavyImpact();
@@ -52,14 +46,16 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: _surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          side: BorderSide(color: _ink, width: GenZTokens.borderWidthThin),
+        ),
         title: Text(
           'settings.delete_confirm'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
         ),
         content: Text(
-          'settings.delete_warn_1'.tr() +
-          'settings.delete_warn_2'.tr(),
+          'settings.delete_warn_1'.tr() + 'settings.delete_warn_2'.tr(),
           style: AppFonts.body(color: _textSec, height: 1.4),
         ),
         actions: [
@@ -71,7 +67,10 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
             ),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+            style: FilledButton.styleFrom(
+              backgroundColor: GenZTokens.danger,
+              foregroundColor: GenZTokens.paper,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('settings.delete_forever'.tr()),
           ),
@@ -89,7 +88,16 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
       if (!mounted) return;
       setState(() => _deleting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message), backgroundColor: Colors.redAccent),
+        SnackBar(content: Text(e.message), backgroundColor: GenZTokens.danger),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _deleting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('errors.generic'.tr()),
+          backgroundColor: GenZTokens.danger,
+        ),
       );
     }
   }
@@ -97,10 +105,11 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: _bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: IconThemeData(color: _textPri),
         title: Text(
           'settings.privacy_title'.tr(),
           style: AppFonts.heading(
@@ -122,17 +131,17 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                 'privacy.body_3'.tr(),
           ),
           _linkTile(
-            Icons.description_outlined,
+            PhosphorIcons.fileText(),
             'privacy.policy'.tr(),
             AccountPrivacyScreen.privacyUrl,
           ),
           _linkTile(
-            Icons.gavel_outlined,
+            PhosphorIcons.gavel(),
             'privacy.terms'.tr(),
             AccountPrivacyScreen.termsUrl,
           ),
           _linkTile(
-            Icons.download_outlined,
+            PhosphorIcons.downloadSimple(),
             'privacy.request_copy'.tr(),
             AccountPrivacyScreen.privacyUrl,
           ),
@@ -144,7 +153,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
             style: AppFonts.body(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: Colors.redAccent,
+              color: GenZTokens.danger,
               letterSpacing: 1,
             ),
           ),
@@ -152,10 +161,10 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: const Color(0xFFD8422B),
+              color: GenZTokens.danger,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: _ink, width: 2.5),
-              boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 4))],
+              border: Border.all(color: _ink, width: GenZTokens.borderWidth),
+              boxShadow: GenZTokens.hardShadow(_ink),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,7 +174,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                   style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFFFFFDF5),
+                    color: GenZTokens.paper,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -174,7 +183,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                   style: AppFonts.body(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFFFFFDF5),
+                    color: GenZTokens.paper,
                     height: 1.4,
                   ),
                 ),
@@ -183,14 +192,16 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                   width: double.infinity,
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFFDF5),
-                      foregroundColor: const Color(0xFFD8422B),
+                      backgroundColor: GenZTokens.paper,
+                      foregroundColor: GenZTokens.danger,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: const BorderSide(
-                          color: Color(0xFF141210),
-                          width: 2,
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusInput,
+                        ),
+                        side: BorderSide(
+                          color: _ink,
+                          width: GenZTokens.borderWidthThin,
                         ),
                       ),
                     ),
@@ -201,12 +212,14 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                             height: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFFD8422B),
+                              color: GenZTokens.danger,
                             ),
                           )
-                        : const Icon(Icons.delete_forever),
+                        : Icon(PhosphorIcons.trash(PhosphorIconsStyle.fill)),
                     label: Text(
-                      _deleting ? 'common.deleting'.tr() : 'settings.delete_account_cta'.tr(),
+                      _deleting
+                          ? 'common.deleting'.tr()
+                          : 'settings.delete_account_cta'.tr(),
                     ),
                   ),
                 ),
@@ -229,8 +242,8 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
       decoration: BoxDecoration(
         color: _surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _ink, width: 2),
-        boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 3))],
+        border: Border.all(color: _ink, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(_ink),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,46 +286,55 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
       final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!ok && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('errors.generic'.tr())),
+          SnackBar(
+            content: Text('errors.generic'.tr()),
+            backgroundColor: GenZTokens.danger,
+          ),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('errors.generic'.tr())),
+          SnackBar(
+            content: Text('errors.generic'.tr()),
+            backgroundColor: GenZTokens.danger,
+          ),
         );
       }
     }
   }
 
   Widget _linkTile(IconData icon, String label, String url) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: () => _openUrl(url),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        margin: const EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-          color: _surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _ink, width: 2),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: _textSec, size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: AppFonts.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: _textPri,
+    return Tooltip(
+      message: 'privacy.opens_website'.tr(namedArgs: {'label': label}),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+        onTap: () => _openUrl(url),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: _surface,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+            border: Border.all(color: _ink, width: GenZTokens.borderWidthThin),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: _textSec, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppFonts.body(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _textPri,
+                  ),
                 ),
               ),
-            ),
-            Icon(Icons.arrow_forward, size: 14, color: _textSec),
-          ],
+              Icon(PhosphorIcons.caretRight(), size: 14, color: _textSec),
+            ],
+          ),
         ),
       ),
     );

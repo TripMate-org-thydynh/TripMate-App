@@ -1,12 +1,13 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'dart:convert';
-import 'package:tripmate/core/theme/app_fonts.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:tripmate/core/theme/gen_z_tokens.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/reservations_repository.dart';
@@ -21,20 +22,26 @@ class TripReservationsScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
+  bool _isDark(BuildContext context) =>
+      isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary => const Color(0xFF8B4DE8);
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
-  Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surface(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _primary => GenZTokens.purple;
+  Color _textPri(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSec(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color _border(BuildContext context) => _isDark(context)
+      ? GenZTokens.inkDark.withValues(alpha: 0.1)
+      : GenZTokens.ink.withValues(alpha: 0.06);
 
   static const _meta = <ReservationType, (String, IconData, Color)>{
     ReservationType.flight: (
       'reservations.type_flight',
       PhosphorIconsFill.airplaneTilt,
-      Color(0xFF3D8BFF),
+      GenZTokens.blue,
     ),
     ReservationType.train: (
       'reservations.type_train',
@@ -44,32 +51,32 @@ class TripReservationsScreen extends ConsumerWidget {
     ReservationType.bus: (
       'reservations.type_bus',
       PhosphorIconsFill.bus,
-      Color(0xFF1FA85C),
+      GenZTokens.green,
     ),
     ReservationType.hotel: (
       'reservations.type_hotel',
       PhosphorIconsFill.buildings,
-      Color(0xFF8B4DE8),
+      GenZTokens.purple,
     ),
     ReservationType.restaurant: (
       'reservations.type_restaurant',
       PhosphorIconsFill.forkKnife,
-      Color(0xFFF5822B),
+      GenZTokens.orange,
     ),
     ReservationType.car: (
       'reservations.type_car_rental',
       PhosphorIconsFill.car,
-      Color(0xFFD6248C),
+      GenZTokens.magenta,
     ),
     ReservationType.event: (
       'reservations.type_event',
       PhosphorIconsFill.ticket,
-      Color(0xFFFFB020),
+      GenZTokens.yellow,
     ),
     ReservationType.attraction: (
       'reservations.type_attraction',
       PhosphorIconsFill.mapPin,
-      Color(0xFFEF4444),
+      GenZTokens.danger,
     ),
     ReservationType.other: (
       'expense.cat_other',
@@ -93,12 +100,12 @@ class TripReservationsScreen extends ConsumerWidget {
     return v.toStringAsFixed(0);
   }
 
-  static const _months = 'Th1 Th2 Th3 Th4 Th5 Th6 Th7 Th8 Th9 Th10 Th11 Th12';
   String _fmtDate(DateTime d) {
-    final m = _months.split(' ')[d.month - 1];
+    final dd = d.day.toString().padLeft(2, '0');
+    final mm = d.month.toString().padLeft(2, '0');
     final hh = d.hour.toString().padLeft(2, '0');
-    final mm = d.minute.toString().padLeft(2, '0');
-    return '$m ${d.day} · $hh:$mm';
+    final min = d.minute.toString().padLeft(2, '0');
+    return '$dd/$mm · $hh:$min';
   }
 
   @override
@@ -108,11 +115,11 @@ class TripReservationsScreen extends ConsumerWidget {
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        foregroundColor: GenZTokens.paper,
         onPressed: () => _addReservation(context, ref),
-        icon: const Icon(Icons.add),
+        icon: Icon(PhosphorIcons.plus()),
         label: Text(
-          'packing.add'.tr(),
+          'reservations.add'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800),
         ),
       ),
@@ -124,7 +131,7 @@ class TripReservationsScreen extends ConsumerWidget {
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
-            color: _textPri,
+            color: _textPri(context),
           ),
         ),
         actions: [
@@ -146,10 +153,10 @@ class TripReservationsScreen extends ConsumerWidget {
         color: _primary,
         onRefresh: () async => ref.invalidate(tripReservationsProvider(tripId)),
         child: async.when(
-          loading: () => _skeleton(),
-          error: (e, _) => _error(),
+          loading: () => _skeleton(context),
+          error: (e, _) => _error(context),
           data: (items) {
-            if (items.isEmpty) return _empty();
+            if (items.isEmpty) return _empty(context);
             return ListView.builder(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
               itemCount: items.length,
@@ -175,9 +182,9 @@ class TripReservationsScreen extends ConsumerWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: _surface,
+          color: _surface(context),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: _textPri.withValues(alpha: 0.06)),
+          border: Border.all(color: _border(context)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -207,7 +214,7 @@ class TripReservationsScreen extends ConsumerWidget {
                             style: AppFonts.heading(
                               fontWeight: FontWeight.w800,
                               fontSize: 15,
-                              color: _textPri,
+                              color: _textPri(context),
                               decoration: cancelled
                                   ? TextDecoration.lineThrough
                                   : null,
@@ -215,7 +222,11 @@ class TripReservationsScreen extends ConsumerWidget {
                           ),
                         ),
                         if (r.url != null && r.url!.isNotEmpty)
-                          Icon(Icons.open_in_new, size: 15, color: _textSec),
+                          Icon(
+                            PhosphorIcons.arrowSquareOut(),
+                            size: 15,
+                            color: _textSec(context),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -229,19 +240,25 @@ class TripReservationsScreen extends ConsumerWidget {
                     ),
                     if (r.startTime != null) ...[
                       const SizedBox(height: 6),
-                      _line(Icons.schedule, _fmtDate(r.startTime!.toLocal())),
+                      _line(
+                        context,
+                        PhosphorIcons.clock(),
+                        _fmtDate(r.startTime!.toLocal()),
+                      ),
                     ],
                     if (r.location != null && r.location!.isNotEmpty)
-                      _line(Icons.place_outlined, r.location!),
+                      _line(context, PhosphorIcons.mapPin(), r.location!),
                     if (r.confirmationNumber != null &&
                         r.confirmationNumber!.isNotEmpty)
                       _line(
-                        Icons.confirmation_number_outlined,
+                        context,
+                        PhosphorIcons.barcode(),
                         r.confirmationNumber!,
                       ),
                     if (r.price != null && r.price! > 0)
                       _line(
-                        Icons.account_balance_wallet_outlined,
+                        context,
+                        PhosphorIcons.wallet(),
                         _fmtMoney(r.price!),
                       ),
                   ],
@@ -254,16 +271,16 @@ class TripReservationsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _line(IconData icon, String text) => Padding(
+  Widget _line(BuildContext context, IconData icon, String text) => Padding(
     padding: const EdgeInsets.only(top: 4),
     child: Row(
       children: [
-        Icon(icon, size: 13, color: _textSec),
+        Icon(icon, size: 13, color: _textSec(context)),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
             text,
-            style: AppFonts.body(fontSize: 12.5, color: _textSec),
+            style: AppFonts.body(fontSize: 12.5, color: _textSec(context)),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -280,7 +297,7 @@ class TripReservationsScreen extends ConsumerWidget {
     final cancelled = r.status.toUpperCase() == 'CANCELLED';
     final action = await showModalBottomSheet<String>(
       context: context,
-      backgroundColor: _surface,
+      backgroundColor: _surface(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -291,19 +308,23 @@ class TripReservationsScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             _actionTile(
               ctx,
-              Icons.edit_outlined,
+              PhosphorIcons.pencilSimple(),
               'reservations.edit'.tr(),
               'edit',
             ),
             _actionTile(
               ctx,
-              cancelled ? Icons.check_circle_outline : Icons.cancel_outlined,
-              cancelled ? 'reservations.restore_confirmed'.tr() : 'reservations.mark_cancelled'.tr(),
+              cancelled
+                  ? PhosphorIcons.checkCircle()
+                  : PhosphorIcons.xCircle(),
+              cancelled
+                  ? 'reservations.restore_confirmed'.tr()
+                  : 'reservations.mark_cancelled'.tr(),
               'toggle',
             ),
             _actionTile(
               ctx,
-              Icons.delete_outline,
+              PhosphorIcons.trash(),
               'general.delete2'.tr(),
               'delete',
               danger: true,
@@ -342,7 +363,7 @@ class TripReservationsScreen extends ConsumerWidget {
     String value, {
     bool danger = false,
   }) {
-    final color = danger ? const Color(0xFFD8422B) : _textPri;
+    final color = danger ? GenZTokens.danger : _textPri(ctx);
     return ListTile(
       leading: Icon(icon, color: color),
       title: Text(
@@ -365,13 +386,13 @@ class TripReservationsScreen extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: _surface,
+        backgroundColor: _surface(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'common.delete_confirm'.tr(namedArgs: {'name': r.title}),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
-            color: _textPri,
+            color: _textPri(context),
             fontSize: 16,
           ),
         ),
@@ -380,12 +401,12 @@ class TripReservationsScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: AppFonts.body(color: _textSec),
+              style: AppFonts.body(color: _textSec(context)),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFFD8422B),
+              backgroundColor: GenZTokens.danger,
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('general.delete2'.tr()),
@@ -406,7 +427,7 @@ class TripReservationsScreen extends ConsumerWidget {
     final paste = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: _surface,
+        backgroundColor: _surface(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -417,7 +438,7 @@ class TripReservationsScreen extends ConsumerWidget {
                 'reservations.paste_title'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
-                  color: _textPri,
+                  color: _textPri(context),
                   fontSize: 16,
                 ),
               ),
@@ -430,18 +451,17 @@ class TripReservationsScreen extends ConsumerWidget {
           children: [
             Text(
               'reservations.paste_sub'.tr(),
-              style: AppFonts.body(fontSize: 12.5, color: _textSec),
+              style: AppFonts.body(fontSize: 12.5, color: _textSec(context)),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: textCtrl,
               autofocus: true,
               maxLines: 6,
-              style: AppFonts.body(color: _textPri, fontSize: 13),
+              style: AppFonts.body(color: _textPri(context), fontSize: 13),
               decoration: InputDecoration(
-                hintText:
-                    'reservations.paste_hint'.tr(),
-                hintStyle: AppFonts.body(color: _textSec, fontSize: 12),
+                hintText: 'reservations.paste_hint'.tr(),
+                hintStyle: AppFonts.body(color: _textSec(context), fontSize: 12),
                 filled: true,
                 fillColor: _bgOf(context),
                 border: OutlineInputBorder(
@@ -457,7 +477,7 @@ class TripReservationsScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: AppFonts.body(color: _textSec),
+              style: AppFonts.body(color: _textSec(context)),
             ),
           ),
           FilledButton(
@@ -475,7 +495,7 @@ class TripReservationsScreen extends ConsumerWidget {
       SnackBar(
         content: Text('reservations.parsing'.tr()),
         behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 8),
+        duration: const Duration(seconds: 8),
       ),
     );
     final result = await ref
@@ -489,9 +509,13 @@ class TripReservationsScreen extends ConsumerWidget {
     if (created == 0) {
       msg = 'reservations.ai_none_text'.tr();
     } else if (exps > 0) {
-      msg = 'reservations.added_with_expenses'.tr(namedArgs: {'n': '\$created', 'e': '\$exps'});
+      msg = 'reservations.added_with_expenses'.tr(
+        namedArgs: {'n': '$created', 'e': '$exps'},
+      );
     } else {
-      msg = 'reservations.added_from_ticket'.tr(namedArgs: {'n': '\$created'});
+      msg = 'reservations.added_from_ticket'.tr(
+        namedArgs: {'n': '$created'},
+      );
     }
     messenger.showSnackBar(
       SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
@@ -505,7 +529,7 @@ class TripReservationsScreen extends ConsumerWidget {
     // Hỏi nguồn ảnh: thư viện hoặc chụp
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: _surface,
+      backgroundColor: _surface(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -519,13 +543,13 @@ class TripReservationsScreen extends ConsumerWidget {
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 fontSize: 16,
-                color: _textPri,
+                color: _textPri(context),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'reservations.pick_photo_sub'.tr(),
-              style: AppFonts.body(fontSize: 12.5, color: _textSec),
+              style: AppFonts.body(fontSize: 12.5, color: _textSec(context)),
             ),
             const SizedBox(height: 16),
             Row(
@@ -568,7 +592,7 @@ class TripReservationsScreen extends ConsumerWidget {
       SnackBar(
         content: Text('reservations.reading_photo'.tr()),
         behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 12),
+        duration: const Duration(seconds: 12),
       ),
     );
 
@@ -590,7 +614,9 @@ class TripReservationsScreen extends ConsumerWidget {
       if (created == 0) {
         msg = 'reservations.ai_none_image'.tr();
       } else if (exps > 0) {
-        msg = 'reservations.added_with_expenses'.tr(namedArgs: {'n': '\$created', 'e': '\$exps'});
+        msg = 'reservations.added_with_expenses'.tr(
+          namedArgs: {'n': '$created', 'e': '$exps'},
+        );
       } else {
         msg = 'reservations.detected_from_image'.tr(
           namedArgs: {'n': '$created'},
@@ -663,7 +689,7 @@ class TripReservationsScreen extends ConsumerWidget {
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: _surface,
+      backgroundColor: _surface(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -685,7 +711,7 @@ class TripReservationsScreen extends ConsumerWidget {
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w800,
                     fontSize: 18,
-                    color: _textPri,
+                    color: _textPri(context),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -707,7 +733,9 @@ class TripReservationsScreen extends ConsumerWidget {
                           color: sel ? m.$3 : _bgOf(context),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: sel ? m.$3 : _textSec.withValues(alpha: 0.3),
+                            color: sel
+                                ? m.$3
+                                : _textSec(context).withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -716,7 +744,7 @@ class TripReservationsScreen extends ConsumerWidget {
                             Icon(
                               m.$2,
                               size: 14,
-                              color: sel ? Colors.white : _textSec,
+                              color: sel ? GenZTokens.paper : _textSec(context),
                             ),
                             const SizedBox(width: 6),
                             Text(
@@ -724,7 +752,7 @@ class TripReservationsScreen extends ConsumerWidget {
                               style: AppFonts.body(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 12,
-                                color: sel ? Colors.white : _textPri,
+                                color: sel ? GenZTokens.paper : _textPri(context),
                               ),
                             ),
                           ],
@@ -792,7 +820,7 @@ class TripReservationsScreen extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.event, size: 18, color: _primary),
+                        Icon(PhosphorIcons.calendar(), size: 18, color: _primary),
                         const SizedBox(width: 10),
                         Text(
                           when == null
@@ -800,7 +828,9 @@ class TripReservationsScreen extends ConsumerWidget {
                               : _fmtDate(when!),
                           style: AppFonts.body(
                             fontWeight: FontWeight.w600,
-                            color: when == null ? _textSec : _textPri,
+                            color: when == null
+                                ? _textSec(context)
+                                : _textPri(context),
                           ),
                         ),
                       ],
@@ -893,10 +923,10 @@ class TripReservationsScreen extends ConsumerWidget {
     keyboardType: number ? TextInputType.number : TextInputType.text,
     // Lọc chữ khi ô ấy là ô số — keyboardType chỉ gợi ý bàn phím.
     inputFormatters: number ? [FilteringTextInputFormatter.digitsOnly] : null,
-    style: AppFonts.body(color: _textPri),
+    style: AppFonts.body(color: _textPri(context)),
     decoration: InputDecoration(
       hintText: hint,
-      hintStyle: AppFonts.body(color: _textSec),
+      hintStyle: AppFonts.body(color: _textSec(context)),
       filled: true,
       fillColor: _bgOf(context),
       border: OutlineInputBorder(
@@ -907,7 +937,7 @@ class TripReservationsScreen extends ConsumerWidget {
     ),
   );
 
-  Widget _empty() => ListView(
+  Widget _empty(BuildContext context) => ListView(
     padding: const EdgeInsets.all(28),
     children: [
       const SizedBox(height: 50),
@@ -919,19 +949,19 @@ class TripReservationsScreen extends ConsumerWidget {
         style: AppFonts.heading(
           fontWeight: FontWeight.w800,
           fontSize: 20,
-          color: _textPri,
+          color: _textPri(context),
         ),
       ),
       const SizedBox(height: 6),
       Text(
         'reservations.empty_sub'.tr(),
         textAlign: TextAlign.center,
-        style: AppFonts.body(fontSize: 14, color: _textSec),
+        style: AppFonts.body(fontSize: 14, color: _textSec(context)),
       ),
     ],
   );
 
-  Widget _skeleton() => ListView(
+  Widget _skeleton(BuildContext context) => ListView(
     padding: const EdgeInsets.all(20),
     children: List.generate(
       5,
@@ -939,24 +969,24 @@ class TripReservationsScreen extends ConsumerWidget {
         height: 84,
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.04),
+          color: _isDark(context)
+              ? GenZTokens.inkDark.withValues(alpha: 0.06)
+              : GenZTokens.ink.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(18),
         ),
       ),
     ),
   );
 
-  Widget _error() => ListView(
+  Widget _error(BuildContext context) => ListView(
     children: [
       const SizedBox(height: 120),
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -964,7 +994,7 @@ class TripReservationsScreen extends ConsumerWidget {
               'reservations.load_failed'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
-                color: _textPri,
+                color: _textPri(context),
               ),
             ),
           ],

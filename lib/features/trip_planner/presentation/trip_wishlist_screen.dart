@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/wishlist_providers.dart';
 import '../data/wishlist_repository.dart';
 
@@ -21,7 +22,7 @@ class TripWishlistScreen extends ConsumerWidget {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   /// Accent lấy từ theme đang chọn.
   ///
   /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
@@ -30,9 +31,9 @@ class TripWishlistScreen extends ConsumerWidget {
   /// an. Doc tu `colorScheme` de mau di theo lua chon that.
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
+  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   void _vote(WidgetRef ref, String itemId) {
     HapticFeedback.mediumImpact();
@@ -103,6 +104,64 @@ class TripWishlistScreen extends ConsumerWidget {
     }
   }
 
+  Future<void> _deleteItem(
+    BuildContext context,
+    WidgetRef ref,
+    WishlistItem item,
+  ) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'wishlist.delete_item'.tr(),
+          style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
+        ),
+        content: Text(
+          'wishlist.delete_item_confirm'.tr(namedArgs: {'name': item.name}),
+          style: AppFonts.body(color: _textSec),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: GenZTokens.danger),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('general.delete'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    HapticFeedback.mediumImpact();
+    try {
+      await ref.read(wishlistProvider(tripId).notifier).deleteItem(item.id);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('wishlist.deleted_success'.tr()),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(wishlistProvider(tripId));
@@ -112,7 +171,7 @@ class TripWishlistScreen extends ConsumerWidget {
         backgroundColor: _primaryOf(context),
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () => _addItem(context, ref),
-        icon: const Icon(Icons.add),
+        icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'packing.add'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -160,8 +219,8 @@ class TripWishlistScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.04),
+              ? GenZTokens.inkDark.withValues(alpha: 0.04)
+              : GenZTokens.ink.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(16),
         ),
       ),
@@ -174,9 +233,9 @@ class TripWishlistScreen extends ConsumerWidget {
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -191,7 +250,7 @@ class TripWishlistScreen extends ConsumerWidget {
             FilledButton.icon(
               style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
               onPressed: () => ref.invalidate(wishlistProvider(tripId)),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text('general.retry'.tr()),
             ),
           ],
@@ -248,8 +307,8 @@ class TripWishlistScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.black,
+              ? GenZTokens.inkDark.withValues(alpha: 0.12)
+              : GenZTokens.ink,
           width: 2,
         ),
       ),
@@ -318,6 +377,18 @@ class TripWishlistScreen extends ConsumerWidget {
                 ],
               ),
             ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: Icon(
+              PhosphorIcons.trash(),
+              size: 18,
+              color: _textSec,
+            ),
+            tooltip: 'general.delete'.tr(),
+            onPressed: () => _deleteItem(context, ref, item),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
           ),
         ],
       ),

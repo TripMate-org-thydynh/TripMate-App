@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -91,7 +92,7 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
           child: Row(
             children: [
               Icon(
-                urgent ? Icons.hourglass_bottom : Icons.hourglass_top,
+                urgent ? PhosphorIcons.hourglassLow() : PhosphorIcons.hourglassHigh(),
                 size: 20,
                 color: GenZTokens.ink,
               ),
@@ -128,7 +129,7 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
                 ),
               ),
               Icon(
-                Icons.chevron_right,
+                PhosphorIcons.caretRight(),
                 size: 20,
                 color: GenZTokens.ink.withValues(alpha: isDark ? 0.8 : 0.6),
               ),

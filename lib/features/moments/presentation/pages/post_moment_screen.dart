@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
@@ -118,13 +119,14 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -155,11 +157,7 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.add_photo_alternate_outlined,
-                          size: 40,
-                          color: inkSoft,
-                        ),
+                        Icon(PhosphorIcons.image(), size: 40, color: inkSoft),
                         const SizedBox(height: 8),
                         Text(
                           'moments.pick_hint'.tr(),
@@ -176,7 +174,7 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : () => _pick(ImageSource.camera),
-                  icon: const Icon(Icons.photo_camera_outlined, size: 18),
+                  icon: Icon(PhosphorIcons.camera(), size: 18),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: ink,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -204,7 +202,7 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : () => _pick(ImageSource.gallery),
-                  icon: const Icon(Icons.photo_library_outlined, size: 18),
+                  icon: Icon(PhosphorIcons.images(), size: 18),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: ink,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -283,7 +281,10 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _picked == null || _busy ? null : _post,
-              icon: const Icon(Icons.send_rounded, size: 18),
+              icon: Icon(
+                PhosphorIcons.paperPlaneTilt(PhosphorIconsStyle.fill),
+                size: 18,
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: GenZTokens.green,
                 foregroundColor: GenZTokens.ink,

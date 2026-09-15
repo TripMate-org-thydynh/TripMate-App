@@ -10,6 +10,7 @@ import '../../../core/format/money.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../data/entitlement_provider.dart';
 import '../pages/subscription_checkout_screen.dart';
 import 'vietqr_payment_sheet.dart';
@@ -176,7 +177,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     final isDark = theme.brightness == Brightness.dark;
     final ink = theme.colorScheme.onSurface;
     final accent = theme.colorScheme.primary;
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
     final isPlayChannel = kDistributionChannel == DistributionChannel.play;
 
@@ -275,7 +276,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.security_rounded, size: 16, color: ink),
+                      Icon(PhosphorIcons.shieldCheck(), size: 16, color: ink),
                       const SizedBox(width: 8),
                       Text(
                         'Google Play Billing',
@@ -294,7 +295,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                     Expanded(
                       child: _GatewayChip(
                         label: 'VietQR',
-                        icon: Icons.qr_code_2_rounded,
+                        icon: PhosphorIcons.qrCode(),
                         selected: _gateway == _SelectedGateway.sepay,
                         ink: ink,
                         accent: accent,
@@ -305,7 +306,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                     Expanded(
                       child: _GatewayChip(
                         label: 'Ví MoMo',
-                        icon: Icons.account_balance_wallet_outlined,
+                        icon: PhosphorIcons.wallet(),
                         selected: _gateway == _SelectedGateway.momo,
                         ink: ink,
                         accent: accent,
@@ -316,7 +317,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                     Expanded(
                       child: _GatewayChip(
                         label: 'ZaloPay',
-                        icon: Icons.payment_outlined,
+                        icon: PhosphorIcons.creditCard(),
                         selected: _gateway == _SelectedGateway.zalopay,
                         ink: ink,
                         accent: accent,

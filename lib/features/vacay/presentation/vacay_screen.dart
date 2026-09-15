@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/network/error_message.dart';
 import '../application/vacay_providers.dart';
 
@@ -22,11 +23,11 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
-      widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _card =>
-      widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   void _showAddDialog() {
     DateTime selectedDate = DateTime.now();
@@ -87,8 +88,8 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                       lastDate: DateTime(2028),
                       builder: (context, child) => Theme(
                         data: Theme.of(context).copyWith(
-                          colorScheme: const ColorScheme.light(
-                            primary: Color(0xFFF5822B),
+                          colorScheme: ColorScheme.light(
+                            primary: GenZTokens.orange,
                           ),
                         ),
                         child: child!,
@@ -112,7 +113,9 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                       children: [
                         Icon(
                           PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
-                          color: const Color(0xFFF5822B),
+                          color: widget.isDarkMode
+                              ? GenZTokens.purple
+                              : GenZTokens.orange,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
@@ -156,8 +159,10 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFF5822B),
+                      borderSide: BorderSide(
+                        color: widget.isDarkMode
+                            ? GenZTokens.purple
+                            : GenZTokens.orange,
                         width: 2,
                       ),
                     ),
@@ -170,13 +175,13 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF5822B),
-                      foregroundColor: Colors.white,
+                      backgroundColor: GenZTokens.orange,
+                      foregroundColor: GenZTokens.ink,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
-                        side: const BorderSide(
-                          color: Color(0xFF141210),
+                        side: BorderSide(
+                          color: _ink,
                           width: 2,
                         ),
                       ),
@@ -202,7 +207,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                       style: AppFonts.heading(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: GenZTokens.ink,
                       ),
                     ),
                   ),
@@ -230,13 +235,13 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: selected
-                ? const Color(0xFFF5822B)
-                : const Color(0xFFF5822B).withValues(alpha: 0.1),
+                ? GenZTokens.orange
+                : GenZTokens.orange.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: selected
-                  ? const Color(0xFFF5822B)
-                  : const Color(0xFFF5822B).withValues(alpha: 0.3),
+                  ? _ink
+                  : _ink.withValues(alpha: 0.2),
               width: selected ? 2 : 1,
             ),
           ),
@@ -245,7 +250,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
             style: TextStyle(
               fontSize: 13,
               fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-              color: selected ? Colors.white : const Color(0xFFF5822B),
+              color: selected ? GenZTokens.ink : _textSec,
             ),
           ),
         ),
@@ -288,21 +293,21 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
           HapticFeedback.selectionClick();
           _showAddDialog();
         },
-        backgroundColor: const Color(0xFFF5822B),
-        foregroundColor: Colors.white,
+        backgroundColor: GenZTokens.orange,
+        foregroundColor: GenZTokens.ink,
         icon: Icon(PhosphorIcons.calendarPlus()),
         label: Text(
           'trips.hub_leave_days'.tr(),
           style: AppFonts.heading(
             fontSize: 14,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: GenZTokens.ink,
           ),
         ),
       ),
       body: myDaysAsync.when(
         loading: () => Center(
-          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+          child: CircularProgressIndicator(color: GenZTokens.orange),
         ),
         error: (e, _) => Center(
           child: Text(
@@ -325,13 +330,13 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5822B),
+                  color: GenZTokens.orange,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFF141210), width: 2),
-                  boxShadow: const [
+                  border: Border.all(color: _ink, width: 2),
+                  boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF141210),
-                      offset: Offset(4, 4),
+                      color: _ink,
+                      offset: const Offset(4, 4),
                       blurRadius: 0,
                     ),
                   ],
@@ -344,7 +349,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                       style: AppFonts.heading(
                         fontSize: 12,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: GenZTokens.ink.withValues(alpha: 0.8),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -447,12 +452,8 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: d.type == 'LEAVE'
-                                  ? const Color(
-                                      0xFF3D8BFF,
-                                    ).withValues(alpha: 0.1)
-                                  : const Color(
-                                      0xFF1FA85C,
-                                    ).withValues(alpha: 0.1),
+                                  ? GenZTokens.blue.withValues(alpha: 0.15)
+                                  : GenZTokens.green.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -463,15 +464,15 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: d.type == 'LEAVE'
-                                    ? const Color(0xFF3D8BFF)
-                                    : const Color(0xFF1FA85C),
+                                    ? GenZTokens.blue
+                                    : GenZTokens.green,
                               ),
                             ),
                           ),
                           IconButton(
                             icon: Icon(
                               PhosphorIcons.trash(),
-                              color: Colors.red,
+                              color: GenZTokens.danger,
                               size: 18,
                             ),
                             onPressed: () async {
@@ -500,17 +501,17 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
               ),
               const SizedBox(height: 12),
               bridgeAsync.when(
-                loading: () => const Center(
+                loading: () => Center(
                   child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: CircularProgressIndicator(),
+                    padding: const EdgeInsets.all(16),
+                    child: CircularProgressIndicator(color: GenZTokens.orange),
                   ),
                 ),
                 error: (e, _) => Text(
                   'vacay.load_suggestions_failed'.tr(
                     namedArgs: {'err': friendlyError(e)},
                   ),
-                  style: AppFonts.body(fontSize: 13, color: Colors.red),
+                  style: AppFonts.body(fontSize: 13, color: GenZTokens.danger),
                 ),
                 data: (suggestions) {
                   if (suggestions.isEmpty) {
@@ -528,12 +529,10 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                         margin: const EdgeInsets.only(bottom: 10),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(
-                            0xFFCF9FFF,
-                          ).withValues(alpha: 0.15),
+                          color: GenZTokens.purple.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: const Color(0xFFCF9FFF),
+                            color: GenZTokens.purple,
                             width: 1.5,
                           ),
                         ),
@@ -542,7 +541,9 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                           children: [
                             Icon(
                               PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                              color: const Color(0xFF8B4DE8),
+                              color: widget.isDarkMode
+                                  ? GenZTokens.purple
+                                  : GenZTokens.purple,
                               size: 20,
                             ),
                             const SizedBox(width: 10),
@@ -578,9 +579,7 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
                                           vertical: 3,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: const Color(
-                                            0xFF141210,
-                                          ).withValues(alpha: 0.08),
+                                          color: _ink.withValues(alpha: 0.08),
                                           borderRadius: BorderRadius.circular(
                                             6,
                                           ),
@@ -620,14 +619,14 @@ class _VacayScreenState extends ConsumerState<VacayScreen> {
           style: AppFonts.heading(
             fontSize: 24,
             fontWeight: FontWeight.w900,
-            color: Colors.white,
+            color: GenZTokens.ink,
           ),
         ),
         Text(
           '$label ($unit)',
           style: AppFonts.body(
             fontSize: 12,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: GenZTokens.ink.withValues(alpha: 0.8),
           ),
         ),
       ],

@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../network/api_exception.dart';
 import '../theme/app_fonts.dart';
@@ -102,8 +103,8 @@ class AppErrorState extends StatelessWidget {
           children: [
             Icon(
               _api == null || _api!.isNetwork
-                  ? Icons.wifi_off_rounded
-                  : Icons.error_outline_rounded,
+                  ? PhosphorIcons.wifiSlash()
+                  : PhosphorIcons.warningCircle(),
               size: 40,
               color: inkSoft.withValues(alpha: 0.8),
             ),
@@ -112,7 +113,7 @@ class AppErrorState extends StatelessWidget {
               _api?.message ?? 'errors.load_failed'.tr(),
               textAlign: TextAlign.center,
               style: AppFonts.heading(
-                fontSize: 16,
+                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: ink,
               ),
@@ -120,7 +121,7 @@ class AppErrorState extends StatelessWidget {
             const SizedBox(height: GenZTokens.space4),
             ElevatedButton.icon(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh, size: 18),
+              icon: Icon(PhosphorIcons.arrowClockwise(), size: 18),
               style: ElevatedButton.styleFrom(
                 backgroundColor: GenZTokens.yellow,
                 foregroundColor: GenZTokens.ink,
@@ -131,7 +132,7 @@ class AppErrorState extends StatelessWidget {
                 ),
               ),
               label: Text(
-                'general.retry'.tr(),
+                'common.retry'.tr(),
                 style: AppFonts.heading(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,

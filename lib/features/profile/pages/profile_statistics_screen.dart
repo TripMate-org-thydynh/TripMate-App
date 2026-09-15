@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/format/money.dart';
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../data/profile_provider.dart';
 
 /// Thống kê hồ sơ — **số liệu thật** từ `GET /users/me/stats`.
@@ -18,26 +21,28 @@ class ProfileStatisticsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final state = ref.watch(profileDataProvider);
     final stats = state.stats;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF141210)
-          : const Color(0xFFFDF6D3),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black87,
-          ),
+          icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'profile.stats_title'.tr(),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: AppFonts.heading(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: ink,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -46,9 +51,11 @@ class ProfileStatisticsScreen extends ConsumerWidget {
         child: Column(
           children: [
             Card(
-              color: isDark ? const Color(0xFF262019) : Colors.white,
+              elevation: 0,
+              color: surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: ink, width: 2.5),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -56,7 +63,9 @@ class ProfileStatisticsScreen extends ConsumerWidget {
                     ? const Center(
                         child: Padding(
                           padding: EdgeInsets.all(24),
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(
+                            color: GenZTokens.orange,
+                          ),
                         ),
                       )
                     : Column(
@@ -66,33 +75,45 @@ class ProfileStatisticsScreen extends ConsumerWidget {
                             'profile.trip_count'.tr(
                               namedArgs: {'n': '${_int(stats, 'totalTrips')}'},
                             ),
-                            isDark,
+                            inkSoft,
                           ),
-                          const Divider(height: 24),
+                          Divider(
+                            height: 24,
+                            color: inkSoft.withValues(alpha: 0.2),
+                          ),
                           _row(
                             'profile.stat_distance_done'.tr(),
                             '${_int(stats, 'totalDistanceKm')} km',
-                            isDark,
+                            inkSoft,
                           ),
-                          const Divider(height: 24),
+                          Divider(
+                            height: 24,
+                            color: inkSoft.withValues(alpha: 0.2),
+                          ),
                           _row(
                             'profile.stat_places_done'.tr(),
                             'profile.place_count'.tr(
                               namedArgs: {'n': '${_int(stats, 'totalPlaces')}'},
                             ),
-                            isDark,
+                            inkSoft,
                           ),
-                          const Divider(height: 24),
+                          Divider(
+                            height: 24,
+                            color: inkSoft.withValues(alpha: 0.2),
+                          ),
                           _row(
                             'profile.stat_xp'.tr(),
                             '${formatMoney(_int(stats, 'achievementPoints'), locale: context.locale.languageCode).replaceAll(RegExp(r'\s*[đ₫]$'), '')} XP',
-                            isDark,
+                            inkSoft,
                           ),
-                          const Divider(height: 24),
+                          Divider(
+                            height: 24,
+                            color: inkSoft.withValues(alpha: 0.2),
+                          ),
                           _row(
                             'profile.stat_reputation'.tr(),
                             '${_int(stats, 'squadReputationScore')}%',
-                            isDark,
+                            inkSoft,
                           ),
                         ],
                       ),
@@ -108,24 +129,22 @@ class ProfileStatisticsScreen extends ConsumerWidget {
   static int _int(Map<String, dynamic>? stats, String key) =>
       (stats?[key] as num?)?.toInt() ?? 0;
 
-  Widget _row(String title, String val, bool isDark) {
+  Widget _row(String title, String val, Color inkSoft) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: Text(
             title,
-            style: TextStyle(
-              color: isDark ? Colors.grey[400] : Colors.grey[600],
-            ),
+            style: AppFonts.body(color: inkSoft),
           ),
         ),
         const SizedBox(width: 12),
         Text(
           val,
-          style: const TextStyle(
+          style: AppFonts.heading(
             fontWeight: FontWeight.bold,
-            color: Colors.purpleAccent,
+            color: GenZTokens.purple,
           ),
         ),
       ],

@@ -2,8 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:tripmate/core/theme/gen_z_tokens.dart';
 
 import '../../../core/providers/auth_provider.dart';
 import '../application/todos_providers.dart';
@@ -19,18 +20,24 @@ class TripTodosScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
+  bool _isDark(BuildContext context) =>
+      isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary => const Color(0xFF8B4DE8);
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
-  Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surface(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _primary => GenZTokens.purple;
+  Color _textPri(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSec(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color _border(BuildContext context) => _isDark(context)
+      ? GenZTokens.inkDark.withValues(alpha: 0.1)
+      : GenZTokens.ink.withValues(alpha: 0.06);
 
   static const _prio = <String, (String, Color)>{
-    'HIGH': ('todos.priority_urgent', Color(0xFFD8422B)),
-    'NORMAL': ('todos.priority_normal', Color(0xFF3D8BFF)),
+    'HIGH': ('todos.priority_urgent', GenZTokens.danger),
+    'NORMAL': ('todos.priority_normal', GenZTokens.blue),
     'LOW': ('todos.priority_relaxed', Color(0xFF64748B)),
   };
 
@@ -62,13 +69,13 @@ class TripTodosScreen extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: _surface,
+        backgroundColor: _surface(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'common.delete_confirm'.tr(namedArgs: {'name': it.title}),
-          style: GoogleFonts.spaceGrotesk(
+          style: AppFonts.heading(
             fontWeight: FontWeight.w800,
-            color: _textPri,
+            color: _textPri(context),
             fontSize: 16,
           ),
         ),
@@ -77,12 +84,12 @@ class TripTodosScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: GoogleFonts.outfit(color: _textSec),
+              style: AppFonts.body(color: _textSec(context)),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFFD8422B),
+              backgroundColor: GenZTokens.danger,
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('general.delete2'.tr()),
@@ -103,7 +110,7 @@ class TripTodosScreen extends ConsumerWidget {
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: _surface,
+      backgroundColor: _surface(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -121,20 +128,20 @@ class TripTodosScreen extends ConsumerWidget {
             children: [
               Text(
                 'todos.add'.tr(),
-                style: GoogleFonts.spaceGrotesk(
+                style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
-                  color: _textPri,
+                  color: _textPri(context),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: titleCtrl,
                 autofocus: true,
-                style: GoogleFonts.outfit(color: _textPri),
+                style: AppFonts.body(color: _textPri(context)),
                 decoration: InputDecoration(
                   hintText: 'todos.item_hint'.tr(),
-                  hintStyle: GoogleFonts.outfit(color: _textSec),
+                  hintStyle: AppFonts.body(color: _textSec(context)),
                   filled: true,
                   fillColor: _bgOf(context),
                   border: OutlineInputBorder(
@@ -146,9 +153,9 @@ class TripTodosScreen extends ConsumerWidget {
               const SizedBox(height: 14),
               Text(
                 'todos.priority'.tr(),
-                style: GoogleFonts.outfit(
+                style: AppFonts.body(
                   fontWeight: FontWeight.w700,
-                  color: _textSec,
+                  color: _textSec(context),
                   fontSize: 12,
                 ),
               ),
@@ -171,15 +178,15 @@ class TripTodosScreen extends ConsumerWidget {
                           border: Border.all(
                             color: sel
                                 ? e.value.$2
-                                : _textSec.withValues(alpha: 0.3),
+                                : _textSec(context).withValues(alpha: 0.3),
                           ),
                         ),
                         child: Text(
                           e.value.$1.tr(),
-                          style: GoogleFonts.outfit(
+                          style: AppFonts.body(
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
-                            color: sel ? Colors.white : _textPri,
+                            color: sel ? GenZTokens.paper : _textPri(context),
                           ),
                         ),
                       ),
@@ -209,15 +216,15 @@ class TripTodosScreen extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.event, size: 18, color: _primary),
+                      Icon(PhosphorIcons.calendar(), size: 18, color: _primary),
                       const SizedBox(width: 10),
                       Text(
                         due == null
                             ? 'todos.due_hint'.tr()
-                            : '${due!.day}/${due!.month}/${due!.year}',
-                        style: GoogleFonts.outfit(
+                            : '${due!.day.toString().padLeft(2, '0')}/${due!.month.toString().padLeft(2, '0')}/${due!.year}',
+                        style: AppFonts.body(
                           fontWeight: FontWeight.w600,
-                          color: due == null ? _textSec : _textPri,
+                          color: due == null ? _textSec(context) : _textPri(context),
                         ),
                       ),
                     ],
@@ -238,7 +245,7 @@ class TripTodosScreen extends ConsumerWidget {
                   onPressed: () => Navigator.pop(ctx, true),
                   child: Text(
                     'todos.add'.tr(),
-                    style: GoogleFonts.spaceGrotesk(
+                    style: AppFonts.heading(
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -264,12 +271,12 @@ class TripTodosScreen extends ConsumerWidget {
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: _primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        foregroundColor: GenZTokens.paper,
         onPressed: () => _addTodo(context, ref),
-        icon: const Icon(Icons.add),
+        icon: Icon(PhosphorIcons.plus()),
         label: Text(
-          'packing.add'.tr(),
-          style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w800),
+          'todos.add'.tr(),
+          style: AppFonts.heading(fontWeight: FontWeight.w800),
         ),
       ),
       appBar: AppBar(
@@ -277,10 +284,10 @@ class TripTodosScreen extends ConsumerWidget {
         elevation: 0,
         title: Text(
           'todos.title'.tr(),
-          style: GoogleFonts.spaceGrotesk(
+          style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
-            color: _textPri,
+            color: _textPri(context),
           ),
         ),
       ),
@@ -288,10 +295,10 @@ class TripTodosScreen extends ConsumerWidget {
         color: _primary,
         onRefresh: () => ref.read(todosProvider(tripId).notifier).refresh(),
         child: async.when(
-          loading: () => _skeleton(),
-          error: (e, _) => _error(),
+          loading: () => _skeleton(context),
+          error: (e, _) => _error(context),
           data: (list) => list.items.isEmpty
-              ? _empty()
+              ? _empty(context)
               : ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                   children: [
@@ -310,9 +317,9 @@ class TripTodosScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _surface,
+        color: _surface(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _textPri.withValues(alpha: 0.08)),
+        border: Border.all(color: _border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,18 +339,21 @@ class TripTodosScreen extends ConsumerWidget {
                   done
                       ? 'todos.all_done'.tr()
                       : 'todos.done_count'.tr(
-            namedArgs: {'done': '${list.done}', 'total': '${list.total}'},
-          ),
-                  style: GoogleFonts.spaceGrotesk(
+                          namedArgs: {
+                            'done': '${list.done}',
+                            'total': '${list.total}',
+                          },
+                        ),
+                  style: AppFonts.heading(
                     fontWeight: FontWeight.w800,
                     fontSize: 15,
-                    color: _textPri,
+                    color: _textPri(context),
                   ),
                 ),
               ),
               Text(
                 '${list.percent}%',
-                style: GoogleFonts.spaceMono(
+                style: AppFonts.mono(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
                   color: _primary,
@@ -376,9 +386,9 @@ class TripTodosScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: _surface,
+          color: _surface(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _textPri.withValues(alpha: 0.06)),
+          border: Border.all(color: _border(context)),
         ),
         child: Row(
           children: [
@@ -394,12 +404,12 @@ class TripTodosScreen extends ConsumerWidget {
                   border: Border.all(
                     color: it.isDone
                         ? _primary
-                        : _textSec.withValues(alpha: 0.5),
+                        : _textSec(context).withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
                 child: it.isDone
-                    ? const Icon(Icons.check, size: 18, color: Colors.white)
+                    ? Icon(PhosphorIcons.check(), size: 18, color: GenZTokens.paper)
                     : null,
               ),
             ),
@@ -410,10 +420,10 @@ class TripTodosScreen extends ConsumerWidget {
                 children: [
                   Text(
                     it.title,
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.body(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.5,
-                      color: it.isDone ? _textSec : _textPri,
+                      color: it.isDone ? _textSec(context) : _textPri(context),
                       decoration: it.isDone ? TextDecoration.lineThrough : null,
                     ),
                   ),
@@ -431,7 +441,7 @@ class TripTodosScreen extends ConsumerWidget {
                         ),
                         child: Text(
                           pm.$1,
-                          style: GoogleFonts.spaceMono(
+                          style: AppFonts.mono(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             color: pm.$2,
@@ -440,14 +450,18 @@ class TripTodosScreen extends ConsumerWidget {
                       ),
                       if (it.dueDate != null) ...[
                         const SizedBox(width: 8),
-                        Icon(Icons.event, size: 14, color: _textSec),
+                        Icon(
+                          PhosphorIcons.calendar(),
+                          size: 14,
+                          color: _textSec(context),
+                        ),
                         const SizedBox(width: 3),
                         Text(
-                          '${it.dueDate!.toLocal().day}/${it.dueDate!.toLocal().month}',
-                          style: GoogleFonts.spaceMono(
+                          '${it.dueDate!.toLocal().day.toString().padLeft(2, '0')}/${it.dueDate!.toLocal().month.toString().padLeft(2, '0')}',
+                          style: AppFonts.mono(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: _textSec,
+                            color: _textSec(context),
                           ),
                         ),
                       ],
@@ -459,7 +473,7 @@ class TripTodosScreen extends ConsumerWidget {
             const SizedBox(width: 8),
             GestureDetector(
               onTap: () => _assignToMe(ref, it),
-              child: _avatar(it, mine),
+              child: _avatar(context, it, mine),
             ),
           ],
         ),
@@ -467,7 +481,7 @@ class TripTodosScreen extends ConsumerWidget {
     );
   }
 
-  Widget _avatar(TodoItem it, bool mine) {
+  Widget _avatar(BuildContext context, TodoItem it, bool mine) {
     if (it.assignee == null) {
       return Container(
         width: 30,
@@ -475,11 +489,15 @@ class TripTodosScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: _textSec.withValues(alpha: 0.4),
+            color: _textSec(context).withValues(alpha: 0.4),
             width: 1.5,
           ),
         ),
-        child: Icon(Icons.person_add_alt, size: 15, color: _textSec),
+        child: Icon(
+          PhosphorIcons.userPlus(),
+          size: 15,
+          color: _textSec(context),
+        ),
       );
     }
     final url = it.assignee!.avatarUrl;
@@ -491,7 +509,7 @@ class TripTodosScreen extends ConsumerWidget {
       height: 30,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: mine ? _primary : _textSec,
+        color: mine ? _primary : _textSec(context),
         image: (url != null && url.isNotEmpty)
             ? DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
             : null,
@@ -500,17 +518,17 @@ class TripTodosScreen extends ConsumerWidget {
       child: (url == null || url.isEmpty)
           ? Text(
               initial,
-              style: GoogleFonts.spaceGrotesk(
+              style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 fontSize: 13,
-                color: Colors.white,
+                color: GenZTokens.paper,
               ),
             )
           : null,
     );
   }
 
-  Widget _empty() => ListView(
+  Widget _empty(BuildContext context) => ListView(
     padding: const EdgeInsets.all(24),
     children: [
       const SizedBox(height: 50),
@@ -519,22 +537,22 @@ class TripTodosScreen extends ConsumerWidget {
       Text(
         'todos.empty'.tr(),
         textAlign: TextAlign.center,
-        style: GoogleFonts.spaceGrotesk(
+        style: AppFonts.heading(
           fontWeight: FontWeight.w800,
           fontSize: 20,
-          color: _textPri,
+          color: _textPri(context),
         ),
       ),
       const SizedBox(height: 6),
       Text(
         'todos.empty_sub'.tr(),
         textAlign: TextAlign.center,
-        style: GoogleFonts.outfit(fontSize: 14, color: _textSec),
+        style: AppFonts.body(fontSize: 14, color: _textSec(context)),
       ),
     ],
   );
 
-  Widget _skeleton() => ListView(
+  Widget _skeleton(BuildContext context) => ListView(
     padding: const EdgeInsets.all(20),
     children: List.generate(
       6,
@@ -542,32 +560,32 @@ class TripTodosScreen extends ConsumerWidget {
         height: 56,
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.04),
+          color: _isDark(context)
+              ? GenZTokens.inkDark.withValues(alpha: 0.06)
+              : GenZTokens.ink.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(16),
         ),
       ),
     ),
   );
 
-  Widget _error() => ListView(
+  Widget _error(BuildContext context) => ListView(
     children: [
       const SizedBox(height: 120),
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
             Text(
               'common.list_load_failed'.tr(),
-              style: GoogleFonts.spaceGrotesk(
+              style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
-                color: _textPri,
+                color: _textPri(context),
               ),
             ),
           ],

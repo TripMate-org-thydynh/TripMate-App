@@ -3,6 +3,7 @@ import '../../../../core/services/media_uploader.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../moments/data/moments_repository.dart';
 import '../../data/home_feed_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -290,7 +291,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                         ),
                       ),
                       Icon(
-                        _weatherData?.icon ?? Icons.wb_sunny_outlined,
+                        _weatherData?.icon ?? PhosphorIcons.sun(),
                         color: _weatherData?.color ?? GenZTokens.yellow,
                         size: 26,
                       ),
@@ -300,7 +301,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   Row(
                     children: [
                       Icon(
-                        Icons.psychology_outlined,
+                        PhosphorIcons.brain(),
                         color: _inkSoft,
                         size: 12,
                       ),
@@ -327,19 +328,19 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   if (_isLoadingWeather) ...[
                     const PillTag(
                       text: '-- °C',
-                      icon: Icons.thermostat_outlined,
+                      icon: PhosphorIconsRegular.thermometer,
                       color: GenZTokens.lilac,
                     ),
                     const SizedBox(height: 6),
                     PillTag(
                       text: 'dashboard.loading'.tr(),
-                      icon: Icons.wb_cloudy_outlined,
+                      icon: PhosphorIcons.cloud(),
                       color: GenZTokens.yellow,
                     ),
                   ] else if (_weatherData != null) ...[
                     PillTag(
                       text: '${_weatherData!.temp.toStringAsFixed(0)}°C',
-                      icon: Icons.thermostat_outlined,
+                      icon: PhosphorIcons.thermometer(),
                       color: GenZTokens.lilac,
                     ),
                     const SizedBox(height: 6),
@@ -472,7 +473,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                   child: Row(
                                     children: [
                                       Icon(
-                                        Icons.schedule_outlined,
+                                        PhosphorIcons.clock(),
                                         color: _ink,
                                         size: 14,
                                       ),
@@ -582,8 +583,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      const Icon(
-                        Icons.notifications_none_rounded,
+                      Icon(
+                        PhosphorIcons.bell(),
                         size: 22,
                         color: GenZTokens.ink,
                       ),
@@ -686,8 +687,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               imageUrl: shown[i].avatarUrl!,
                               fit: BoxFit.cover,
                               placeholder: (c, url) => Container(color: _bg),
-                              errorWidget: (c, url, e) => const Icon(
-                                Icons.person,
+                              errorWidget: (c, url, e) => Icon(
+                                PhosphorIcons.user(),
                                 size: 16,
                                 color: GenZTokens.ink,
                               ),
@@ -814,7 +815,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 text: 'dashboard.member_count'.tr(
                   namedArgs: {'count': '${t.memberCount}'},
                 ),
-                icon: Icons.group,
+                icon: PhosphorIcons.users(),
                 color: GenZTokens.yellow,
               ),
             ),
@@ -830,13 +831,13 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     children: [
                       PillTag(
                         text: daysLabel,
-                        icon: Icons.schedule_rounded,
+                        icon: PhosphorIcons.clock(),
                         color: GenZTokens.lilac,
                       ),
                       const SizedBox(width: 8),
                       PillTag(
                         text: t.inviteCode,
-                        icon: Icons.tag,
+                        icon: PhosphorIcons.hash(),
                         color: GenZTokens.pink,
                       ),
                       if (TripVibe.of(t.vibe) != null) ...[
@@ -866,8 +867,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(
-                          Icons.place,
+                        Icon(
+                          PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                           size: 15,
                           color: GenZTokens.paper,
                         ),
@@ -908,8 +909,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
+            Icon(
+              PhosphorIcons.cloudSlash(),
               size: 36,
               color: GenZTokens.paper,
             ),
@@ -950,7 +951,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.airplane_ticket, size: 36, color: GenZTokens.ink),
+            Icon(PhosphorIcons.ticket(), size: 36, color: GenZTokens.ink),
             const SizedBox(height: 8),
             Text(
               'dashboard.no_trips_title'.tr(),
@@ -973,7 +974,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             const SizedBox(height: 14),
             PillTag(
               text: 'dashboard.create_trip'.tr(),
-              icon: Icons.add,
+              icon: PhosphorIcons.plus(),
               color: GenZTokens.paper,
             ),
           ],
@@ -1003,8 +1004,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 children: [
                   Row(
                     children: [
-                      const Icon(
-                        Icons.local_fire_department_rounded,
+                      Icon(
+                        PhosphorIcons.flame(PhosphorIconsStyle.fill),
                         color: GenZTokens.red,
                         size: 22,
                       ),
@@ -1099,7 +1100,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   String _fmtMoney(double v) {
     if (v >= 1000000) {
       final m = v / 1000000;
-      return '${m == m.roundToDouble() ? m.toStringAsFixed(0) : m.toStringAsFixed(1)}tr';
+      return '${m == m.roundToDouble() ? m.toStringAsFixed(0) : m.toStringAsFixed(1)}${'dashboard.currency_tr'.tr()}';
     }
     if (v >= 1000) return '${(v / 1000).toStringAsFixed(0)}k';
     return v.toStringAsFixed(0);
@@ -1113,191 +1114,195 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       children: [
         // Section heading
         Row(
-          children: [
-            Text(
-              'dashboard.scrapbook'.tr(),
-              style: AppFonts.heading(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: _ink,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(Icons.camera_alt_outlined, size: 20, color: _ink),
-          ],
-        ),
-        const SizedBox(height: 16),
+           children: [
+             Text(
+               'dashboard.scrapbook'.tr(),
+               style: AppFonts.heading(
+                 fontSize: 22,
+                 fontWeight: FontWeight.w800,
+                 color: _ink,
+                 letterSpacing: -0.5,
+               ),
+             ),
+             const SizedBox(width: 8),
+             Icon(PhosphorIcons.camera(), size: 20, color: _ink),
+           ],
+         ),
+         const SizedBox(height: 16),
 
-        // Scrapbook lấy kỷ niệm THẬT mới nhất trên mọi chuyến của user.
-        // Trước đây khối này là 2 tấm polaroid cứng (ảnh Unsplash + tên bịa)
-        // hiển thị y hệt nhau cho mọi tài khoản.
-        Consumer(
-          builder: (context, ref, _) {
-            final async = ref.watch(recentMomentsProvider);
-            return async.when(
-              loading: () => const SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-              ),
-              error: (_, _) =>
-                  _scrapbookPlaceholder('dashboard.scrapbook_error'.tr()),
-              data: (moments) {
-                if (moments.isEmpty) {
-                  return _scrapbookPlaceholder(
-                    'dashboard.scrapbook_empty'.tr(),
-                  );
-                }
-                final shown = moments.take(2).toList();
-                return Row(
-                  children: [
-                    for (var i = 0; i < shown.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 16),
-                      Expanded(
-                        child: Transform.rotate(
-                          angle: i.isEven ? -0.06 : 0.05,
-                          child: GestureDetector(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => MemoryWallScreen(
-                                  isDarkMode: isDarkMode,
-                                  onThemeToggle: onThemeToggle,
-                                ),
-                              ),
-                            ),
-                            child: _buildPolaroidCard(
-                              context: context,
-                              title: shown[i].title,
-                              author: '- ${shown[i].authorName} -',
-                              location: shown[i].location,
-                              fallbackColor: i.isEven
-                                  ? GenZTokens.orange
-                                  : GenZTokens.blue,
-                              // Polaroid nhỏ trong scrapbook.
-                              imageUrl: optimizedMedia(
-                                shown[i].mediaUrl,
-                                width: 320,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                    // Chỉ có 1 kỷ niệm → chừa chỗ để tấm polaroid không bị kéo giãn.
-                    if (shown.length == 1) ...[
-                      const SizedBox(width: 16),
-                      const Spacer(),
-                    ],
-                  ],
-                );
-              },
-            );
-          },
-        ),
-      ],
-    );
-  }
+         // Scrapbook lấy kỷ niệm THẬT mới nhất trên mọi chuyến của user.
+         // Trước đây khối này là 2 tấm polaroid cứng (ảnh Unsplash + tên bịa)
+         // hiển thị y hệt nhau cho mọi tài khoản.
+         Consumer(
+           builder: (context, ref, _) {
+             final async = ref.watch(recentMomentsProvider);
+             return async.when(
+               loading: () => const SizedBox(
+                 height: 200,
+                 child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+               ),
+               error: (_, _) =>
+                   _scrapbookPlaceholder('dashboard.scrapbook_error'.tr()),
+               data: (moments) {
+                 if (moments.isEmpty) {
+                   return _scrapbookPlaceholder(
+                     'dashboard.scrapbook_empty'.tr(),
+                   );
+                 }
+                 final shown = moments.take(2).toList();
+                 return Row(
+                   children: [
+                     for (var i = 0; i < shown.length; i++) ...[
+                       if (i > 0) const SizedBox(width: 16),
+                       Expanded(
+                         child: Transform.rotate(
+                           angle: i.isEven ? -0.06 : 0.05,
+                           child: GestureDetector(
+                             onTap: () => Navigator.push(
+                               context,
+                               MaterialPageRoute(
+                                 builder: (_) => MemoryWallScreen(
+                                   isDarkMode: isDarkMode,
+                                   onThemeToggle: onThemeToggle,
+                                 ),
+                               ),
+                             ),
+                             child: _buildPolaroidCard(
+                               context: context,
+                               title: shown[i].title,
+                               author: '- ${shown[i].authorName} -',
+                               location: shown[i].location,
+                               fallbackColor: i.isEven
+                                   ? GenZTokens.orange
+                                   : GenZTokens.blue,
+                               // Polaroid nhỏ trong scrapbook.
+                               imageUrl: optimizedMedia(
+                                 shown[i].mediaUrl,
+                                 width: 320,
+                               ),
+                             ),
+                           ),
+                         ),
+                       ),
+                     ],
+                     // Chỉ có 1 kỷ niệm → chừa chỗ để tấm polaroid không bị kéo giãn.
+                     if (shown.length == 1) ...[
+                       const SizedBox(width: 16),
+                       const Spacer(),
+                     ],
+                   ],
+                 );
+               },
+             );
+           },
+         ),
+       ],
+     );
+   }
 
-  /// Khung thay thế khi chưa có kỷ niệm nào hoặc tải lỗi.
-  Widget _scrapbookPlaceholder(String message) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-      decoration: BoxDecoration(
-        color: _paper,
-        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: _ink.withValues(alpha: 0.25), width: 2),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.photo_camera_outlined,
-            size: 28,
-            color: _ink.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: AppFonts.body(
-              fontSize: 13,
-              color: _ink.withValues(alpha: 0.6),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+   /// Khung thay thế khi chưa có kỷ niệm nào hoặc tải lỗi.
+   Widget _scrapbookPlaceholder(String message) {
+     return Container(
+       width: double.infinity,
+       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+       decoration: BoxDecoration(
+         color: _paper,
+         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+         border: Border.all(color: _ink.withValues(alpha: 0.25), width: 2),
+       ),
+       child: Column(
+         children: [
+           Icon(
+             PhosphorIcons.camera(),
+             size: 28,
+             color: _ink.withValues(alpha: 0.5),
+           ),
+           const SizedBox(height: 8),
+           Text(
+             message,
+             textAlign: TextAlign.center,
+             style: AppFonts.body(
+               fontSize: 13,
+               color: _ink.withValues(alpha: 0.6),
+             ),
+           ),
+         ],
+       ),
+     );
+   }
 
-  Widget _buildPolaroidCard({
-    required BuildContext context,
-    required String title,
-    required String author,
-    required String location,
-    required Color fallbackColor,
-    required String imageUrl,
-  }) {
-    return HardShadowBox(
-      color: _paper,
-      radius: 10,
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              height: 130,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                height: 130,
-                color: fallbackColor,
-                child: const Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(GenZTokens.ink),
-                    ),
-                  ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                height: 130,
-                color: fallbackColor,
-                child: const Center(
-                  child: Icon(
-                    Icons.image_outlined,
-                    color: GenZTokens.ink,
-                    size: 28,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: GoogleFonts.caveat(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: _ink,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            author,
-            style: GoogleFonts.caveat(fontSize: 14, color: _inkSoft),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              const Icon(Icons.location_on, size: 12, color: GenZTokens.red),
-              const SizedBox(width: 2),
+   Widget _buildPolaroidCard({
+     required BuildContext context,
+     required String title,
+     required String author,
+     required String location,
+     required Color fallbackColor,
+     required String imageUrl,
+   }) {
+     return HardShadowBox(
+       color: _paper,
+       radius: 10,
+       padding: const EdgeInsets.all(10),
+       child: Column(
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: [
+           ClipRRect(
+             borderRadius: BorderRadius.circular(4),
+             child: CachedNetworkImage(
+               imageUrl: imageUrl,
+               height: 130,
+               width: double.infinity,
+               fit: BoxFit.cover,
+               placeholder: (context, url) => Container(
+                 height: 130,
+                 color: fallbackColor,
+                 child: const Center(
+                   child: SizedBox(
+                     width: 20,
+                     height: 20,
+                     child: CircularProgressIndicator(
+                       strokeWidth: 2,
+                       valueColor: AlwaysStoppedAnimation<Color>(GenZTokens.ink),
+                     ),
+                   ),
+                 ),
+               ),
+               errorWidget: (context, url, error) => Container(
+                 height: 130,
+                 color: fallbackColor,
+                 child: Center(
+                   child: Icon(
+                     PhosphorIcons.image(),
+                     color: GenZTokens.ink,
+                     size: 28,
+                   ),
+                 ),
+               ),
+             ),
+           ),
+           const SizedBox(height: 12),
+           Text(
+             title,
+             style: GoogleFonts.caveat(
+               fontSize: 18,
+               fontWeight: FontWeight.bold,
+               color: _ink,
+             ),
+           ),
+           const SizedBox(height: 2),
+           Text(
+             author,
+             style: GoogleFonts.caveat(fontSize: 14, color: _inkSoft),
+           ),
+           const SizedBox(height: 4),
+           Row(
+             children: [
+               Icon(
+                 PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
+                 size: 12,
+                 color: GenZTokens.red,
+               ),
+               const SizedBox(width: 2),
               Expanded(
                 child: Text(
                   location.toUpperCase(),
