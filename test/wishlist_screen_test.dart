@@ -30,6 +30,9 @@ class _FakeWishlistRepo implements WishlistRepository {
 
   @override
   Future<void> toggleVote(String tripId, String itemId) async {}
+
+  @override
+  Future<void> delete(String tripId, String itemId) async {}
 }
 
 Widget _wrap(WishlistRepository repo) {

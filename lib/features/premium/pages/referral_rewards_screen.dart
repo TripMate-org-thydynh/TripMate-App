@@ -1,13 +1,14 @@
-import '../../../core/theme/theme.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
-import 'package:easy_localization/easy_localization.dart';
 import '../../../core/api_service.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 
 /// Man gioi thieu ban be.
 ///
@@ -105,26 +106,38 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
       // giới thiệu một lần.
       unawaited(_load());
 
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+      final accent = isDark ? GenZTokens.lilac : GenZTokens.purple;
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? const Color(0xFF262019)
-              : Colors.white,
+          backgroundColor:
+              isDark ? GenZTokens.paperDark : GenZTokens.paper,
           title: Text(
             'common.success'.tr(),
-            style: AppFonts.heading(fontWeight: FontWeight.bold),
+            style: AppFonts.heading(
+              fontWeight: FontWeight.bold,
+              color: ink,
+            ),
           ),
-          content: Text(msg, style: AppFonts.heading(fontSize: 13.5)),
+          content: Text(
+            msg,
+            style: AppFonts.heading(fontSize: 13.5, color: ink),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'common.awesome'.tr(),
-                style: AppFonts.heading(fontWeight: FontWeight.bold),
+                style: AppFonts.heading(
+                  fontWeight: FontWeight.bold,
+                  color: accent,
+                ),
               ),
             ),
           ],
@@ -161,16 +174,14 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Brand design system tokens
-    final primaryColor = isDark
-        ? TripMateTheme.darkPrimary
-        : TripMateTheme.lightPrimary;
-    final backgroundColor = isDark
-        ? TripMateTheme.darkBackground
-        : TripMateTheme.lightBackground;
-    final surfaceColor = isDark
-        ? TripMateTheme.darkSurface
-        : TripMateTheme.lightSurface;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final backgroundColor =
+        isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surfaceColor =
+        isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final borderCol = ink.withValues(alpha: 0.15);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -179,16 +190,17 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black87,
+            PhosphorIcons.arrowLeft(),
+            color: ink,
           ),
+          tooltip: 'common.close'.tr(),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'premium.refer_friends'.tr(),
           style: AppFonts.heading(
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
+            color: ink,
           ),
         ),
       ),
@@ -203,11 +215,16 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: primaryColor,
+                color: GenZTokens.yellow,
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: ink,
+                  width: GenZTokens.borderWidth,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: primaryColor.withValues(alpha: 0.25),
+                    color: ink.withValues(alpha: 0.25),
+                    offset: const Offset(0, 4),
                     blurRadius: 0,
                   ),
                 ],
@@ -217,7 +234,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                   Text(
                     'premium.your_code'.tr(),
                     style: AppFonts.heading(
-                      color: Colors.white70,
+                      color: GenZTokens.ink,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                       letterSpacing: 1.2,
@@ -227,7 +244,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                   SelectableText(
                     _code ?? '…',
                     style: AppFonts.heading(
-                      color: Colors.white,
+                      color: GenZTokens.ink,
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2,
@@ -238,7 +255,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                     'referral.code_intro'.tr(),
                     textAlign: TextAlign.center,
                     style: AppFonts.heading(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: GenZTokens.ink,
                       fontSize: 12,
                       height: 1.4,
                     ),
@@ -260,15 +277,22 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: primaryColor,
+                      backgroundColor: surfaceColor,
+                      foregroundColor: ink,
+                      side: BorderSide(
+                        color: ink,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: Text(
                       'premium.copy_code'.tr(),
-                      style: AppFonts.heading(fontWeight: FontWeight.bold),
+                      style: AppFonts.heading(
+                        fontWeight: FontWeight.bold,
+                        color: ink,
+                      ),
                     ),
                   ),
                 ],
@@ -287,13 +311,14 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                 decoration: BoxDecoration(
                   color: surfaceColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
-                  ),
+                  border: Border.all(color: borderCol),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_outline, color: primaryColor),
+                    Icon(
+                      PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+                      color: GenZTokens.success,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -302,7 +327,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                         ),
                         style: AppFonts.heading(
                           fontSize: 13,
-                          color: isDark ? Colors.white70 : Colors.black87,
+                          color: ink,
                         ),
                       ),
                     ),
@@ -316,7 +341,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                color: isDark ? Colors.white : Colors.black87,
+                color: ink,
               ),
             ),
             const SizedBox(height: 12),
@@ -325,9 +350,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
               decoration: BoxDecoration(
                 color: surfaceColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
-                ),
+                border: Border.all(color: borderCol),
               ),
               child: Row(
                 children: [
@@ -335,14 +358,14 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                     child: TextField(
                       controller: _codeController,
                       style: AppFonts.heading(
-                        color: isDark ? Colors.white : Colors.black87,
+                        color: ink,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
                         hintText: 'referral.friend_code_hint'.tr(),
                         hintStyle: AppFonts.heading(
-                          color: Colors.grey,
+                          color: inkSoft,
                           fontSize: 13,
                         ),
                         border: InputBorder.none,
@@ -350,12 +373,12 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                     ),
                   ),
                   _isSubmitting
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.purpleAccent,
+                            color: primaryColor,
                           ),
                         )
                       : TextButton(
@@ -382,7 +405,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
               style: AppFonts.heading(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                color: isDark ? Colors.white : Colors.black87,
+                color: ink,
               ),
             ),
             const SizedBox(height: 12),
@@ -403,9 +426,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                   textAlign: TextAlign.center,
                   style: AppFonts.body(
                     fontSize: 13,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white70
-                        : Colors.black54,
+                    color: inkSoft,
                   ),
                 ),
               )
@@ -420,12 +441,14 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Card(
                       color: surfaceColor,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: borderCol),
                       ),
                       child: ListTile(
                         leading: Icon(
-                          Icons.person_add_alt_1_outlined,
+                          PhosphorIcons.userPlus(),
                           color: primaryColor,
                         ),
                         title: Text(
@@ -433,20 +456,21 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                           style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
                             fontSize: 13.5,
+                            color: ink,
                           ),
                         ),
                         subtitle: Text(
                           _joinedLabel(ref['joinedAt'] as String?),
                           style: AppFonts.heading(
                             fontSize: 11.5,
-                            color: Colors.grey,
+                            color: inkSoft,
                           ),
                         ),
                         trailing: Text(
                           '+${ref['xp'] ?? 0} XP',
                           style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                            color: GenZTokens.success,
                             fontSize: 13,
                           ),
                         ),

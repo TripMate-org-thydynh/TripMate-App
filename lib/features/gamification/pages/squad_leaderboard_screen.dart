@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -15,18 +16,17 @@ import '../../../core/widgets/state_views.dart';
 class SquadLeaderboardScreen extends ConsumerWidget {
   const SquadLeaderboardScreen({super.key});
 
-  static const _medals = ['🥇', '🥈', '🥉'];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
@@ -40,7 +40,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
         actions: [
           if (tripId != null)
             IconButton(
-              icon: Icon(Icons.refresh, color: ink),
+              icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
               onPressed: () => ref.invalidate(leaderboardProvider(tripId)),
             ),
         ],
@@ -48,7 +48,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
       body: tripId == null
           ? AppEmptyState(
               isDark: isDark,
-              icon: Icons.emoji_events_outlined,
+              icon: PhosphorIcons.trophy(),
               title: 'games.need_trip_title'.tr(),
               body: 'games.need_trip_body'.tr(),
             )
@@ -67,7 +67,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
                     if (rows.isEmpty || rows.every((r) => r.xp == 0)) {
                       return AppEmptyState(
                         isDark: isDark,
-                        icon: Icons.emoji_events_outlined,
+                        icon: PhosphorIcons.trophy(),
                         title: 'games.leaderboard_title'.tr(),
                         body: 'games.leaderboard_empty'.tr(),
                       );
@@ -94,6 +94,9 @@ class SquadLeaderboardScreen extends ConsumerWidget {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final isPodium = r.rank <= 3;
+    final statColor = isPodium
+        ? GenZTokens.ink.withValues(alpha: 0.7)
+        : inkSoft;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space4),
@@ -104,18 +107,14 @@ class SquadLeaderboardScreen extends ConsumerWidget {
           color: ink,
           width: isPodium ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
         ),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Row(
         children: [
           SizedBox(
             width: 34,
-            child: Text(
-              isPodium ? _medals[r.rank - 1] : '#${r.rank}',
-              style: AppFonts.mono(
-                fontSize: isPodium ? 22 : 14,
-                fontWeight: FontWeight.w700,
-                color: isPodium ? GenZTokens.ink : inkSoft,
-              ),
+            child: Center(
+              child: _rankWidget(r.rank, isPodium, inkSoft),
             ),
           ),
           const SizedBox(width: GenZTokens.space3),
@@ -133,16 +132,35 @@ class SquadLeaderboardScreen extends ConsumerWidget {
                     color: isPodium ? GenZTokens.ink : ink,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '📸 ${r.moments}   💸 ${r.expenses}   🗺️ ${r.plans}   📝 ${r.notes}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppFonts.mono(
-                    fontSize: 12,
-                    color: isPodium
-                        ? GenZTokens.ink.withValues(alpha: 0.7)
-                        : inkSoft,
+                const SizedBox(height: 4),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _statChip(
+                        PhosphorIcons.camera(),
+                        '${r.moments}',
+                        statColor,
+                      ),
+                      const SizedBox(width: 8),
+                      _statChip(
+                        PhosphorIcons.money(),
+                        '${r.expenses}',
+                        statColor,
+                      ),
+                      const SizedBox(width: 8),
+                      _statChip(
+                        PhosphorIcons.mapTrifold(),
+                        '${r.plans}',
+                        statColor,
+                      ),
+                      const SizedBox(width: 8),
+                      _statChip(
+                        PhosphorIcons.notepad(),
+                        '${r.notes}',
+                        statColor,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -159,6 +177,49 @@ class SquadLeaderboardScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _rankWidget(int rank, bool isPodium, Color inkSoft) {
+    if (rank == 1) {
+      return Icon(
+        PhosphorIcons.trophy(PhosphorIconsStyle.fill),
+        size: 22,
+        color: GenZTokens.ink,
+      );
+    }
+    if (rank == 2) {
+      return Icon(
+        PhosphorIcons.medal(PhosphorIconsStyle.fill),
+        size: 22,
+        color: GenZTokens.ink,
+      );
+    }
+    if (rank == 3) {
+      return Icon(
+        PhosphorIcons.medal(),
+        size: 22,
+        color: GenZTokens.ink,
+      );
+    }
+    return Text(
+      '#$rank',
+      style: AppFonts.mono(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: inkSoft,
+      ),
+    );
+  }
+
+  Widget _statChip(IconData icon, String value, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 13, color: color),
+        const SizedBox(width: 3),
+        Text(value, style: AppFonts.mono(fontSize: 12, color: color)),
+      ],
     );
   }
 }

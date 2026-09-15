@@ -3,15 +3,17 @@
 import 'package:easy_localization/easy_localization.dart' show tr;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/theme/app_fonts.dart';
+import '../../core/theme/gen_z_tokens.dart';
 import '../profile/data/profile_provider.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'pages/subscription_checkout_screen.dart';
 import 'pages/billing_history_screen.dart';
-import 'pages/subscription_settings_screen.dart';
-import 'pages/referral_rewards_screen.dart';
 import 'pages/creator_revenue_dashboard_screen.dart';
 import 'pages/referral_campaign_screen.dart';
+import 'pages/referral_rewards_screen.dart';
+import 'pages/subscription_checkout_screen.dart';
+import 'pages/subscription_settings_screen.dart';
 
 class PremiumHubScreen extends StatefulWidget {
   const PremiumHubScreen({super.key});
@@ -55,24 +57,15 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
   Widget build(BuildContext context) {
     final isDark = _isDarkMode;
 
-    final primaryColor = isDark
-        ? const Color(0xFFC9B8FF)
-        : const Color(0xFFF5822B);
-    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
-    // va viet cung accent cua preset *grape*, nen doi theme khong an.
-    final secondaryColor = Theme.of(context).colorScheme.primary;
-    final tertiaryColor = isDark
-        ? const Color(0xFFFFB783)
-        : const Color(0xFFF5822B);
+    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final secondaryColor = isDark ? GenZTokens.yellow : GenZTokens.orange;
+    final tertiaryColor = isDark ? GenZTokens.orange : GenZTokens.yellow;
 
-    final bgColor = Theme.of(context).scaffoldBackgroundColor;
-    final cardBg = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    final textPrimary = isDark
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
-    final textSecondary = isDark
-        ? const Color(0xFFB8AE9C)
-        : const Color(0xFF4A453E);
+    final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary =
+        isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final glassBorder = textPrimary; // viền ink brutalist
 
     return Scaffold(
@@ -93,9 +86,10 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                     children: [
                       IconButton(
                         icon: Icon(
-                          Icons.arrow_back_ios_new,
+                          PhosphorIcons.arrowLeft(),
                           color: textPrimary,
                         ),
+                        tooltip: tr('common.close'),
                         onPressed: () => Navigator.pop(context),
                       ),
                       Text(
@@ -125,7 +119,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'trip.mate',
+                                  'TripMate',
                                   style: AppFonts.heading(
                                     fontSize: 32,
                                     fontWeight: FontWeight.w800,
@@ -169,7 +163,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                 color: tertiaryColor.withValues(alpha: 0.15),
                               ),
                               child: Icon(
-                                Icons.workspace_premium,
+                                PhosphorIcons.crown(),
                                 color: tertiaryColor,
                                 size: 24,
                               ),
@@ -216,8 +210,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                 ),
                                 decoration: BoxDecoration(
                                   color: isDark
-                                      ? const Color(0xFF262019)
-                                      : Colors.white,
+                                      ? GenZTokens.paperDark
+                                      : GenZTokens.paper,
                                   borderRadius: BorderRadius.circular(19),
                                   border: Border.all(
                                     color: isNeon
@@ -256,29 +250,33 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
 
                         // Feature check rows list
                         _buildFeatureRow(
-                          '✨ Premium Identity',
-                          'Stand out with glowing squad tags & gold border highlights.',
+                          tr('premium.feat_identity_title'),
+                          tr('premium.feat_identity_desc'),
+                          PhosphorIcons.sparkle(),
                           primaryColor,
                           textPrimary,
                           textSecondary,
                         ),
                         _buildFeatureRow(
-                          '🗺️ Hidden Travel Spots',
-                          'Unlock exclusive geolocated pins & secret local viewpoints.',
+                          tr('premium.feat_spots_title'),
+                          tr('premium.feat_spots_desc'),
+                          PhosphorIcons.mapPin(),
                           secondaryColor,
                           textPrimary,
                           textSecondary,
                         ),
                         _buildFeatureRow(
-                          '💯 Exclusive Reactions',
-                          'Express chaos with custom LIT, DEAD, and YASSS emojis.',
+                          tr('premium.feat_reactions_title'),
+                          tr('premium.feat_reactions_desc'),
+                          PhosphorIcons.smiley(),
                           tertiaryColor,
                           textPrimary,
                           textSecondary,
                         ),
                         _buildFeatureRow(
-                          '📦 Infinite High-Res Storage',
-                          'Keep original raw frames and cinematic highlights forever.',
+                          tr('premium.feat_storage_title'),
+                          tr('premium.feat_storage_desc'),
+                          PhosphorIcons.cloudArrowUp(),
                           primaryColor,
                           textPrimary,
                           textSecondary,
@@ -286,7 +284,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
 
                         const SizedBox(height: 28),
 
-                        // Shimmering dark metallic Payment/Join button
+                        // Shimmering payment/join button (GenZ style with yellow accent)
                         AnimatedBuilder(
                           animation: _shimmerController,
                           builder: (context, child) {
@@ -320,23 +318,19 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                             },
                             child: Container(
                               width: double.infinity,
-                              height: 60,
+                              height: 56,
                               decoration: BoxDecoration(
-                                color: Color(0xFF222222),
-                                borderRadius: BorderRadius.circular(30),
+                                color: GenZTokens.yellow,
+                                borderRadius: BorderRadius.circular(28),
                                 border: Border.all(
-                                  color: Colors.white24,
-                                  width: 1.5,
+                                  color: textPrimary,
+                                  width: 2,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.6),
+                                    color: textPrimary,
                                     blurRadius: 0,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                  BoxShadow(
-                                    color: primaryColor.withValues(alpha: 0.15),
-                                    blurRadius: 0,
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
@@ -347,15 +341,15 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                     Text(
                                       tr('premium.join_elite'),
                                       style: AppFonts.heading(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                                        color: GenZTokens.ink,
+                                        fontWeight: FontWeight.w900,
                                         fontSize: 16,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.white,
+                                    Icon(
+                                      PhosphorIcons.arrowRight(),
+                                      color: GenZTokens.ink,
                                       size: 20,
                                     ),
                                   ],
@@ -379,8 +373,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         const SizedBox(height: 10),
 
                         _buildSettingTile(
-                          'Subscription Settings ⚙',
-                          'Manage payment methods & automatic renewals',
+                          tr('premium.sub_settings_title'),
+                          tr('premium.sub_settings_desc'),
+                          PhosphorIcons.gear(),
                           () {
                             Navigator.push(
                               context,
@@ -397,8 +392,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         ),
 
                         _buildSettingTile(
-                          'Invoices History 🧾',
-                          'Download PDF invoices of your payments history',
+                          tr('premium.invoices_title'),
+                          tr('premium.invoices_desc'),
+                          PhosphorIcons.receipt(),
                           () {
                             Navigator.push(
                               context,
@@ -415,8 +411,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         ),
 
                         _buildSettingTile(
-                          'Referral Rewards 🎁',
-                          'Invite squad mates & receive free premium levels',
+                          tr('premium.referral_rewards_title'),
+                          tr('premium.referral_rewards_desc'),
+                          PhosphorIcons.gift(),
                           () {
                             Navigator.push(
                               context,
@@ -433,8 +430,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         ),
 
                         _buildSettingTile(
-                          'Referral Campaign 🤝',
-                          'Bring the squad & unlock lifetime Elite access',
+                          tr('premium.referral_campaign_title'),
+                          tr('premium.referral_campaign_desc'),
+                          PhosphorIcons.usersThree(),
                           () {
                             Navigator.push(
                               context,
@@ -453,8 +451,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         ),
 
                         _buildSettingTile(
-                          'Creative Shop Revenue 🎨',
-                          'Dashboard of your custom sticker packages sales',
+                          tr('premium.creator_shop_title'),
+                          tr('premium.creator_shop_desc'),
+                          PhosphorIcons.paintBrush(),
                           () {
                             Navigator.push(
                               context,
@@ -486,6 +485,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
   Widget _buildFeatureRow(
     String title,
     String subtitle,
+    IconData icon,
     Color glowColor,
     Color textPrimary,
     Color textSecondary,
@@ -496,12 +496,12 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: glowColor.withValues(alpha: 0.15),
             ),
-            child: Icon(Icons.done, color: glowColor, size: 14),
+            child: Icon(icon, color: glowColor, size: 16),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -532,6 +532,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
   Widget _buildSettingTile(
     String title,
     String desc,
+    IconData icon,
     VoidCallback onTap,
     Color cardBg,
     Color glassBorder,
@@ -548,6 +549,14 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
       ),
       child: ListTile(
         onTap: onTap,
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: textPrimary.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 18, color: textPrimary),
+        ),
         title: Text(
           title,
           style: AppFonts.heading(
@@ -560,7 +569,11 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
           desc,
           style: AppFonts.body(fontSize: 12, color: textSecondary),
         ),
-        trailing: const Icon(Icons.arrow_forward, size: 14, color: Colors.grey),
+        trailing: Icon(
+          PhosphorIcons.caretRight(),
+          size: 16,
+          color: textSecondary,
+        ),
       ),
     );
   }

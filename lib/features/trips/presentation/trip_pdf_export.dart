@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:tripmate/core/theme/gen_z_tokens.dart';
 import 'package:tripmate/core/network/error_message.dart';
 import '../../trips/domain/trip.dart';
 import '../../trip_planner/domain/itinerary_item.dart';
@@ -49,7 +50,7 @@ class TripPdfExporter {
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                        '✈️ TripMate',
+                        'TripMate',
                         style: pw.TextStyle(
                           fontSize: 14,
                           color: PdfColors.white,
@@ -67,7 +68,7 @@ class TripPdfExporter {
                       if (trip.destination != null) ...[
                         pw.SizedBox(height: 8),
                         pw.Text(
-                          '📍 ${trip.destination}',
+                          trip.destination!,
                           style: const pw.TextStyle(
                             fontSize: 16,
                             color: PdfColors.white,
@@ -290,7 +291,7 @@ class TripPdfExporter {
                     ),
                     if (r.location != null)
                       pw.Text(
-                        '📍 ${r.location}',
+                        r.location!,
                         style: const pw.TextStyle(fontSize: 11),
                       ),
                     if (r.confirmationNumber != null)
@@ -356,15 +357,19 @@ class ExportPdfButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final packingAsync = ref.watch(packingProvider(trip.id));
     final itineraryAsync = ref.watch(tripItineraryProvider(trip.id));
+    final reservationsAsync = ref.watch(tripReservationsProvider(trip.id));
 
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF8B4DE8),
+        backgroundColor: GenZTokens.purple,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: Color(0xFF141210), width: 2),
+          side: BorderSide(
+            color: isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
+            width: 2,
+          ),
         ),
         elevation: 0,
       ),
@@ -373,12 +378,14 @@ class ExportPdfButton extends ConsumerWidget {
         final itinerary =
             itineraryAsync.valueOrNull ?? const <int, List<ItineraryItem>>{};
         final packing = packingAsync.valueOrNull ?? const PackingList();
+        final reservations =
+            reservationsAsync.valueOrNull ?? const <Reservation>[];
         try {
           await TripPdfExporter.exportAndShare(
             trip: trip,
             itinerary: itinerary,
             packing: packing,
-            reservations: const [],
+            reservations: reservations,
             context: context,
           );
         } catch (e) {
@@ -391,7 +398,7 @@ class ExportPdfButton extends ConsumerWidget {
                   ),
                 ),
                 behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.red,
+                backgroundColor: GenZTokens.danger,
               ),
             );
           }

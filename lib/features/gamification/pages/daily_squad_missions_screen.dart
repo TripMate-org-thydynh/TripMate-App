@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../data/games_repository.dart';
 import '../widgets/challenge_list_view.dart';
@@ -15,7 +16,7 @@ class DailySquadMissionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChallengeListScreen(
       titleKey: 'games.daily_title',
-      emptyIcon: Icons.today_outlined,
+      emptyIcon: PhosphorIcons.calendarCheck(),
       provider: dailyMissionsProvider,
     );
   }

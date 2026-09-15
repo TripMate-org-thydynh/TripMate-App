@@ -5,11 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/api_service.dart';
+import '../../../core/distribution_channel.dart';
 import '../../../core/format/money.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../data/entitlement_provider.dart';
+import '../pages/subscription_checkout_screen.dart';
 import 'vietqr_payment_sheet.dart';
 
 enum _SelectedPlan { squad, plusMonth, plusYear }
@@ -89,6 +92,22 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
   }
 
   Future<void> _handleCheckout() async {
+    // Nếu là kênh Play (bản phát hành CH Play): Google bắt buộc thanh toán qua Play Billing.
+    // Điều hướng sang SubscriptionCheckoutScreen để người dùng mua qua Google Play,
+    // tuyệt đối không mở VietQR/Ví để tránh vi phạm chính sách dẫn đến bị gỡ app.
+    if (kDistributionChannel == DistributionChannel.play) {
+      final upgraded = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => const SubscriptionCheckoutScreen(),
+        ),
+      );
+      if (mounted && upgraded == true) {
+        ref.invalidate(entitlementProvider);
+        Navigator.of(context).pop(true);
+      }
+      return;
+    }
+
     setState(() => _loading = true);
     try {
       final planCode = _plan == _SelectedPlan.squad ? 'SQUAD' : 'PLUS';
@@ -158,8 +177,9 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     final isDark = theme.brightness == Brightness.dark;
     final ink = theme.colorScheme.onSurface;
     final accent = theme.colorScheme.primary;
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
+    final isPlayChannel = kDistributionChannel == DistributionChannel.play;
 
     return SafeArea(
       top: false,
@@ -215,9 +235,9 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                 onTap: () => setState(() => _plan = _SelectedPlan.squad),
                 child: _PlanCard(
                   title: 'paywall.plan_squad'.tr(),
-                  price: formatMoney(10000, locale: locale),
+                  price: formatMoney(99000, locale: locale),
                   perUnit: 'paywall.plan_squad_each'.tr(
-                    namedArgs: {'price': formatMoney(2000, locale: locale)},
+                    namedArgs: {'price': formatMoney(19800, locale: locale)},
                   ),
                   highlighted: _plan == _SelectedPlan.squad,
                   ink: ink,
@@ -231,7 +251,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   title: 'paywall.plan_plus'.tr(),
                   price: formatMoney(39000, locale: locale),
                   perUnit: 'paywall.plan_plus_year'.tr(
-                    namedArgs: {'price': formatMoney(299000, locale: locale)},
+                    namedArgs: {'price': formatMoney(374000, locale: locale)},
                   ),
                   highlighted: _plan == _SelectedPlan.plusMonth,
                   ink: ink,
@@ -240,43 +260,72 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
               ),
               const SizedBox(height: 12),
 
-              // Bộ chọn phương thức thanh toán
-              Row(
-                children: [
-                  Expanded(
-                    child: _GatewayChip(
-                      label: 'VietQR',
-                      icon: Icons.qr_code_2_rounded,
-                      selected: _gateway == _SelectedGateway.sepay,
-                      ink: ink,
-                      accent: accent,
-                      onTap: () => setState(() => _gateway = _SelectedGateway.sepay),
+              // Bộ chọn phương thức thanh toán: Nếu là kênh Google Play thì ẩn VietQR/Ví,
+              // chỉ hiện bảo đảm thanh toán của Google Play để không vi phạm chính sách nộp store.
+              if (isPlayChannel)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: accent.withValues(alpha: 0.35),
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: _GatewayChip(
-                      label: 'Ví MoMo',
-                      icon: Icons.account_balance_wallet_outlined,
-                      selected: _gateway == _SelectedGateway.momo,
-                      ink: ink,
-                      accent: accent,
-                      onTap: () => setState(() => _gateway = _SelectedGateway.momo),
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(PhosphorIcons.shieldCheck(), size: 16, color: ink),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Google Play Billing',
+                        style: AppFonts.heading(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: ink,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: _GatewayChip(
-                      label: 'ZaloPay',
-                      icon: Icons.payment_outlined,
-                      selected: _gateway == _SelectedGateway.zalopay,
-                      ink: ink,
-                      accent: accent,
-                      onTap: () => setState(() => _gateway = _SelectedGateway.zalopay),
+                )
+              else
+                Row(
+                  children: [
+                    Expanded(
+                      child: _GatewayChip(
+                        label: 'VietQR',
+                        icon: PhosphorIcons.qrCode(),
+                        selected: _gateway == _SelectedGateway.sepay,
+                        ink: ink,
+                        accent: accent,
+                        onTap: () => setState(() => _gateway = _SelectedGateway.sepay),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: _GatewayChip(
+                        label: 'Ví MoMo',
+                        icon: PhosphorIcons.wallet(),
+                        selected: _gateway == _SelectedGateway.momo,
+                        ink: ink,
+                        accent: accent,
+                        onTap: () => setState(() => _gateway = _SelectedGateway.momo),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: _GatewayChip(
+                        label: 'ZaloPay',
+                        icon: PhosphorIcons.creditCard(),
+                        selected: _gateway == _SelectedGateway.zalopay,
+                        ink: ink,
+                        accent: accent,
+                        onTap: () => setState(() => _gateway = _SelectedGateway.zalopay),
+                      ),
+                    ),
+                  ],
+                ),
 
               const SizedBox(height: 14),
               SizedBox(

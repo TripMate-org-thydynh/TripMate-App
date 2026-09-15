@@ -81,6 +81,9 @@ class WishlistRepository {
 
   Future<void> toggleVote(String tripId, String itemId) =>
       _client.postData('${_base(tripId)}/$itemId/vote');
+
+  Future<void> delete(String tripId, String itemId) =>
+      _client.deleteData('${_base(tripId)}/$itemId');
 }
 
 final wishlistRepositoryProvider = Provider<WishlistRepository>((ref) {

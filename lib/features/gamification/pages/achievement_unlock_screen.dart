@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -19,12 +20,13 @@ class AchievementUnlockScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
@@ -37,7 +39,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: ink),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
             onPressed: () => ref.invalidate(badgesProvider),
           ),
         ],
@@ -56,7 +58,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
               if (badges.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.emoji_events_outlined,
+                  icon: PhosphorIcons.trophy(),
                   title: 'games.badges_title'.tr(),
                   body: 'games.badges_empty'.tr(),
                 );
@@ -67,10 +69,10 @@ class AchievementUnlockScreen extends ConsumerWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(GenZTokens.space5),
                   children: [
-                    _summary(isDark, unlocked, badges.length),
+                    _summary(isDark, ink, unlocked, badges.length),
                     const SizedBox(height: GenZTokens.space5),
                     for (final b in badges) ...[
-                      _card(isDark, b),
+                      _card(isDark, ink, b),
                       const SizedBox(height: GenZTokens.space4),
                     ],
                   ],
@@ -81,7 +83,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
     );
   }
 
-  Widget _summary(bool isDark, int unlocked, int total) {
+  Widget _summary(bool isDark, Color ink, int unlocked, int total) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(GenZTokens.space5),
@@ -89,9 +91,10 @@ class AchievementUnlockScreen extends ConsumerWidget {
         color: GenZTokens.yellow,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: GenZTokens.ink,
+          color: ink,
           width: GenZTokens.borderWidth,
         ),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         children: [
@@ -112,8 +115,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
     );
   }
 
-  Widget _card(bool isDark, TripBadge b) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+  Widget _card(bool isDark, Color ink, TripBadge b) {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
@@ -128,6 +130,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
               ? GenZTokens.borderWidth
               : GenZTokens.borderWidthThin,
         ),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +138,9 @@ class AchievementUnlockScreen extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                b.unlocked ? Icons.emoji_events : Icons.lock_outline,
+                b.unlocked
+                    ? PhosphorIcons.trophy(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.lockKey(),
                 size: 20,
                 color: b.unlocked ? GenZTokens.success : inkSoft,
               ),

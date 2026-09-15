@@ -130,10 +130,10 @@ class PickTripSheet extends ConsumerWidget {
             decoration: BoxDecoration(
               color: GenZTokens.yellow,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GenZTokens.ink, width: 2),
+              border: Border.all(color: _ink, width: 2),
             ),
-            child: const Icon(
-              Icons.airplane_ticket,
+            child: Icon(
+              PhosphorIcons.ticket(PhosphorIconsStyle.fill),
               color: GenZTokens.ink,
               size: 22,
             ),
@@ -187,7 +187,7 @@ class PickTripSheet extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           ChunkyButton(
-            icon: Icons.add,
+            icon: PhosphorIcons.plus(),
             onPressed: () {
               Navigator.pop(context);
               CreateTripSheet.show(context, isDarkMode);

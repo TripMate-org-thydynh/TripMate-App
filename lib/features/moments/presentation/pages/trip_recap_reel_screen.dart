@@ -33,7 +33,7 @@ class TripRecapReelScreen extends ConsumerWidget {
             body: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
           error: (e, _) => Scaffold(
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
             body: AppErrorState(
               isDark: isDarkMode,
@@ -44,14 +44,14 @@ class TripRecapReelScreen extends ConsumerWidget {
           data: (recap) {
             if (!recap.hasData) {
               return Scaffold(
-                backgroundColor: isDarkMode ? Colors.black : Colors.white,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 appBar: AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                 ),
                 body: AppEmptyState(
                   isDark: isDarkMode,
-                  icon: Icons.auto_awesome,
+                  icon: PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                   title: 'recap.empty_title'.tr(),
                   body: 'recap.empty_body'.tr(),
                 ),
@@ -155,7 +155,7 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
         _RecapSlide.stat(
           palette: _Palette.ink,
           icon: PhosphorIcons.camera(PhosphorIconsStyle.fill),
-          kicker: 'MEMORY WALL',
+          kicker: 'recap.k_wall'.tr(),
           title: '${recap.momentCount}',
           unit: 'recap.unit_moments'.tr(),
           caption: 'recap.cap_moments'.tr(args: ['${recap.momentCount}']),
@@ -324,8 +324,8 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.pause_rounded,
+                          Icon(
+                            PhosphorIcons.pause(PhosphorIconsStyle.fill),
                             color: Colors.white,
                             size: 16,
                           ),
@@ -448,7 +448,11 @@ class _SlideStage extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0x59000000), Color(0x14000000), Color(0xB3000000)],
+                colors: [
+                  Color(0x59000000),
+                  Color(0x14000000),
+                  Color(0xB3000000),
+                ],
                 stops: [0.0, 0.38, 1.0],
               ),
             ),
@@ -465,11 +469,7 @@ class _SlideStage extends StatelessWidget {
                 // ảnh thành một tấm hình dán giữa nền — mất hẳn cảm giác đang
                 // ngồi trước máy chiếu. Nó tự lo phần chữ bằng dải tối riêng.
                 if (slide.type == _SlideType.reel) {
-                  return _ReelSlide(
-                    slide: slide,
-                    recap: recap,
-                    paused: paused,
-                  );
+                  return _ReelSlide(slide: slide, recap: recap, paused: paused);
                 }
                 return Padding(
                   padding: EdgeInsets.fromLTRB(22, compact ? 58 : 70, 22, 28),
@@ -614,7 +614,9 @@ class _ReelSlideState extends State<_ReelSlide>
                 settle: t,
               ),
             ),
-            Positioned.fill(child: _AgedFilm(progress: t, amount: flickerAmount)),
+            Positioned.fill(
+              child: _AgedFilm(progress: t, amount: flickerAmount),
+            ),
             Positioned(
               left: 0,
               right: 0,
@@ -706,7 +708,9 @@ class _AgedFilm extends StatelessWidget {
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: const Color(0xFFD9A441).withValues(alpha: 0.20 * amount + 0.06),
+                color: const Color(
+                  0xFFD9A441,
+                ).withValues(alpha: 0.20 * amount + 0.06),
               ),
             ),
           ),
@@ -845,11 +849,10 @@ class _StatSlide extends StatelessWidget {
                   Positioned(
                     left: 26,
                     bottom: -6,
-                    child:
-                        _UnitText(slide.unit ?? '')
-                            .animate(delay: 260.ms)
-                            .fadeIn(duration: 380.ms)
-                            .slideY(begin: 0.6, curve: Curves.easeOutCubic),
+                    child: _UnitText(slide.unit ?? '')
+                        .animate(delay: 260.ms)
+                        .fadeIn(duration: 380.ms)
+                        .slideY(begin: 0.6, curve: Curves.easeOutCubic),
                   ),
                 ],
               ),
@@ -926,9 +929,19 @@ class _TiltedShots extends StatelessWidget {
                               child: _NetworkOrAssetImage(
                                 url: shots[i].posterUrl,
                                 fit: BoxFit.cover,
-                                semanticLabel: shots[i].caption?.trim().isNotEmpty == true
-                                    ? 'Ảnh khoảnh khắc của ${shots[i].authorName}: ${shots[i].caption!.trim()}'
-                                    : 'Ảnh khoảnh khắc của ${shots[i].authorName}',
+                                semanticLabel:
+                                    shots[i].caption?.trim().isNotEmpty == true
+                                    ? 'recap.moment_photo_caption'.tr(
+                                        namedArgs: {
+                                          'author': shots[i].authorName,
+                                          'caption': shots[i].caption!.trim(),
+                                        },
+                                      )
+                                    : 'recap.moment_photo'.tr(
+                                        namedArgs: {
+                                          'author': shots[i].authorName,
+                                        },
+                                      ),
                               ),
                             ),
                           ),
@@ -1286,8 +1299,15 @@ class _PhotoCard extends StatelessWidget {
               url: moment.posterUrl,
               fit: BoxFit.cover,
               semanticLabel: moment.caption?.trim().isNotEmpty == true
-                  ? 'Ảnh khoảnh khắc của ${moment.authorName}: ${moment.caption!.trim()}'
-                  : 'Ảnh khoảnh khắc của ${moment.authorName}',
+                  ? 'recap.moment_photo_caption'.tr(
+                      namedArgs: {
+                        'author': moment.authorName,
+                        'caption': moment.caption!.trim(),
+                      },
+                    )
+                  : 'recap.moment_photo'.tr(
+                      namedArgs: {'author': moment.authorName},
+                    ),
             ),
             if (moment.type == 'VIDEO')
               Center(
@@ -1340,8 +1360,15 @@ class _MomentStrip extends StatelessWidget {
                   url: shown[i].posterUrl,
                   fit: BoxFit.cover,
                   semanticLabel: shown[i].caption?.trim().isNotEmpty == true
-                      ? 'Ảnh kỷ niệm của ${shown[i].authorName}: ${shown[i].caption!.trim()}'
-                      : 'Ảnh kỷ niệm của ${shown[i].authorName}',
+                      ? 'recap.memory_photo_caption'.tr(
+                          namedArgs: {
+                            'author': shown[i].authorName,
+                            'caption': shown[i].caption!.trim(),
+                          },
+                        )
+                      : 'recap.memory_photo'.tr(
+                          namedArgs: {'author': shown[i].authorName},
+                        ),
                 ),
               ),
             ),
@@ -1362,9 +1389,7 @@ class _AssetTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: ExcludeSemantics(
-        child: Image.asset(asset, fit: BoxFit.cover),
-      ),
+      child: ExcludeSemantics(child: Image.asset(asset, fit: BoxFit.cover)),
     );
   }
 }
@@ -1433,8 +1458,8 @@ class _AvatarBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final initial = name.trim().isEmpty ? 'T' : name.trim()[0].toUpperCase();
     final semanticLabel = name.trim().isNotEmpty
-        ? 'Ảnh đại diện của ${name.trim()}'
-        : 'Ảnh đại diện';
+        ? 'recap.avatar_of'.tr(namedArgs: {'name': name.trim()})
+        : 'recap.avatar'.tr();
     return Container(
       width: size,
       height: size,
@@ -1482,15 +1507,24 @@ class _MiniStats extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _MiniStat(value: '${recap.days}', label: 'recap.mini_days'.tr()),
+          child: _MiniStat(
+            value: '${recap.days}',
+            label: 'recap.mini_days'.tr(),
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _MiniStat(value: '${recap.placeCount}', label: 'recap.mini_stops'.tr()),
+          child: _MiniStat(
+            value: '${recap.placeCount}',
+            label: 'recap.mini_stops'.tr(),
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _MiniStat(value: '${recap.momentCount}', label: 'recap.mini_moments'.tr()),
+          child: _MiniStat(
+            value: '${recap.momentCount}',
+            label: 'recap.mini_moments'.tr(),
+          ),
         ),
       ],
     );
@@ -1514,15 +1548,24 @@ class _MetricRibbon extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _MiniStat(value: '${recap.memberCount}', label: 'recap.mini_crew'.tr()),
+            child: _MiniStat(
+              value: '${recap.memberCount}',
+              label: 'recap.mini_crew'.tr(),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _MiniStat(value: '${recap.placeCount}', label: 'recap.mini_stops'.tr()),
+            child: _MiniStat(
+              value: '${recap.placeCount}',
+              label: 'recap.mini_stops'.tr(),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _MiniStat(value: '${recap.expenseCount}', label: 'recap.mini_bills'.tr()),
+            child: _MiniStat(
+              value: '${recap.expenseCount}',
+              label: 'recap.mini_bills'.tr(),
+            ),
           ),
         ],
       ),
@@ -1624,8 +1667,8 @@ class _TopChrome extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               IconButton(
-                tooltip: 'Đóng',
-                icon: const Icon(Icons.close, color: Colors.white),
+                tooltip: 'common.close'.tr(),
+                icon: Icon(PhosphorIcons.x(), color: Colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -1938,7 +1981,7 @@ class _NetworkOrAssetImage extends StatelessWidget {
         child: Container(
           color: Colors.black.withValues(alpha: 0.18),
           child: Icon(
-            Icons.image_not_supported_outlined,
+            PhosphorIcons.imageBroken(),
             color: Colors.white.withValues(alpha: 0.65),
           ),
         ),

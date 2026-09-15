@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,16 +120,16 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
               ),
               const SizedBox(height: 32),
 
-              _field(_username, 'Username', Icons.alternate_email),
+              _field(_username, 'auth.username'.tr(), PhosphorIcons.at()),
               const SizedBox(height: 14),
               _field(
                 _password,
                 'auth.password'.tr(),
-                Icons.lock_outline,
+                PhosphorIcons.lock(),
                 obscure: _obscure,
                 trailing: IconButton(
                   icon: Icon(
-                    _obscure ? Icons.visibility_off : Icons.visibility,
+                    _obscure ? PhosphorIcons.eyeSlash() : PhosphorIcons.eye(),
                     color: _sub,
                     size: 20,
                   ),
@@ -140,7 +141,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                 _field(
                   _confirm,
                   'auth.confirm_password'.tr(),
-                  Icons.lock_outline,
+                  PhosphorIcons.lock(),
                   obscure: _obscure,
                 ),
               ],

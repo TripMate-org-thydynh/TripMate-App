@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/checkins_providers.dart';
 import '../data/checkins_repository.dart';
 
@@ -24,19 +25,29 @@ class TripCheckinsScreen extends ConsumerWidget {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _ink =>
-      isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _card =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
 
   static const _statusColors = {
-    'GOING': Color(0xFF1FA85C),
-    'MAYBE': Color(0xFFFFD84D),
-    'OUT': Color(0xFFFF4444),
+    'GOING': GenZTokens.success,
+    'MAYBE': GenZTokens.warning,
+    'OUT': GenZTokens.danger,
   };
 
-  static const _statusEmoji = {'GOING': '✅', 'MAYBE': '🤔', 'OUT': '❌'};
+  static PhosphorIconData _statusIcon(String status) {
+    switch (status) {
+      case 'GOING':
+        return PhosphorIcons.checkCircle(PhosphorIconsStyle.fill);
+      case 'MAYBE':
+        return PhosphorIcons.question(PhosphorIconsStyle.bold);
+      case 'OUT':
+      default:
+        return PhosphorIcons.xCircle(PhosphorIconsStyle.fill);
+    }
+  }
 
   static const _statusLabel = {
     'GOING': 'checkins.status_going',
@@ -45,7 +56,10 @@ class TripCheckinsScreen extends ConsumerWidget {
   };
 
   Widget _statusChip(String status, bool selected, VoidCallback onTap) {
-    final color = _statusColors[status] ?? Colors.grey;
+    final color = _statusColors[status] ?? GenZTokens.inkSoft;
+    final textColor = selected
+        ? (color.computeLuminance() > 0.5 ? GenZTokens.ink : GenZTokens.paper)
+        : color;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -59,17 +73,20 @@ class TripCheckinsScreen extends ConsumerWidget {
             width: selected ? 2 : 1,
           ),
         ),
-        child: Text(
-          '${_statusEmoji[status]} ${_statusLabel[status]!.tr()}',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-            color: selected
-                ? (color.computeLuminance() > 0.5
-                      ? const Color(0xFF141210)
-                      : Colors.white)
-                : color,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(_statusIcon(status), size: 14, color: textColor),
+            const SizedBox(width: 6),
+            Text(
+              _statusLabel[status]!.tr(),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+                color: textColor,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -113,7 +130,7 @@ class TripCheckinsScreen extends ConsumerWidget {
       ),
       body: checkinsAsync.when(
         loading: () => Center(
-          child: CircularProgressIndicator(color: const Color(0xFFF5822B)),
+          child: CircularProgressIndicator(color: GenZTokens.orange),
         ),
         error: (e, _) => Center(
           child: Text(
@@ -168,10 +185,10 @@ class TripCheckinsScreen extends ConsumerWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF5822B),
+                            color: GenZTokens.orange,
                             borderRadius: BorderRadius.circular(99),
                             border: Border.all(
-                              color: const Color(0xFF141210),
+                              color: GenZTokens.ink,
                               width: 2,
                             ),
                           ),
@@ -180,7 +197,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                             style: AppFonts.heading(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
-                              color: Colors.white,
+                              color: GenZTokens.ink,
                             ),
                           ),
                         ),
@@ -195,7 +212,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                           ),
                           style: AppFonts.body(
                             fontSize: 12,
-                            color: const Color(0xFF1FA85C),
+                            color: GenZTokens.success,
                           ),
                         ),
                       ],
@@ -212,7 +229,8 @@ class TripCheckinsScreen extends ConsumerWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: dayCheckins.map((c) {
-                          final color = _statusColors[c.status] ?? Colors.grey;
+                          final color =
+                              _statusColors[c.status] ?? GenZTokens.inkSoft;
                           return Chip(
                             avatar: c.userAvatarUrl != null
                                 ? CircleAvatar(
@@ -235,9 +253,23 @@ class TripCheckinsScreen extends ConsumerWidget {
                                       ),
                                     ),
                                   ),
-                            label: Text(
-                              '${c.userName} ${_statusEmoji[c.status] ?? ''}',
-                              style: AppFonts.body(fontSize: 12, color: _ink),
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  c.userName,
+                                  style: AppFonts.body(
+                                    fontSize: 12,
+                                    color: _ink,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  _statusIcon(c.status),
+                                  size: 13,
+                                  color: color,
+                                ),
+                              ],
                             ),
                             backgroundColor: color.withValues(alpha: 0.12),
                             side: BorderSide(

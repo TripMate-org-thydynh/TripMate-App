@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../../core/theme/app_fonts.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../../system_states/application/tripmate_mcp_config.dart';
 
 class TripmateMcpScreen extends StatefulWidget {
@@ -16,12 +20,14 @@ class TripmateMcpScreen extends StatefulWidget {
 class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
   bool _mcpEnabled = true;
 
+  bool get _isDark =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      widget.isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      _isDark ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _ink =>
-      widget.isDarkMode ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+      _isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
   /// Accent lay tu theme dang chon.
   ///
@@ -29,7 +35,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
   /// Day la State nen doc thang `context` duoc.
   Color get _primary => Theme.of(context).colorScheme.primary;
   Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +50,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: _ink),
+          icon: Icon(PhosphorIcons.arrowLeft(), color: _ink),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -87,7 +93,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                             height: 14,
                             decoration: BoxDecoration(
                               color: _mcpEnabled
-                                  ? const Color(0xFF1FA85C)
+                                  ? GenZTokens.green
                                   : Colors.grey,
                               shape: BoxShape.circle,
                               border: Border.all(color: _ink, width: 1.5),
@@ -97,7 +103,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                           Text(
                             _mcpEnabled
                                 ? 'system_phases.mcp_active'.tr()
-                                : 'MCP Connection Status: INACTIVE',
+                                : 'profile.mcp_inactive'.tr(),
                             style: GoogleFonts.spaceMono(
                               fontWeight: FontWeight.w900,
                               fontSize: 12,
@@ -112,7 +118,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                           HapticFeedback.mediumImpact();
                           setState(() => _mcpEnabled = val);
                         },
-                        activeThumbColor: const Color(0xFFFFD84D),
+                        activeThumbColor: GenZTokens.yellow,
                         activeTrackColor: _primary.withValues(alpha: 0.3),
                       ),
                     ],
@@ -146,8 +152,8 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: widget.isDarkMode
-                    ? const Color(0xFF141210)
+                color: _isDark
+                    ? GenZTokens.inkDark
                     : const Color(0xFF262019),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: borderCol, width: 2),
@@ -168,8 +174,8 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                     top: 0,
                     right: 0,
                     child: IconButton(
-                      icon: const Icon(
-                        Icons.copy,
+                      icon: Icon(
+                        PhosphorIcons.copy(),
                         color: Colors.white70,
                         size: 18,
                       ),
@@ -196,15 +202,15 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
               height: 48,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFD84D),
-                  foregroundColor: const Color(0xFF141210),
+                  backgroundColor: GenZTokens.yellow,
+                  foregroundColor: GenZTokens.ink,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                     side: BorderSide(color: borderCol, width: 2),
                   ),
                 ),
-                icon: const Icon(Icons.menu_book),
+                icon: Icon(PhosphorIcons.bookOpen()),
                 label: Text(
                   'system_phases.mcp_docs'.tr(),
                   style: GoogleFonts.spaceGrotesk(
@@ -237,7 +243,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: Text(
-                            'OK',
+                            'common.got_it'.tr(),
                             style: GoogleFonts.spaceGrotesk(
                               fontWeight: FontWeight.bold,
                               color: _primary,

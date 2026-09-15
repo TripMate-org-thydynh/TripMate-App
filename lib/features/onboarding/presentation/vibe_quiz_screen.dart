@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../core/api_service.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
 
@@ -34,7 +35,7 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
     GenZTokens.pink,
   ];
 
-  final List<_Question> _questions = [
+  List<_Question> get _questions => [
     _Question('onboarding.q_trip'.tr(), [
       _Choice('onboarding.a_chill'.tr(), PhosphorIcons.leaf(PhosphorIconsStyle.fill)),
       _Choice(
@@ -96,6 +97,24 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
 
   Future<void> _finish() async {
     HapticFeedback.heavyImpact();
+    final vibeTagMap = [
+      ['chill', 'chaos'],
+      ['cafe', 'nightlife'],
+      ['street_food', 'fine_dining'],
+      ['budget', 'luxury'],
+      ['photography', 'mindful'],
+    ];
+    final tags = <String>[];
+    _answers.forEach((qIdx, choiceIdx) {
+      if (qIdx < vibeTagMap.length && choiceIdx < vibeTagMap[qIdx].length) {
+        tags.add(vibeTagMap[qIdx][choiceIdx]);
+      }
+    });
+    if (tags.isNotEmpty) {
+      try {
+        await ApiService.patch('/users/me', {'vibeTags': tags});
+      } catch (_) {}
+    }
     await ref.read(authProvider.notifier).completeOnboarding();
     // Router redirect tự đưa về /dashboard khi onboardingDone = true.
   }
@@ -104,6 +123,7 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
   Widget build(BuildContext context) {
     // Khối màu full-bleed đổi theo bước; chữ và viền LUÔN là ink tối
     // để giữ tương phản AA trên mọi accent sáng (kể cả dark mode).
+    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final blockColor = _stepColors[_step % _stepColors.length];
     final q = _questions[_step];
 
@@ -149,7 +169,7 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                     'total': '${_questions.length}',
                   },
                 ),
-                color: GenZTokens.paper,
+                color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
               ),
               const SizedBox(height: GenZTokens.space3),
               AnimatedSwitcher(
@@ -171,9 +191,9 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    Expanded(child: _choiceCard(q.choices[0], 0)),
+                    Expanded(child: _choiceCard(q.choices[0], 0, isDark)),
                     const SizedBox(height: GenZTokens.space4),
-                    Expanded(child: _choiceCard(q.choices[1], 1)),
+                    Expanded(child: _choiceCard(q.choices[1], 1, isDark)),
                   ],
                 ),
               ),
@@ -184,11 +204,11 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
     );
   }
 
-  Widget _choiceCard(_Choice choice, int idx) {
+  Widget _choiceCard(_Choice choice, int idx, bool isDark) {
     return GestureDetector(
       onTap: () => _pick(idx),
       child: HardShadowBox(
-        color: GenZTokens.paper,
+        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
         radius: GenZTokens.radiusCard,
         borderColor: GenZTokens.ink,
         shadowColor: GenZTokens.ink,
@@ -215,12 +235,16 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                 style: AppFonts.heading(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: GenZTokens.ink,
+                  color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                   letterSpacing: -0.3,
                 ),
               ),
             ),
-            const Icon(Icons.arrow_forward, size: 20, color: GenZTokens.ink),
+            Icon(
+              PhosphorIcons.arrowRight(),
+              size: 20,
+              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            ),
           ],
         ),
       ),

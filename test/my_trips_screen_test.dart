@@ -63,6 +63,8 @@ class _FakeTripsRepo implements TripsRepository {
       trips.firstWhere((t) => t.id == id);
   @override
   Future<void> leaveTrip(String id) async {}
+  @override
+  Future<void> deleteTrip(String id) async {}
 }
 
 class _FakeNotifRepo implements NotificationsRepository {

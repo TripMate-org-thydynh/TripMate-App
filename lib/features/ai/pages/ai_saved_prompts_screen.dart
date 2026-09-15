@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/theme/app_fonts.dart';
@@ -22,9 +23,10 @@ class AiSavedPromptsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -37,6 +39,13 @@ class AiSavedPromptsScreen extends ConsumerWidget {
             color: ink,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
+            onPressed: () => ref.invalidate(suggestedPromptsProvider),
+            tooltip: 'common.refresh'.tr(),
+          ),
+        ],
       ),
       body: ref
           .watch(suggestedPromptsProvider)
@@ -52,7 +61,7 @@ class AiSavedPromptsScreen extends ConsumerWidget {
               if (prompts.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.bookmark_border,
+                  icon: PhosphorIcons.bookmarkSimple(),
                   title: 'ai.prompts_title'.tr(),
                   body: 'ai.prompts_empty'.tr(),
                 );
@@ -85,6 +94,7 @@ class AiSavedPromptsScreen extends ConsumerWidget {
           color: surface,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+          boxShadow: GenZTokens.hardShadow(ink),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +124,7 @@ class AiSavedPromptsScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: GenZTokens.space3),
-            Icon(Icons.copy_rounded, size: 18, color: inkSoft),
+            Icon(PhosphorIcons.copy(), size: 18, color: inkSoft),
           ],
         ),
       ),

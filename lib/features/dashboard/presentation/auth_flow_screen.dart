@@ -116,7 +116,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     },
     {
       'name': 'Adventure',
-      'desc': 'Ha Giang loop and exploring Son Doong cave.',
+      'desc': 'auth.vibe_adventure',
       'icon1': PhosphorIcons.compass(PhosphorIconsStyle.fill),
       'icon2': PhosphorIcons.backpack(PhosphorIconsStyle.fill),
       'image':
@@ -208,7 +208,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
 
     return Scaffold(
       backgroundColor: widget.isDarkMode
-          ? const Color(0xFF1A1712)
+          ? GenZTokens.paperDark
           : accent.lightBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -216,10 +216,10 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         leading: _currentStep > 0 && _currentStep < 4
             ? IconButton(
                 icon: Icon(
-                  Icons.arrow_back_ios,
+                  PhosphorIcons.arrowLeft(),
                   color: widget.isDarkMode
-                      ? Colors.white
-                      : const Color(0xFF141210),
+                      ? GenZTokens.inkDark
+                      : GenZTokens.ink,
                   size: 20,
                 ),
                 onPressed: _prevStep,
@@ -232,8 +232,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                   color: widget.isDarkMode
-                      ? const Color(0xFFFDF6D3)
-                      : const Color(0xFF141210),
+                      ? GenZTokens.inkDark
+                      : GenZTokens.ink,
                   letterSpacing: -1,
                 ),
               )
@@ -251,7 +251,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               child: Text(
                 'auth.skip'.tr(),
                 style: AppFonts.heading(
-                  color: widget.isDarkMode ? Colors.white38 : Colors.black38,
+                  color: widget.isDarkMode
+                      ? GenZTokens.inkSoftDark
+                      : GenZTokens.inkSoft,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -265,7 +267,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             Positioned.fill(
               child: Container(
                 color: widget.isDarkMode
-                    ? const Color(0xFF1A1712)
+                    ? GenZTokens.paperDark
                     : accent.lightBackground,
               ),
             ),
@@ -344,15 +346,15 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
                   color: widget.isDarkMode
-                      ? Colors.white
-                      : const Color(0xFF141210),
+                      ? GenZTokens.inkDark
+                      : GenZTokens.ink,
                   letterSpacing: -1.2,
                   height: 1.25,
                   shadows: widget.isDarkMode
                       ? [
-                          const Shadow(
-                            color: Colors.black54,
-                            offset: Offset(0, 4),
+                          Shadow(
+                            color: GenZTokens.ink.withValues(alpha: 0.54),
+                            offset: const Offset(0, 4),
                             blurRadius: 0,
                           ),
                         ]
@@ -365,8 +367,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
                   color: widget.isDarkMode
-                      ? const Color(0xFFCBC3D7)
-                      : const Color(0xFF4A453E),
+                      ? GenZTokens.inkSoftDark
+                      : GenZTokens.inkSoft,
                   fontSize: 15,
                 ),
               ),
@@ -431,19 +433,19 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                           width: context.rs(280),
                           height: context.rs(400),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFFDF5),
+                            color: GenZTokens.paper,
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
                               color: widget.isDarkMode
-                                  ? const Color(0xFFFDF6D3)
-                                  : const Color(0xFF141210),
+                                  ? GenZTokens.inkDark
+                                  : GenZTokens.ink,
                               width: isSelected ? 3 : 2.5,
                             ),
                             boxShadow: [
                               BoxShadow(
                                 color: widget.isDarkMode
-                                    ? const Color(0xFFFDF6D3)
-                                    : const Color(0xFF141210),
+                                    ? GenZTokens.inkDark
+                                    : GenZTokens.ink,
                                 offset: Offset(0, isSelected ? 6 : 4),
                               ),
                             ],
@@ -461,10 +463,18 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                                     fadeInDuration: const Duration(
                                       milliseconds: 400,
                                     ),
-                                    placeholder: (context, url) =>
-                                        Container(color: Colors.black12),
-                                    errorWidget: (context, url, error) =>
-                                        Container(color: Colors.black54),
+                                     placeholder: (context, url) =>
+                                         Container(
+                                           color: GenZTokens.ink.withValues(
+                                             alpha: 0.12,
+                                           ),
+                                         ),
+                                     errorWidget: (context, url, error) =>
+                                         Container(
+                                           color: GenZTokens.ink.withValues(
+                                             alpha: 0.54,
+                                           ),
+                                         ),
                                   ),
                                 ),
                               ),
@@ -498,13 +508,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                                       shape: BoxShape.circle,
                                       color: primaryColor,
                                       border: Border.all(
-                                        color: const Color(0xFF141210),
+                                        color: GenZTokens.ink,
                                         width: 2,
                                       ),
                                     ),
-                                    child: const Icon(
-                                      Icons.check,
-                                      color: Color(0xFF141210),
+                                    child: Icon(
+                                      PhosphorIcons.check(PhosphorIconsStyle.bold),
+                                      color: GenZTokens.ink,
                                       size: 22,
                                     ),
                                   ),
@@ -549,7 +559,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                                                   size: 28,
                                                   color: isSelected
                                                       ? secondaryColor
-                                                      : Colors.white,
+                                                      : GenZTokens.inkDark,
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
@@ -560,7 +570,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                                                   size: 24,
                                                   color: isSelected
                                                       ? secondaryColor
-                                                      : Colors.white70,
+                                                      : GenZTokens.inkSoftDark,
                                                 ),
                                               ),
                                             ],
@@ -575,7 +585,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                                           fontWeight: FontWeight.bold,
                                           color: isSelected
                                               ? secondaryColor
-                                              : Colors.white,
+                                              : GenZTokens.inkDark,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -585,9 +595,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                                         overflow: TextOverflow.ellipsis,
                                         style: AppFonts.body(
                                           fontSize: 13.5,
-                                          color: const Color(
-                                            0xFFCBC3D7,
-                                          ), // on-surface-variant
+                                          color: GenZTokens.inkSoftDark,
                                           height: 1.3,
                                         ),
                                       ),
@@ -655,7 +663,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    Icons.arrow_forward,
+                    PhosphorIcons.arrowRight(),
                     color: hasSelection
                         ? GenZTokens.ink
                         : GenZTokens.ink.withValues(alpha: 0.5),
@@ -703,7 +711,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           _buildGlassField(
             _emailController,
             'auth.email_hint'.tr(),
-            Icons.mail_outline,
+            PhosphorIcons.envelope(),
           ),
           const SizedBox(height: 24),
           DecoratedBox(
@@ -789,10 +797,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
     }
 
     final isDark = widget.isDarkMode;
-    final textColor = isDark ? Colors.white : const Color(0xFF141210);
-    final subTextColor = isDark ? Colors.white54 : const Color(0xFF4A453E);
-    final dividerColor = isDark ? Colors.white10 : Colors.black12;
-    final dividerTextColor = isDark ? Colors.white30 : const Color(0xFFB8AE9C);
+    final textColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final subTextColor = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final dividerColor = isDark
+        ? GenZTokens.inkDark.withValues(alpha: 0.15)
+        : GenZTokens.ink.withValues(alpha: 0.15);
+    final dividerTextColor =
+        isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Column(
       key: const ValueKey('auth_step'),
@@ -847,17 +858,17 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             children: [
               Icon(
                 _isEmailInput
-                    ? Icons.mail_outline
-                    : Icons.phone_android_outlined,
+                    ? PhosphorIcons.envelope()
+                    : PhosphorIcons.deviceMobile(),
                 size: 20,
-                color: isDark ? Colors.white38 : Colors.black38,
+                color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
               ),
               if (!_isEmailInput) ...[
                 const SizedBox(width: 8),
                 Text(
                   '+84',
                   style: AppFonts.heading(
-                    color: isDark ? Colors.white70 : const Color(0xFF374151),
+                    color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
@@ -867,8 +878,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   height: 20,
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   color: isDark
-                      ? Colors.white24
-                      : Colors.black.withValues(alpha: 0.15),
+                      ? GenZTokens.inkDark.withValues(alpha: 0.2)
+                      : GenZTokens.ink.withValues(alpha: 0.15),
                 ),
               ] else
                 const SizedBox(width: 8),
@@ -878,9 +889,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   keyboardType: TextInputType.emailAddress,
                   style: AppFonts.heading(color: textColor, fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: _isEmailInput ? 'auth.your_email'.tr() : 'auth.phone_number'.tr(),
+                    hintText: _isEmailInput
+                        ? 'auth.your_email'.tr()
+                        : 'auth.phone_number'.tr(),
                     hintStyle: TextStyle(
-                      color: isDark ? Colors.white24 : Colors.black26,
+                      color: isDark
+                          ? GenZTokens.inkSoftDark.withValues(alpha: 0.4)
+                          : GenZTokens.inkSoft.withValues(alpha: 0.4),
                       fontSize: 14,
                     ),
                     border: InputBorder.none,
@@ -1007,7 +1022,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         // Full-width Google button
         _buildSocialBtn(
           'auth.continue_google'.tr(),
-          Icons.account_circle_outlined,
+          PhosphorIcons.userCircle(),
           () {
             _handleRealGoogleSignIn(context, primaryColor, secondaryColor);
           },
@@ -1016,7 +1031,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         // Đăng nhập / đăng ký bằng username + mật khẩu
         _buildSocialBtn(
           'auth.use_password'.tr(),
-          Icons.password_rounded,
+          PhosphorIcons.password(),
           () => Navigator.push(
             context,
             MaterialPageRoute(
@@ -1103,7 +1118,11 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               border: Border.all(color: ink, width: GenZTokens.borderWidth),
               boxShadow: GenZTokens.hardShadow(ink),
             ),
-            child: Icon(Icons.sms_rounded, size: 40, color: ink),
+            child: Icon(
+              PhosphorIcons.chatTeardropDots(PhosphorIconsStyle.fill),
+              size: 40,
+              color: ink,
+            ),
           ),
         ),
         const SizedBox(height: 32),
@@ -1331,13 +1350,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           _buildGlassField(
             _nameController,
             'auth.display_name_hint'.tr(),
-            Icons.face_outlined,
+            PhosphorIcons.smiley(),
           ),
           const SizedBox(height: 16),
           _buildGlassField(
             _usernameController,
             'auth.username_hint'.tr(),
-            Icons.alternate_email,
+            PhosphorIcons.at(),
           ),
           const SizedBox(height: 32),
           Text(
@@ -1352,14 +1371,14 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           const SizedBox(height: 12),
           _buildGlassField(
             _instaController,
-            'Username Instagram',
-            Icons.camera_alt_outlined,
+            'auth.instagram_hint'.tr(),
+            PhosphorIcons.camera(),
           ),
           const SizedBox(height: 12),
           _buildGlassField(
             _tiktokController,
-            'Username TikTok',
-            Icons.music_note_outlined,
+            'auth.tiktok_hint'.tr(),
+            PhosphorIcons.musicNote(),
           ),
           const SizedBox(height: 48),
           ElevatedButton(
@@ -1640,7 +1659,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         messenger.showSnackBar(
           SnackBar(
             content: Text('auth.google_no_token'.tr()),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: GenZTokens.red,
           ),
         );
         return;
@@ -1689,7 +1708,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         messenger.showSnackBar(
           SnackBar(
             content: Text('auth.google_signin_failed'.tr(namedArgs: {'err': friendlyError(e)})),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: GenZTokens.red,
           ),
         );
       }

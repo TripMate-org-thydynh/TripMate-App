@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -37,7 +38,7 @@ class FriendsListScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: ink),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
             onPressed: () => ref.invalidate(travelBuddiesProvider),
           ),
         ],
@@ -56,7 +57,7 @@ class FriendsListScreen extends ConsumerWidget {
               if (buddies.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.group_outlined,
+                  icon: PhosphorIcons.users(),
                   title: 'profile.buddies_empty_title'.tr(),
                   body: 'profile.buddies_empty_body'.tr(),
                 );

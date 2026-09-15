@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -33,7 +34,11 @@ class XpBalanceChip extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.bolt, size: 15, color: GenZTokens.ink),
+          Icon(
+            PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+            size: 15,
+            color: GenZTokens.ink,
+          ),
           const SizedBox(width: 3),
           Text(
             // Chưa tải xong thì hiện '—' thay vì 0, để không ai tưởng mình hết XP.

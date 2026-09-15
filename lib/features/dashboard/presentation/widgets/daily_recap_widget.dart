@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../data/home_feed_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -30,7 +31,7 @@ class DailyRecapWidget extends ConsumerWidget {
               'time': a.tripName,
               'chaosVibe': _activityVibe(a.type),
               'details': a.label,
-              'colorHex': _colorFor(a.type),
+              'color': _colorFor(a.type),
             },
           )
           .toList(),
@@ -41,18 +42,18 @@ class DailyRecapWidget extends ConsumerWidget {
   }
 
   /// Màu viền theo loại hoạt động — giữ bảng màu brutalist của app.
-  int _colorFor(String type) {
+  Color _colorFor(String type) {
     switch (type) {
       case 'EXPENSE_ADDED':
-        return 0xFF1FA85C;
+        return GenZTokens.green;
       case 'MOMENT_SHARED':
-        return 0xFF8B4DE8;
+        return GenZTokens.purple;
       case 'ITINERARY_ADDED':
-        return 0xFF3D8BFF;
+        return GenZTokens.blue;
       case 'POLL_CREATED':
-        return 0xFFD6248C;
+        return GenZTokens.magenta;
       default:
-        return 0xFFF5822B;
+        return GenZTokens.orange;
     }
   }
 
@@ -175,14 +176,14 @@ class DailyRecapWidget extends ConsumerWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.auto_awesome,
+                      Icon(
+                        PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                         size: 14,
                         color: GenZTokens.ink,
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Wrapped Reel 🔥',
+                        'dashboard.wrapped_reel'.tr(),
                         style: AppFonts.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -229,8 +230,8 @@ class DailyRecapWidget extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.history_toggle_off,
+                      Icon(
+                        PhosphorIcons.clockCounterClockwise(),
                         size: 38,
                         color: GenZTokens.orange,
                       ),
@@ -270,7 +271,7 @@ class DailyRecapWidget extends ConsumerWidget {
                   itemCount: activities.length,
                   itemBuilder: (context, index) {
                     final item = activities[index];
-                    final themeColor = Color(item['colorHex'] as int);
+                    final themeColor = item['color'] as Color;
 
                     return Container(
                       width: 270,

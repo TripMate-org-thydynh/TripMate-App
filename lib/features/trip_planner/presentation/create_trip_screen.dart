@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/theme/theme.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/network/api_exception.dart';
 import '../../trips/application/trips_providers.dart';
 import '../../trips/presentation/join_trip_screen.dart';
@@ -44,13 +46,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
   // Phần tử thứ 2 là KEY i18n, không phải nhãn — dịch tại chỗ render bằng
   // `.tr()` để đổi ngôn ngữ trong app cập nhật ngay (const map thì không thể
   // gọi .tr() lúc khai báo).
-  static const List<(String, String, IconData)> _vibes = [
-    ('CHILL', 'trips.vibe_chill', Icons.cloud_outlined),
-    ('PARTY', 'trips.vibe_party', Icons.celebration_outlined),
-    ('ADVENTURE', 'trips.vibe_adventure', Icons.terrain_outlined),
-    ('FOODIE', 'trips.vibe_foodie', Icons.restaurant_outlined),
-    ('CULTURE', 'trips.vibe_culture', Icons.account_balance_outlined),
-    ('AESTHETIC', 'trips.vibe_aesthetic', Icons.camera_alt_outlined),
+  static final List<(String, String, IconData)> _vibes = [
+    ('CHILL', 'trips.vibe_chill', PhosphorIcons.cloud()),
+    ('PARTY', 'trips.vibe_party', PhosphorIcons.confetti()),
+    ('ADVENTURE', 'trips.vibe_adventure', PhosphorIcons.mountains()),
+    ('FOODIE', 'trips.vibe_foodie', PhosphorIcons.forkKnife()),
+    ('CULTURE', 'trips.vibe_culture', PhosphorIcons.bank()),
+    ('AESTHETIC', 'trips.vibe_aesthetic', PhosphorIcons.camera()),
   ];
   bool _showEmptyState = true;
   bool _busy = false; // Đang gọi API tạo trip
@@ -229,7 +231,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.message),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: GenZTokens.danger,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -239,7 +241,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('trips.generic_error_retry'.tr()),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: GenZTokens.danger,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -315,13 +317,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     Color textSecondary,
     bool isDark,
   ) {
-    final borderCol = isDark
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.black.withValues(alpha: 0.05);
+    final borderCol = (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+        .withValues(alpha: isDark ? 0.1 : 0.05);
 
     return Container(
       key: const ValueKey('empty_state_view'),
-      decoration: BoxDecoration(color: Colors.transparent),
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -343,9 +344,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                           height: 80,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: isDark
-                                ? const Color(0x13FFFFFF)
-                                : const Color(0x0A000000),
+                            color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                                .withValues(alpha: 0.05),
                             border: Border.all(color: borderCol, width: 1.5),
                             boxShadow: [
                               BoxShadow(
@@ -358,7 +358,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                             ],
                           ),
                           child: Icon(
-                            Icons.diamond,
+                            PhosphorIcons.diamond(PhosphorIconsStyle.fill),
                             size: 38 + (4 * _pulseController.value),
                             color: primaryColor,
                           ),
@@ -446,8 +446,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF262019)
-                                  : Colors.white,
+                                  ? GenZTokens.paperDark
+                                  : GenZTokens.paper,
                               borderRadius: BorderRadius.circular(29),
                               border: Border.all(
                                 color: primaryColor.withValues(alpha: 0.5),
@@ -458,7 +458,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.auto_awesome,
+                                  PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                                   color: primaryColor,
                                   size: 20,
                                 ),
@@ -499,7 +499,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: textPrimary, width: 2),
       ),
@@ -514,11 +514,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: AppFonts.body(
-            color: isDark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E),
+            color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
           ),
           prefixIcon: Icon(
             icon,
-            color: isDark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E),
+            color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
             size: 20,
           ),
           border: InputBorder.none,
@@ -580,14 +580,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                   // Trip Name input
                   Container(
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0x13FFFFFF)
-                          : const Color(0x0A000000),
+                      color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                          .withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isDark
-                            ? Colors.white.withValues(alpha: 0.08)
-                            : Colors.black,
+                            ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                            : GenZTokens.ink,
                         width: 2,
                       ),
                     ),
@@ -629,14 +628,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0x13FFFFFF)
-                                  : const Color(0x0A000000),
+                              color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                                  .withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isDark
-                                    ? Colors.white.withValues(alpha: 0.08)
-                                    : Colors.black,
+                                    ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                                    : GenZTokens.ink,
                                 width: 2,
                               ),
                             ),
@@ -659,7 +657,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                   ),
                                 ),
                                 Icon(
-                                  Icons.calendar_today,
+                                  PhosphorIcons.calendar(),
                                   size: 16,
                                   color: primaryColor.withValues(alpha: 0.8),
                                 ),
@@ -677,14 +675,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                           child: Container(
                             height: 54,
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0x13FFFFFF)
-                                  : const Color(0x0A000000),
+                              color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                                  .withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isDark
-                                    ? Colors.white.withValues(alpha: 0.08)
-                                    : Colors.black,
+                                    ? GenZTokens.inkDark.withValues(alpha: 0.12)
+                                    : GenZTokens.ink,
                                 width: 2,
                               ),
                             ),
@@ -707,7 +704,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                   ),
                                 ),
                                 Icon(
-                                  Icons.event,
+                                  PhosphorIcons.calendarCheck(),
                                   size: 16,
                                   color: primaryColor.withValues(alpha: 0.8),
                                 ),
@@ -751,7 +748,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                       child: Semantics(
                         button: true,
                         selected: isSelected,
-                        label: 'Ảnh bìa ${cover['title']}',
+                        label: 'trips.cover_accessibility'.tr(
+                          namedArgs: {'title': cover['title']!},
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.only(right: 16),
                           child: AnimatedBuilder(
@@ -768,10 +767,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                         )
                                       : Border.all(
                                           color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.08,
+                                              ? GenZTokens.inkDark.withValues(
+                                                  alpha: 0.12,
                                                 )
-                                              : Colors.black,
+                                              : GenZTokens.ink,
                                           width: 2,
                                         ),
                                   boxShadow: isSelected
@@ -805,7 +804,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                               fit: BoxFit.cover,
                                               placeholder: (context, url) =>
                                                   Container(
-                                                    color: Colors.black12,
+                                                    color: (isDark
+                                                            ? GenZTokens.inkDark
+                                                            : GenZTokens.ink)
+                                                        .withValues(alpha: 0.08),
                                                     child: const Center(
                                                       child: SizedBox(
                                                         width: 20,
@@ -818,7 +820,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                     ),
                                                   ),
                                               errorWidget: (context, url, error) =>
-                                                  Container(color: Colors.black38),
+                                                  Container(
+                                                    color: GenZTokens.ink
+                                                        .withValues(alpha: 0.38),
+                                                  ),
                                             ),
                                     ),
                                   ),
@@ -841,7 +846,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     top: 12,
                                     right: 12,
                                     child: Icon(
-                                      Icons.check_circle,
+                                      PhosphorIcons.checkCircle(
+                                        PhosphorIconsStyle.fill,
+                                      ),
                                       color: secondaryColor,
                                       size: 20,
                                     ),
@@ -884,7 +891,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               _extraField(
                 _destinationController,
                 'trips.destination_hint'.tr(),
-                Icons.place_outlined,
+                PhosphorIcons.mapPin(),
                 textPrimary,
                 isDark,
               ),
@@ -916,8 +923,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                         color: sel
                             ? secondaryColor
                             : (isDark
-                                  ? const Color(0xFF262019)
-                                  : const Color(0xFFFFFDF5)),
+                                  ? GenZTokens.paperDark
+                                  : GenZTokens.paper),
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: textPrimary, width: 2),
                       ),
@@ -927,7 +934,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                           Icon(
                             v.$3,
                             size: 16,
-                            color: sel ? Colors.white : textPrimary,
+                            color: sel ? GenZTokens.ink : textPrimary,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -935,7 +942,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                             style: AppFonts.heading(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
-                              color: sel ? Colors.white : textPrimary,
+                              color: sel ? GenZTokens.ink : textPrimary,
                             ),
                           ),
                         ],
@@ -958,8 +965,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               const SizedBox(height: 12),
               _extraField(
                 _budgetController,
-                'vd: 3000000 (VND)',
-                Icons.account_balance_wallet_outlined,
+                'trips.budget_hint'.tr(),
+                PhosphorIcons.wallet(),
                 textPrimary,
                 isDark,
                 number: true,
@@ -976,8 +983,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                   ),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF262019)
-                        : const Color(0xFFFFFDF5),
+                        ? GenZTokens.paperDark
+                        : GenZTokens.paper,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: textPrimary, width: 2.5),
                     boxShadow: [
@@ -1010,8 +1017,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? const Color(0xFF262019)
-                                    : const Color(0xFFFFFDF5),
+                                    ? GenZTokens.paperDark
+                                    : GenZTokens.paper,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: textPrimary,
@@ -1027,9 +1034,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: isDark
-                                        ? Colors.white24
-                                        : Colors.black12,
+                                    color: (isDark
+                                            ? GenZTokens.inkDark
+                                            : GenZTokens.ink)
+                                        .withValues(alpha: 0.15),
                                     width: 3.0,
                                     style: BorderStyle.solid,
                                   ),
@@ -1037,11 +1045,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                 ),
                                 child: Center(
                                   child: Icon(
-                                    Icons.qr_code_2,
+                                    PhosphorIcons.qrCode(),
                                     size: 54,
-                                    color: isDark
-                                        ? Colors.white70
-                                        : Colors.black54,
+                                    color: (isDark
+                                            ? GenZTokens.inkDark
+                                            : GenZTokens.ink)
+                                        .withValues(alpha: 0.6),
                                   ),
                                 ),
                               ),
@@ -1068,9 +1077,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                         color: surfaceColor,
                                         width: 2.0,
                                       ),
-                                      boxShadow: const [
+                                      boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black26,
+                                          color: (isDark
+                                                  ? GenZTokens.inkDark
+                                                  : GenZTokens.ink)
+                                              .withValues(alpha: 0.15),
                                           blurRadius: 0,
                                         ),
                                       ],
@@ -1078,7 +1090,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(22),
                                       child: Semantics(
-                                        label: 'Ảnh đại diện thành viên Minh Nhật',
+                                        label: 'trips.avatar_minh_nhat'.tr(),
                                         image: true,
                                         child: 'assets/images/avatar_minh_nhat.webp'
                                                 .startsWith('assets/')
@@ -1093,12 +1105,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                 placeholder: (context, url) =>
                                                     ExcludeSemantics(
                                                       child: Container(
-                                                        color: Colors.black12,
+                                                        color: (isDark
+                                                                ? GenZTokens.inkDark
+                                                                : GenZTokens.ink)
+                                                            .withValues(alpha: 0.08),
                                                       ),
                                                     ),
                                                 errorWidget:
                                                     (context, url, error) =>
-                                                        const Icon(Icons.person),
+                                                        Icon(PhosphorIcons.user()),
                                               ),
                                       ),
                                     ),
@@ -1128,9 +1143,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                         color: surfaceColor,
                                         width: 2.0,
                                       ),
-                                      boxShadow: const [
+                                      boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black26,
+                                          color: (isDark
+                                                  ? GenZTokens.inkDark
+                                                  : GenZTokens.ink)
+                                              .withValues(alpha: 0.15),
                                           blurRadius: 0,
                                         ),
                                       ],
@@ -1138,7 +1156,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(25),
                                       child: Semantics(
-                                        label: 'Ảnh đại diện thành viên Thảo Ly',
+                                        label: 'trips.avatar_thao_ly'.tr(),
                                         image: true,
                                         child: 'assets/images/avatar_thao_ly.webp'
                                                 .startsWith('assets/')
@@ -1153,12 +1171,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                 placeholder: (context, url) =>
                                                     ExcludeSemantics(
                                                       child: Container(
-                                                        color: Colors.black12,
+                                                        color: (isDark
+                                                                ? GenZTokens.inkDark
+                                                                : GenZTokens.ink)
+                                                            .withValues(alpha: 0.08),
                                                       ),
                                                     ),
                                                 errorWidget:
                                                     (context, url, error) =>
-                                                        const Icon(Icons.person),
+                                                        Icon(PhosphorIcons.user()),
                                               ),
                                       ),
                                     ),
@@ -1188,9 +1209,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                         color: surfaceColor,
                                         width: 2.0,
                                       ),
-                                      boxShadow: const [
+                                      boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black26,
+                                          color: (isDark
+                                                  ? GenZTokens.inkDark
+                                                  : GenZTokens.ink)
+                                              .withValues(alpha: 0.15),
                                           blurRadius: 0,
                                         ),
                                       ],
@@ -1200,10 +1224,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                       child: Image.asset(
                                         'assets/images/avatar_user.webp',
                                         fit: BoxFit.cover,
-                                        semanticLabel: 'Ảnh đại diện của bạn',
+                                        semanticLabel: 'trips.avatar_user'.tr(),
                                         errorBuilder:
                                             (context, error, stackTrace) =>
-                                                const Icon(Icons.person),
+                                                Icon(PhosphorIcons.user()),
                                       ),
                                     ),
                                   ),
@@ -1249,13 +1273,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                       ],
                     ),
                     child: _busy
-                        ? const Center(
+                        ? Center(
                             child: SizedBox(
                               width: 22,
                               height: 22,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                color: Colors.white,
+                                color: GenZTokens.ink,
                               ),
                             ),
                           )
@@ -1267,13 +1291,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                 style: AppFonts.heading(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.white,
+                                  color: GenZTokens.ink,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(
-                                Icons.rocket_launch,
-                                color: Colors.white,
+                              Icon(
+                                PhosphorIcons.rocketLaunch(
+                                  PhosphorIconsStyle.fill,
+                                ),
+                                color: GenZTokens.ink,
                                 size: 20,
                               ),
                             ],
@@ -1293,7 +1319,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
 
   // APP BAR FOR EMPTY STATE
   Widget _buildCustomAppBar(Color primaryColor, bool isDark) {
-    final ink = isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return ClipRect(
       child: Container(
@@ -1317,7 +1343,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isDark ? Colors.white24 : Colors.black12,
+                  color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                      .withValues(alpha: 0.15),
                   width: 1.5,
                 ),
               ),
@@ -1326,9 +1353,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                 child: Image.asset(
                   'assets/images/avatar_user.webp',
                   fit: BoxFit.cover,
-                  semanticLabel: 'Ảnh đại diện của bạn',
+                  semanticLabel: 'trips.avatar_user'.tr(),
                   errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.trip_origin),
+                      Icon(PhosphorIcons.circleDashed()),
                 ),
               ),
             ),
@@ -1347,14 +1374,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
             Row(
               children: [
                 IconButton(
-                  tooltip: isDark
-                      ? 'Chuyển sang giao diện sáng'
-                      : 'Chuyển sang giao diện tối',
+                  tooltip: 'theme.toggle'.tr(),
                   icon: Icon(
-                    isDark ? Icons.light_mode : Icons.dark_mode,
+                    isDark ? PhosphorIcons.sun() : PhosphorIcons.moon(),
                     color: isDark
-                        ? const Color(0xFFC9B8FF)
-                        : const Color(0xFFF5822B),
+                        ? GenZTokens.lilac
+                        : GenZTokens.orange,
                     size: 22,
                   ),
                   onPressed: widget.onThemeToggle,
@@ -1364,7 +1389,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                 IconButton(
                   tooltip: 'trips.join_by_code'.tr(),
                   icon: Icon(
-                    Icons.confirmation_number_outlined,
+                    PhosphorIcons.ticket(),
                     color: ink,
                     size: 22,
                   ),
@@ -1389,7 +1414,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     Color primaryColor,
     Color secondaryColor,
   ) {
-    final ink = isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -1400,7 +1425,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
           child: Container(
             height: 70,
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+              color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
               borderRadius: BorderRadius.circular(30),
               border: Border.all(color: ink, width: 2.5),
               boxShadow: [BoxShadow(color: ink, offset: const Offset(0, 4))],
@@ -1413,7 +1438,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                 // item: ..." ra cho người dùng. Đây là thanh chuyển giữa hai
                 // chế độ của màn tạo chuyến nên chỉ giữ hai mục có thật.
                 _buildNavItem(
-                  Icons.add_circle,
+                  PhosphorIcons.plusCircle(PhosphorIconsStyle.fill),
                   'add_circle',
                   !_showEmptyState,
                   isDark,
@@ -1425,7 +1450,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                   },
                 ),
                 _buildNavItem(
-                  Icons.auto_awesome,
+                  PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                   'auto_awesome',
                   _showEmptyState,
                   isDark,
@@ -1471,7 +1496,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               icon,
               color: isActive
                   ? primaryColor
-                  : (isDark ? Colors.white60 : Colors.black54),
+                  : (isDark
+                      ? GenZTokens.inkDark.withValues(alpha: 0.6)
+                      : GenZTokens.ink.withValues(alpha: 0.54)),
               size: 24,
             ),
           ),

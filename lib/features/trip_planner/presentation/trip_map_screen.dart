@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/network/error_message.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 
 import '../data/itinerary_repository.dart';
 import '../domain/itinerary_item.dart';
@@ -28,18 +30,18 @@ class TripMapScreen extends ConsumerWidget {
 
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
+  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   static const _dayColors = <Color>[
-    Color(0xFFF5822B),
-    Color(0xFF3D8BFF),
-    Color(0xFF1FA85C),
-    Color(0xFF8B4DE8),
-    Color(0xFFD6248C),
-    Color(0xFF06B6D4),
-    Color(0xFFFFB020),
+    GenZTokens.orange,
+    GenZTokens.blue,
+    GenZTokens.green,
+    GenZTokens.purple,
+    GenZTokens.pink,
+    GenZTokens.info,
+    GenZTokens.yellow,
   ];
   Color _dayColor(int day) => _dayColors[(day - 1) % _dayColors.length];
 
@@ -63,7 +65,7 @@ class TripMapScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.link, color: _textPri),
+            icon: Icon(PhosphorIcons.link(), color: _textPri),
             tooltip: 'itinerary.map_enter_place'.tr(),
             onPressed: () => _showPlaceImportModal(context, ref),
           ),
@@ -161,20 +163,24 @@ class TripMapScreen extends ConsumerWidget {
                             height: 34,
                             child: Semantics(
                               button: true,
-                              label: 'Khoảnh khắc: ${m.authorName}',
+                              label: 'itinerary.map_moment_label'.tr(
+                                namedArgs: {'author': m.authorName},
+                              ),
                               child: GestureDetector(
                                 onTap: () => _showMoment(context, m),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFD6248C),
+                                    color: GenZTokens.pink,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: Colors.white,
                                       width: 2,
                                     ),
                                   ),
-                                  child: const Icon(
-                                    Icons.camera_alt,
+                                  child: Icon(
+                                    PhosphorIcons.camera(
+                                      PhosphorIconsStyle.fill,
+                                    ),
                                     size: 16,
                                     color: Colors.white,
                                   ),
@@ -196,8 +202,11 @@ class TripMapScreen extends ConsumerWidget {
                             height: 40,
                             child: Semantics(
                               button: true,
-                              label:
-                                  'Điểm dừng: ${filteredPoints[i].item.placeName}',
+                              label: 'itinerary.map_stop_label'.tr(
+                                namedArgs: {
+                                  'place': filteredPoints[i].item.placeName,
+                                },
+                              ),
                               child: GestureDetector(
                                 onTap: () => _showStop(
                                   context,
@@ -212,11 +221,14 @@ class TripMapScreen extends ConsumerWidget {
                                       color: Colors.white,
                                       width: 2.5,
                                     ),
-                                    boxShadow: const [
+                                    boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black26,
+                                        color: (isDarkMode
+                                                ? GenZTokens.inkDark
+                                                : GenZTokens.ink)
+                                            .withValues(alpha: 0.2),
                                         blurRadius: 4,
-                                        offset: Offset(0, 2),
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),
@@ -252,18 +264,18 @@ class TripMapScreen extends ConsumerWidget {
     String? activeFilter,
   ) {
     final categories = [
-      (key: null, label: 'trips.filter_all'.tr(), emoji: '📍'),
-      (key: 'FOOD', label: 'itinerary.cat_food_plain'.tr(), emoji: '🍔'),
-      (key: 'ACTIVITIES', label: 'itinerary.map_fun'.tr(), emoji: '🎭'),
-      (key: 'ACCOMMODATION', label: 'expense.cat_stay'.tr(), emoji: '🏨'),
-      (key: 'COFFEE', label: 'itinerary.map_coffee'.tr(), emoji: '☕'),
-      (key: 'OTHER', label: 'expense.cat_other'.tr(), emoji: '📍'),
+      (key: null, label: 'trips.filter_all'.tr(), icon: PhosphorIcons.mapPin()),
+      (key: 'FOOD', label: 'itinerary.cat_food_plain'.tr(), icon: PhosphorIcons.forkKnife()),
+      (key: 'ACTIVITIES', label: 'itinerary.map_fun'.tr(), icon: PhosphorIcons.ticket()),
+      (key: 'ACCOMMODATION', label: 'expense.cat_stay'.tr(), icon: PhosphorIcons.buildings()),
+      (key: 'COFFEE', label: 'itinerary.map_coffee'.tr(), icon: PhosphorIcons.coffee()),
+      (key: 'OTHER', label: 'expense.cat_other'.tr(), icon: PhosphorIcons.dotsThreeCircle()),
     ];
 
     return Container(
       height: 56,
       padding: const EdgeInsets.symmetric(vertical: 8),
-      color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+      color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -271,7 +283,7 @@ class TripMapScreen extends ConsumerWidget {
         itemBuilder: (context, index) {
           final cat = categories[index];
           final isSelected = activeFilter == cat.key;
-          final inkColor = isDarkMode ? Colors.white : const Color(0xFF141210);
+          final inkColor = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -286,7 +298,7 @@ class TripMapScreen extends ConsumerWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? const Color(0xFFFFD84D)
+                      ? GenZTokens.yellow
                       : (Theme.of(context).scaffoldBackgroundColor),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: inkColor, width: 2),
@@ -297,14 +309,18 @@ class TripMapScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(cat.emoji, style: const TextStyle(fontSize: 14)),
+                    Icon(
+                      cat.icon,
+                      size: 14,
+                      color: isSelected ? GenZTokens.ink : inkColor,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       cat.label,
                       style: GoogleFonts.spaceGrotesk(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: inkColor,
+                        color: isSelected ? GenZTokens.ink : inkColor,
                       ),
                     ),
                   ],
@@ -319,7 +335,7 @@ class TripMapScreen extends ConsumerWidget {
 
   Widget _legend(List<int> days, bool hasMoments) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    color: isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5),
+    color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
     child: SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -345,7 +361,11 @@ class TripMapScreen extends ConsumerWidget {
             const SizedBox(width: 16),
           ],
           if (hasMoments) ...[
-            const Icon(Icons.camera_alt, size: 13, color: Color(0xFFD6248C)),
+            Icon(
+              PhosphorIcons.camera(PhosphorIconsStyle.fill),
+              size: 13,
+              color: GenZTokens.pink,
+            ),
             const SizedBox(width: 5),
             Text(
               'checkins.title_short'.tr(),
@@ -365,8 +385,8 @@ class TripMapScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: isDarkMode
-          ? const Color(0xFF262019)
-          : const Color(0xFFFFFDF5),
+          ? GenZTokens.paperDark
+          : GenZTokens.paper,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -437,8 +457,8 @@ class TripMapScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: isDarkMode
-          ? const Color(0xFF262019)
-          : const Color(0xFFFFFDF5),
+          ? GenZTokens.paperDark
+          : GenZTokens.paper,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -477,7 +497,7 @@ class TripMapScreen extends ConsumerWidget {
                     style: GoogleFonts.spaceGrotesk(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFFD6248C),
+                      color: GenZTokens.pink,
                     ),
                   ),
                 ],
@@ -498,8 +518,12 @@ class TripMapScreen extends ConsumerWidget {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   semanticLabel: m.caption != null && m.caption!.isNotEmpty
-                      ? 'Ảnh khoảnh khắc: ${m.caption}'
-                      : 'Ảnh khoảnh khắc của ${m.authorName}',
+                      ? 'itinerary.map_moment_caption'.tr(
+                          namedArgs: {'caption': m.caption!},
+                        )
+                      : 'itinerary.map_moment_photo'.tr(
+                          namedArgs: {'author': m.authorName},
+                        ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -556,10 +580,10 @@ class TripMapScreen extends ConsumerWidget {
 
   void _showPlaceImportModal(BuildContext context, WidgetRef ref) {
     final textController = TextEditingController();
-    final borderCol = isDarkMode ? Colors.white : const Color(0xFF141210);
+    final borderCol = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
     final cardBgCol = isDarkMode
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
+        ? GenZTokens.paperDark
+        : GenZTokens.paper;
 
     showModalBottomSheet(
       context: context,
@@ -604,7 +628,7 @@ class TripMapScreen extends ConsumerWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: const Color(0xFFFFD84D),
+                    color: GenZTokens.yellow,
                     width: 2.5,
                   ),
                 ),
@@ -617,8 +641,8 @@ class TripMapScreen extends ConsumerWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFD84D),
-                  foregroundColor: const Color(0xFF141210),
+                  backgroundColor: GenZTokens.yellow,
+                  foregroundColor: GenZTokens.ink,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -664,7 +688,7 @@ class TripMapScreen extends ConsumerWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            backgroundColor: Colors.green,
+                            backgroundColor: GenZTokens.success,
                           ),
                         );
                       }
@@ -677,7 +701,7 @@ class TripMapScreen extends ConsumerWidget {
                                 namedArgs: {'err': friendlyError(e)},
                               ),
                             ),
-                            backgroundColor: Colors.red,
+                            backgroundColor: GenZTokens.danger,
                           ),
                         );
                       }
@@ -688,7 +712,7 @@ class TripMapScreen extends ConsumerWidget {
                         // Noi ro phai lam gi, thay vi mot cau bao loi chung.
                         content: Text('itinerary.import_no_coords'.tr()),
                         duration: const Duration(seconds: 6),
-                        backgroundColor: Colors.red,
+                        backgroundColor: GenZTokens.danger,
                       ),
                     );
                   }

@@ -36,8 +36,8 @@ class MomentsRepository {
   Future<void> react(String tripId, String momentId, String emoji) => _client
       .postData('${_base(tripId)}/$momentId/reactions', {'emoji': emoji});
 
-  Future<void> comment(String tripId, String momentId, String text) =>
-      _client.postData('${_base(tripId)}/$momentId/comments', {'text': text});
+  Future<void> comment(String tripId, String momentId, String text) => _client
+      .postData('${_base(tripId)}/$momentId/comments', {'content': text});
 
   /// Đặt lại caption cho khoảnh khắc (chỉ tác giả sửa được).
   Future<void> updateCaption(String tripId, String momentId, String caption) =>

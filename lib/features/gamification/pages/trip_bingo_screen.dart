@@ -1,13 +1,14 @@
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../profile/data/xp_repository.dart';
 import '../data/games_repository.dart';
-import 'package:flutter/services.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import '../../../../core/theme/gen_z_tokens.dart';
 
 class TripBingoScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -40,18 +41,50 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
 
   final List<Map<String, dynamic>> _bingoTiles = [
     {
-      'emoji': '☕',
-      'title': 'Cafe at 2AM',
+      'icon': PhosphorIcons.coffee(),
+      'titleKey': 'games.bingo_tile_cafe',
       'state': 'normal', // completed, active, normal
     },
-    {'emoji': '📸', 'title': 'Accidental Film Photo', 'state': 'normal'},
-    {'emoji': '☔', 'title': 'Survive Random Rain', 'state': 'normal'},
-    {'emoji': '🗺️', 'title': 'Lost with Squad', 'state': 'normal'},
-    {'emoji': '💸', 'title': 'Overspend Budget', 'state': 'normal'},
-    {'emoji': '🍕', 'title': 'Eat 4th Meal', 'state': 'normal'},
-    {'emoji': '🎤', 'title': 'Public Karaoke', 'state': 'normal'},
-    {'emoji': '🏃', 'title': 'Miss a Train', 'state': 'normal'},
-    {'emoji': '🌅', 'title': 'Stay up til Sunrise', 'state': 'normal'},
+    {
+      'icon': PhosphorIcons.camera(),
+      'titleKey': 'games.bingo_tile_photo',
+      'state': 'normal',
+    },
+    {
+      'icon': PhosphorIcons.cloudRain(),
+      'titleKey': 'games.bingo_tile_rain',
+      'state': 'normal',
+    },
+    {
+      'icon': PhosphorIcons.mapTrifold(),
+      'titleKey': 'games.bingo_tile_lost',
+      'state': 'normal',
+    },
+    {
+      'icon': PhosphorIcons.money(),
+      'titleKey': 'games.bingo_tile_overspend',
+      'state': 'normal',
+    },
+    {
+      'icon': PhosphorIcons.pizza(),
+      'titleKey': 'games.bingo_tile_meal',
+      'state': 'normal',
+    },
+    {
+      'icon': PhosphorIcons.microphone(),
+      'titleKey': 'games.bingo_tile_karaoke',
+      'state': 'normal',
+    },
+    {
+      'icon': PhosphorIcons.train(),
+      'titleKey': 'games.bingo_tile_train',
+      'state': 'normal',
+    },
+    {
+      'icon': PhosphorIcons.sunHorizon(),
+      'titleKey': 'games.bingo_tile_sunrise',
+      'state': 'normal',
+    },
   ];
 
   @override
@@ -182,9 +215,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
 
   void _showBingoCelebrationDialog() {
     final isDark = widget.isDarkMode;
-    final surfaceColor = isDark
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     showDialog(
@@ -284,20 +315,12 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     final isDark = widget.isDarkMode;
 
     // Design System colors
-    final bgStart = Theme.of(context).scaffoldBackgroundColor;
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
-    // va viet cung accent cua preset *grape*, nen doi theme khong an.
+    final bgStart = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final primary = Theme.of(context).colorScheme.primary;
-    final secondary = isDark
-        ? const Color(0xFF1FA85C)
-        : const Color(0xFFFFD84D);
-    final textPrimary = isDark
-        ? const Color(0xFFDAE2FD)
-        : const Color(0xFF141210);
-    final textMuted = isDark
-        ? const Color(0xFFCBC3D7)
-        : const Color(0xFF4A453E);
+    final secondary = isDark ? GenZTokens.green : GenZTokens.yellow;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textMuted = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Scaffold(
       body: Container(
@@ -413,7 +436,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
         children: [
           IconButton(
             icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
+              PhosphorIcons.arrowLeft(),
               color: textPrimary,
               size: 20,
             ),
@@ -432,7 +455,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
           if (widget.onThemeToggle != null)
             IconButton(
               icon: Icon(
-                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                isDark ? PhosphorIcons.sun() : PhosphorIcons.moon(),
                 color: textPrimary.withValues(alpha: 0.6),
                 size: 20,
               ),
@@ -491,7 +514,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
         color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: (isDark ? Colors.white : Colors.black),
+          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
           width: 2,
         ),
       ),
@@ -531,7 +554,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     height: 8,
                     child: LinearProgressIndicator(
                       value: currentChaosRatio,
-                      backgroundColor: (isDark ? Colors.white : Colors.black)
+                      backgroundColor: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
                           .withValues(alpha: 0.05),
                       valueColor: AlwaysStoppedAnimation<Color>(secondary),
                     ),
@@ -552,8 +575,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
           const SizedBox(height: 12),
           Text(
             remainingCount > 0
-                ? 'Chaos level increasing. $remainingCount more for Bingo!'
-                : 'Bingo achieved! Complete chaos unleashed! 🎉',
+                ? 'games.bingo_remaining'
+                    .tr(namedArgs: {'count': '$remainingCount'})
+                : 'games.bingo_unleashed'.tr(),
             style: AppFonts.body(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -588,8 +612,8 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
         final state = tile['state'] as String;
 
         Color tileBg = surface.withValues(alpha: isDark ? 0.35 : 0.65);
-        Color tileBorder = (isDark ? Colors.white : Colors.black).withValues(
-          alpha: 0.05,
+        Color tileBorder = (isDark ? GenZTokens.inkDark : GenZTokens.ink).withValues(
+          alpha: 0.1,
         );
         double borderWidth = 1.0;
         List<BoxShadow>? tileGlow;
@@ -627,7 +651,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 SnackBar(
                   content: Text(
                     'games.bingo_tile_checked'.tr(
-                      namedArgs: {'tile': '${tile['title']}'},
+                      namedArgs: {'tile': (tile['titleKey'] as String).tr()},
                     ),
                   ),
                   behavior: SnackBarBehavior.floating,
@@ -652,13 +676,14 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      tile['emoji'] as String,
-                      style: const TextStyle(fontSize: 22),
+                    Icon(
+                      tile['icon'] as IconData,
+                      size: 24,
+                      color: state == 'completed' ? GenZTokens.ink : textPrimary,
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      tile['title'] as String,
+                      (tile['titleKey'] as String).tr(),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -667,7 +692,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                         fontWeight: state == 'completed'
                             ? FontWeight.w900
                             : FontWeight.bold,
-                        color: textPrimary,
+                        color: state == 'completed' ? GenZTokens.ink : textPrimary,
                       ),
                     ),
                   ],
@@ -677,7 +702,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     top: 2,
                     right: 2,
                     child: Icon(
-                      Icons.check_circle_rounded,
+                      PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
                       color: secondary,
                       size: 14,
                     ),
@@ -737,7 +762,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.workspace_premium_rounded,
+                PhosphorIcons.trophy(PhosphorIconsStyle.fill),
                 color: secondary,
                 size: 24,
               ),
@@ -749,8 +774,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 children: [
                   Text(
                     lines > 0
-                        ? 'Bingo! $lines line${lines > 1 ? 's' : ''} completed 🎉'
-                        : 'No bingo line yet 🎯',
+                        ? 'games.bingo_lines_completed'
+                            .tr(namedArgs: {'count': '$lines'})
+                        : 'games.bingo_no_lines'.tr(),
                     style: AppFonts.heading(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -759,7 +785,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$done/${_bingoTiles.length} tiles checked.',
+                    'games.bingo_tiles_count'.tr(
+                      namedArgs: {'done': '$done', 'total': '${_bingoTiles.length}'},
+                    ),
                     style: AppFonts.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

@@ -13,6 +13,7 @@ import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../profile/data/xp_repository.dart';
 import '../../../profile/pages/sticker_store_screen.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_message.dart';
 
@@ -46,12 +47,12 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      _dark ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _primary =>
-      _dark ? const Color(0xFFF5822B) : const Color(0xFFF5822B);
-  Color get _textPri => _dark ? Colors.white : const Color(0xFF141210);
+      Theme.of(context).colorScheme.primary;
+  Color get _textPri => _dark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      _dark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   void initState() {
@@ -298,7 +299,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
         title: Row(
           children: [
             Text(
-              'Squad Chat',
+              'chat.title'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
@@ -311,12 +312,12 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _connected ? const Color(0xFF1FA85C) : _textSec,
+                color: _connected ? GenZTokens.success : _textSec,
               ),
             ),
             const SizedBox(width: 5),
             Text(
-              _connected ? 'live' : 'common.connecting'.tr(),
+              _connected ? 'chat.live'.tr() : 'common.connecting'.tr(),
               style: AppFonts.body(fontSize: 12, color: _textSec),
             ),
           ],
@@ -340,9 +341,9 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -437,8 +438,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                   ? null
                   : Border.all(
                       color: _dark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : Colors.black,
+                          ? GenZTokens.paperDark
+                          : GenZTokens.ink,
                       width: 2,
                     ),
             ),
@@ -454,7 +455,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                     m.content ?? '',
                     style: AppFonts.body(
                       fontSize: 14,
-                      color: isMe ? Colors.white : _textPri,
+                      color: isMe ? GenZTokens.ink : _textPri,
                       height: 1.3,
                     ),
                   ),
@@ -545,9 +546,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 ),
                 child: Icon(
                   PhosphorIcons.paperPlaneRight(PhosphorIconsStyle.fill),
-                  // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
-                  // vi accent mint la vang thi chu trang chim han.
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: GenZTokens.ink,
                   size: 22,
                 ),
               ),

@@ -110,7 +110,24 @@
     "vibe_placeholder": "VD: quán cà phê view đồi ở Đà Lạt",
     "vibe_title": "Vibe Match ✨",
     "workspace_sub": "Hàng đợi render video recap & bóc tách hóa đơn nền",
-    "wrapped_title": "Tổng kết chuyến"
+    "wrapped_title": "Tổng kết chuyến",
+    "param_weekend_trip": "Chuyến 3 ngày cuối tuần",
+    "param_deep_chill": "Thư giãn tối đa",
+    "param_high_energy": "Năng lượng bùng nổ",
+    "param_nature_focus": "Hòa mình thiên nhiên",
+    "param_city_exploration": "Khám phá phố thị",
+    "custom_vibe_title": "Thêm tiêu chí lịch trình",
+    "custom_vibe_hint": "Nhập tiêu chí mới (vd: Ẩm thực đường phố...)",
+    "custom_vibe_add": "Thêm tiêu chí",
+    "just_now": "Vừa xong",
+    "matey_greeting": "Hey, mình là Matey!",
+    "online": "Trực tuyến",
+    "send": "Gửi",
+    "suggested_prompts_title": "Gợi ý câu lệnh",
+    "vibe_aesthetic": "Thơ mộng",
+    "vibe_chaotic_genz": "Gen Z hỗn loạn",
+    "vibe_cinematic": "Điện ảnh",
+    "vibe_funny": "Hài hước"
   },
   "ai_hub": {
     "boost": "Bứt Tốc ⚡",
@@ -225,7 +242,10 @@
     "vibe_party": "Đêm Bùi Viện và bar rooftop giữa Sài Gòn.",
     "welcome": "chào mừng vào squad.",
     "welcome_back": "Chào mừng trở lại, {name}!",
-    "your_email": "Email của bạn"
+    "your_email": "Email của bạn",
+    "instagram_hint": "Username Instagram",
+    "tiktok_hint": "Username TikTok",
+    "vibe_adventure": "Phượt Hà Giang và thám hiểm hang Sơn Đoòng."
   },
   "banks": {
     "acct_holder": "Tên chủ tài khoản",
@@ -248,7 +268,9 @@
     "empty": "Chưa có tin nhắn",
     "empty_sub": "Bắt đầu trò chuyện với squad nào!",
     "input_hint": "Nhắn gì đó...",
-    "load_failed": "Không tải được tin nhắn"
+    "load_failed": "Không tải được tin nhắn",
+    "title": "Squad Chat",
+    "live": "trực tiếp"
   },
   "checkins": {
     "empty": "Chưa ai điểm danh ngày này",
@@ -296,7 +318,9 @@
     "unknown": "Không xác định",
     "unlimited": "Không giới hạn",
     "unnamed": "Không tên",
-    "update": "Cập nhật"
+    "update": "Cập nhật",
+    "more": "Thêm",
+    "refresh": "Làm mới"
   },
   "dares": {
     "d1": "Uống hết ly nước này trong 5 giây! 🍺",
@@ -382,7 +406,11 @@
     "vibe_updated": "Đã đổi vibe của bạn thành {mood}!",
     "weather": "Thời tiết",
     "weather_checking": "Đang check thời tiết...",
-    "weather_saving_vibe": "giữ nhiệt cho chuyến"
+    "weather_saving_vibe": "giữ nhiệt cho chuyến",
+    "active_count": "{count} đang hoạt động",
+    "quick_tag": "Nhanh",
+    "wrapped_reel": "Wrapped Reel",
+    "currency_tr": "tr"
   },
   "discovery": {
     "add_to_trip": "Thêm vào chuyến",
@@ -456,7 +484,11 @@
     "session_expired_long": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
     "unauthorized": "Bạn không có quyền thực hiện thao tác này.",
     "unknown_error": "Có lỗi xảy ra, thử lại sau.",
-    "viewing_offline": "ĐANG XEM OFFLINE 📶🚫"
+    "viewing_offline": "ĐANG XEM OFFLINE 📶🚫",
+    "internet_died": "Mất kết nối mạng rồi",
+    "saved_locally": "Lưu trên máy",
+    "reconnect": "Thử kết nối lại",
+    "still_offline": "Vẫn chưa có kết nối mạng"
   },
   "expense": {
     "add": "Thêm chi",
@@ -575,7 +607,8 @@
     "target_amount_invalid": "Vui lòng nhập mục tiêu quỹ hợp lệ (tối thiểu 1đ)",
     "target_hint": "Nhập mục tiêu (VD: 5,000,000)",
     "title": "Quỹ chuyến đi",
-    "total_collected": "Đã thu"
+    "total_collected": "Đã thu",
+    "delete_contribution": "Xoá khoản đóng góp"
   },
   "games": {
     "accept_fate": "Chấp nhận số phận 💸",
@@ -685,7 +718,25 @@
     "xp_source_poll": "Bình chọn",
     "xp_title": "Hệ thống Squad XP 🚀",
     "xp_to_next": "Cần thêm {xp} XP để lên cấp tiếp theo",
-    "xp_zero": "Squad chưa có XP nào. Thêm điểm lịch trình, ghi chi tiêu hay đăng khoảnh khắc để bắt đầu tích luỹ!"
+    "xp_zero": "Squad chưa có XP nào. Thêm điểm lịch trình, ghi chi tiêu hay đăng khoảnh khắc để bắt đầu tích luỹ!",
+    "bingo_lines_completed": "Bingo! Đã hoàn thành {count} hàng",
+    "bingo_no_lines": "Chưa hoàn thành hàng nào",
+    "bingo_remaining": "Độ quậy đang tăng dần. Còn {count} ô nữa để đạt Bingo!",
+    "bingo_tile_cafe": "Cà phê lúc 2h sáng",
+    "bingo_tile_karaoke": "Hát karaoke dạo",
+    "bingo_tile_lost": "Lạc đường cùng squad",
+    "bingo_tile_meal": "Ăn bữa thứ 4 trong ngày",
+    "bingo_tile_overspend": "Vung tay quá trán",
+    "bingo_tile_photo": "Ảnh dìm hàng bất ngờ",
+    "bingo_tile_rain": "Vượt qua cơn mưa rào",
+    "bingo_tile_sunrise": "Thức đón bình minh",
+    "bingo_tile_train": "Lỡ chuyến xe buýt / tàu",
+    "bingo_tiles_count": "Đã đánh dấu {done}/{total} ô",
+    "bingo_unleashed": "Đã đạt Bingo! Cơn lốc hỗn loạn đã khai mở!",
+    "dare_level_chaos": "Chaos",
+    "dare_level_chill": "Chill",
+    "dare_level_extreme": "Extreme",
+    "trip_bingo_title": "Trip Bingo"
   },
   "gamification": {
     "achievements_accumulated": "Xem các cúp danh hiệu đã tích lũy",
@@ -882,7 +933,16 @@
     "tuyen_lam_sunset_title": "Ngắm Hoàng Hôn Hồ Tuyền Lâm",
     "undo": "Hoàn tác",
     "view_route": "Xem Lộ Trình",
-    "wishlist_add_place": "Thêm địa điểm"
+    "wishlist_add_place": "Thêm địa điểm",
+    "added_success": "Đã thêm vào chuyến đi!",
+    "scheduled_desc": "{place} đã được xếp vào Ngày {day} lúc {time}.",
+    "map_moment_label": "Khoảnh khắc: {author}",
+    "map_stop_label": "Điểm dừng: {place}",
+    "map_moment_caption": "Ảnh khoảnh khắc: {caption}",
+    "map_moment_photo": "Ảnh khoảnh khắc của {author}",
+    "delete_stop": "Xóa điểm dừng",
+    "delete_stop_confirm": "Bạn có chắc muốn xóa điểm dừng này khỏi lịch trình không?",
+    "deleted_success": "Đã xóa điểm dừng khỏi lịch trình"
   },
   "journal": {
     "body_hint": "Hôm nay bạn trải qua điều gì? Kể cho squad nghe...",
@@ -969,7 +1029,11 @@
     "wall": "Bức tường kỷ niệm",
     "wall_empty": "Bức tường kỷ niệm còn trống. Đăng khoảnh khắc đầu tiên từ một chuyến đi nhé!",
     "wall_hub": "Menu bức tường kỷ niệm",
-    "wall_sub": "Album của squad"
+    "wall_sub": "Album của squad",
+    "menu_features": "Menu tính năng",
+    "pick_from_gallery": "Chọn ảnh từ thư viện",
+    "captured_photo": "Ảnh vừa chụp",
+    "flip_camera": "Đổi camera"
   },
   "nav": {
     "create": "Tạo chuyến",
@@ -1179,7 +1243,46 @@
     "promo_apply": "Áp dụng",
     "promo_remove": "Bỏ mã",
     "promo_saved": "Giảm {amount}",
-    "promo_invalid": "Mã không dùng được cho gói này"
+    "promo_invalid": "Mã không dùng được cho gói này",
+    "play_unavailable": "Không kết nối được CH Play. Hãy kiểm tra ứng dụng CH Play rồi thử lại.",
+    "play_busy": "Đang có một giao dịch chưa xong. Chờ một chút rồi thử lại nhé.",
+    "play_product_missing": "Gói này chưa mở bán trên CH Play.",
+    "play_launch_failed": "Không mở được cửa sổ thanh toán của Google.",
+    "play_failed": "Thanh toán không thành công. Bạn chưa bị trừ tiền.",
+    "play_pending_verification": "Đã thanh toán xong nhưng chưa xác nhận được. Bạn KHÔNG mất tiền — mở lại màn hình này sau ít phút để nhận gói.",
+    "referral_slogan": "Rủ hội bạn.\nMở khoá đặc quyền cực chất.",
+    "feat_identity_title": "Đặc quyền danh tính",
+    "feat_identity_desc": "Nổi bật với huy hiệu squad phát sáng và viền nổi bật.",
+    "feat_spots_title": "Điểm đến ẩn",
+    "feat_spots_desc": "Mở khoá toạ độ độc quyền và góc ngắm cảnh bí mật của người bản địa.",
+    "feat_reactions_title": "Biểu cảm độc quyền",
+    "feat_reactions_desc": "Bùng nổ cảm xúc với các biểu cảm cực chất dành riêng cho hội bạn.",
+    "feat_storage_title": "Lưu trữ chất lượng cao vô hạn",
+    "feat_storage_desc": "Giữ trọn khung hình gốc và video recap chất lượng cao mãi mãi.",
+    "sub_settings_title": "Cài đặt gói hội viên",
+    "sub_settings_desc": "Quản lý phương thức thanh toán và trạng thái gói",
+    "invoices_title": "Lịch sử hóa đơn",
+    "invoices_desc": "Xem và theo dõi lịch sử thanh toán hoá đơn",
+    "referral_rewards_title": "Phần thưởng giới thiệu",
+    "referral_rewards_desc": "Mời bạn bè và nhận thêm điểm thưởng",
+    "referral_campaign_title": "Chiến dịch giới thiệu",
+    "referral_campaign_desc": "Rủ hội bạn tham gia cùng trải nghiệm TripMate",
+    "creator_shop_title": "Doanh thu Creative Shop",
+    "creator_shop_desc": "Theo dõi trạng thái chợ nhà sáng tạo và bộ sticker",
+    "vietqr_title": "Quét mã VietQR để thanh toán",
+    "vietqr_sub": "Chuyển khoản đúng số tiền và nội dung để hệ thống tự động kích hoạt",
+    "vietqr_bank": "Ngân hàng",
+    "vietqr_account_number": "Số tài khoản",
+    "vietqr_account_name": "Chủ tài khoản",
+    "vietqr_amount": "Số tiền",
+    "vietqr_content": "Nội dung CK",
+    "vietqr_waiting": "Đang chờ ngân hàng thông báo nhận tiền...",
+    "vietqr_waiting_sub": "Hệ thống tự động kích hoạt gói cước ngay khi nhận được thanh toán",
+    "vietqr_success_title": "Thanh toán thành công!",
+    "vietqr_success_desc": "Giao dịch đã xác thực. Gói cước của bạn đã được kích hoạt!",
+    "vietqr_open_gateway": "Mở trang thanh toán SePay Gateway",
+    "vietqr_copied": "Đã sao chép {label}: {value}",
+    "vietqr_error_image": "Không tải được ảnh QR"
   },
   "privacy": {
     "body_1": "TripMate chỉ thu thập dữ liệu cần thiết để chạy ứng dụng (hồ sơ, ",
@@ -1304,7 +1407,13 @@
     "update_failed": "❌ Lỗi cập nhật profile hoặc trùng lặp Username!",
     "updated": "🎉 Cập nhật thông tin profile thành công!",
     "view_gallery": "XEM THƯ VIỆN",
-    "xp_points": "Điểm XP"
+    "xp_points": "Điểm XP",
+    "username": "Tên người dùng",
+    "theme_subtitle": "chọn phong cách cho nhóm của bạn.",
+    "theme_applied": "{name} đã được áp dụng!",
+    "travel_atlas_title": "Bản đồ Atlas",
+    "bucket_list_tab": "Danh sách mong muốn",
+    "mcp_inactive": "Trạng thái MCP: KHÔNG HOẠT ĐỘNG"
   },
   "recap": {
     "cap_days": "Bằng đó ngày, {} người, không ai bỏ cuộc.",
@@ -1342,7 +1451,13 @@
     "unit_days": "ngày",
     "unit_moments": "khoảnh khắc",
     "unit_places": "địa điểm",
-    "your_trip": "Chuyến của bạn"
+    "your_trip": "Chuyến của bạn",
+    "avatar": "Ảnh đại diện",
+    "avatar_of": "Ảnh đại diện của {name}",
+    "memory_photo": "Ảnh kỷ niệm của {author}",
+    "memory_photo_caption": "Ảnh kỷ niệm của {author}: {caption}",
+    "moment_photo": "Ảnh khoảnh khắc của {author}",
+    "moment_photo_caption": "Ảnh khoảnh khắc của {author}: {caption}"
   },
   "referral": {
     "code_intro": "Chia sẻ mã này! Mỗi khi một đứa bạn nhập mã và đăng ký thành công, cả hai sẽ nhận ngay 500 XP bứt tốc cấp độ!",
@@ -1418,6 +1533,7 @@
   },
   "splash": {
     "tag_moments": "lưu moment",
+    "tag_plan": "lên kèo chill",
     "tag_split": "chia tiền ez"
   },
   "system_phases": {
@@ -1460,7 +1576,9 @@
     "font_handwriting": "Chữ viết tay Cá tính ✍️",
     "font_modern": "Gen Z Hiện đại 🚀",
     "font_playful": "Gen Z Năng động 🎈",
-    "toggle": "Đổi giao diện sáng/tối"
+    "toggle": "Đổi giao diện sáng/tối",
+    "switch_dark": "Chuyển sang chế độ tối",
+    "switch_light": "Chuyển sang chế độ sáng"
   },
   "todos": {
     "add": "Thêm việc cần làm",
@@ -1577,7 +1695,23 @@
     "vibe_culture": "Văn hoá",
     "vibe_foodie": "Ăn sập",
     "vibe_party": "Quẩy",
-    "where_to_next_form": "đi đâu tiếp theo?"
+    "where_to_next_form": "đi đâu tiếp theo?",
+    "cover_cover_1": "Tokyo Drift",
+    "cover_cover_2": "Island Time",
+    "cover_cover_3": "Alpine Glow",
+    "delete_trip": "Xóa chuyến đi",
+    "delete_trip_confirm": "Bạn có chắc muốn xóa chuyến đi này không? Thao tác này không thể hoàn tác.",
+    "hub_squad_chat": "Chat nhóm",
+    "hub_wishlist": "Wishlist",
+    "join_code_example": "vd: ABC123",
+    "join_now": "Tham gia ngay",
+    "join_tab": "Tham gia",
+    "trip_deleted": "Đã xóa chuyến đi",
+    "vibe_display": "Vibe: {vibe}",
+    "cover_accessibility": "Ảnh bìa {title}",
+    "avatar_minh_nhat": "Ảnh đại diện thành viên Minh Nhật",
+    "avatar_thao_ly": "Ảnh đại diện thành viên Thảo Ly",
+    "avatar_user": "Ảnh đại diện của bạn"
   },
   "vacay": {
     "add_short": "Thêm ngày",
@@ -1630,7 +1764,8 @@
     "squad_done": "Squad đã chọn xong!",
     "title": "Hợp Gu",
     "type_food": "Ăn uống",
-    "type_place": "Địa điểm"
+    "type_place": "Địa điểm",
+    "squad_match": "{pct}% ĐỘ KHỚP SQUAD"
   },
   "weather": {
     "clear": "Trời quang",
@@ -1654,7 +1789,10 @@
     "empty": "Wishlist trống",
     "empty_sub": "Thả địa điểm cả nhóm muốn đi vào đây!",
     "load_failed": "Không tải được wishlist",
-    "title": "Wishlist nhóm"
+    "title": "Wishlist nhóm",
+    "delete_item": "Xóa địa điểm",
+    "delete_item_confirm": "Bạn có chắc muốn xóa địa điểm này khỏi wishlist không?",
+    "deleted_success": "Đã xóa khỏi wishlist"
   },
   "xp": {
     "balance": "XP còn lại",

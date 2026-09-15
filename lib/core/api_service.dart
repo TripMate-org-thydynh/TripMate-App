@@ -6,6 +6,7 @@ import '../features/system_states/pages/no_internet_screen.dart';
 import 'app_messenger.dart';
 import 'network/api_client.dart';
 import 'network/envelope.dart';
+import 'distribution_channel.dart';
 
 class ApiService {
   // Global Navigator Key for system-level redirection
@@ -85,6 +86,8 @@ class ApiService {
               }
               options.headers['content-type'] = 'application/json';
               options.headers['Accept-Language'] = currentLanguage;
+              // Server dua vao day de biet nen bay Play Billing hay VietQR.
+              options.headers['X-Client-Channel'] = kDistributionChannel.wire;
               return handler.next(options);
             },
             onError: (err, handler) {

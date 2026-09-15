@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:tripmate/core/theme/gen_z_tokens.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/format/money.dart';
@@ -32,18 +33,20 @@ class TripFundScreen extends ConsumerStatefulWidget {
 class _TripFundScreenState extends ConsumerState<TripFundScreen> {
   bool _isDeleting = false;
 
-  bool get _dark => widget.isDarkMode;
+  bool _isDark(BuildContext context) =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _primary => const Color(0xFF10B981);
-  Color get _textPri => _dark ? Colors.white : const Color(0xFF141210);
-  Color get _textSec =>
-      _dark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
-  Color get _border => _dark
-      ? Colors.white.withValues(alpha: 0.08)
-      : Colors.black.withValues(alpha: 0.08);
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surface(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _primary => GenZTokens.green;
+  Color _textPri(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSec(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color _border(BuildContext context) => _isDark(context)
+      ? GenZTokens.inkDark.withValues(alpha: 0.1)
+      : GenZTokens.ink.withValues(alpha: 0.08);
 
   // ── Mở Form Tạo Quỹ ──
   void _openCreateFundSheet(BuildContext context) {
@@ -57,7 +60,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
         ),
         child: _CreateFundSheet(
           tripId: widget.tripId,
-          isDarkMode: _dark,
+          isDarkMode: _isDark(context),
           primaryColor: _primary,
         ),
       ),
@@ -76,7 +79,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
         ),
         child: _ContributeSheet(
           tripId: widget.tripId,
-          isDarkMode: _dark,
+          isDarkMode: _isDark(context),
           primaryColor: _primary,
         ),
       ),
@@ -96,7 +99,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
         bool isDialogSubmitting = false;
         return StatefulBuilder(
           builder: (ctx, setDialogState) => AlertDialog(
-            backgroundColor: _surface,
+            backgroundColor: _surface(context),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -104,7 +107,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               'fund.delete_contribution_confirm'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
-                color: _textPri,
+                color: _textPri(context),
                 fontSize: 16,
               ),
             ),
@@ -113,12 +116,12 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                 onPressed: isDialogSubmitting ? null : () => Navigator.pop(ctx),
                 child: Text(
                   'general.cancel'.tr(),
-                  style: AppFonts.body(color: _textSec),
+                  style: AppFonts.body(color: _textSec(context)),
                 ),
               ),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFFD8422B),
+                  backgroundColor: GenZTokens.danger,
                 ),
                 onPressed: isDialogSubmitting
                     ? null
@@ -159,10 +162,17 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                         height: 18,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Colors.white,
+                          color: GenZTokens.paper,
                         ),
                       )
-                    : Text('general.delete2'.tr()),
+                    : Text(
+                        'general.delete2'.tr(),
+                        style: AppFonts.heading(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          color: GenZTokens.paper,
+                        ),
+                      ),
               ),
             ],
           ),
@@ -186,7 +196,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w800,
-            color: _textPri,
+            color: _textPri(context),
           ),
         ),
       ),
@@ -194,9 +204,9 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
           ? null
           : FloatingActionButton.extended(
               backgroundColor: _primary,
-              foregroundColor: Colors.white,
+              foregroundColor: GenZTokens.paper,
               onPressed: () => _openContributeSheet(context),
-              icon: const Icon(Icons.add, size: 20),
+              icon: Icon(PhosphorIcons.plus(), size: 20),
               label: Text(
                 'fund.contribute_btn'.tr(),
                 style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -207,8 +217,8 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
         onRefresh: () =>
             ref.read(fundProvider(widget.tripId).notifier).refresh(),
         child: async.when(
-          loading: () => _skeleton(),
-          error: (e, _) => _error(),
+          loading: () => _skeleton(context),
+          error: (e, _) => _error(context),
           data: (fundData) {
             if (fundData == null) {
               return _emptyView(context);
@@ -248,7 +258,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             fontSize: 20,
-            color: _textPri,
+            color: _textPri(context),
           ),
         ),
         const SizedBox(height: 12),
@@ -257,7 +267,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
           textAlign: TextAlign.center,
           style: AppFonts.body(
             fontSize: 14,
-            color: _textSec,
+            color: _textSec(context),
             height: 1.5,
           ),
         ),
@@ -266,7 +276,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
           child: FilledButton.icon(
             style: FilledButton.styleFrom(
               backgroundColor: _primary,
-              foregroundColor: Colors.white,
+              foregroundColor: GenZTokens.paper,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -274,7 +284,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               elevation: 0,
             ),
             onPressed: () => _openCreateFundSheet(context),
-            icon: const Icon(Icons.add, size: 20),
+            icon: Icon(PhosphorIcons.plus(), size: 20),
             label: Text(
               'fund.create_fund_btn'.tr(),
               style: AppFonts.heading(
@@ -321,7 +331,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
                 fontSize: 16,
-                color: _textPri,
+                color: _textPri(context),
               ),
             ),
             const SizedBox(width: 6),
@@ -330,7 +340,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               style: AppFonts.mono(
                 fontWeight: FontWeight.w700,
                 fontSize: 13,
-                color: _textSec,
+                color: _textSec(context),
               ),
             ),
             const Spacer(),
@@ -339,7 +349,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                 'fund.delete_tip'.tr(),
                 style: AppFonts.body(
                   fontSize: 11,
-                  color: _textSec.withValues(alpha: 0.8),
+                  color: _textSec(context).withValues(alpha: 0.8),
                 ),
               ),
           ],
@@ -348,7 +358,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
 
         // 3. Danh sách các khoản đóng góp
         if (fund.contributions.isEmpty)
-          _emptyContributionsCard()
+          _emptyContributionsCard(context)
         else
           ...fund.contributions.map(
             (item) => _contributionTile(context, item),
@@ -371,9 +381,9 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _surface,
+        color: _surface(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _border),
+        border: Border.all(color: _border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,7 +404,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   fontSize: 15,
-                  color: _textPri,
+                  color: _textPri(context),
                 ),
               ),
               const Spacer(),
@@ -441,7 +451,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                     style: AppFonts.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: _textSec,
+                      color: _textSec(context),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -463,7 +473,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                     style: AppFonts.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: _textSec,
+                      color: _textSec(context),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -472,7 +482,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                     style: AppFonts.mono(
                       fontWeight: FontWeight.w800,
                       fontSize: 16,
-                      color: _textPri,
+                      color: _textPri(context),
                     ),
                   ),
                 ],
@@ -502,13 +512,13 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               style: AppFonts.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: isCompleted ? _primary : _textSec,
+                color: isCompleted ? _primary : _textSec(context),
               ),
             ),
           ),
           const SizedBox(height: 14),
 
-          Divider(height: 1, color: _border),
+          Divider(height: 1, color: _border(context)),
           const SizedBox(height: 12),
 
           // Hạn chót
@@ -517,7 +527,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               Icon(
                 PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
                 size: 17,
-                color: _textSec,
+                color: _textSec(context),
               ),
               const SizedBox(width: 8),
               Text(
@@ -525,7 +535,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                 style: AppFonts.body(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: _textSec,
+                  color: _textSec(context),
                 ),
               ),
               const SizedBox(width: 6),
@@ -536,7 +546,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                 style: AppFonts.body(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: fund.deadline != null ? _textPri : _textSec,
+                  color: fund.deadline != null ? _textPri(context) : _textSec(context),
                 ),
               ),
             ],
@@ -551,7 +561,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                 Icon(
                   PhosphorIcons.note(PhosphorIconsStyle.fill),
                   size: 17,
-                  color: _textSec,
+                  color: _textSec(context),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -559,7 +569,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                     fund.note!.trim(),
                     style: AppFonts.body(
                       fontSize: 13,
-                      color: _textSec,
+                      color: _textSec(context),
                       height: 1.4,
                     ),
                   ),
@@ -573,13 +583,13 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
   }
 
   // ── Thẻ trống khi chưa có khoản đóng góp nào ──
-  Widget _emptyContributionsCard() {
+  Widget _emptyContributionsCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
       decoration: BoxDecoration(
-        color: _surface,
+        color: _surface(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: _border),
+        border: Border.all(color: _border(context)),
       ),
       child: Center(
         child: Text(
@@ -587,7 +597,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
           textAlign: TextAlign.center,
           style: AppFonts.body(
             fontSize: 13.5,
-            color: _textSec,
+            color: _textSec(context),
             height: 1.4,
           ),
         ),
@@ -610,9 +620,9 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: _surface,
+          color: _surface(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _border),
+          border: Border.all(color: _border(context)),
         ),
         child: Row(
           children: [
@@ -654,7 +664,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                     style: AppFonts.body(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
-                      color: _textPri,
+                      color: _textPri(context),
                     ),
                   ),
                   if (item.note != null && item.note!.trim().isNotEmpty) ...[
@@ -663,7 +673,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                       item.note!.trim(),
                       style: AppFonts.body(
                         fontSize: 12,
-                        color: _textSec,
+                        color: _textSec(context),
                       ),
                     ),
                   ],
@@ -673,7 +683,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                       DateFormat('HH:mm · dd/MM/yyyy').format(item.createdAt!),
                       style: AppFonts.mono(
                         fontSize: 11,
-                        color: _textSec.withValues(alpha: 0.8),
+                        color: _textSec(context).withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -702,11 +712,11 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               icon: Icon(
                 PhosphorIcons.trash(),
                 size: 18,
-                color: _textSec.withValues(alpha: 0.6),
+                color: _textSec(context).withValues(alpha: 0.6),
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-              tooltip: 'Xoá khoản đóng góp',
+              tooltip: 'fund.delete_contribution'.tr(),
               onPressed: () => _confirmDelete(context, item),
             ),
           ],
@@ -716,16 +726,16 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
   }
 
   // ── Skeleton loading ──
-  Widget _skeleton() => ListView(
+  Widget _skeleton(BuildContext context) => ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Container(
             height: 170,
             margin: const EdgeInsets.only(bottom: 24),
             decoration: BoxDecoration(
-              color: _dark
-                  ? Colors.white.withValues(alpha: 0.04)
-                  : Colors.black.withValues(alpha: 0.04),
+              color: _isDark(context)
+                  ? GenZTokens.inkDark.withValues(alpha: 0.06)
+                  : GenZTokens.ink.withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(20),
             ),
           ),
@@ -735,9 +745,9 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
               height: 64,
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: _dark
-                    ? Colors.white.withValues(alpha: 0.04)
-                    : Colors.black.withValues(alpha: 0.04),
+                color: _isDark(context)
+                    ? GenZTokens.inkDark.withValues(alpha: 0.06)
+                    : GenZTokens.ink.withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
@@ -746,15 +756,15 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
       );
 
   // ── Báo lỗi khi tải thất bại ──
-  Widget _error() => ListView(
+  Widget _error(BuildContext context) => ListView(
         children: [
           const SizedBox(height: 120),
           Center(
             child: Column(
               children: [
-                const Icon(
-                  Icons.cloud_off_rounded,
-                  color: Colors.redAccent,
+                Icon(
+                  PhosphorIcons.cloudSlash(),
+                  color: GenZTokens.danger,
                   size: 44,
                 ),
                 const SizedBox(height: 14),
@@ -762,7 +772,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
                   'fund.error_load'.tr(),
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w800,
-                    color: _textPri,
+                    color: _textPri(context),
                     fontSize: 16,
                   ),
                 ),
@@ -781,7 +791,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// BOTTOM SHEET TẠO QUÝ MỚI
+// BOTTOM SHEET TẠO QUỸ MỚI
 // ══════════════════════════════════════════════════════════════════════════════
 class _CreateFundSheet extends ConsumerStatefulWidget {
   final String tripId;
@@ -804,14 +814,16 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
   DateTime? _deadline;
   bool _isSubmitting = false;
 
-  bool get _dark => widget.isDarkMode;
+  bool _isDark(BuildContext context) =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _textPri => _dark ? Colors.white : const Color(0xFF141210);
-  Color get _textSec =>
-      _dark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surface(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color _textPri(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSec(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   void dispose() {
@@ -830,7 +842,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('fund.target_amount_invalid'.tr()),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: GenZTokens.danger,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -862,7 +874,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _surface,
+        color: _surface(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
@@ -883,13 +895,13 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
-                  color: _textPri,
+                  color: _textPri(context),
                 ),
               ),
               const Spacer(),
               IconButton(
-                icon: Icon(Icons.close, color: _textSec),
-                tooltip: 'Đóng',
+                icon: Icon(PhosphorIcons.x(), color: _textSec(context)),
+                tooltip: 'common.close'.tr(),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -901,7 +913,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
             'fund.target_amount'.tr(),
             style: AppFonts.body(
               fontWeight: FontWeight.w700,
-              color: _textSec,
+              color: _textSec(context),
               fontSize: 12,
             ),
           ),
@@ -913,11 +925,11 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
             style: AppFonts.mono(
               fontWeight: FontWeight.w700,
               fontSize: 16,
-              color: _textPri,
+              color: _textPri(context),
             ),
             decoration: InputDecoration(
               hintText: 'fund.target_hint'.tr(),
-              hintStyle: AppFonts.body(color: _textSec.withValues(alpha: 0.6)),
+              hintStyle: AppFonts.body(color: _textSec(context).withValues(alpha: 0.6)),
               filled: true,
               fillColor: _bgOf(context),
               border: OutlineInputBorder(
@@ -937,7 +949,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
             'fund.deadline'.tr(),
             style: AppFonts.body(
               fontWeight: FontWeight.w700,
-              color: _textSec,
+              color: _textSec(context),
               fontSize: 12,
             ),
           ),
@@ -951,11 +963,11 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
                 firstDate: now,
                 lastDate: now.add(const Duration(days: 365 * 5)),
                 builder: (context, child) => Theme(
-                  data: _dark
+                  data: _isDark(context)
                       ? ThemeData.dark().copyWith(
                           colorScheme: ColorScheme.dark(
                             primary: widget.primaryColor,
-                            surface: _surface,
+                            surface: _surface(context),
                           ),
                         )
                       : ThemeData.light().copyWith(
@@ -980,7 +992,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
                 children: [
                   Icon(
                     PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
-                    color: _textSec,
+                    color: _textSec(context),
                     size: 20,
                   ),
                   const SizedBox(width: 10),
@@ -990,7 +1002,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
                           ? DateFormat('dd/MM/yyyy').format(_deadline!)
                           : 'fund.deadline_hint'.tr(),
                       style: AppFonts.body(
-                        color: _deadline != null ? _textPri : _textSec,
+                        color: _deadline != null ? _textPri(context) : _textSec(context),
                         fontWeight: _deadline != null
                             ? FontWeight.w700
                             : FontWeight.w400,
@@ -1005,7 +1017,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
                         style: AppFonts.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Colors.redAccent,
+                          color: GenZTokens.danger,
                         ),
                       ),
                     ),
@@ -1020,7 +1032,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
             'fund.note'.tr(),
             style: AppFonts.body(
               fontWeight: FontWeight.w700,
-              color: _textSec,
+              color: _textSec(context),
               fontSize: 12,
             ),
           ),
@@ -1028,10 +1040,10 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
           TextField(
             controller: _noteCtrl,
             maxLines: 2,
-            style: AppFonts.body(color: _textPri),
+            style: AppFonts.body(color: _textPri(context)),
             decoration: InputDecoration(
               hintText: 'fund.note_hint'.tr(),
-              hintStyle: AppFonts.body(color: _textSec.withValues(alpha: 0.6)),
+              hintStyle: AppFonts.body(color: _textSec(context).withValues(alpha: 0.6)),
               filled: true,
               fillColor: _bgOf(context),
               border: OutlineInputBorder(
@@ -1060,7 +1072,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: GenZTokens.paper,
                       ),
                     )
                   : Text(
@@ -1068,7 +1080,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
                       style: AppFonts.heading(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
-                        color: Colors.white,
+                        color: GenZTokens.paper,
                       ),
                     ),
             ),
@@ -1117,14 +1129,16 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
     _requestId = _newRequestId();
   }
 
-  bool get _dark => widget.isDarkMode;
+  bool _isDark(BuildContext context) =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
-  Color get _textPri => _dark ? Colors.white : const Color(0xFF141210);
-  Color get _textSec =>
-      _dark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surface(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color _textPri(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSec(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   void dispose() {
@@ -1143,7 +1157,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('fund.amount_invalid'.tr()),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: GenZTokens.danger,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1177,7 +1191,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
 
     return Container(
       decoration: BoxDecoration(
-        color: _surface,
+        color: _surface(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
@@ -1198,13 +1212,13 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
-                  color: _textPri,
+                  color: _textPri(context),
                 ),
               ),
               const Spacer(),
               IconButton(
-                icon: Icon(Icons.close, color: _textSec),
-                tooltip: 'Đóng',
+                icon: Icon(PhosphorIcons.x(), color: _textSec(context)),
+                tooltip: 'common.close'.tr(),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -1216,7 +1230,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
             'fund.amount'.tr(),
             style: AppFonts.body(
               fontWeight: FontWeight.w700,
-              color: _textSec,
+              color: _textSec(context),
               fontSize: 12,
             ),
           ),
@@ -1228,11 +1242,11 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
             style: AppFonts.mono(
               fontWeight: FontWeight.w800,
               fontSize: 18,
-              color: _textPri,
+              color: _textPri(context),
             ),
             decoration: InputDecoration(
               hintText: 'fund.amount_hint'.tr(),
-              hintStyle: AppFonts.body(color: _textSec.withValues(alpha: 0.6)),
+              hintStyle: AppFonts.body(color: _textSec(context).withValues(alpha: 0.6)),
               filled: true,
               fillColor: _bgOf(context),
               border: OutlineInputBorder(
@@ -1252,7 +1266,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
             'fund.quick_amounts'.tr(),
             style: AppFonts.body(
               fontWeight: FontWeight.w600,
-              color: _textSec,
+              color: _textSec(context),
               fontSize: 12,
             ),
           ),
@@ -1273,7 +1287,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
                     color: _bgOf(context),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: _textSec.withValues(alpha: 0.25),
+                      color: _textSec(context).withValues(alpha: 0.25),
                     ),
                   ),
                   child: Text(
@@ -1281,7 +1295,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
                     style: AppFonts.mono(
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
-                      color: _textPri,
+                      color: _textPri(context),
                     ),
                   ),
                 ),
@@ -1295,17 +1309,17 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
             'fund.note'.tr(),
             style: AppFonts.body(
               fontWeight: FontWeight.w700,
-              color: _textSec,
+              color: _textSec(context),
               fontSize: 12,
             ),
           ),
           const SizedBox(height: 6),
           TextField(
             controller: _noteCtrl,
-            style: AppFonts.body(color: _textPri),
+            style: AppFonts.body(color: _textPri(context)),
             decoration: InputDecoration(
               hintText: 'fund.note_hint'.tr(),
-              hintStyle: AppFonts.body(color: _textSec.withValues(alpha: 0.6)),
+              hintStyle: AppFonts.body(color: _textSec(context).withValues(alpha: 0.6)),
               filled: true,
               fillColor: _bgOf(context),
               border: OutlineInputBorder(
@@ -1334,7 +1348,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: GenZTokens.paper,
                       ),
                     )
                   : Text(
@@ -1342,7 +1356,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
                       style: AppFonts.heading(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
-                        color: Colors.white,
+                        color: GenZTokens.paper,
                       ),
                     ),
             ),

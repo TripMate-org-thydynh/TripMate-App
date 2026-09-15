@@ -1,7 +1,11 @@
-import '../../../core/theme/theme.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_localization/easy_localization.dart' show tr;
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+import 'package:tripmate/core/theme/gen_z_tokens.dart';
+
+import '../../../core/theme/theme.dart';
 
 class NoInternetScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -20,44 +24,84 @@ class NoInternetScreen extends StatefulWidget {
 class _NoInternetScreenState extends State<NoInternetScreen> {
   bool _isConnecting = false;
 
-  void _reconnect() {
+  Future<void> _reconnect() async {
     setState(() {
       _isConnecting = true;
     });
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    try {
+      final results = await Connectivity().checkConnectivity();
       if (!mounted) return;
-      setState(() {
-        _isConnecting = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            tr('errors.back_online'),
-            style: AppFonts.heading(fontWeight: FontWeight.bold),
+      final isOffline =
+          results.isEmpty || results.every((r) => r == ConnectivityResult.none);
+      if (!isOffline) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr('errors.back_online'),
+              style: AppFonts.heading(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: TripMateTheme.darkSecondary,
+            behavior: SnackBarBehavior.floating,
           ),
-          backgroundColor: TripMateTheme.darkSecondary,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      Navigator.pop(context);
-    });
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr('errors.still_offline'),
+              style: AppFonts.heading(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: GenZTokens.danger,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (_) {
+      // Bỏ qua lỗi bắt kết nối
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isConnecting = false;
+        });
+      }
+    }
   }
 
   void _playDinoGame() {
+    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDark
+        ? TripMateTheme.darkPrimary
+        : TripMateTheme.lightPrimary;
+    final textPrimary = isDark
+        ? GenZTokens.inkDark
+        : GenZTokens.ink;
+    final textSecondary = isDark
+        ? GenZTokens.inkSoftDark
+        : GenZTokens.inkSoft;
+    final surfaceColor = isDark
+        ? GenZTokens.paperDark
+        : GenZTokens.paper;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: widget.isDarkMode
-            ? TripMateTheme.darkSurface
-            : Colors.white,
+        backgroundColor: surfaceColor,
         title: Row(
           children: [
-            const Text('🦖', style: TextStyle(fontSize: 28)),
+            Icon(
+              PhosphorIcons.gameController(PhosphorIconsStyle.fill),
+              size: 28,
+              color: primaryColor,
+            ),
             const SizedBox(width: 8),
             Text(
               tr('errors.dino_game'),
-              style: AppFonts.heading(fontWeight: FontWeight.bold),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.bold,
+                color: textPrimary,
+              ),
             ),
           ],
         ),
@@ -66,28 +110,68 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
           children: [
             Text(
               tr('errors.dino_sub'),
-              style: AppFonts.body(fontSize: 13, height: 1.4),
+              style: AppFonts.body(
+                fontSize: 13,
+                height: 1.4,
+                color: textSecondary,
+              ),
             ),
             const SizedBox(height: 24),
             Container(
               height: 100,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: (widget.isDarkMode ? Colors.white : Colors.black)
+                color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
                     .withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: widget.isDarkMode ? Colors.white10 : Colors.black12,
+                  color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                      .withValues(alpha: 0.1),
                 ),
               ),
-              child: const Center(
-                child: Text(
-                  '🦖   🌵   🌵   🏃‍♂️💨\n\n[ Score: 1,420 ]',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.bold,
-                  ),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          PhosphorIcons.gameController(),
+                          size: 22,
+                          color: primaryColor,
+                        ),
+                        const SizedBox(width: 10),
+                        Icon(
+                          PhosphorIcons.plant(),
+                          size: 18,
+                          color: GenZTokens.green,
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(
+                          PhosphorIcons.plant(),
+                          size: 18,
+                          color: GenZTokens.green,
+                        ),
+                        const SizedBox(width: 10),
+                        Icon(
+                          PhosphorIcons.personSimpleRun(),
+                          size: 22,
+                          color: textPrimary,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '[ Score: 1,420 ]',
+                      textAlign: TextAlign.center,
+                      style: AppFonts.mono(
+                        fontWeight: FontWeight.bold,
+                        color: textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -98,7 +182,10 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               tr('common.close'),
-              style: AppFonts.heading(fontWeight: FontWeight.bold),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
             ),
           ),
         ],
@@ -108,7 +195,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
 
     final primaryColor = isDark
         ? TripMateTheme.darkPrimary
@@ -117,26 +204,26 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
         ? TripMateTheme.darkSecondary
         : TripMateTheme.lightSecondary;
     final bgColor = isDark
-        ? TripMateTheme.darkBackground
-        : TripMateTheme.lightBackground;
+        ? GenZTokens.creamDark
+        : GenZTokens.cream;
     final surfaceColor = isDark
-        ? TripMateTheme.darkSurface
-        : TripMateTheme.lightSurface;
+        ? GenZTokens.paperDark
+        : GenZTokens.paper;
     final textPrimary = isDark
-        ? TripMateTheme.darkTextPrimary
-        : TripMateTheme.lightTextPrimary;
+        ? GenZTokens.inkDark
+        : GenZTokens.ink;
     final textSecondary = isDark
-        ? TripMateTheme.darkTextSecondary
-        : TripMateTheme.lightTextSecondary;
+        ? GenZTokens.inkSoftDark
+        : GenZTokens.inkSoft;
     final borderCol = isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.08);
+        ? GenZTokens.inkDark.withValues(alpha: 0.12)
+        : GenZTokens.ink.withValues(alpha: 0.08);
 
     return Scaffold(
       backgroundColor: bgColor,
       body: Stack(
         children: [
-          // Background aurora overlays (Irresponsible glowing aesthetic)
+          // Background aurora overlays
           Positioned(
             top: -60,
             left: -60,
@@ -147,7 +234,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withValues(alpha: 0.08),
+                    color: GenZTokens.danger.withValues(alpha: 0.08),
                     blurRadius: 0,
                   ),
                 ],
@@ -170,7 +257,10 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back, color: textPrimary),
+                        icon: Icon(
+                          PhosphorIcons.arrowLeft(),
+                          color: textPrimary,
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                       Row(
@@ -178,8 +268,8 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                           IconButton(
                             icon: Icon(
                               isDark
-                                  ? Icons.light_mode_outlined
-                                  : Icons.dark_mode_outlined,
+                                  ? PhosphorIcons.sun()
+                                  : PhosphorIcons.moon(),
                               color: primaryColor,
                             ),
                             onPressed: widget.onThemeToggle,
@@ -191,14 +281,14 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.15),
+                              color: GenZTokens.danger.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.wifi_off,
-                                  color: Colors.redAccent,
+                                Icon(
+                                  PhosphorIcons.wifiSlash(),
+                                  color: GenZTokens.danger,
                                   size: 14,
                                 ),
                                 const SizedBox(width: 4),
@@ -207,7 +297,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                                   style: AppFonts.heading(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.redAccent,
+                                    color: GenZTokens.danger,
                                   ),
                                 ),
                               ],
@@ -222,7 +312,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
 
                   // Headline block
                   Text(
-                    'bro the\ninternet died 😭',
+                    tr('errors.internet_died'),
                     style: AppFonts.heading(
                       fontSize: 34,
                       fontWeight: FontWeight.w900,
@@ -259,7 +349,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Icon(
-                                Icons.group_off,
+                                PhosphorIcons.users(),
                                 color: primaryColor,
                                 size: 24,
                               ),
@@ -300,7 +390,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Icon(
-                                Icons.cloud_done,
+                                PhosphorIcons.cloudCheck(),
                                 color: secondaryColor,
                                 size: 24,
                               ),
@@ -315,7 +405,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Saved locally',
+                                tr('errors.saved_locally'),
                                 style: AppFonts.body(
                                   fontSize: 12,
                                   color: textSecondary,
@@ -327,12 +417,6 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                       ),
                     ],
                   ),
-
-                  // Trước đây ở đây có thẻ "Next Up: Tokyo Shibuya Crossing"
-                  // — một điểm đến bịa, hiện cho MỌI người dùng mất mạng dù họ
-                  // đang đi Đà Lạt. Màn offline không đọc được dữ liệu chuyến
-                  // (đó là lý do nó hiện ra), nên không có nguồn nào để thay
-                  // bằng số liệu thật. Bỏ hẳn thay vì bịa tiếp.
 
                   const SizedBox(height: 60),
 
@@ -360,24 +444,24 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                                 height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Colors.white,
+                                  color: GenZTokens.ink,
                                 ),
                               )
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.refresh,
-                                    color: Colors.white,
+                                  Icon(
+                                    PhosphorIcons.arrowsClockwise(),
+                                    color: GenZTokens.ink,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Reconnect',
+                                    tr('errors.reconnect'),
                                     style: AppFonts.heading(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
-                                      color: Colors.white,
+                                      color: GenZTokens.ink,
                                     ),
                                   ),
                                 ],

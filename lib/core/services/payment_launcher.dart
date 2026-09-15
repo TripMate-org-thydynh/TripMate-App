@@ -7,6 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../format/money.dart';
+import '../theme/gen_z_tokens.dart';
 
 /// Mở các ứng dụng thanh toán Việt Nam (Momo / ZaloPay) bằng deep-link thật.
 ///
@@ -98,13 +99,12 @@ class _PaymentSheet extends StatelessWidget {
     required this.isDark,
   });
 
-  Color get _primary =>
-      isDark ? const Color(0xFFFF6A4A) : const Color(0xFFE0533C);
-  Color get _surface => isDark ? const Color(0xFF1C1C1E) : Colors.white;
-  Color get _bg => isDark ? const Color(0xFF141218) : const Color(0xFFFCFAF6);
-  Color get _textPri => isDark ? Colors.white : const Color(0xFF1E2022);
+  Color get _primary => GenZTokens.orange;
+  Color get _surface => isDark ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _bg => isDark ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _textPri => isDark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      isDark ? const Color(0xFF94A3B8) : const Color(0xFF686D76);
+      isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   Future<void> _handle(BuildContext context, String method) async {
     // Luôn copy sẵn thông tin để người dùng dán nhanh.
@@ -126,7 +126,7 @@ class _PaymentSheet extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: ok ? _primary : Colors.blueGrey,
+        backgroundColor: ok ? _primary : (isDark ? GenZTokens.paperDark : GenZTokens.inkSoft),
         content: Text(
           ok
               ? 'payment.opened_copied'.tr()
@@ -144,8 +144,8 @@ class _PaymentSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.black.withValues(alpha: 0.05),
+              ? GenZTokens.inkDark.withValues(alpha: 0.12)
+              : GenZTokens.ink.withValues(alpha: 0.12),
         ),
       ),
       child: SafeArea(
@@ -296,8 +296,8 @@ class _PayOption extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.06)
-                : Colors.black.withValues(alpha: 0.06),
+                ? GenZTokens.inkDark.withValues(alpha: 0.1)
+                : GenZTokens.ink.withValues(alpha: 0.1),
           ),
         ),
         child: Row(
@@ -331,7 +331,7 @@ class _PayOption extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 14, color: textSec),
+            Icon(PhosphorIcons.caretRight(), size: 14, color: textSec),
           ],
         ),
       ),

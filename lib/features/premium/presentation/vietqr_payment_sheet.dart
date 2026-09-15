@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/api_service.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -104,7 +106,9 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã sao chép $label: $text'),
+        content: Text(
+          tr('premium.vietqr_copied', namedArgs: {'label': label, 'value': text}),
+        ),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -126,9 +130,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? GenZTokens.paperDark : GenZTokens.cream;
+    final bg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final cardBg = isDark ? GenZTokens.creamDark : GenZTokens.paper;
+    final cardBg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     final bankCode = widget.bankInfo?['bankCode']?.toString() ?? 'MBBank';
     final accountNumber =
@@ -170,10 +175,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded, size: 22),
+                  icon: Icon(PhosphorIcons.x(), size: 20),
                   splashRadius: 18,
-                  color: ink.withValues(alpha: 0.7),
-                  tooltip: 'Đóng',
+                  color: inkSoft,
+                  tooltip: tr('common.close'),
                 ),
               ],
             ),
@@ -190,14 +195,14 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(
-                      Icons.check_circle_rounded,
+                    Icon(
+                      PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
                       color: GenZTokens.green,
                       size: 72,
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Thanh toán thành công! 🎉',
+                      tr('premium.vietqr_success_title'),
                       style: AppFonts.heading(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -207,10 +212,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Webhook SePay đã xác thực giao dịch chuyển khoản.\nGói cước của bạn đã được kích hoạt tức thì!',
+                      tr('premium.vietqr_success_desc'),
                       style: AppFonts.body(
                         fontSize: 14,
-                        color: ink.withValues(alpha: 0.8),
+                        color: inkSoft,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -221,7 +226,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
             ] else ...[
               // Tiêu đề
               Text(
-                'Quét mã VietQR để thanh toán',
+                tr('premium.vietqr_title'),
                 style: AppFonts.heading(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -231,10 +236,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Chuyển khoản đúng số tiền và nội dung để Webhook tự động kích hoạt',
+                tr('premium.vietqr_sub'),
                 style: AppFonts.body(
                   fontSize: 13,
-                  color: ink.withValues(alpha: 0.7),
+                  color: inkSoft,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -271,14 +276,14 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                         width: 220,
                         height: 220,
                         color: Colors.grey.shade100,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.qr_code_2_rounded,
+                            Icon(PhosphorIcons.qrCode(),
                                 size: 64, color: Colors.grey),
-                            SizedBox(height: 8),
-                            Text('Không tải được ảnh QR',
-                                style: TextStyle(color: Colors.grey)),
+                            const SizedBox(height: 8),
+                            Text(tr('premium.vietqr_error_image'),
+                                style: const TextStyle(color: Colors.grey)),
                           ],
                         ),
                       ),
@@ -301,43 +306,43 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                   children: [
                     _buildDetailRow(
                       context,
-                      label: 'Ngân hàng',
+                      label: tr('premium.vietqr_bank'),
                       value: bankCode,
                       ink: ink,
                     ),
-                    const Divider(height: 16),
+                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
                     _buildDetailRow(
                       context,
-                      label: 'Số tài khoản',
+                      label: tr('premium.vietqr_account_number'),
                       value: accountNumber,
                       ink: ink,
-                      onCopy: () => _copy(accountNumber, 'Số tài khoản'),
+                      onCopy: () => _copy(accountNumber, tr('premium.vietqr_account_number')),
                     ),
-                    const Divider(height: 16),
+                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
                     _buildDetailRow(
                       context,
-                      label: 'Chủ tài khoản',
+                      label: tr('premium.vietqr_account_name'),
                       value: accountName,
                       ink: ink,
                     ),
-                    const Divider(height: 16),
+                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
                     _buildDetailRow(
                       context,
-                      label: 'Số tiền',
+                      label: tr('premium.vietqr_amount'),
                       value: _formatCurrency(widget.amount),
                       ink: GenZTokens.purple,
                       isBold: true,
-                      onCopy: () => _copy(widget.amount.toString(), 'Số tiền'),
+                      onCopy: () => _copy(widget.amount.toString(), tr('premium.vietqr_amount')),
                     ),
-                    const Divider(height: 16),
+                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
                     _buildDetailRow(
                       context,
-                      label: 'Nội dung CK',
+                      label: tr('premium.vietqr_content'),
                       value: content,
                       ink: GenZTokens.purple,
                       isBold: true,
                       highlight: true,
-                      onCopy: () => _copy(content, 'Nội dung chuyển khoản'),
+                      onCopy: () => _copy(content, tr('premium.vietqr_content')),
                     ),
                   ],
                 ),
@@ -372,7 +377,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Đang chờ ngân hàng thông báo nhận tiền...',
+                            tr('premium.vietqr_waiting'),
                             style: AppFonts.body(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
@@ -381,10 +386,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Webhook SePay tự động duyệt đơn ngay khi biến động số dư phát sinh',
+                            tr('premium.vietqr_waiting_sub'),
                             style: AppFonts.body(
                               fontSize: 11,
-                              color: ink.withValues(alpha: 0.7),
+                              color: inkSoft,
                             ),
                           ),
                         ],
@@ -406,8 +411,8 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                             mode: LaunchMode.externalApplication);
                       }
                     },
-                    icon: const Icon(Icons.open_in_browser_rounded, size: 18),
-                    label: const Text('Mở trang thanh toán SePay Gateway'),
+                    icon: Icon(PhosphorIcons.arrowSquareOut(), size: 18),
+                    label: Text(tr('premium.vietqr_open_gateway')),
                     style: TextButton.styleFrom(
                       foregroundColor: GenZTokens.purple,
                       textStyle: AppFonts.body(
@@ -473,7 +478,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                 child: Padding(
                   padding: const EdgeInsets.all(4),
                   child: Icon(
-                    Icons.copy_rounded,
+                    PhosphorIcons.copy(),
                     size: 16,
                     color: ink.withValues(alpha: 0.8),
                   ),

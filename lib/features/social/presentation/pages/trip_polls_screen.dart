@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../application/polls_providers.dart';
 import '../../data/polls_repository.dart';
 import '../../domain/poll.dart';
@@ -24,7 +25,7 @@ class TripPollsScreen extends ConsumerWidget {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   /// Accent lấy từ theme đang chọn.
   ///
   /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
@@ -33,9 +34,9 @@ class TripPollsScreen extends ConsumerWidget {
   /// an. Doc tu `colorScheme` de mau di theo lua chon that.
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
+  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   void _vote(WidgetRef ref, String optionId) {
     HapticFeedback.mediumImpact();
@@ -109,7 +110,7 @@ class TripPollsScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('polls.need_options'.tr()),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: GenZTokens.danger,
           ),
         );
       }
@@ -131,7 +132,7 @@ class TripPollsScreen extends ConsumerWidget {
         backgroundColor: _primaryOf(context),
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () => _createPoll(context, ref),
-        icon: const Icon(Icons.add),
+        icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'polls.create_poll'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -171,8 +172,8 @@ class TripPollsScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.04),
+              ? GenZTokens.inkDark.withValues(alpha: 0.05)
+              : GenZTokens.ink.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
         ),
       ),
@@ -185,9 +186,9 @@ class TripPollsScreen extends ConsumerWidget {
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -202,7 +203,7 @@ class TripPollsScreen extends ConsumerWidget {
             FilledButton.icon(
               style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
               onPressed: () => ref.invalidate(pollsProvider(tripId)),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text('general.retry'.tr()),
             ),
           ],
@@ -268,8 +269,8 @@ class TripPollsScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.black,
+              ? GenZTokens.inkDark.withValues(alpha: 0.15)
+              : GenZTokens.ink,
           width: 2,
         ),
       ),
@@ -317,8 +318,8 @@ class TripPollsScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isDarkMode
-                              ? Colors.white.withValues(alpha: 0.08)
-                              : Colors.black,
+                              ? GenZTokens.inkDark.withValues(alpha: 0.15)
+                              : GenZTokens.ink,
                           width: 2,
                         ),
                       ),

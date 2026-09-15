@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/api_service.dart';
 import '../../../core/theme/app_fonts.dart';
@@ -57,7 +58,7 @@ class _SubscriptionSettingsScreenState
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -87,7 +88,7 @@ class _SubscriptionSettingsScreenState
     if (!isActive) {
       return AppEmptyState(
         isDark: isDark,
-        icon: Icons.workspace_premium_outlined,
+        icon: PhosphorIcons.crown(),
         title: 'premium.no_plan_title'.tr(),
         body: 'premium.no_plan_body'.tr(),
       );
@@ -116,7 +117,7 @@ class _SubscriptionSettingsScreenState
               color: GenZTokens.lilac,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
               border: Border.all(
-                color: GenZTokens.ink,
+                color: ink,
                 width: GenZTokens.borderWidth,
               ),
             ),
@@ -203,7 +204,7 @@ class _SubscriptionSettingsScreenState
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.info_outline, size: 18, color: inkSoft),
+                Icon(PhosphorIcons.info(), size: 18, color: inkSoft),
                 const SizedBox(width: GenZTokens.space3),
                 Expanded(
                   child: Text(
@@ -232,19 +233,49 @@ class _SubscriptionSettingsScreenState
   /// Hỏi lại một câu vì thao tác này cắt quyền ngay lập tức và không lấy lại
   /// được — nhưng chỉ một câu, và nút đồng ý không bị làm mờ đi.
   Future<void> _cancelTrial() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('trial.cancel_title'.tr()),
-        content: Text('trial.cancel_body'.tr()),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+        title: Text(
+          'trial.cancel_title'.tr(),
+          style: AppFonts.heading(
+            fontWeight: FontWeight.bold,
+            color: ink,
+          ),
+        ),
+        content: Text(
+          'trial.cancel_body'.tr(),
+          style: AppFonts.body(
+            color: inkSoft,
+            fontSize: 13,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('trial.cancel_keep'.tr()),
+            child: Text(
+              'trial.cancel_keep'.tr(),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.bold,
+                color: inkSoft,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('trial.cancel_confirm'.tr()),
+            child: Text(
+              'trial.cancel_confirm'.tr(),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.bold,
+                color: GenZTokens.danger,
+              ),
+            ),
           ),
         ],
       ),

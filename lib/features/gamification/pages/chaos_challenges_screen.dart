@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/network/api_exception.dart';
@@ -121,14 +122,16 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark || widget.isDarkMode;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
@@ -144,21 +147,28 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
           ? null
           : FloatingActionButton.extended(
               onPressed: _busy ? null : () => _draw(),
-              backgroundColor: GenZTokens.purple,
-              foregroundColor: Colors.white,
+              backgroundColor: GenZTokens.yellow,
+              foregroundColor: GenZTokens.ink,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+              ),
               icon: _busy
                   ? const SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Colors.white,
+                        color: GenZTokens.ink,
                       ),
                     )
-                  : const Icon(Icons.casino_outlined),
+                  : Icon(PhosphorIcons.diceFive(PhosphorIconsStyle.fill)),
               label: Text(
                 'games.chaos_draw'.tr(),
-                style: AppFonts.heading(fontWeight: FontWeight.w800),
+                style: AppFonts.heading(
+                  fontWeight: FontWeight.w800,
+                  color: GenZTokens.ink,
+                ),
               ),
             ),
       body: _body(isDark, tripId),
@@ -169,7 +179,7 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
     if (tripId == null) {
       return AppEmptyState(
         isDark: isDark,
-        icon: Icons.local_fire_department_outlined,
+        icon: PhosphorIcons.fire(PhosphorIconsStyle.fill),
         title: 'games.need_trip_title'.tr(),
         body: 'games.need_trip_body'.tr(),
       );
@@ -186,7 +196,7 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
           ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
           : AppEmptyState(
               isDark: isDark,
-              icon: Icons.local_fire_department_outlined,
+              icon: PhosphorIcons.fire(PhosphorIconsStyle.fill),
               title: 'games.chaos_title'.tr(),
               body: 'games.chaos_empty'.tr(),
             );
@@ -225,20 +235,43 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
         color: done ? color.withValues(alpha: 0.18) : surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Text(
-                dare.chaosLabel.isEmpty ? '🔥' * level : dare.chaosLabel,
-                style: AppFonts.heading(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: ink,
+              if (dare.chaosLabel.isNotEmpty) ...[
+                Icon(
+                  PhosphorIcons.fire(PhosphorIconsStyle.fill),
+                  size: 16,
+                  color: color,
                 ),
-              ),
+                const SizedBox(width: 4),
+                Text(
+                  dare.chaosLabel,
+                  style: AppFonts.heading(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: ink,
+                  ),
+                ),
+              ] else
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(
+                    level.clamp(1, 5),
+                    (_) => Padding(
+                      padding: const EdgeInsets.only(right: 2),
+                      child: Icon(
+                        PhosphorIcons.fire(PhosphorIconsStyle.fill),
+                        size: 16,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -274,7 +307,12 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: done ? null : () => _complete(index),
-              icon: Icon(done ? Icons.check_circle : Icons.bolt, size: 18),
+              icon: Icon(
+                done
+                    ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+                size: 18,
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: done ? color : GenZTokens.yellow,
                 foregroundColor: GenZTokens.ink,

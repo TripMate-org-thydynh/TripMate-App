@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -19,29 +20,31 @@ class SquadXpSystemScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
         iconTheme: IconThemeData(
-          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+          color: ink,
         ),
         title: Text(
           'games.xp_title'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            color: ink,
           ),
         ),
       ),
       body: tripId == null
           ? AppEmptyState(
               isDark: isDark,
-              icon: Icons.rocket_launch_outlined,
+              icon: PhosphorIcons.rocketLaunch(),
               title: 'games.need_trip_title'.tr(),
               body: 'games.need_trip_body'.tr(),
             )
@@ -73,9 +76,10 @@ class SquadXpSystemScreen extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.all(GenZTokens.space5),
           decoration: BoxDecoration(
-            color: GenZTokens.purple,
+            color: GenZTokens.yellow,
             borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
             border: Border.all(color: ink, width: GenZTokens.borderWidth),
+            boxShadow: GenZTokens.hardShadow(ink),
           ),
           child: Column(
             children: [
@@ -91,9 +95,9 @@ class SquadXpSystemScreen extends ConsumerWidget {
                       child: CircularProgressIndicator(
                         value: xp.levelProgress,
                         strokeWidth: 12,
-                        backgroundColor: Colors.white.withValues(alpha: 0.25),
+                        backgroundColor: GenZTokens.ink.withValues(alpha: 0.15),
                         valueColor: const AlwaysStoppedAnimation(
-                          GenZTokens.yellow,
+                          GenZTokens.ink,
                         ),
                       ),
                     ),
@@ -105,7 +109,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                           style: AppFonts.mono(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: Colors.white.withValues(alpha: 0.85),
+                            color: GenZTokens.ink.withValues(alpha: 0.7),
                           ),
                         ),
                         Text(
@@ -113,7 +117,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                           style: AppFonts.heading(
                             fontSize: 44,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white,
+                            color: GenZTokens.ink,
                           ),
                         ),
                       ],
@@ -127,7 +131,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                 style: AppFonts.mono(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: GenZTokens.ink,
                 ),
               ),
               const SizedBox(height: 4),
@@ -140,7 +144,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
                   fontSize: 13,
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: GenZTokens.ink.withValues(alpha: 0.8),
                 ),
               ),
             ],

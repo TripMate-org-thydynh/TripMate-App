@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -44,7 +45,7 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
         child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
       error: (e, _) => _message(
-        icon: Icons.wifi_off_rounded,
+        icon: PhosphorIcons.wifiSlash(),
         title: 'errors.load_failed'.tr(),
         body: '',
         actionLabel: 'general.retry'.tr(),
@@ -53,7 +54,7 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
       data: (trips) {
         if (trips.isEmpty) {
           return _message(
-            icon: Icons.map_outlined,
+            icon: PhosphorIcons.mapTrifold(),
             title: 'itinerary.no_trip_title'.tr(),
             body: 'itinerary.no_trip_body'.tr(),
             actionLabel: 'trips.create_trip'.tr(),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/home_feed_repository.dart';
 
@@ -108,7 +109,11 @@ class _MarqueeStripState extends State<_MarqueeStrip> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Icon(Icons.star, size: 12, color: GenZTokens.ink),
+                  Icon(
+                    PhosphorIcons.star(PhosphorIconsStyle.fill),
+                    size: 12,
+                    color: GenZTokens.ink,
+                  ),
                 ],
               ),
             );

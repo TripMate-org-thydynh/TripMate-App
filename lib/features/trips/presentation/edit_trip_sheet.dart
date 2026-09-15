@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/network/api_exception.dart';
+import '../../../core/theme/gen_z_tokens.dart';
 import '../application/trips_providers.dart';
 import '../domain/trip.dart';
 
@@ -52,17 +53,17 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      _dark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      _dark ? GenZTokens.paperDark : GenZTokens.paper;
 
   /// Accent lay tu theme dang chon.
   ///
   /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*.
   /// Day la State nen doc thang `context` duoc.
   Color get _primary => Theme.of(context).colorScheme.primary;
-  Color get _ink => _dark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
+  Color get _ink => _dark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
   Color get _textSec =>
-      _dark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   static const _vibes = <(String, String, IconData)>[
     ('CHILL', 'trips.vibe_chill', PhosphorIconsFill.cloud),
@@ -147,12 +148,78 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
     }
   }
 
+  Future<void> _deleteTrip() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _bgOf(ctx),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: _ink, width: 2),
+        ),
+        title: Text(
+          'trips.delete_trip'.tr(),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: _ink,
+          ),
+        ),
+        content: Text(
+          'trips.delete_trip_confirm'.tr(),
+          style: AppFonts.body(fontSize: 14, color: _textSec),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'common.cancel'.tr(),
+              style: AppFonts.heading(
+                fontWeight: FontWeight.w700,
+                color: _textSec,
+              ),
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: GenZTokens.danger,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'common.delete'.tr(),
+              style: AppFonts.heading(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+
+    setState(() => _busy = true);
+    try {
+      await ref.read(tripsProvider.notifier).deleteTrip(widget.trip.id);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    } on ApiException catch (e) {
+      _snack(e.message, error: true);
+      setState(() => _busy = false);
+    } catch (_) {
+      _snack('trips.generic_error_retry'.tr(), error: true);
+      setState(() => _busy = false);
+    }
+  }
+
   void _snack(String msg, {bool error = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: error ? Colors.redAccent : _primary,
+        backgroundColor: error ? GenZTokens.danger : _primary,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -213,8 +280,8 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                   ),
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFD84D),
-                      foregroundColor: const Color(0xFF141210),
+                      backgroundColor: GenZTokens.yellow,
+                      foregroundColor: GenZTokens.ink,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(11),
@@ -227,7 +294,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFF141210),
+                              color: GenZTokens.ink,
                             ),
                           )
                         : Text(
@@ -237,6 +304,25 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                               fontSize: 15,
                             ),
                           ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: TextButton.icon(
+                  onPressed: _busy ? null : _deleteTrip,
+                  icon: Icon(
+                    PhosphorIcons.trash(),
+                    color: GenZTokens.danger,
+                    size: 18,
+                  ),
+                  label: Text(
+                    'trips.delete_trip'.tr(),
+                    style: AppFonts.heading(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: GenZTokens.danger,
+                    ),
                   ),
                 ),
               ),
@@ -297,6 +383,9 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
           runSpacing: 8,
           children: _vibes.map((v) {
             final sel = _vibe == v.$1;
+            final onSel = _primary.computeLuminance() > 0.5
+                ? GenZTokens.ink
+                : Colors.white;
             return GestureDetector(
               onTap: () => setState(() => _vibe = sel ? null : v.$1),
               child: Container(
@@ -312,14 +401,14 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(v.$3, size: 15, color: sel ? Colors.white : _textSec),
+                    Icon(v.$3, size: 15, color: sel ? onSel : _textSec),
                     const SizedBox(width: 6),
                     Text(
                       v.$2.tr(),
                       style: AppFonts.heading(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: sel ? Colors.white : _textPri,
+                        color: sel ? onSel : _textPri,
                       ),
                     ),
                   ],

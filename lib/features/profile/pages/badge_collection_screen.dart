@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
@@ -20,7 +21,8 @@ class BadgeCollectionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode;
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return Scaffold(
@@ -39,7 +41,7 @@ class BadgeCollectionScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: ink),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
             onPressed: () => ref.invalidate(badgesProvider),
           ),
         ],
@@ -58,7 +60,7 @@ class BadgeCollectionScreen extends ConsumerWidget {
               if (badges.isEmpty) {
                 return AppEmptyState(
                   isDark: isDark,
-                  icon: Icons.emoji_events_outlined,
+                  icon: PhosphorIcons.trophy(),
                   title: 'games.badges_title'.tr(),
                   body: 'games.badges_empty'.tr(),
                 );
@@ -111,7 +113,9 @@ class BadgeCollectionScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(
-              b.unlocked ? Icons.emoji_events : Icons.lock_outline,
+              b.unlocked
+                  ? PhosphorIcons.trophy(PhosphorIconsStyle.fill)
+                  : PhosphorIcons.lockKey(),
               size: 26,
               color: b.unlocked ? GenZTokens.ink : inkSoft,
             ),

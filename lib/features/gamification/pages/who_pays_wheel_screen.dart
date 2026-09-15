@@ -1,17 +1,17 @@
-import 'dart:math';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'package:flutter/material.dart';
-import '../../../core/widgets/state_views.dart';
-import '../../../core/theme/gen_z_tokens.dart';
-// Chỉ lấy `.tr()`: easy_localization re-export intl, gây va chạm
-// `TextDirection` với dart:ui dùng trong CustomPainter bên dưới.
-import 'package:easy_localization/easy_localization.dart' show tr;
-import '../../dashboard/data/home_feed_repository.dart';
-import '../data/games_repository.dart';
 import 'dart:async';
+import 'dart:math';
+import 'package:easy_localization/easy_localization.dart' show tr;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+
+import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/state_views.dart';
+import '../../dashboard/data/home_feed_repository.dart';
 import '../../trips/application/trips_providers.dart';
+import '../data/games_repository.dart';
 
 class WhoPaysWheelScreen extends ConsumerStatefulWidget {
   const WhoPaysWheelScreen({super.key});
@@ -160,16 +160,19 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
           child: Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF262019) : Colors.white,
-              borderRadius: BorderRadius.circular(28),
+              color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.redAccent.withValues(alpha: 0.3),
+                  color: GenZTokens.red.withValues(alpha: 0.3),
                   blurRadius: 0,
                   spreadRadius: 2,
                 ),
               ],
-              border: Border.all(color: const Color(0xFFD8422B), width: 2.5),
+              border: Border.all(
+                color: GenZTokens.red,
+                width: GenZTokens.borderWidth,
+              ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -177,7 +180,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                 Text(
                   tr('games.chaos_payer'),
                   style: AppFonts.heading(
-                    color: const Color(0xFFD8422B),
+                    color: GenZTokens.red,
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.5,
@@ -188,19 +191,19 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFD8422B),
+                      color: GenZTokens.red,
                       width: 3,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFD8422B).withValues(alpha: 0.3),
+                        color: GenZTokens.red.withValues(alpha: 0.3),
                         blurRadius: 0,
                       ),
                     ],
                   ),
                   child: CircleAvatar(
                     radius: 48,
-                    backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
+                    backgroundColor: GenZTokens.red.withValues(alpha: 0.1),
                     backgroundImage: NetworkImage(winner['avatar']!),
                   ),
                 ),
@@ -210,9 +213,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                   style: AppFonts.heading(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: isDark
-                        ? const Color(0xFFDAE2FD)
-                        : const Color(0xFF141210),
+                    color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -222,20 +223,22 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                   style: AppFonts.body(
                     fontSize: 13,
                     height: 1.5,
-                    color: isDark
-                        ? const Color(0xFFCBC3D7)
-                        : const Color(0xFF4A453E),
+                    color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
                   ),
                 ),
                 const SizedBox(height: 28),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD8422B),
-                    foregroundColor: Colors.white,
+                    backgroundColor: GenZTokens.red,
+                    foregroundColor: GenZTokens.ink,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                      side: BorderSide(
+                        color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                     elevation: 0,
                   ),
@@ -244,6 +247,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                     style: AppFonts.heading(
                       fontWeight: FontWeight.w800,
                       fontSize: 15,
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ),
@@ -280,7 +284,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     // nên yêu cầu tối thiểu 2 thành viên.
     if (_currentParticipants.length < 2) {
       return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -290,7 +294,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
         ),
         body: AppEmptyState(
           isDark: isDark,
-          icon: Icons.casino_outlined,
+          icon: PhosphorIcons.diceFive(),
           title: tr('games.wheel_need_squad_title'),
           body: tr('games.wheel_need_squad_body'),
         ),
@@ -298,247 +302,224 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     }
 
     // Standard Palette colors
-    final Color bgColor = isDark
-        ? const Color(0xFF1A1712)
-        : const Color(0xFFFDF6D3);
-    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau va
-    // viet cung accent cua preset *grape*, nen doi theme khong an.
+    final Color bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final Color primaryColor = Theme.of(context).colorScheme.primary;
-    final Color surfaceColor = isDark
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
-    final Color textPrimary = isDark
-        ? const Color(0xFFDAE2FD)
-        : const Color(0xFF141210);
-    final Color textSecondary = isDark
-        ? const Color(0xFFCBC3D7)
-        : const Color(0xFF4A453E);
+    final Color surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final Color textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final Color textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Scaffold(
       backgroundColor: bgColor,
-      body: Container(
-        decoration: isDark
-            ? const BoxDecoration(color: Color(0xFF1A1712))
-            : null,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 10.0,
-              ),
-              child: Column(
-                children: [
-                  // Top Navigation Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(Icons.arrow_back, color: textPrimary),
-                        style: IconButton.styleFrom(
-                          backgroundColor: surfaceColor.withValues(
-                            alpha: isDark ? 0.3 : 0.8,
-                          ),
-                          shape: const CircleBorder(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 10.0,
+            ),
+            child: Column(
+              children: [
+                // Top Navigation Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(PhosphorIcons.arrowLeft(), color: textPrimary),
+                      style: IconButton.styleFrom(
+                        backgroundColor: surfaceColor.withValues(
+                          alpha: isDark ? 0.3 : 0.8,
+                        ),
+                        shape: const CircleBorder(),
+                        side: BorderSide(
+                          color: textPrimary,
+                          width: GenZTokens.borderWidthThin,
                         ),
                       ),
-                      Text(
-                        'trip.mate',
-                        style: AppFonts.heading(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 18,
-                          color: primaryColor,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Flashing Alert Pill
-                  const FlashingPill(),
-                  const SizedBox(height: 16),
-
-                  // Title Text
-                  Text(
-                    tr('games.who_pays_title'),
-                    style: AppFonts.heading(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: textPrimary,
-                      letterSpacing: -0.5,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    tr('games.chaos_mode_sub'),
-                    style: AppFonts.body(fontSize: 14, color: textSecondary),
-                  ),
-                  const SizedBox(height: 48),
+                    Text(
+                      'trip.mate',
+                      style: AppFonts.heading(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        color: primaryColor,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
-                  // Spinning Wheel Widget Stack with comical floaty bubbles
-                  SizedBox(
-                    width: 360,
-                    height: 360,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Left bubble: please not me
-                        FloatingBubble(
-                          text: tr('games.wheel_bubble_left'),
-                          top: -12,
-                          left: 4,
-                          textColor: const Color(0xFFFB923C),
-                          isDark: isDark,
+                // Flashing Alert Pill
+                const FlashingPill(),
+                const SizedBox(height: 16),
+
+                // Title Text
+                Text(
+                  tr('games.who_pays_title'),
+                  style: AppFonts.heading(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: textPrimary,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  tr('games.chaos_mode_sub'),
+                  style: AppFonts.body(fontSize: 14, color: textSecondary),
+                ),
+                const SizedBox(height: 48),
+
+                // Spinning Wheel Widget Stack with comical floaty bubbles
+                SizedBox(
+                  width: 360,
+                  height: 360,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Left bubble: please not me
+                      FloatingBubble(
+                        text: tr('games.wheel_bubble_left'),
+                        top: -12,
+                        left: 4,
+                        textColor: GenZTokens.orange,
+                        isDark: isDark,
+                      ),
+                      // Right bubble: my wallet is empty
+                      FloatingBubble(
+                        text: tr('games.wheel_bubble_right'),
+                        top: 160,
+                        right: 4,
+                        textColor: GenZTokens.green,
+                        isDark: isDark,
+                      ),
+                      // Wheel glowing outer border container
+                      Container(
+                        width: 312,
+                        height: 312,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: GenZTokens.orange.withValues(alpha: 0.3),
+                            width: 6,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.15),
+                              blurRadius: 0,
+                            ),
+                          ],
                         ),
-                        // Right bubble: my wallet is empty
-                        FloatingBubble(
-                          text: tr('games.wheel_bubble_right'),
-                          top: 160,
-                          right: 4,
-                          textColor: const Color(0xFF1FA85C),
-                          isDark: isDark,
+                      ),
+                      // The Spinning Wheel
+                      GestureDetector(
+                        onTap: _spin,
+                        child: AnimatedBuilder(
+                          animation: _spinAnimation,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _spinAnimation.value,
+                              child: CustomPaint(
+                                size: const Size(300, 300),
+                                painter: ChaosWheelPainter(
+                                  participants: _currentParticipants,
+                                  isDark: isDark,
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                        // Wheel glowing outer border container
-                        Container(
-                          width: 312,
-                          height: 312,
+                      ),
+                      // Wheel Center Hub with Dice icon
+                      GestureDetector(
+                        onTap: _spin,
+                        child: Container(
+                          width: 64,
+                          height: 64,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
+                            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
                             border: Border.all(
-                              color: isDark
-                                  ? const Color(
-                                      0xFFF5822B,
-                                    ).withValues(alpha: 0.3)
-                                  : const Color(
-                                      0xFFF5822B,
-                                    ).withValues(alpha: 0.3),
-                              width: 6,
+                              color: primaryColor,
+                              width: 3,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    (Theme.of(context).colorScheme.primary)
-                                        .withValues(alpha: 0.15),
+                                color: primaryColor.withValues(alpha: 0.4),
                                 blurRadius: 0,
                               ),
                             ],
                           ),
-                        ),
-                        // The Spinning Wheel
-                        GestureDetector(
-                          onTap: _spin,
-                          child: AnimatedBuilder(
-                            animation: _spinAnimation,
-                            builder: (context, child) {
-                              return Transform.rotate(
-                                angle: _spinAnimation.value,
-                                child: CustomPaint(
-                                  size: const Size(300, 300),
-                                  painter: ChaosWheelPainter(
-                                    participants: _currentParticipants,
-                                    isDark: isDark,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        // Wheel Center Hub with Dice icon
-                        GestureDetector(
-                          onTap: _spin,
-                          child: Container(
-                            width: 64,
-                            height: 64,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isDark
-                                  ? const Color(0xFF262019)
-                                  : Colors.white,
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 3,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      (Theme.of(context).colorScheme.primary)
-                                          .withValues(alpha: 0.4),
-                                  blurRadius: 0,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.casino,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 28,
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Top pointer indicator
-                        Positioned(
-                          top: -12,
-                          child: Transform.rotate(
-                            angle: _pointerAngle,
-                            alignment: Alignment.topCenter,
+                          child: Center(
                             child: Icon(
-                              Icons.arrow_drop_down_sharp,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: 42,
+                              PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
+                              color: primaryColor,
+                              size: 28,
                             ),
+                          ),
+                        ),
+                      ),
+                      // Top pointer indicator
+                      Positioned(
+                        top: -12,
+                        child: Transform.rotate(
+                          angle: _pointerAngle,
+                          alignment: Alignment.topCenter,
+                          child: Icon(
+                            PhosphorIcons.caretDown(PhosphorIconsStyle.fill),
+                            color: primaryColor,
+                            size: 42,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 64),
+
+                // Bottom Gradient "casino SPIN TO DECIDE" button
+                GestureDetector(
+                  onTap: _spin,
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryColor.withValues(alpha: 0.4),
+                          blurRadius: 0,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          tr('games.spin_cta'),
+                          style: AppFonts.heading(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.0,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 64),
-
-                  // Bottom Gradient "casino SPIN TO DECIDE" button
-                  GestureDetector(
-                    onTap: _spin,
-                    child: Container(
-                      width: double.infinity,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: [
-                          BoxShadow(
-                            color: primaryColor.withValues(alpha: 0.4),
-                            blurRadius: 0,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.casino,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            tr('games.spin_cta'),
-                            style: AppFonts.heading(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -560,17 +541,17 @@ class ChaosWheelPainter extends CustomPainter {
     final sectorAngle = (2 * pi) / participants.length;
 
     final darkColors = [
-      const Color(0xFFF5822B), // Purple
-      const Color(0xFF1FA85C), // Mint Green
-      const Color(0xFFFB923C), // Orange
-      const Color(0xFFD8422B), // Red
+      GenZTokens.purple,
+      GenZTokens.green,
+      GenZTokens.orange,
+      GenZTokens.red,
     ];
 
     final lightColors = [
-      const Color(0xFFF5822B), // Coral
-      const Color(0xFFFFD84D), // Amber
-      const Color(0xFF3D8BFF), // Blue
-      const Color(0xFF1FA85C), // Emerald
+      GenZTokens.orange,
+      GenZTokens.yellow,
+      GenZTokens.blue,
+      GenZTokens.green,
     ];
 
     final colors = isDark ? darkColors : lightColors;
@@ -589,7 +570,8 @@ class ChaosWheelPainter extends CustomPainter {
       );
 
       final borderPaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.2)
+        ..color = (isDark ? GenZTokens.inkDark : GenZTokens.ink)
+            .withValues(alpha: 0.25)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
 
@@ -605,16 +587,9 @@ class ChaosWheelPainter extends CustomPainter {
       tp.text = TextSpan(
         text: participants[i]['name']!,
         style: AppFonts.heading(
-          color: Colors.white,
+          color: GenZTokens.ink,
           fontWeight: FontWeight.w800,
           fontSize: 13,
-          shadows: [
-            Shadow(
-              color: Colors.black.withValues(alpha: 0.5),
-              offset: const Offset(0, 1),
-              blurRadius: 0,
-            ),
-          ],
         ),
       );
       tp.layout();
@@ -674,19 +649,16 @@ class _FlashingPillState extends State<FlashingPill>
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: const Color(0xFFD8422B).withValues(alpha: 0.08),
+            color: GenZTokens.red.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: const Color(
-                0xFFD8422B,
-              ).withValues(alpha: _opacityAnimation.value),
+              color: GenZTokens.red.withValues(alpha: _opacityAnimation.value),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(
-                  0xFFD8422B,
-                ).withValues(alpha: _opacityAnimation.value * 0.2),
+                color: GenZTokens.red
+                    .withValues(alpha: _opacityAnimation.value * 0.2),
                 blurRadius: 0,
                 spreadRadius: 1,
               ),
@@ -699,7 +671,7 @@ class _FlashingPillState extends State<FlashingPill>
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFD8422B),
+                  color: GenZTokens.red,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -707,7 +679,7 @@ class _FlashingPillState extends State<FlashingPill>
               Text(
                 tr('games.chaos_mode'),
                 style: AppFonts.heading(
-                  color: const Color(0xFFD8422B),
+                  color: GenZTokens.red,
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
@@ -796,19 +768,19 @@ class _FloatingBubbleState extends State<FloatingBubble>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: widget.isDark
-                ? const Color(0xFF262019).withValues(alpha: 0.85)
-                : Colors.white.withValues(alpha: 0.85),
+            color: (widget.isDark ? GenZTokens.paperDark : GenZTokens.paper)
+                .withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: widget.isDark
-                  ? Colors.white.withValues(alpha: 0.12)
-                  : Colors.black,
+                  ? GenZTokens.inkDark.withValues(alpha: 0.2)
+                  : GenZTokens.ink,
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: (widget.isDark ? GenZTokens.inkDark : GenZTokens.ink)
+                    .withValues(alpha: 0.1),
                 blurRadius: 0,
                 offset: const Offset(0, 4),
               ),

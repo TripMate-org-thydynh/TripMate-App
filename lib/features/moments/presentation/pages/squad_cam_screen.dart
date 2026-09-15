@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
@@ -312,8 +313,8 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
           child: Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.close, color: Colors.white, size: 28),
-                tooltip: 'Đóng',
+                icon: Icon(PhosphorIcons.x(), color: Colors.white, size: 28),
+                tooltip: 'common.close'.tr(),
                 onPressed: () => Navigator.pop(context),
               ),
               const Spacer(),
@@ -332,7 +333,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                     style: AppFonts.heading(
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ),
@@ -373,7 +374,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
               // Bấm = ảnh, giữ = video.
               Semantics(
                 button: true,
-                label: 'Chụp ảnh',
+                label: 'moments.take_photo'.tr(),
                 child: GestureDetector(
                   onTap: _capture,
                   onLongPressStart: (_) => _startRecording(),
@@ -396,12 +397,12 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                 width: 56,
                 child: _cameras.length > 1
                     ? IconButton(
-                        icon: const Icon(
-                          Icons.cameraswitch_outlined,
+                        icon: Icon(
+                          PhosphorIcons.cameraRotate(),
                           color: Colors.white,
                           size: 30,
                         ),
-                        tooltip: 'Đổi camera',
+                        tooltip: 'moments.flip_camera'.tr(),
                         onPressed: _flip,
                       )
                     : null,
@@ -423,9 +424,9 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
               // vừa quay xong nên đã biết nội dung; phát lại chỉ làm chậm.
               ? Container(
                   color: Colors.black87,
-                  child: const Center(
+                  child: Center(
                     child: Icon(
-                      Icons.videocam_rounded,
+                      PhosphorIcons.videoCamera(),
                       color: Colors.white54,
                       size: 72,
                     ),
@@ -434,15 +435,15 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
               : Image.file(
                   _shot!,
                   fit: BoxFit.cover,
-                  semanticLabel: 'Ảnh vừa chụp',
+                  semanticLabel: 'moments.captured_photo'.tr(),
                 ),
         ),
         Positioned(
           top: 8,
           left: 8,
           child: IconButton(
-            icon: const Icon(Icons.close, color: Colors.white, size: 28),
-            tooltip: 'Đóng',
+            icon: Icon(PhosphorIcons.x(), color: Colors.white, size: 28),
+            tooltip: 'common.close'.tr(),
             onPressed: _sending
                 ? null
                 : () => setState(() {
@@ -499,10 +500,13 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _sending ? null : _send,
-                  icon: const Icon(Icons.send_rounded, size: 20),
+                  icon: Icon(
+                    PhosphorIcons.paperPlaneTilt(PhosphorIconsStyle.fill),
+                    size: 20,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: GenZTokens.green,
-                    foregroundColor: Colors.white,
+                    foregroundColor: GenZTokens.ink,
                     disabledBackgroundColor: Colors.white24,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -514,7 +518,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                     style: AppFonts.heading(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: GenZTokens.ink,
                     ),
                   ),
                 ),

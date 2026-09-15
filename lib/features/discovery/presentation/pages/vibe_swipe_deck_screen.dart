@@ -1,13 +1,15 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
+
+import '../../../../core/network/api_exception.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../profile/data/bucket_list_repository.dart';
 import '../../../trip_planner/application/wishlist_providers.dart';
 import '../../../trips/application/trips_providers.dart';
-import '../../../../core/network/api_exception.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
-import 'package:flutter/services.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Vibe Match dạng swipe deck (kiểu Tinder cho địa điểm).
 /// Vuốt phải = thích, vuốt trái = bỏ qua. Cuối deck hiện kết quả nhóm.
@@ -72,7 +74,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
       messenger.showSnackBar(
         SnackBar(
           content: Text(e.message),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: GenZTokens.danger,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -158,9 +160,9 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _textPri =>
-      widget.isDarkMode ? Colors.white : const Color(0xFF141210);
+      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      widget.isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   void _swipe(bool liked) {
     HapticFeedback.mediumImpact();
@@ -217,8 +219,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
       child: Row(
         children: [
           IconButton(
-            tooltip: 'Quay lại',
-            icon: Icon(Icons.arrow_back, color: _textPri),
+            tooltip: 'common.back'.tr(),
+            icon: Icon(PhosphorIcons.arrowLeft(), color: _textPri),
             onPressed: () => Navigator.pop(context),
           ),
           Expanded(
@@ -349,8 +351,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
 
   Widget _card(_Place place, {bool behind = false}) {
     final ink = widget.isDarkMode
-        ? const Color(0xFFFDF6D3)
-        : const Color(0xFF141210);
+        ? GenZTokens.inkDark
+        : GenZTokens.ink;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -404,25 +406,27 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFD84D),
+                  color: GenZTokens.yellow,
                   borderRadius: BorderRadius.circular(99),
-                  border: Border.all(color: const Color(0xFF141210), width: 2),
+                  border: Border.all(color: GenZTokens.ink, width: 2),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                      color: const Color(0xFF141210),
+                      color: GenZTokens.ink,
                       size: 13,
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      '${place.match}% SQUAD MATCH',
+                      'vibe_deck.squad_match'.tr(
+                        namedArgs: {'pct': '${place.match}'},
+                      ),
                       style: AppFonts.mono(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF141210),
+                        color: GenZTokens.ink,
                       ),
                     ),
                   ],
@@ -449,8 +453,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.location_on,
+                      Icon(
+                        PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                         color: Colors.white70,
                         size: 15,
                       ),
@@ -471,10 +475,10 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFC9B8FF),
+                      color: GenZTokens.lilac,
                       borderRadius: BorderRadius.circular(99),
                       border: Border.all(
-                        color: const Color(0xFF141210),
+                        color: GenZTokens.ink,
                         width: 2,
                       ),
                     ),
@@ -483,7 +487,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                       style: AppFonts.mono(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF141210),
+                        color: GenZTokens.ink,
                       ),
                     ),
                   ),
@@ -503,18 +507,18 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _circleBtn(
-            icon: Icons.close,
-            color: const Color(0xFFD8422B),
+            icon: PhosphorIcons.x(),
+            color: GenZTokens.danger,
             size: 64,
-            label: 'Bỏ qua',
+            label: 'common.skip_caps'.tr(),
             onTap: () => _swipe(false),
           ),
           const SizedBox(width: 28),
           _circleBtn(
-            icon: Icons.favorite,
-            color: const Color(0xFF1FA85C),
+            icon: PhosphorIcons.heart(PhosphorIconsStyle.fill),
+            color: GenZTokens.success,
             size: 72,
-            label: 'Thích',
+            label: 'vibe_deck.like'.tr(),
             onTap: () => _swipe(true),
           ),
         ],
@@ -542,15 +546,15 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             color: color,
             border: Border.all(
               color: widget.isDarkMode
-                  ? const Color(0xFFFDF6D3)
-                  : const Color(0xFF141210),
+                  ? GenZTokens.inkDark
+                  : GenZTokens.ink,
               width: 2.5,
             ),
             boxShadow: [
               BoxShadow(
                 color: widget.isDarkMode
-                  ? const Color(0xFFFDF6D3)
-                  : const Color(0xFF141210),
+                  ? GenZTokens.inkDark
+                  : GenZTokens.ink,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -574,14 +578,14 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             decoration: BoxDecoration(
               color: _primary,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFF141210), width: 2.5),
-              boxShadow: const [
-                BoxShadow(color: Color(0xFF141210), offset: Offset(0, 4)),
+              border: Border.all(color: GenZTokens.ink, width: 2.5),
+              boxShadow: [
+                BoxShadow(color: GenZTokens.ink, offset: const Offset(0, 4)),
               ],
             ),
             child: Icon(
               PhosphorIcons.confetti(PhosphorIconsStyle.fill),
-              color: const Color(0xFFFFFDF5),
+              color: GenZTokens.ink,
               size: 30,
             ),
           ),
@@ -623,10 +627,10 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: Colors.white,
+                          color: GenZTokens.ink,
                         ),
                       )
-                    : const Icon(Icons.bookmark_add_outlined, size: 18),
+                    : Icon(PhosphorIcons.bookmarkSimple(), size: 18),
                 label: Text(
                   'vibe_deck.save_to_bucket'.tr(),
                   style: AppFonts.heading(
@@ -635,8 +639,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1FA85C),
-                  foregroundColor: Colors.white,
+                  backgroundColor: GenZTokens.success,
+                  foregroundColor: GenZTokens.ink,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -660,7 +664,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                foregroundColor: GenZTokens.ink,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -685,20 +689,20 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: widget.isDarkMode
-            ? const Color(0xFF262019)
-            : const Color(0xFFFFFDF5),
+            ? GenZTokens.paperDark
+            : GenZTokens.paper,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: widget.isDarkMode
-              ? const Color(0xFFFDF6D3)
-              : const Color(0xFF141210),
+              ? GenZTokens.inkDark
+              : GenZTokens.ink,
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
             color: widget.isDarkMode
-                ? const Color(0xFFFDF6D3)
-                : const Color(0xFF141210),
+                ? GenZTokens.inkDark
+                : GenZTokens.ink,
             offset: const Offset(0, 3),
           ),
         ],

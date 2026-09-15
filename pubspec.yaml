@@ -56,6 +56,12 @@ dependencies:
   intl: ^0.20.2
   connectivity_plus: ^7.3.1
 
+  # Google Play Billing. Bản tải từ CH Play bắt buộc bán gói qua đây theo chính
+  # sách Payments của Google; bản APK/web dùng VietQR nên gói này không tải về.
+  in_app_purchase: ^3.2.0
+  # Can truc tiep de truyen applicationUserName (rang bien lai vao tai khoan).
+  in_app_purchase_android: ^0.4.0
+
   # Camera trực tiếp cho luồng chụp nhanh kiểu Locket (mở là thấy khung ngắm).
   camera: ^0.11.0+2
   # Ghi dữ liệu sang widget màn hình chính (Android AppWidget + iOS WidgetKit).

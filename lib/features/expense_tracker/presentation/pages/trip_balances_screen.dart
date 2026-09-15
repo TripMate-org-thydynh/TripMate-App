@@ -7,6 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/format/money.dart';
 import '../../../../core/network/error_message.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 
 import '../../../../core/services/payment_launcher.dart';
 import '../../../social/presentation/pages/trip_polls_screen.dart';
@@ -32,7 +33,7 @@ class TripBalancesScreen extends ConsumerWidget {
   Color _bgOf(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
   Color get _surface =>
-      isDarkMode ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   /// Accent lấy từ theme đang chọn.
   ///
   /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
@@ -41,9 +42,9 @@ class TripBalancesScreen extends ConsumerWidget {
   /// an. Doc tu `colorScheme` de mau di theo lua chon that.
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
-  Color get _textPri => isDarkMode ? Colors.white : const Color(0xFF141210);
+  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
-      isDarkMode ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +59,7 @@ class TripBalancesScreen extends ConsumerWidget {
           HapticFeedback.mediumImpact();
           AddExpenseSheet.show(context, tripId, isDarkMode);
         },
-        icon: const Icon(Icons.add),
+        icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'expense.add'.tr(),
           style: AppFonts.heading(fontWeight: FontWeight.w800),
@@ -73,7 +74,7 @@ class TripBalancesScreen extends ConsumerWidget {
             Text(
               'expense.split_title'.tr(),
               style: AppFonts.heading(
-                fontSize: 17,
+                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: _textPri,
               ),
@@ -128,8 +129,8 @@ class TripBalancesScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 14),
         decoration: BoxDecoration(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.04)
-              : Colors.black.withValues(alpha: 0.04),
+              ? GenZTokens.inkDark.withValues(alpha: 0.05)
+              : GenZTokens.ink.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
         ),
       ),
@@ -142,9 +143,9 @@ class TripBalancesScreen extends ConsumerWidget {
       Center(
         child: Column(
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              color: Colors.redAccent,
+            Icon(
+              PhosphorIcons.cloudSlash(),
+              color: GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
@@ -168,7 +169,7 @@ class TripBalancesScreen extends ConsumerWidget {
             FilledButton.icon(
               style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
               onPressed: () => ref.refresh(tripBalancesProvider(tripId)),
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text('general.retry'.tr()),
             ),
           ],
@@ -270,8 +271,8 @@ class TripBalancesScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.black,
+              ? GenZTokens.inkDark.withValues(alpha: 0.15)
+              : GenZTokens.ink,
           width: 2,
         ),
       ),
@@ -291,7 +292,7 @@ class TripBalancesScreen extends ConsumerWidget {
                         fontSize: 14,
                       ),
                     ),
-                    Icon(Icons.arrow_forward, size: 16, color: _primaryOf(context)),
+                    Icon(PhosphorIcons.arrowRight(), size: 16, color: _primaryOf(context)),
                     Flexible(
                       child: Text(
                         s.to.name,
@@ -355,7 +356,7 @@ class TripBalancesScreen extends ConsumerWidget {
 
   Widget _balanceRow(BuildContext context, MemberBalance b) {
     final positive = b.balance >= 0;
-    final color = positive ? const Color(0xFF1FA85C) : Colors.redAccent;
+    final color = positive ? GenZTokens.success : GenZTokens.danger;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -364,8 +365,8 @@ class TripBalancesScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isDarkMode
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.black,
+              ? GenZTokens.inkDark.withValues(alpha: 0.15)
+              : GenZTokens.ink,
           width: 2,
         ),
       ),
