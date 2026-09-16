@@ -534,8 +534,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                 borderRadius: BorderRadius.circular(22),
                                 border: Border.all(
                                   color: isDark
-                                      ? Colors.white.withValues(alpha: 0.08)
-                                      : Colors.black,
+                                      ? GenZTokens.inkSoftDark
+                                      : GenZTokens.ink,
                                   width: 2,
                                 ),
                               ),
@@ -782,9 +782,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
               : GenZTokens.ink,
           width: 2,
         ),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 0),
-        ],
+        boxShadow: GenZTokens.hardShadow(
+          isDark ? GenZTokens.inkDark : GenZTokens.ink,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

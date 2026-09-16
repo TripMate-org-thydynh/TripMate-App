@@ -182,7 +182,7 @@ class TripMapScreen extends ConsumerWidget {
                                       PhosphorIconsStyle.fill,
                                     ),
                                     size: 16,
-                                    color: Colors.white,
+                                    color: GenZTokens.ink,
                                   ),
                                 ),
                               ),
@@ -238,7 +238,7 @@ class TripMapScreen extends ConsumerWidget {
                                     style: GoogleFonts.spaceMono(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
-                                      color: Colors.white,
+                                      color: GenZTokens.ink,
                                     ),
                                   ),
                                 ),
@@ -413,7 +413,7 @@ class TripMapScreen extends ConsumerWidget {
                       style: GoogleFonts.spaceMono(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: GenZTokens.ink,
                       ),
                     ),
                   ),

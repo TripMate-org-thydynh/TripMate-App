@@ -196,16 +196,17 @@ class GamesRepository {
 
   /// Ván bingo đang mở của chuyến (nếu có) — để giữ ô đã tick giữa các lần vào.
   ///
-  /// Trước đây bảng bingo mở ra là đã sẵn 3 ô "completed" cho mọi người, và
-  /// mọi ô tick đều mất khi thoát màn.
+  /// Bỏ qua session đã kết thúc (isActive == false) và chỉ nhận session có
+  /// gameType == 'CARD_MATCH' cùng stateJson.game == 'BINGO'.
   Future<({String id, List<int> marked})?> fetchBingo(String tripId) async {
     final data = await _client.getData(_base(tripId));
     if (data is! List) return null;
     for (final e in data.whereType<Map>()) {
       if (e['gameType'] != 'CARD_MATCH') continue;
-      if (e['endedAt'] != null) continue;
+      if (e['isActive'] == false) continue;
       final state = e['stateJson'];
-      final raw = (state is Map) ? state['marked'] : null;
+      if (state is! Map || state['game'] != 'BINGO') continue;
+      final raw = state['marked'];
       final marked = (raw is List)
           ? raw.whereType<num>().map((n) => n.toInt()).toList()
           : <int>[];
@@ -221,6 +222,11 @@ class GamesRepository {
       'initialState': {'game': 'BINGO', 'marked': <int>[]},
     });
     return (data as Map)['id'] as String;
+  }
+
+  /// Kết thúc ván bingo trên server (đặt isActive = false).
+  Future<void> endBingo(String tripId, String sessionId) async {
+    await _client.patchData('${_base(tripId)}/$sessionId/end');
   }
 
   Future<void> saveBingo(

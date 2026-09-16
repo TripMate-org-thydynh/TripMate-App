@@ -173,7 +173,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'common.cancel'.tr(),
+              'general.cancel'.tr(),
               style: AppFonts.heading(
                 fontWeight: FontWeight.w700,
                 color: _textSec,
@@ -183,14 +183,14 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: GenZTokens.danger,
-              foregroundColor: Colors.white,
+              foregroundColor: GenZTokens.paper,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'common.delete'.tr(),
+              'general.delete'.tr(),
               style: AppFonts.heading(fontWeight: FontWeight.w800),
             ),
           ),
@@ -383,9 +383,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
           runSpacing: 8,
           children: _vibes.map((v) {
             final sel = _vibe == v.$1;
-            final onSel = _primary.computeLuminance() > 0.5
-                ? GenZTokens.ink
-                : Colors.white;
+            final onSel = GenZTokens.ink;
             return GestureDetector(
               onTap: () => setState(() => _vibe = sel ? null : v.$1),
               child: Container(

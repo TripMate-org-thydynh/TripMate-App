@@ -301,9 +301,7 @@ class MyTripsScreen extends ConsumerWidget {
           ),
           child: Builder(
             builder: (context) {
-              final onSelected = _primaryOf(context).computeLuminance() > 0.5
-                  ? GenZTokens.ink
-                  : Colors.white;
+              final onSelected = GenZTokens.ink;
               return Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

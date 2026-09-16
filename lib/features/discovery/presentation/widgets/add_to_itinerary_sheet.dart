@@ -332,8 +332,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             height: 5,
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.15)
-                  : Colors.black.withValues(alpha: 0.15),
+                  ? GenZTokens.inkSoftDark
+                  : GenZTokens.inkSoft,
               borderRadius: BorderRadius.circular(3),
             ),
           ),
@@ -359,14 +359,18 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.black.withValues(alpha: 0.05),
+                  color: surfaceColor,
+                  border: Border.all(
+                    color: isDark
+                        ? GenZTokens.paperDark
+                        : GenZTokens.ink,
+                    width: 1.5,
+                  ),
                 ),
                 child: Icon(
                   PhosphorIcons.x(),
                   size: 16,
-                  color: textColor.withValues(alpha: 0.8),
+                  color: textColor,
                 ),
               ),
             ),
@@ -390,57 +394,29 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                   : GenZTokens.ink,
               width: 2,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-                blurRadius: 0,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            boxShadow: GenZTokens.hardShadow(
+              isDark ? GenZTokens.inkDark : GenZTokens.ink,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Cover Photo
-              Stack(
-                children: [
-                  // Nền màu, không phải ảnh Unsplash ngẫu nhiên.
-                  //
-                  // Địa điểm nay là thật (do AI trả về hoặc người dùng nhập)
-                  // nhưng app không có ảnh của nó, nên một tấm ảnh lạ dán vào
-                  // đây khiến người dùng tưởng đó là ảnh chỗ mình sắp thêm.
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(22),
-                        topRight: Radius.circular(22),
-                      ),
-                      color: Color(0xFF8B4DE8),
-                    ),
+              // Nền màu, không phải ảnh Unsplash ngẫu nhiên.
+              //
+              // Địa điểm nay là thật (do AI trả về hoặc người dùng nhập)
+              // nhưng app không có ảnh của nó, nên một tấm ảnh lạ dán vào
+              // đây khiến người dùng tưởng đó là ảnh chỗ mình sắp thêm.
+              Container(
+                height: 150,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(22),
+                    topRight: Radius.circular(22),
                   ),
-                  // Darken overlay
-                  Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(22),
-                        topRight: Radius.circular(22),
-                      ),
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.black.withValues(alpha: 0.4),
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ),
-                  // Hai overlay "Café & Deli" và điểm "4.9" đã bỏ:
-                  // app không có phân loại lẫn đánh giá cho địa điểm này.
-                ],
+                  color: GenZTokens.purple,
+                ),
               ),
 
               // Card details + Schedule form parameters
@@ -476,8 +452,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                     const SizedBox(height: 16),
                     Divider(
                       color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.06),
+                          ? GenZTokens.inkSoftDark
+                          : GenZTokens.inkSoft,
                     ),
                     const SizedBox(height: 10),
 
@@ -521,12 +497,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                   color: isSelected
                                       ? primaryColor.withValues(alpha: 0.15)
                                       : (isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.04,
-                                              )
-                                            : Colors.black.withValues(
-                                                alpha: 0.03,
-                                              )),
+                                            ? GenZTokens.paperDark
+                                            : GenZTokens.paper),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: isSelected
@@ -582,12 +554,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                   color: isSelected
                                       ? secondaryColor.withValues(alpha: 0.15)
                                       : (isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.04,
-                                              )
-                                            : Colors.black.withValues(
-                                                alpha: 0.03,
-                                              )),
+                                            ? GenZTokens.paperDark
+                                            : GenZTokens.paper),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                     color: isSelected
@@ -618,9 +586,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                     Container(
                       height: 38,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.03)
-                            : Colors.black.withValues(alpha: 0.02),
+                        color: surfaceColor,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: isDark
@@ -647,8 +613,8 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                     const SizedBox(height: 18),
                     Divider(
                       color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.06),
+                          ? GenZTokens.inkSoftDark
+                          : GenZTokens.inkSoft,
                     ),
                     const SizedBox(height: 10),
 

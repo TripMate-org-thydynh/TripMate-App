@@ -146,7 +146,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
       floatingActionButton: _tabController.index == 2
           ? FloatingActionButton.extended(
               backgroundColor: GenZTokens.green,
-              foregroundColor: Colors.white,
+              foregroundColor: GenZTokens.ink,
               onPressed: _addBucketItem,
               icon: Icon(PhosphorIcons.plus()),
               label: Text(
@@ -490,7 +490,9 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                           decoration: BoxDecoration(
                             color: badge.isUnlocked
                                 ? GenZTokens.yellow
-                                : Colors.grey,
+                                : (_isDark
+                                    ? GenZTokens.inkSoftDark.withValues(alpha: 0.3)
+                                    : GenZTokens.inkSoft.withValues(alpha: 0.3)),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -523,14 +525,22 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                                     ? (_isDark
                                           ? GenZTokens.inkSoftDark
                                           : GenZTokens.inkSoft)
-                                    : Colors.grey,
+                                    : (_isDark
+                                          ? GenZTokens.inkSoftDark
+                                          : GenZTokens.inkSoft),
                               ),
                             ),
                           ],
                         ),
                       ),
                       if (!badge.isUnlocked)
-                        Icon(PhosphorIcons.lockKey(), size: 16, color: Colors.grey),
+                        Icon(
+                          PhosphorIcons.lockKey(),
+                          size: 16,
+                          color: _isDark
+                              ? GenZTokens.inkSoftDark
+                              : GenZTokens.inkSoft,
+                        ),
                     ],
                   ),
                 );

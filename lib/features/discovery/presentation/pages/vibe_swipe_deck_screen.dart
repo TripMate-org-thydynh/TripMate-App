@@ -138,11 +138,11 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   /// Màu thẻ suy từ id để mỗi địa điểm có một màu ổn định giữa các lần mở.
   static List<Color> _gradientFor(String id) {
     const palettes = [
-      [Color(0xFF1FA85C), Color(0xFF0F766E)],
-      [Color(0xFFF5822B), Color(0xFFB23A1E)],
-      [Color(0xFF8B4DE8), Color(0xFFF5822B)],
-      [Color(0xFFFFD84D), Color(0xFFEA580C)],
-      [Color(0xFFD6248C), Color(0xFF8B4DE8)],
+      [GenZTokens.green, GenZTokens.blue],
+      [GenZTokens.orange, GenZTokens.red],
+      [GenZTokens.purple, GenZTokens.orange],
+      [GenZTokens.yellow, GenZTokens.orange],
+      [GenZTokens.magenta, GenZTokens.purple],
     ];
     return palettes[id.hashCode.abs() % palettes.length];
   }
@@ -304,7 +304,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 left: 28,
                 child: Opacity(
                   opacity: likeOpacity,
-                  child: _stamp('vibe_deck.like'.tr(), const Color(0xFF1FA85C), -0.3),
+                  child: _stamp('vibe_deck.like'.tr(), GenZTokens.success, -0.3),
                 ),
               ),
               // NOPE stamp
@@ -315,7 +315,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   opacity: nopeOpacity,
                   child: _stamp(
                     'common.skip_caps'.tr(),
-                    const Color(0xFFD8422B),
+                    GenZTokens.danger,
                     0.3,
                   ),
                 ),
@@ -559,7 +559,13 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
               ),
             ],
           ),
-          child: Icon(icon, color: Colors.white, size: size * 0.42),
+          child: Icon(
+            icon,
+            color: color == GenZTokens.danger
+                ? GenZTokens.paper
+                : GenZTokens.ink,
+            size: size * 0.42,
+          ),
         ),
       ),
     );
@@ -721,7 +727,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 '#${rank + 1}',
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w900,
-                  color: Colors.white,
+                  color: GenZTokens.ink,
                   fontSize: 16,
                 ),
               ),

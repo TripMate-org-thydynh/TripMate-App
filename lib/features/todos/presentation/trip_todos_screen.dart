@@ -38,7 +38,7 @@ class TripTodosScreen extends ConsumerWidget {
   static const _prio = <String, (String, Color)>{
     'HIGH': ('todos.priority_urgent', GenZTokens.danger),
     'NORMAL': ('todos.priority_normal', GenZTokens.blue),
-    'LOW': ('todos.priority_relaxed', Color(0xFF64748B)),
+    'LOW': ('todos.priority_relaxed', GenZTokens.inkSoft),
   };
 
   /// Phần tử thứ 1 trong `_prio` là KEY i18n (const map không gọi được .tr()).

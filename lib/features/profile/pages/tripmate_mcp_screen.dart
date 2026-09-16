@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../system_states/application/tripmate_mcp_config.dart';
 
@@ -94,7 +93,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                             decoration: BoxDecoration(
                               color: _mcpEnabled
                                   ? GenZTokens.green
-                                  : Colors.grey,
+                                  : _textSec,
                               shape: BoxShape.circle,
                               border: Border.all(color: _ink, width: 1.5),
                             ),
@@ -154,7 +153,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
               decoration: BoxDecoration(
                 color: _isDark
                     ? GenZTokens.inkDark
-                    : const Color(0xFF262019),
+                    : GenZTokens.ink,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: borderCol, width: 2),
               ),
@@ -166,7 +165,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                       jsonString,
                       style: GoogleFonts.spaceMono(
                         fontSize: 12,
-                        color: const Color(0xFF56B6C2), // Teal color
+                        color: GenZTokens.blue,
                       ),
                     ),
                   ),
@@ -176,7 +175,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                     child: IconButton(
                       icon: Icon(
                         PhosphorIcons.copy(),
-                        color: Colors.white70,
+                        color: _isDark ? GenZTokens.ink : GenZTokens.paper.withValues(alpha: 0.7),
                         size: 18,
                       ),
                       tooltip: 'settings.copy_schema'.tr(),

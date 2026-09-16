@@ -29,46 +29,46 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
   late PageController _pageController;
   int _selectedIdx = 0;
 
-  final List<Map<String, dynamic>> _themes = const [
+  late final List<Map<String, dynamic>> _themes = [
     {
-      'emoji': '🌃',
+      'icon': PhosphorIcons.buildings(),
       'name': 'Tokyo Neon',
       'desc':
           'Electric cyberpunk nights. Neon-soaked streets and infinite vibes.',
-      'gradient': [Color(0xFF7B2FF7), Color(0xFFFF007F), Color(0xFF00F0FF)],
-      'accent': Color(0xFFFF007F),
+      'gradient': const [Color(0xFF7B2FF7), Color(0xFFFF007F), Color(0xFF00F0FF)],
+      'accent': const Color(0xFFFF007F),
       'preview': 'Tokyo Bound',
     },
     {
-      'emoji': '🌧',
+      'icon': PhosphorIcons.cloudRain(),
       'name': 'Đà Lạt Mist',
       'desc': 'Emerald fog rolling over pine forests. Cozy highland energy.',
-      'gradient': [Color(0xFF134E4A), Color(0xFF1FA85C), Color(0xFF6EE7B7)],
-      'accent': Color(0xFF1FA85C),
+      'gradient': const [Color(0xFF134E4A), Color(0xFF1FA85C), Color(0xFF6EE7B7)],
+      'accent': const Color(0xFF1FA85C),
       'preview': 'Mountain Escape',
     },
     {
-      'emoji': '🏖',
+      'icon': PhosphorIcons.sunHorizon(),
       'name': 'Beach Chaos',
       'desc': 'Salt air and golden hour. Pure Gen-Z summer chaos energy.',
-      'gradient': [Color(0xFFFB923C), Color(0xFF3D8BFF), Color(0xFFFF6B6B)],
-      'accent': Color(0xFFFB923C),
+      'gradient': const [Color(0xFFFB923C), Color(0xFF3D8BFF), Color(0xFFFF6B6B)],
+      'accent': const Color(0xFFFB923C),
       'preview': 'Sun & Chaos',
     },
     {
-      'emoji': '📼',
+      'icon': PhosphorIcons.cassetteTape(),
       'name': 'Retro VHS',
       'desc': 'Lo-fi nostalgia. Grainy filters and late-night analog dreams.',
-      'gradient': [Color(0xFF92400E), Color(0xFFF5822B), Color(0xFFD8422B)],
-      'accent': Color(0xFFF5822B),
+      'gradient': const [Color(0xFF92400E), Color(0xFFF5822B), Color(0xFFD8422B)],
+      'accent': const Color(0xFFF5822B),
       'preview': 'Rewind Mode',
     },
     {
-      'emoji': '⚡',
+      'icon': PhosphorIcons.lightning(),
       'name': 'Cyber Punk',
       'desc': 'Hard-edged neon and midnight chrome. The future is chaotic.',
-      'gradient': [Color(0xFF141210), Color(0xFF1FA85C), Color(0xFF7B2FF7)],
-      'accent': Color(0xFF1FA85C),
+      'gradient': const [Color(0xFF141210), Color(0xFF1FA85C), Color(0xFF7B2FF7)],
+      'accent': const Color(0xFF1FA85C),
       'preview': 'System Override',
     },
   ];
@@ -475,9 +475,10 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
               // Theme badge
               Row(
                 children: [
-                  Text(
-                    theme['emoji'] as String,
-                    style: const TextStyle(fontSize: 28),
+                  Icon(
+                    theme['icon'] as IconData,
+                    size: 28,
+                    color: Colors.white,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -623,7 +624,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Squad Energy 72%',
+                            '${'live_trip.squad_energy'.tr()} 72%',
                             style: AppFonts.body(
                               fontSize: 11.5,
                               color: Colors.white.withValues(alpha: 0.55),
