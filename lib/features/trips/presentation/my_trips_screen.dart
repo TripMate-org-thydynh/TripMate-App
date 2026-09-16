@@ -25,19 +25,24 @@ class MyTripsScreen extends ConsumerWidget {
   const MyTripsScreen({super.key, this.isDarkMode = false});
 
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
+      isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
 
-  /// Accent lay tu theme dang chon.
-  ///
-  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*,
-  /// nen doi theme khong an o man nay.
-  Color _primaryOf(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
-  Color get _ink =>
-      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _surface =>
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent =>
+      isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _accentSoft =>
+      isDarkMode ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+  Color get _danger =>
+      isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,40 +50,37 @@ class MyTripsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: _bgOf(context),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _ink, width: 2.5),
-          boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 4))],
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: _accent,
+        foregroundColor: _onAccent,
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
         ),
-        child: FloatingActionButton.extended(
-          backgroundColor: GenZTokens.yellow,
-          foregroundColor: GenZTokens.ink,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          onPressed: () {
-            HapticFeedback.mediumImpact();
-            CreateTripSheet.show(context, isDarkMode);
-          },
-          icon: Icon(PhosphorIcons.plus()),
-          label: Text(
-            'trips.new'.tr(),
-            style: AppFonts.heading(fontWeight: FontWeight.w800),
+        onPressed: () {
+          HapticFeedback.mediumImpact();
+          CreateTripSheet.show(context, isDarkMode);
+        },
+        icon: Icon(PhosphorIcons.plus(), color: _onAccent),
+        label: Text(
+          'trips.new'.tr(),
+          style: AppFonts.heading(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            color: _onAccent,
           ),
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context),
         elevation: 0,
         title: Text(
           'trips.mine'.tr(),
           style: AppFonts.heading(
             fontSize: 20,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w700,
             color: _textPri,
-            letterSpacing: -0.5,
+            letterSpacing: -0.2,
           ),
         ),
         actions: [
@@ -87,7 +89,7 @@ class MyTripsScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        color: _primaryOf(context),
+        color: _accent,
         onRefresh: () => ref.read(tripsProvider.notifier).refresh(),
         child: tripsAsync.when(
           loading: () => _buildSkeleton(),
@@ -102,15 +104,15 @@ class MyTripsScreen extends ConsumerWidget {
   // ── Loading skeleton ───────────────────────────────────────────────────────
   Widget _buildSkeleton() {
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       itemCount: 4,
       itemBuilder: (context, i) => Container(
-        height: 120,
-        margin: const EdgeInsets.only(bottom: 16),
+        height: 100,
+        margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: _ink, width: 2),
+          color: _surface,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
         ),
       ),
     );
@@ -120,25 +122,25 @@ class MyTripsScreen extends ConsumerWidget {
   Widget _buildError(BuildContext context, WidgetRef ref, Object error) {
     return ListView(
       children: [
-        const SizedBox(height: 120),
+        const SizedBox(height: 100),
         Center(
           child: Column(
             children: [
               Container(
-                width: 72,
-                height: 72,
+                width: 64,
+                height: 64,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: GenZTokens.danger,
-                  border: Border.all(color: _ink, width: 2.5),
-                  boxShadow: [
-                    BoxShadow(color: _ink, offset: const Offset(0, 4)),
-                  ],
+                  color: _fill,
+                  border: Border.all(
+                    color: _danger,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Icon(
                   PhosphorIcons.cloudSlash(),
-                  color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-                  size: 34,
+                  color: _danger,
+                  size: 32,
                 ),
               ),
               const SizedBox(height: 16),
@@ -146,7 +148,7 @@ class MyTripsScreen extends ConsumerWidget {
                 'trips.load_failed'.tr(),
                 style: AppFonts.heading(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: _textPri,
                 ),
               ),
@@ -160,16 +162,31 @@ class MyTripsScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: _primaryOf(context),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: _ink,
+                  side: BorderSide(
+                    color: _line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
+                  ),
                 ),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
                   ref.read(tripsProvider.notifier).refresh();
                 },
-                icon: Icon(PhosphorIcons.arrowsClockwise()),
-                label: Text('general.retry'.tr()),
+                icon: Icon(PhosphorIcons.arrowsClockwise(), size: 16),
+                label: Text(
+                  'general.retry'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
@@ -182,25 +199,25 @@ class MyTripsScreen extends ConsumerWidget {
   Widget _buildEmpty() {
     return ListView(
       children: [
-        const SizedBox(height: 120),
+        const SizedBox(height: 100),
         Center(
           child: Column(
             children: [
               Container(
-                width: 84,
-                height: 84,
+                width: 72,
+                height: 72,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: GenZTokens.lilac,
-                  border: Border.all(color: _ink, width: 2.5),
-                  boxShadow: [
-                    BoxShadow(color: _ink, offset: const Offset(0, 4)),
-                  ],
+                  color: _fill,
+                  border: Border.all(
+                    color: _line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Icon(
                   PhosphorIcons.airplaneTilt(PhosphorIconsStyle.fill),
-                  color: GenZTokens.ink,
-                  size: 40,
+                  color: _accent,
+                  size: 36,
                 ),
               ),
               const SizedBox(height: 18),
@@ -208,7 +225,7 @@ class MyTripsScreen extends ConsumerWidget {
                 'trips.empty'.tr(),
                 style: AppFonts.heading(
                   fontSize: 18,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   color: _textPri,
                 ),
               ),
@@ -238,10 +255,10 @@ class MyTripsScreen extends ConsumerWidget {
 
     final chipRow = present.length >= 2
         ? SizedBox(
-            height: 46,
+            height: 44,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(20, 6, 20, 4),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
               children: [
                 _filterChip(
                   context,
@@ -288,42 +305,38 @@ class MyTripsScreen extends ConsumerWidget {
           ref.read(tripVibeFilterProvider.notifier).state = code;
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected
-                ? _primaryOf(context)
-                : (isDarkMode
-                      ? GenZTokens.paperDark
-                      : GenZTokens.paper),
-            borderRadius: BorderRadius.circular(99),
-            border: Border.all(color: _ink, width: 2),
+            color: selected ? _accentSoft : _fill,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+            border: Border.all(
+              color: selected ? _accent : _line,
+              width: selected
+                  ? GenZTokens.borderWidth
+                  : GenZTokens.borderWidthThin,
+            ),
           ),
-          child: Builder(
-            builder: (context) {
-              final onSelected = GenZTokens.ink;
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (icon != null) ...[
-                    Icon(
-                      icon,
-                      size: 15,
-                      color: selected ? onSelected : _textSec,
-                    ),
-                    const SizedBox(width: 6),
-                  ],
-                  Text(
-                    label,
-                    style: AppFonts.heading(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: selected ? onSelected : _textPri,
-                    ),
-                  ),
-                ],
-              );
-            },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: 14,
+                  color: selected ? _accent : _textSec,
+                ),
+                const SizedBox(width: 6),
+              ],
+              Text(
+                label,
+                style: AppFonts.heading(
+                  fontSize: 13,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? _accent : _textSec,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -333,7 +346,7 @@ class MyTripsScreen extends ConsumerWidget {
   // ── Data list ──────────────────────────────────────────────────────────────
   Widget _buildList(List<Trip> trips, {Widget? header}) {
     return ListView.builder(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       itemCount: trips.length + (header != null ? 1 : 0),
       itemBuilder: (context, index) {
         if (header != null && index == 0) return header;
@@ -355,7 +368,7 @@ class MyTripsScreen extends ConsumerWidget {
 
   Widget _tripCard(BuildContext context, Trip t) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 12),
       child: PressableCard(
         onTap: () {
           HapticFeedback.selectionClick();
@@ -366,32 +379,36 @@ class MyTripsScreen extends ConsumerWidget {
             ),
           );
         },
-        color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-        radius: 20,
-        padding: const EdgeInsets.all(18),
+        color: _surface,
+        radius: GenZTokens.radiusCard,
+        borderWidth: GenZTokens.borderWidthThin,
+        depth: 1,
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: _primaryOf(context),
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
+                    color: _fill,
                     border: Border.all(
-                      color: _ink,
-                      width: 2,
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
                   child: Icon(
                     PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-                    color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-                    size: 24,
+                    color: _accent,
+                    size: 22,
                   ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,7 +419,7 @@ class MyTripsScreen extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppFonts.heading(
                           fontSize: 16,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w700,
                           color: _textPri,
                         ),
                       ),
@@ -433,9 +450,14 @@ class MyTripsScreen extends ConsumerWidget {
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
-                                color: v.color.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(99),
-                                border: Border.all(color: v.color, width: 1.2),
+                                color: v.color.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(
+                                  GenZTokens.radiusPill,
+                                ),
+                                border: Border.all(
+                                  color: v.color.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -446,7 +468,7 @@ class MyTripsScreen extends ConsumerWidget {
                                     v.label,
                                     style: AppFonts.heading(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w600,
                                       color: _textPri,
                                     ),
                                   ),
@@ -465,11 +487,13 @@ class MyTripsScreen extends ConsumerWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: GenZTokens.yellow,
-                    borderRadius: BorderRadius.circular(99),
+                    color: _fill,
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusPill,
+                    ),
                     border: Border.all(
-                      color: _ink,
-                      width: 2,
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
                   child: Text(
@@ -477,7 +501,7 @@ class MyTripsScreen extends ConsumerWidget {
                     style: AppFonts.mono(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: GenZTokens.ink,
+                      color: _textSec,
                     ),
                   ),
                 ),

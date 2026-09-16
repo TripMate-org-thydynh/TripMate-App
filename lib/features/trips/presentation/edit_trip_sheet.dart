@@ -24,7 +24,7 @@ class EditTripSheet extends ConsumerStatefulWidget {
     return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: GenZTokens.paper.withValues(alpha: 0),
       builder: (_) => Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -50,20 +50,17 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
   bool _busy = false;
 
   bool get _dark => widget.isDarkMode;
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      _dark ? GenZTokens.paperDark : GenZTokens.paper;
-
-  /// Accent lay tu theme dang chon.
-  ///
-  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*.
-  /// Day la State nen doc thang `context` duoc.
-  Color get _primary => Theme.of(context).colorScheme.primary;
+  Color get _surface => _dark ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => _dark ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => _dark ? GenZTokens.lineDark : GenZTokens.line;
   Color get _ink => _dark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
-  Color get _textSec =>
-      _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _textSec => _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _accent => _dark ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent => _dark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _accentSoft =>
+      _dark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+  Color get _danger => _dark ? GenZTokens.dangerDark : GenZTokens.danger;
 
   static const _vibes = <(String, String, IconData)>[
     ('CHILL', 'trips.vibe_chill', PhosphorIconsFill.cloud),
@@ -152,16 +149,16 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: _bgOf(ctx),
+        backgroundColor: _surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: _ink, width: 2),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          side: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
         ),
         title: Text(
           'trips.delete_trip'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             color: _ink,
           ),
         ),
@@ -175,23 +172,24 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
             child: Text(
               'general.cancel'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: _textSec,
               ),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: GenZTokens.danger,
-              foregroundColor: GenZTokens.paper,
+              backgroundColor: _danger,
+              foregroundColor:
+                  _dark ? GenZTokens.onAccentDark : GenZTokens.onAccent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
               ),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               'general.delete'.tr(),
-              style: AppFonts.heading(fontWeight: FontWeight.w800),
+              style: AppFonts.heading(fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -218,9 +216,20 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg),
-        backgroundColor: error ? GenZTokens.danger : _primary,
+        content: Text(
+          msg,
+          style: TextStyle(
+            color: error
+                ? (_dark ? GenZTokens.onAccentDark : GenZTokens.onAccent)
+                : _ink,
+          ),
+        ),
+        backgroundColor: error ? _danger : _surface,
         behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          side: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+        ),
       ),
     );
   }
@@ -231,28 +240,29 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: _bgOf(context),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        color: _surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
         border: Border(
-          top: BorderSide(color: _ink, width: 2.5),
-          left: BorderSide(color: _ink, width: 2.5),
-          right: BorderSide(color: _ink, width: 2.5),
+          top: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+          left: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+          right: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
         ),
+        boxShadow: GenZTokens.hardShadow(_ink, _dark),
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: Container(
-                  width: 40,
+                  width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: _textSec.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(99),
+                    color: _textSec.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   ),
                 ),
               ),
@@ -261,50 +271,46 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                 'trips.edit'.tr(),
                 style: AppFonts.heading(
                   fontSize: 20,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: _ink,
                 ),
               ),
               const SizedBox(height: 16),
               Flexible(child: SingleChildScrollView(child: _form())),
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: _ink, width: 2.5),
-                    boxShadow: _busy
-                        ? null
-                        : [BoxShadow(color: _ink, offset: const Offset(0, 4))],
-                  ),
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: GenZTokens.yellow,
-                      foregroundColor: GenZTokens.ink,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(11),
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _accent,
+                    foregroundColor: _onAccent,
+                    disabledBackgroundColor: _line,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
                       ),
                     ),
-                    onPressed: _busy ? null : _save,
-                    child: _busy
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: GenZTokens.ink,
-                            ),
-                          )
-                        : Text(
-                            'reservations.save_changes'.tr(),
-                            style: AppFonts.heading(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15,
-                            ),
-                          ),
                   ),
+                  onPressed: _busy ? null : _save,
+                  child: _busy
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: _onAccent,
+                          ),
+                        )
+                      : Text(
+                          'reservations.save_changes'.tr(),
+                          style: AppFonts.heading(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: _onAccent,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -313,15 +319,15 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                   onPressed: _busy ? null : _deleteTrip,
                   icon: Icon(
                     PhosphorIcons.trash(),
-                    color: GenZTokens.danger,
+                    color: _danger,
                     size: 18,
                   ),
                   label: Text(
                     'trips.delete_trip'.tr(),
                     style: AppFonts.heading(
                       fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: GenZTokens.danger,
+                      fontWeight: FontWeight.w600,
+                      color: _danger,
                     ),
                   ),
                 ),
@@ -383,7 +389,6 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
           runSpacing: 8,
           children: _vibes.map((v) {
             final sel = _vibe == v.$1;
-            final onSel = GenZTokens.ink;
             return GestureDetector(
               onTap: () => setState(() => _vibe = sel ? null : v.$1),
               child: Container(
@@ -392,21 +397,26 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: sel ? _primary : _surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _ink, width: 2),
+                  color: sel ? _accentSoft : _fill,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                  border: Border.all(
+                    color: sel ? _accent : _line,
+                    width: sel
+                        ? GenZTokens.borderWidth
+                        : GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(v.$3, size: 15, color: sel ? onSel : _textSec),
+                    Icon(v.$3, size: 15, color: sel ? _accent : _textSec),
                     const SizedBox(width: 6),
                     Text(
                       v.$2.tr(),
                       style: AppFonts.heading(
                         fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: sel ? onSel : _textPri,
+                        fontWeight: FontWeight.w600,
+                        color: sel ? _accent : _textPri,
                       ),
                     ),
                   ],
@@ -453,7 +463,7 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                 dropdownColor: _surface,
                 style: AppFonts.heading(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: _textPri,
                 ),
                 items: _currencies
@@ -511,7 +521,8 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
                 ),
                 Switch(
                   value: _isPublic,
-                  activeThumbColor: _primary,
+                  activeThumbColor: _accent,
+                  activeTrackColor: _accentSoft,
                   onChanged: (v) => setState(() => _isPublic = v),
                 ),
               ],
@@ -528,16 +539,16 @@ class _EditTripSheetState extends ConsumerState<EditTripSheet> {
       t,
       style: AppFonts.body(
         fontSize: 13,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         color: _textSec,
       ),
     ),
   );
 
   BoxDecoration _boxDeco() => BoxDecoration(
-    color: _surface,
-    borderRadius: BorderRadius.circular(12),
-    border: Border.all(color: _ink, width: 2),
+    color: _fill,
+    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+    border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
   );
 
   Widget _field(TextEditingController c, String hint, IconData icon) {

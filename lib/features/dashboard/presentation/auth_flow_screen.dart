@@ -211,7 +211,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
           ? GenZTokens.paperDark
           : accent.lightBackground,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: GenZTokens.paper.withValues(alpha: 0),
         elevation: 0,
         leading: _currentStep > 0 && _currentStep < 4
             ? IconButton(
@@ -482,13 +482,11 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                               // 2. Linear dark background fade for readability
                               Positioned.fill(
                                 child: Container(
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Colors.transparent,
-                                        Color(
-                                          0xD9060E20,
-                                        ), // surface-container-lowest
+                                        GenZTokens.paper.withValues(alpha: 0),
+                                        GenZTokens.ink.withValues(alpha: 0.85),
                                       ],
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
@@ -640,9 +638,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             child: ElevatedButton(
               onPressed: hasSelection ? _nextStep : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                disabledBackgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
+                backgroundColor: GenZTokens.paper.withValues(alpha: 0),
+                disabledBackgroundColor: GenZTokens.paper.withValues(alpha: 0),
+                shadowColor: GenZTokens.paper.withValues(alpha: 0),
                 side: BorderSide.none,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
@@ -759,7 +757,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                 backgroundColor: primaryColor,
                 foregroundColor: fInk,
                 elevation: 0,
-                shadowColor: Colors.transparent,
+                shadowColor: GenZTokens.paper.withValues(alpha: 0),
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -1177,8 +1175,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
                   autofocus: true,
                   showCursor: false,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.transparent,
+                  style: TextStyle(
+                    color: GenZTokens.paper.withValues(alpha: 0),
                     height: 0.01,
                   ),
                   decoration: const InputDecoration(
@@ -1298,7 +1296,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               backgroundColor: primaryColor,
               foregroundColor: GenZTokens.ink,
               elevation: 0,
-              shadowColor: Colors.transparent,
+              shadowColor: GenZTokens.paper.withValues(alpha: 0),
               minimumSize: const Size(double.infinity, 56),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -1462,7 +1460,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
               backgroundColor: primaryColor,
               foregroundColor: GenZTokens.ink,
               elevation: 0,
-              shadowColor: Colors.transparent,
+              shadowColor: GenZTokens.paper.withValues(alpha: 0),
               minimumSize: const Size(double.infinity, 56),
               side: BorderSide(color: ink, width: GenZTokens.borderWidth),
               shape: RoundedRectangleBorder(
@@ -1556,7 +1554,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            shadowColor: Colors.transparent,
+            shadowColor: GenZTokens.paper.withValues(alpha: 0),
             elevation: 0,
           ),
           child: Text(
@@ -1659,7 +1657,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         messenger.showSnackBar(
           SnackBar(
             content: Text('auth.google_no_token'.tr()),
-            backgroundColor: GenZTokens.red,
+            backgroundColor: widget.isDarkMode
+                ? GenZTokens.dangerDark
+                : GenZTokens.danger,
           ),
         );
         return;
@@ -1708,7 +1708,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen>
         messenger.showSnackBar(
           SnackBar(
             content: Text('auth.google_signin_failed'.tr(namedArgs: {'err': friendlyError(e)})),
-            backgroundColor: GenZTokens.red,
+            backgroundColor: widget.isDarkMode
+                ? GenZTokens.dangerDark
+                : GenZTokens.danger,
           ),
         );
       }
@@ -1733,7 +1735,7 @@ class MeshBackgroundPainter extends CustomPainter {
     );
     final radius1 = size.width * 0.8;
     paint.shader = RadialGradient(
-      colors: [accentColor.withValues(alpha: 0.18), Colors.transparent],
+      colors: [accentColor.withValues(alpha: 0.18), accentColor.withValues(alpha: 0)],
     ).createShader(Rect.fromCircle(center: center1, radius: radius1));
     canvas.drawCircle(center1, radius1, paint);
 
@@ -1744,7 +1746,7 @@ class MeshBackgroundPainter extends CustomPainter {
     );
     final radius2 = size.width * 0.7;
     paint.shader = RadialGradient(
-      colors: [accentColor.withValues(alpha: 0.10), Colors.transparent],
+      colors: [accentColor.withValues(alpha: 0.10), accentColor.withValues(alpha: 0)],
     ).createShader(Rect.fromCircle(center: center2, radius: radius2));
     canvas.drawCircle(center2, radius2, paint);
 
@@ -1755,7 +1757,7 @@ class MeshBackgroundPainter extends CustomPainter {
     );
     final radius3 = size.width * 0.75;
     paint.shader = RadialGradient(
-      colors: [accentColor.withValues(alpha: 0.08), Colors.transparent],
+      colors: [accentColor.withValues(alpha: 0.08), accentColor.withValues(alpha: 0)],
     ).createShader(Rect.fromCircle(center: center3, radius: radius3));
     canvas.drawCircle(center3, radius3, paint);
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/gen_z_tokens.dart';
 
-/// Progress bar onboarding: các segment rời viền ink,
-/// phần hoàn thành fill màu accent.
+/// Thanh tiến trình phân đoạn: rãnh nền chìm (fill/fillDark),
+/// phần hoàn thành dùng màu nhấn (accent), viền mảnh 1px.
 class SegmentedProgress extends StatelessWidget {
   final int total;
   final int completed;
@@ -15,14 +15,15 @@ class SegmentedProgress extends StatelessWidget {
     required this.total,
     required this.completed,
     this.fillColor,
-    this.height = 10,
+    this.height = 8,
     this.gap = GenZTokens.space2,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final trackColor = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final fill = fillColor ?? Theme.of(context).colorScheme.primary;
 
     return Row(
@@ -32,13 +33,14 @@ class SegmentedProgress extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(right: i == total - 1 ? 0 : gap),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: GenZTokens.durationFast),
+              curve: Curves.easeOutCubic,
               height: height,
               decoration: BoxDecoration(
-                color: done ? fill : Colors.transparent,
+                color: done ? fill : trackColor,
                 borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                 border: Border.all(
-                  color: ink,
+                  color: done ? fill : line,
                   width: GenZTokens.borderWidthThin,
                 ),
               ),

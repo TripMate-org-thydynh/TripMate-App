@@ -51,23 +51,23 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
     'ANNOYED': 'journal.mood_annoyed',
   };
   static final _moodColors = {
-    'HAPPY': GenZTokens.yellow,
-    'CHILL': GenZTokens.blue,
+    'HAPPY': GenZTokens.chart3,
+    'CHILL': GenZTokens.chart1,
     'TIRED': GenZTokens.inkSoft,
-    'WOW': GenZTokens.orange,
-    'SAD': GenZTokens.green,
-    'EXCITED': GenZTokens.purple,
-    'ANNOYED': GenZTokens.red,
+    'WOW': GenZTokens.accent,
+    'SAD': GenZTokens.chart6,
+    'EXCITED': GenZTokens.chart5,
+    'ANNOYED': GenZTokens.danger,
   };
 
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _ink =>
-      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
       widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _card =>
       widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
 
   void _showAddDialog() {
     final bodyCtrl = TextEditingController();
@@ -84,11 +84,11 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
           builder: (context, setModalState) {
             return Container(
               decoration: BoxDecoration(
-                color: _bgOf(context),
+                color: _bg,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
+                  top: Radius.circular(24),
                 ),
-                border: Border.all(color: _ink.withValues(alpha: 0.12)),
+                border: Border.all(color: _line),
               ),
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
@@ -115,7 +115,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                     Text(
                       'journal.write_title'.tr(),
                       style: AppFonts.heading(
-                        fontSize: 20,
+                        fontSize: 22,
                         fontWeight: FontWeight.w900,
                         color: _ink,
                       ),
@@ -131,8 +131,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           lastDate: DateTime(2030),
                           builder: (context, child) => Theme(
                             data: Theme.of(context).copyWith(
-                              colorScheme: ColorScheme.light(
-                                primary: GenZTokens.orange,
+                              colorScheme: const ColorScheme.light(
+                                primary: GenZTokens.accent,
                               ),
                             ),
                             child: child!,
@@ -149,10 +149,10 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: _card,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _ink.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
                           ),
+                          border: Border.all(color: _line),
                         ),
                         child: Row(
                           children: [
@@ -160,15 +160,13 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               PhosphorIcons.calendarBlank(
                                 PhosphorIconsStyle.fill,
                               ),
-                              color: widget.isDarkMode
-                                  ? GenZTokens.purple
-                                  : GenZTokens.orange,
+                              color: GenZTokens.accent,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
                             Text(
                               DateFormat('dd/MM/yyyy').format(selectedDate),
-                              style: AppFonts.body(fontSize: 14, color: _ink),
+                              style: AppFonts.body(fontSize: 15, color: _ink),
                             ),
                           ],
                         ),
@@ -179,23 +177,32 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                     TextField(
                       controller: titleCtrl,
                       style: AppFonts.heading(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: _ink,
                       ),
                       decoration: InputDecoration(
                         hintText: 'journal.title_hint'.tr(),
-                        hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
+                        hintStyle: AppFonts.body(fontSize: 15, color: _textSec),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
+                          ),
+                          borderSide: BorderSide(color: _line),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
+                          ),
+                          borderSide: BorderSide(color: _line),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: widget.isDarkMode
-                                ? GenZTokens.purple
-                                : GenZTokens.orange,
-                            width: 2,
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
+                          ),
+                          borderSide: const BorderSide(
+                            color: GenZTokens.accent,
+                            width: GenZTokens.borderWidthFocus,
                           ),
                         ),
                         filled: true,
@@ -208,21 +215,29 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       controller: bodyCtrl,
                       minLines: 4,
                       maxLines: 10,
-                      style: AppFonts.body(fontSize: 14, color: _ink),
+                      style: AppFonts.body(fontSize: 15, color: _ink),
                       decoration: InputDecoration(
-                        hintText:
-                            'journal.body_hint'.tr(),
-                        hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
+                        hintText: 'journal.body_hint'.tr(),
+                        hintStyle: AppFonts.body(fontSize: 15, color: _textSec),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
+                          ),
+                          borderSide: BorderSide(color: _line),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
+                          ),
+                          borderSide: BorderSide(color: _line),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: widget.isDarkMode
-                                ? GenZTokens.purple
-                                : GenZTokens.orange,
-                            width: 2,
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
+                          ),
+                          borderSide: const BorderSide(
+                            color: GenZTokens.accent,
+                            width: GenZTokens.borderWidthFocus,
                           ),
                         ),
                         filled: true,
@@ -234,7 +249,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                     Text(
                       'journal.mood_today'.tr(),
                       style: AppFonts.heading(
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: _textSec,
                       ),
@@ -245,8 +260,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       runSpacing: 8,
                       children: _moods.map((mood) {
                         final selected = mood == selectedMood;
-                        final color =
-                            _moodColors[mood] ?? GenZTokens.orange;
+                        final color = _moodColors[mood] ?? GenZTokens.accent;
                         final iconData =
                             _moodIcons[mood] ?? PhosphorIcons.smiley();
                         return GestureDetector(
@@ -259,37 +273,29 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: selected
-                                  ? color
-                                  : color.withValues(alpha: 0.12),
+                                  ? color.withValues(
+                                      alpha: widget.isDarkMode ? 0.32 : 0.18,
+                                    )
+                                  : color.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(99),
                               border: Border.all(
-                                color: selected
-                                    ? _ink
-                                    : _ink.withValues(alpha: 0.2),
-                                width: selected ? 2 : 1,
+                                color: selected ? color : _line,
+                                width: selected ? 1.5 : 1,
                               ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  iconData,
-                                  size: 15,
-                                  color: selected
-                                      ? GenZTokens.ink
-                                      : color,
-                                ),
+                                Icon(iconData, size: 15, color: color),
                                 const SizedBox(width: 6),
                                 Text(
                                   _moodLabel[mood]!.tr(),
-                                  style: TextStyle(
+                                  style: AppFonts.body(
                                     fontSize: 13,
                                     fontWeight: selected
                                         ? FontWeight.w800
                                         : FontWeight.w500,
-                                    color: selected
-                                        ? GenZTokens.ink
-                                        : color,
+                                    color: selected ? _ink : _textSec,
                                   ),
                                 ),
                               ],
@@ -303,14 +309,12 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: GenZTokens.orange,
-                          foregroundColor: GenZTokens.ink,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: GenZTokens.accent,
+                          foregroundColor: GenZTokens.onAccent,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            side: BorderSide(
-                              color: _ink,
-                              width: 2,
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusButton,
                             ),
                           ),
                           elevation: 0,
@@ -337,7 +341,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           style: AppFonts.heading(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
-                            color: GenZTokens.ink,
+                            color: GenZTokens.onAccent,
                           ),
                         ),
                       ),
@@ -357,15 +361,15 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
     final entriesAsync = ref.watch(journalProvider(widget.tripId));
 
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: _bgOf(context),
+        backgroundColor: _bg,
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'journal.title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.w900,
             color: _ink,
           ),
@@ -383,27 +387,30 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
           HapticFeedback.selectionClick();
           _showAddDialog();
         },
-        backgroundColor: GenZTokens.orange,
-        foregroundColor: GenZTokens.ink,
+        backgroundColor: GenZTokens.accent,
+        foregroundColor: GenZTokens.onAccent,
         icon: Icon(PhosphorIcons.pencil()),
         label: Text(
           'journal.write_short'.tr(),
           style: AppFonts.heading(
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w800,
-            color: GenZTokens.ink,
+            color: GenZTokens.onAccent,
           ),
         ),
       ),
       body: entriesAsync.when(
-        loading: () => Center(
-          child: CircularProgressIndicator(color: GenZTokens.orange),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            color: GenZTokens.accent,
+            strokeWidth: 2,
+          ),
         ),
         error: (e, _) => Center(
           child: Text(
             'journal.load_failed'.tr(),
             style: AppFonts.heading(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.w700,
               color: _ink,
             ),
@@ -417,14 +424,14 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                 children: [
                   Icon(
                     PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
-                    size: 72,
+                    size: 64,
                     color: _textSec.withValues(alpha: 0.4),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'journal.empty'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: _textSec,
                     ),
@@ -432,7 +439,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'journal.empty_sub'.tr(),
-                    style: AppFonts.body(fontSize: 14, color: _textSec),
+                    style: AppFonts.body(fontSize: 15, color: _textSec),
                   ),
                 ],
               ),
@@ -444,36 +451,26 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
             itemCount: entries.length,
             itemBuilder: (context, i) {
               final entry = entries[i];
-              final moodColor =
-                  _moodColors[entry.mood] ?? GenZTokens.orange;
+              final moodColor = _moodColors[entry.mood] ?? GenZTokens.accent;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: _card,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: _ink.withValues(alpha: 0.12),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _ink.withValues(alpha: 0.06),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  border: Border.all(color: _line, width: 1),
+                  boxShadow: GenZTokens.hardShadow(_ink, widget.isDarkMode),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Colored header bar
                     Container(
-                      height: 6,
+                      height: 4,
                       decoration: BoxDecoration(
                         color: moodColor,
                         borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(20),
+                          top: Radius.circular(GenZTokens.radiusCard),
                         ),
                       ),
                     ),
@@ -487,12 +484,12 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               // Date
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                                  horizontal: 8,
+                                  vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: moodColor.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: moodColor.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   DateFormat('dd/MM').format(entry.entryDate),
@@ -532,11 +529,11 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                   final confirm = await showDialog<bool>(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
-                                      backgroundColor: _bgOf(context),
+                                      backgroundColor: _bg,
                                       title: Text(
                                         'journal.delete_confirm'.tr(),
                                         style: AppFonts.heading(
-                                          fontSize: 16,
+                                          fontSize: 17,
                                           fontWeight: FontWeight.w700,
                                           color: _ink,
                                         ),
@@ -548,10 +545,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                           child: Text(
                                             'general.cancel'.tr(),
                                             style: AppFonts.body(
-                                              fontSize: 14,
-                                              color: widget.isDarkMode
-                                                  ? GenZTokens.purple
-                                                  : GenZTokens.orange,
+                                              fontSize: 15,
+                                              color: _textSec,
                                             ),
                                           ),
                                         ),
@@ -561,7 +556,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                           child: Text(
                                             'general.delete'.tr(),
                                             style: AppFonts.body(
-                                              fontSize: 14,
+                                              fontSize: 15,
                                               color: GenZTokens.danger,
                                             ),
                                           ),
@@ -588,7 +583,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                             Text(
                               entry.title!,
                               style: AppFonts.heading(
-                                fontSize: 18,
+                                fontSize: 17,
                                 fontWeight: FontWeight.w900,
                                 color: _ink,
                               ),
@@ -599,7 +594,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                             entry.body,
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
-                            style: AppFonts.body(fontSize: 14, color: _ink),
+                            style: AppFonts.body(fontSize: 15, color: _ink),
                           ),
                           if (entry.photos.isNotEmpty) ...[
                             const SizedBox(height: 12),
@@ -615,7 +610,9 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                     height: 80,
                                     margin: const EdgeInsets.only(right: 8),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(
+                                        GenZTokens.radiusInput,
+                                      ),
                                       image: DecorationImage(
                                         image: NetworkImage(photo.mediaUrl),
                                         fit: BoxFit.cover,
@@ -639,9 +636,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               else
                                 CircleAvatar(
                                   radius: 12,
-                                  backgroundColor: moodColor.withValues(
-                                    alpha: 0.2,
-                                  ),
+                                  backgroundColor: _fill,
                                   child: Text(
                                     entry.authorName.isNotEmpty
                                         ? entry.authorName[0].toUpperCase()
@@ -649,7 +644,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: moodColor,
+                                      color: _ink,
                                     ),
                                   ),
                                 ),

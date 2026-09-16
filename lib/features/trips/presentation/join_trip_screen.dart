@@ -55,9 +55,19 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
   }
 
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
+  Color get _inkSoft =>
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _surface =>
       widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent =>
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      widget.isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _danger =>
+      widget.isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
 
   Future<void> _pasteFromClipboard() async {
     final data = await Clipboard.getData(Clipboard.kTextPlain);
@@ -100,8 +110,16 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
       );
       messenger.showSnackBar(
         SnackBar(
-          content: Text('trips.joined_ok'.tr(namedArgs: {'name': trip.name})),
+          content: Text(
+            'trips.joined_ok'.tr(namedArgs: {'name': trip.name}),
+            style: TextStyle(color: _ink),
+          ),
+          backgroundColor: _surface,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            side: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+          ),
         ),
       );
     } on ApiException catch (e) {
@@ -162,33 +180,33 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
           'trips.join'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             color: _ink,
           ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(GenZTokens.space5),
+          padding: const EdgeInsets.all(GenZTokens.space4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
                 padding: const EdgeInsets.all(GenZTokens.space5),
                 decoration: BoxDecoration(
-                  color: GenZTokens.yellow,
+                  color: _surface,
                   borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                   border: Border.all(
-                    color: _ink,
-                    width: GenZTokens.borderWidth,
+                    color: _line,
+                    width: GenZTokens.borderWidthThin,
                   ),
                 ),
                 child: Column(
                   children: [
                     Icon(
                       PhosphorIcons.ticket(PhosphorIconsStyle.fill),
-                      size: 40,
-                      color: GenZTokens.ink,
+                      size: 36,
+                      color: _accent,
                     ),
                     const SizedBox(height: GenZTokens.space3),
                     Text(
@@ -196,8 +214,8 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                       textAlign: TextAlign.center,
                       style: AppFonts.heading(
                         fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: GenZTokens.ink,
+                        fontWeight: FontWeight.w700,
+                        color: _ink,
                       ),
                     ),
                     const SizedBox(height: GenZTokens.space2),
@@ -206,7 +224,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                       textAlign: TextAlign.center,
                       style: AppFonts.body(
                         fontSize: 13,
-                        color: GenZTokens.ink.withValues(alpha: 0.75),
+                        color: _inkSoft,
                       ),
                     ),
                   ],
@@ -225,7 +243,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                 },
                 style: AppFonts.heading(
                   fontSize: 18,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: _ink,
                   letterSpacing: 2,
                 ),
@@ -233,10 +251,10 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                   hintText: 'trips.join_code_hint'.tr(),
                   hintStyle: AppFonts.body(
                     fontSize: 14,
-                    color: _ink.withValues(alpha: 0.4),
+                    color: _inkSoft,
                   ),
                   filled: true,
-                  fillColor: _surface,
+                  fillColor: _fill,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: GenZTokens.space4,
                     vertical: GenZTokens.space4,
@@ -244,27 +262,27 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                   suffixIcon: IconButton(
                     tooltip: 'common.paste_clipboard'.tr(),
                     onPressed: _submitting ? null : _pasteFromClipboard,
-                    icon: Icon(PhosphorIcons.clipboardText(), color: _ink),
+                    icon: Icon(PhosphorIcons.clipboardText(), color: _inkSoft),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                     borderSide: BorderSide(
-                      color: _ink,
-                      width: GenZTokens.borderWidth,
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                     borderSide: BorderSide(
-                      color: _ink,
+                      color: _accent,
                       width: GenZTokens.borderWidthFocus,
                     ),
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                     borderSide: BorderSide(
-                      color: _ink.withValues(alpha: 0.4),
-                      width: GenZTokens.borderWidth,
+                      color: _line.withValues(alpha: 0.5),
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
                 ),
@@ -277,7 +295,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                     Icon(
                       PhosphorIcons.warningCircle(PhosphorIconsStyle.fill),
                       size: 18,
-                      color: GenZTokens.danger,
+                      color: _danger,
                     ),
                     const SizedBox(width: GenZTokens.space2),
                     Expanded(
@@ -285,7 +303,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                         _error!,
                         style: AppFonts.body(
                           fontSize: 13,
-                          color: GenZTokens.danger,
+                          color: _danger,
                         ),
                       ),
                     ),
@@ -296,12 +314,11 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
               ElevatedButton(
                 onPressed: _submitting ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: GenZTokens.green,
-                  disabledBackgroundColor: _ink.withValues(alpha: 0.2),
-                  foregroundColor: GenZTokens.ink,
+                  backgroundColor: _accent,
+                  disabledBackgroundColor: _line,
+                  foregroundColor: _onAccent,
                   elevation: 0,
-                  minimumSize: const Size(double.infinity, 56),
-                  side: BorderSide(color: _ink, width: GenZTokens.borderWidth),
+                  minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
                       GenZTokens.radiusButton,
@@ -309,20 +326,20 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                   ),
                 ),
                 child: _submitting
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: GenZTokens.ink,
+                          strokeWidth: 2,
+                          color: _onAccent,
                         ),
                       )
                     : Text(
                         'trips.join_now'.tr(),
                         style: AppFonts.heading(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: GenZTokens.ink,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: _onAccent,
                         ),
                       ),
               ),

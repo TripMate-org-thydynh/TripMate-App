@@ -10,7 +10,8 @@ class AppFonts {
   AppFonts._();
 
   /// The active font option. This is synchronized with `fontProvider` in `theme_provider.dart`.
-  static AppFontOption currentOption = AppFontOption.playful;
+  /// Spec mục 3: đổi mặc định sang modern (Instrument Sans).
+  static AppFontOption currentOption = AppFontOption.modern;
 
   /// Heading/Display style
   static TextStyle heading({
@@ -35,6 +36,28 @@ class AppFonts {
     double? decorationThickness,
   }) {
     switch (currentOption) {
+      case AppFontOption.modern:
+        return GoogleFonts.instrumentSans(
+          textStyle: textStyle,
+          color: color,
+          backgroundColor: backgroundColor,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          letterSpacing: letterSpacing,
+          wordSpacing: wordSpacing,
+          textBaseline: textBaseline,
+          height: height,
+          locale: locale,
+          foreground: foreground,
+          background: background,
+          shadows: shadows,
+          fontFeatures: fontFeatures,
+          decoration: decoration,
+          decorationColor: decorationColor,
+          decorationStyle: decorationStyle,
+          decorationThickness: decorationThickness,
+        );
       case AppFontOption.playful:
         return GoogleFonts.baloo2(
           textStyle: textStyle,
@@ -81,28 +104,6 @@ class AppFonts {
         );
       case AppFontOption.handwriting:
         return GoogleFonts.sriracha(
-          textStyle: textStyle,
-          color: color,
-          backgroundColor: backgroundColor,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          fontStyle: fontStyle,
-          letterSpacing: letterSpacing,
-          wordSpacing: wordSpacing,
-          textBaseline: textBaseline,
-          height: height,
-          locale: locale,
-          foreground: foreground,
-          background: background,
-          shadows: shadows,
-          fontFeatures: fontFeatures,
-          decoration: decoration,
-          decorationColor: decorationColor,
-          decorationStyle: decorationStyle,
-          decorationThickness: decorationThickness,
-        );
-      case AppFontOption.modern:
-        return GoogleFonts.plusJakartaSans(
           textStyle: textStyle,
           color: color,
           backgroundColor: backgroundColor,
@@ -193,6 +194,28 @@ class AppFonts {
     double? decorationThickness,
   }) {
     switch (currentOption) {
+      case AppFontOption.modern:
+        return GoogleFonts.instrumentSans(
+          textStyle: textStyle,
+          color: color,
+          backgroundColor: backgroundColor,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          fontStyle: fontStyle,
+          letterSpacing: letterSpacing,
+          wordSpacing: wordSpacing,
+          textBaseline: textBaseline,
+          height: height,
+          locale: locale,
+          foreground: foreground,
+          background: background,
+          shadows: shadows,
+          fontFeatures: fontFeatures,
+          decoration: decoration,
+          decorationColor: decorationColor,
+          decorationStyle: decorationStyle,
+          decorationThickness: decorationThickness,
+        );
       case AppFontOption.playful:
         return GoogleFonts.nunito(
           textStyle: textStyle,
@@ -239,28 +262,6 @@ class AppFonts {
         );
       case AppFontOption.handwriting:
         return GoogleFonts.patrickHand(
-          textStyle: textStyle,
-          color: color,
-          backgroundColor: backgroundColor,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          fontStyle: fontStyle,
-          letterSpacing: letterSpacing,
-          wordSpacing: wordSpacing,
-          textBaseline: textBaseline,
-          height: height,
-          locale: locale,
-          foreground: foreground,
-          background: background,
-          shadows: shadows,
-          fontFeatures: fontFeatures,
-          decoration: decoration,
-          decorationColor: decorationColor,
-          decorationStyle: decorationStyle,
-          decorationThickness: decorationThickness,
-        );
-      case AppFontOption.modern:
-        return GoogleFonts.dmSans(
           textStyle: textStyle,
           color: color,
           backgroundColor: backgroundColor,
@@ -376,14 +377,14 @@ class AppFonts {
   /// Centralized TextTheme helper for the body font
   static TextTheme bodyTextTheme([TextTheme? textTheme]) {
     switch (currentOption) {
+      case AppFontOption.modern:
+        return GoogleFonts.instrumentSansTextTheme(textTheme);
       case AppFontOption.playful:
         return GoogleFonts.nunitoTextTheme(textTheme);
       case AppFontOption.curly:
         return GoogleFonts.comfortaaTextTheme(textTheme);
       case AppFontOption.handwriting:
         return GoogleFonts.patrickHandTextTheme(textTheme);
-      case AppFontOption.modern:
-        return GoogleFonts.dmSansTextTheme(textTheme);
       case AppFontOption.brutalist:
         return GoogleFonts.outfitTextTheme(textTheme);
       case AppFontOption.clean:

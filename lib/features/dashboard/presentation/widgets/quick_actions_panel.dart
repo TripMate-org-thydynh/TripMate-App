@@ -160,15 +160,22 @@ class QuickActionsPanel extends StatelessWidget {
     }
   }
 
-  void _showAllActionsSheet(BuildContext context) {
-    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _textSec =>
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
+  void _showAllActionsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: paper,
+      backgroundColor: _surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
       ),
       builder: (ctx) {
         return SafeArea(
@@ -184,13 +191,13 @@ class QuickActionsPanel extends StatelessWidget {
                     Text(
                       'dashboard.quick_actions'.tr(),
                       style: AppFonts.heading(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                         fontSize: 18,
-                        color: ink,
+                        color: _textPri,
                       ),
                     ),
                     IconButton(
-                      icon: Icon(PhosphorIcons.x(), color: ink, size: 20),
+                      icon: Icon(PhosphorIcons.x(), color: _textPri, size: 20),
                       onPressed: () => Navigator.pop(ctx),
                     ),
                   ],
@@ -206,12 +213,12 @@ class QuickActionsPanel extends StatelessWidget {
                         Navigator.pop(ctx);
                         _handleTap(context, type);
                       },
-                      color: paper,
-                      borderColor: ink,
-                      shadowColor: ink,
+                      color: _fill,
+                      borderColor: _line,
+                      shadowColor: _textPri,
                       borderWidth: GenZTokens.borderWidthThin,
                       radius: GenZTokens.radiusPill,
-                      depth: 2,
+                      depth: 1,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 10,
@@ -219,14 +226,14 @@ class QuickActionsPanel extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(_secondaryIcon(type), size: 16, color: ink),
+                          Icon(_secondaryIcon(type), size: 16, color: _accent),
                           const SizedBox(width: 8),
                           Text(
                             (action['labelKey'] as String).tr(),
                             style: AppFonts.body(
                               fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: ink,
+                              fontWeight: FontWeight.w600,
+                              color: _textPri,
                             ),
                           ),
                         ],
@@ -245,8 +252,6 @@ class QuickActionsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -258,17 +263,17 @@ class QuickActionsPanel extends StatelessWidget {
               Text(
                 'dashboard.quick_actions'.tr(),
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   fontSize: 18,
                   letterSpacing: -0.5,
-                  color: ink,
+                  color: _textPri,
                 ),
               ),
               const SizedBox(width: 8),
               PillTag(
                 text: 'dashboard.quick_tag'.tr(),
                 icon: PhosphorIcons.lightning(PhosphorIconsStyle.fill),
-                color: GenZTokens.yellow,
+                selected: true,
               ),
               const Spacer(),
               GestureDetector(
@@ -280,15 +285,15 @@ class QuickActionsPanel extends StatelessWidget {
                       'common.more'.tr(),
                       style: AppFonts.body(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: ink.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w600,
+                        color: _textSec,
                       ),
                     ),
                     const SizedBox(width: 2),
                     Icon(
                       PhosphorIcons.caretRight(),
                       size: 14,
-                      color: ink.withValues(alpha: 0.6),
+                      color: _textSec,
                     ),
                   ],
                 ),
@@ -298,7 +303,7 @@ class QuickActionsPanel extends StatelessWidget {
         ),
         const SizedBox(height: 14),
 
-        // ── Primary 2×2 Spark-style colored cards ────────────────────────────
+        // ── Primary 2×2 Cards ────────────────────────────────────────────────
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -312,26 +317,20 @@ class QuickActionsPanel extends StatelessWidget {
           itemBuilder: (context, index) {
             final action = _primaryActions[index];
             final type = action['type'] as String;
-            // Mỗi ô một khối màu accent đặc — chữ và viền LUÔN là ink
-            const cardColors = [
-              GenZTokens.yellow,
-              GenZTokens.lilac,
-              GenZTokens.green,
-              GenZTokens.pink,
-            ];
-            final bgColor = cardColors[index % cardColors.length];
 
             return PopIn(
               index: index,
               child: PressableCard(
                 onTap: () => _handleTap(context, type),
-                color: bgColor,
-                borderColor: ink,
-                shadowColor: ink,
-                radius: GenZTokens.radiusButton,
+                color: _surface,
+                borderColor: _line,
+                shadowColor: _textPri,
+                borderWidth: GenZTokens.borderWidthThin,
+                depth: 1,
+                radius: GenZTokens.radiusCard,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
+                    horizontal: 14,
                     vertical: 12,
                   ),
                   child: Row(
@@ -339,17 +338,19 @@ class QuickActionsPanel extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: GenZTokens.paper,
-                          borderRadius: BorderRadius.circular(10),
+                          color: _fill,
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusButton,
+                          ),
                           border: Border.all(
-                            color: GenZTokens.ink,
+                            color: _line,
                             width: GenZTokens.borderWidthThin,
                           ),
                         ),
                         child: Icon(
                           _primaryIcon(type),
                           size: 18,
-                          color: GenZTokens.ink,
+                          color: _accent,
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -358,8 +359,8 @@ class QuickActionsPanel extends StatelessWidget {
                           (action['labelKey'] as String).tr(),
                           style: AppFonts.heading(
                             fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: GenZTokens.ink,
+                            fontWeight: FontWeight.w700,
+                            color: _textPri,
                             letterSpacing: -0.2,
                           ),
                           maxLines: 1,

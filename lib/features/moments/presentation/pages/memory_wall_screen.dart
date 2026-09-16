@@ -61,14 +61,16 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     final isDark = widget.isDarkMode;
 
     // TripMate color tokens
-    final bgGradStart = Theme.of(context).scaffoldBackgroundColor;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-
-    final mintColor = GenZTokens.green;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     return Scaffold(
+      backgroundColor: bg,
       // Nút đăng khoảnh khắc — trước đây app KHÔNG có đường nào đưa ảnh lên,
       // nên Memory Wall chỉ đọc được dữ liệu do script kiểm thử đẩy vào.
       floatingActionButton: Row(
@@ -89,6 +91,11 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
             ),
             backgroundColor: surfaceColor,
             foregroundColor: textPrimary,
+            elevation: 1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
+            ),
             child: Icon(PhosphorIcons.image()),
           ),
           const SizedBox(width: 12),
@@ -101,24 +108,28 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
               (tripId) => SquadCamScreen(tripId: tripId, isDarkMode: isDark),
               pop: false,
             ),
-            backgroundColor: GenZTokens.green,
-            foregroundColor: GenZTokens.ink,
+            backgroundColor: accent,
+            foregroundColor: onAccent,
+            elevation: 1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             icon: Icon(
               PhosphorIcons.camera(PhosphorIconsStyle.fill),
-              color: GenZTokens.ink,
+              color: onAccent,
             ),
             label: Text(
               'moments.cam_title'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                color: GenZTokens.ink,
+                fontWeight: FontWeight.w700,
+                color: onAccent,
               ),
             ),
           ),
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(color: bgGradStart),
+        color: bg,
         child: SafeArea(
           child: Stack(
             fit: StackFit.expand,
@@ -154,18 +165,9 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                       color: surfaceColor,
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: textPrimary,
-                                        width: 2,
+                                        color: line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(
-                                            alpha: 0.05,
-                                          ),
-                                          blurRadius: 0,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
                                     ),
                                     child: Icon(
                                       PhosphorIcons.caretLeft(),
@@ -249,8 +251,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                 color: surfaceColor,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: textPrimary,
-                                  width: 2,
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Icon(
@@ -276,8 +278,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                 color: surfaceColor,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: textPrimary,
-                                  width: 2,
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Icon(
@@ -349,7 +351,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                           _openReactions(context, moments[i]),
                                       badge: _buildStickerBadge(
                                         moments[i].location,
-                                        i.isEven ? mintColor : Colors.orange,
+                                        line,
                                       ),
                                     ),
                                 ],
@@ -392,7 +394,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppFonts.body(fontSize: 14, color: color, height: 1.4),
+              style: AppFonts.body(fontSize: 15, color: color, height: 1.4),
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
@@ -440,11 +442,12 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
   /// Bang chon cam xuc cho dung tam anh vua cham.
   void _openReactions(BuildContext context, RecentMoment moment) {
     final isDark = widget.isDarkMode;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
       ),
       builder: (sheetContext) => SafeArea(
         child: Padding(
@@ -458,8 +461,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 style: AppFonts.heading(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
                   color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                 ),
               ),
@@ -491,40 +494,35 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
   }
 
   // Floating Location sticker inside a polaroid or canvas
-  Widget _buildStickerBadge(String label, Color color) {
+  Widget _buildStickerBadge(String label, Color borderColor) {
     final isDark = widget.isDarkMode;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final text = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSec = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     return Transform.rotate(
       angle: 0.08,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: isDark
-              ? GenZTokens.paperDark
-              : Colors.white.withValues(alpha: 0.95),
+          color: surface,
           borderRadius: BorderRadius.circular(4),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 0,
-              offset: const Offset(2, 4),
-            ),
-          ],
-          border: Border.all(color: color, width: 2),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-              color: color,
+              color: textSec,
               size: 12,
             ),
-            const SizedBox(width: 2),
+            const SizedBox(width: 4),
             Text(
               label.replaceAll("location_on ", ""),
               style: AppFonts.heading(
-                color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-                fontSize: 11,
+                color: text,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -549,6 +547,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     final isDark = widget.isDarkMode;
     final frameColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final textColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
     return Transform.rotate(
       angle: rotation,
@@ -562,20 +562,12 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: frameColor,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                 border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : textColor.withValues(alpha: 0.4),
-                  width: 1,
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.15),
-                    blurRadius: 0,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
+                boxShadow: GenZTokens.hardShadow(textColor, isDark),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -585,7 +577,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                   Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(8),
                         child: ExcludeSemantics(
                           child: Image.network(
                             imageUrl,
@@ -596,11 +588,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               return Container(
                                 height: 156,
                                 width: 156,
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? GenZTokens.paperDark
-                                      : GenZTokens.cream,
-                                ),
+                                decoration: BoxDecoration(color: fill),
                                 child: Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -633,13 +621,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               return Container(
                                 height: 156,
                                 width: 156,
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? GenZTokens.paperDark.withValues(
-                                          alpha: 0.5,
-                                        )
-                                      : GenZTokens.cream,
-                                ),
+                                decoration: BoxDecoration(color: fill),
                                 child: Center(
                                   child: SizedBox(
                                     width: 24,
@@ -655,7 +637,9 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                                     .expectedTotalBytes!
                                           : null,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Theme.of(context).colorScheme.primary,
+                                        isDark
+                                            ? GenZTokens.accentDark
+                                            : GenZTokens.accent,
                                       ),
                                     ),
                                   ),
@@ -669,19 +653,19 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                       if (isVideo) ...[
                         Positioned.fill(
                           child: Container(
-                            color: Colors.black.withValues(alpha: 0.2),
+                            color: GenZTokens.ink.withValues(alpha: 0.2),
                             child: Center(
                               child: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withValues(alpha: 0.65),
+                                  color: GenZTokens.ink.withValues(alpha: 0.65),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   PhosphorIcons.playCircle(
                                     PhosphorIconsStyle.fill,
                                   ),
-                                  color: Colors.white,
+                                  color: GenZTokens.onAccent,
                                   size: 24,
                                 ),
                               ),
@@ -698,7 +682,11 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: GenZTokens.danger.withValues(alpha: 0.85),
+                              color:
+                                  (isDark
+                                          ? GenZTokens.dangerDark
+                                          : GenZTokens.danger)
+                                      .withValues(alpha: 0.85),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Row(
@@ -708,7 +696,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                   width: 5,
                                   height: 5,
                                   decoration: const BoxDecoration(
-                                    color: Colors.white,
+                                    color: GenZTokens.onAccent,
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -718,8 +706,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                       ? "REC"
                                       : "REC $videoDuration",
                                   style: GoogleFonts.shareTechMono(
-                                    color: Colors.white,
-                                    fontSize: 11,
+                                    color: GenZTokens.onAccent,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -738,14 +726,16 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.6),
+                            color: GenZTokens.ink.withValues(alpha: 0.6),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             time,
                             style: GoogleFonts.shareTechMono(
-                              color: GenZTokens.yellow,
-                              fontSize: 11,
+                              color: isDark
+                                  ? GenZTokens.warningDark
+                                  : GenZTokens.warning,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -761,7 +751,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                       caption,
                       style: GoogleFonts.caveat(
                         color: textColor,
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 1,
@@ -779,30 +769,33 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     );
   }
 
-  // Frosted AI memory card
-
-  // Realistic Quote Sticky note
-
-  // Telemetry Progress Card builder
-
   // Frosted bottom sheet Hub menu
   void _showHubMenu(BuildContext context) {
     final isDark = widget.isDarkMode;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: surface,
       isScrollControlled: true,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: (isDark ? GenZTokens.inkDark : GenZTokens.ink).withValues(
+        alpha: 0.4,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
+      ),
       builder: (context) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(32),
-            topRight: Radius.circular(32),
-          ),
-          child: Container(
-            color: surface.withValues(alpha: 0.9),
+        return SafeArea(
+          top: false,
+          child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 20,
@@ -816,7 +809,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     width: 44,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: textPrimary.withValues(alpha: 0.2),
+                      color: textSecondary.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -842,30 +835,29 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                   ),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(18),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: GenZTokens.purple,
-                      boxShadow: [
-                        BoxShadow(
-                          color: GenZTokens.orange.withValues(alpha: 0.3),
-                          blurRadius: 0,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusCard,
+                      ),
+                      color: accentSoft,
+                      border: Border.all(
+                        color: line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                     child: Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(14),
+                            color: accent,
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
                             PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                            color: Colors.white,
-                            size: 24,
+                            color: onAccent,
+                            size: 22,
                           ),
                         ),
                         const SizedBox(width: 14),
@@ -877,8 +869,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                 'games.trip_wrapped_title'.tr(),
                                 style: AppFonts.heading(
                                   fontSize: 17,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  color: textPrimary,
                                   letterSpacing: -0.3,
                                 ),
                               ),
@@ -886,8 +878,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               Text(
                                 'moments.recap_entry'.tr(),
                                 style: AppFonts.body(
-                                  fontSize: 12.5,
-                                  color: Colors.white.withValues(alpha: 0.9),
+                                  fontSize: 12,
+                                  color: textSecondary,
                                 ),
                               ),
                             ],
@@ -895,7 +887,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                         ),
                         Icon(
                           PhosphorIcons.arrowRight(),
-                          color: Colors.white,
+                          color: textSecondary,
                           size: 16,
                         ),
                       ],
@@ -916,7 +908,6 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                       icon: PhosphorIcons.sparkle(),
                       title: 'moments.caption_studio'.tr(),
                       desc: 'moments.caption_studio_sub'.tr(),
-                      color: GenZTokens.yellow,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -935,7 +926,6 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                       icon: PhosphorIcons.magicWand(),
                       title: 'moments.auto_sorter'.tr(),
                       desc: 'moments.auto_sorter_sub'.tr(),
-                      color: Colors.tealAccent,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
@@ -954,27 +944,17 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                       icon: PhosphorIcons.mapTrifold(),
                       title: 'moments.photo_map'.tr(),
                       desc: 'moments.photo_map_sub'.tr(),
-                      color: GenZTokens.orange,
-                      // Trước đây mở Photo Map bằng id bịa
-                      // 'hagiang-loop-123' — chuyến không tồn tại nên màn
-                      // bản đồ luôn trắng/lỗi.
                       onTap: () => _openWithTrip(
                         context,
                         (tripId) =>
                             PhotoMapScreen(tripId: tripId, isDarkMode: isDark),
                       ),
                     ),
-                    // Lối tắt ghim widget lên màn hình chính.
-                    //
-                    // Không có nó thì người dùng phải tự mò khay tiện ích của
-                    // launcher — phần lớn sẽ không làm, và widget dù đã cài vẫn
-                    // không ai thấy.
                     _buildFeatureTile(
                       context,
                       icon: PhosphorIcons.appWindow(),
                       title: 'moments.pin_widget'.tr(),
                       desc: 'moments.pin_widget_sub'.tr(),
-                      color: GenZTokens.purple,
                       onTap: () => _pinWidget(context),
                     ),
                   ],
@@ -1037,11 +1017,12 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     required IconData icon,
     required String title,
     required String desc,
-    required Color color,
     required VoidCallback onTap,
   }) {
     final isDark = widget.isDarkMode;
     final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
@@ -1051,18 +1032,15 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color, width: 2),
-          boxShadow: [
-            BoxShadow(color: color.withValues(alpha: 0.02), blurRadius: 0),
-          ],
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
         ),
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: color.withValues(alpha: 0.15),
+              backgroundColor: fill,
               radius: 16,
-              child: Icon(icon, color: color, size: 16),
+              child: Icon(icon, color: textPrimary, size: 16),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -1082,7 +1060,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                   ),
                   Text(
                     desc,
-                    style: AppFonts.heading(fontSize: 11, color: textSecondary),
+                    style: AppFonts.heading(fontSize: 12, color: textSecondary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -1143,7 +1121,7 @@ class _FloatingEmojiWidgetState extends State<FloatingEmojiWidget>
     _scaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1.5,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     // Random slight swaying values
     _swayOffset = (DateTime.now().millisecond % 50) - 25;

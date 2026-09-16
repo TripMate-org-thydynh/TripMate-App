@@ -112,9 +112,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         // Hiện đúng lý do BE trả về (AI hết quota, ảnh mờ...) thay vì một câu
         // chung chung khiến người dùng cứ bấm lại mãi.
         showGlobalSnack(
-          e is ApiException
-              ? e.message
-              : 'expense.scan_failed'.tr(),
+          e is ApiException ? e.message : 'expense.scan_failed'.tr(),
           isError: true,
         );
       }
@@ -125,16 +123,19 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = GenZTokens.orange;
-    final secondaryColor = GenZTokens.success;
-    final bgColor = Theme.of(context).scaffoldBackgroundColor;
-    final textPrimary = widget.isDarkMode
-        ? GenZTokens.inkDark
-        : GenZTokens.ink;
-    final textSecondary = widget.isDarkMode
-        ? GenZTokens.inkSoftDark
-        : GenZTokens.inkSoft;
-    final cardBg = widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+    final isDark = widget.isDarkMode;
+    final primaryColor = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccentColor = isDark
+        ? GenZTokens.onAccentDark
+        : GenZTokens.onAccent;
+    final secondaryColor = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final infoColor = isDark ? GenZTokens.infoDark : GenZTokens.info;
+    final lineColor = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fillColor = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -148,30 +149,40 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         title: Text(
           'expense.scan_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.w800,
-            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: textPrimary,
           ),
         ),
       ),
       body: SafeArea(
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: GenZTokens.durationFast),
           child: _isSelecting
-              ? _buildReceiptSelector(textPrimary, textSecondary, cardBg)
+              ? _buildReceiptSelector(
+                  textPrimary: textPrimary,
+                  textSecondary: textSecondary,
+                  cardBg: cardBg,
+                  lineColor: lineColor,
+                  infoColor: infoColor,
+                  fillColor: fillColor,
+                )
               : _isScanning
               ? _buildScanningViewport(
-                  primaryColor,
-                  secondaryColor,
-                  textPrimary,
-                  textSecondary,
+                  primaryColor: primaryColor,
+                  cardBg: cardBg,
+                  lineColor: lineColor,
+                  textPrimary: textPrimary,
+                  textSecondary: textSecondary,
                 )
               : _buildItemsBreakdown(
-                  primaryColor,
-                  secondaryColor,
-                  cardBg,
-                  textPrimary,
-                  textSecondary,
+                  primaryColor: primaryColor,
+                  onAccentColor: onAccentColor,
+                  secondaryColor: secondaryColor,
+                  cardBg: cardBg,
+                  lineColor: lineColor,
+                  textPrimary: textPrimary,
+                  textSecondary: textSecondary,
                 ),
         ),
       ),
@@ -179,11 +190,14 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
   }
 
   // Màn hình chọn hóa đơn mẫu để quét
-  Widget _buildReceiptSelector(
-    Color textPrimary,
-    Color textSecondary,
-    Color cardBg,
-  ) {
+  Widget _buildReceiptSelector({
+    required Color textPrimary,
+    required Color textSecondary,
+    required Color cardBg,
+    required Color lineColor,
+    required Color infoColor,
+    required Color fillColor,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       key: const ValueKey('selector_view'),
@@ -193,16 +207,18 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: textPrimary, width: 2),
-              boxShadow: GenZTokens.hardShadow(textPrimary),
+              color: cardBg,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(
+                color: lineColor,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Row(
               children: [
                 Icon(
                   PhosphorIcons.lightning(PhosphorIconsStyle.fill),
-                  color: GenZTokens.yellow,
+                  color: infoColor,
                   size: 24,
                 ),
                 const SizedBox(width: 12),
@@ -211,7 +227,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                     'expense.scan_sub'.tr(),
                     style: AppFonts.body(
                       color: textPrimary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
                   ),
@@ -219,14 +235,13 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
             'expense.scan_pick'.tr(),
             style: AppFonts.heading(
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w700,
               fontSize: 13,
-              color: textPrimary,
-              letterSpacing: 1,
+              color: textSecondary,
             ),
           ),
           const SizedBox(height: 12),
@@ -238,16 +253,18 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             subtitle: 'expense.scan_camera_sub'.tr(),
             source: ImageSource.camera,
             cardBg: cardBg,
+            lineColor: lineColor,
             textPrimary: textPrimary,
             textSecondary: textSecondary,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _sourceTile(
             icon: PhosphorIcons.image(),
             title: 'expense.scan_gallery'.tr(),
             subtitle: 'expense.scan_gallery_sub'.tr(),
             source: ImageSource.gallery,
             cardBg: cardBg,
+            lineColor: lineColor,
             textPrimary: textPrimary,
             textSecondary: textSecondary,
           ),
@@ -283,6 +300,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
     required String subtitle,
     required ImageSource source,
     required Color cardBg,
+    required Color lineColor,
     required Color textPrimary,
     required Color textSecondary,
   }) {
@@ -292,9 +310,11 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: textPrimary, width: 2),
-          boxShadow: GenZTokens.hardShadow(textPrimary),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: lineColor,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
         child: Row(
           children: [
@@ -307,7 +327,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                   Text(
                     title,
                     style: AppFonts.heading(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       fontSize: 15,
                       color: textPrimary,
                     ),
@@ -315,7 +335,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: AppFonts.body(fontSize: 12.5, color: textSecondary),
+                    style: AppFonts.body(fontSize: 13, color: textSecondary),
                   ),
                 ],
               ),
@@ -328,12 +348,13 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
   }
 
   // Hiệu ứng quét hóa đơn
-  Widget _buildScanningViewport(
-    Color primaryColor,
-    Color secondaryColor,
-    Color textPrimary,
-    Color textSecondary,
-  ) {
+  Widget _buildScanningViewport({
+    required Color primaryColor,
+    required Color cardBg,
+    required Color lineColor,
+    required Color textPrimary,
+    required Color textSecondary,
+  }) {
     return Center(
       key: const ValueKey('scanning_view'),
       child: Padding(
@@ -345,31 +366,31 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
               width: 200,
               height: 280,
               decoration: BoxDecoration(
-                color: widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.ink,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: primaryColor, width: 3),
-                boxShadow: GenZTokens.hardShadow(textPrimary),
+                color: cardBg,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                border: Border.all(
+                  color: primaryColor,
+                  width: GenZTokens.borderWidthFocus,
+                ),
               ),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Opacity(
-                    opacity: 0.3,
+                    opacity: 0.35,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           PhosphorIcons.receipt(),
                           size: 80,
-                          // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
-                          // vi accent mint la vang thi chu trang chim han.
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: textPrimary,
                         ),
                         const SizedBox(height: 8),
                         Text(
                           _selectedReceiptName ?? 'SCANNING...',
                           style: AppFonts.mono(
-                            color: GenZTokens.paper,
+                            color: textPrimary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -385,14 +406,13 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                         left: 10,
                         right: 10,
                         child: Container(
-                          height: 3,
+                          height: 2,
                           decoration: BoxDecoration(
                             color: primaryColor,
                             boxShadow: [
                               BoxShadow(
-                                color: primaryColor.withValues(alpha: 0.8),
+                                color: primaryColor.withValues(alpha: 0.4),
                                 blurRadius: 4,
-                                spreadRadius: 2,
                               ),
                             ],
                           ),
@@ -407,8 +427,8 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             Text(
               'expense.scan_working'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.w900,
-                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                fontSize: 17,
                 color: textPrimary,
               ),
             ),
@@ -425,13 +445,15 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
   }
 
   // Kết quả bóc tách hóa đơn
-  Widget _buildItemsBreakdown(
-    Color primaryColor,
-    Color secondaryColor,
-    Color cardBg,
-    Color textPrimary,
-    Color textSecondary,
-  ) {
+  Widget _buildItemsBreakdown({
+    required Color primaryColor,
+    required Color onAccentColor,
+    required Color secondaryColor,
+    required Color cardBg,
+    required Color lineColor,
+    required Color textPrimary,
+    required Color textSecondary,
+  }) {
     return SingleChildScrollView(
       key: const ValueKey('breakdown_view'),
       physics: const BouncingScrollPhysics(),
@@ -442,15 +464,18 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: GenZTokens.success.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: GenZTokens.success, width: 2),
+              color: secondaryColor.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(
+                color: secondaryColor,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Row(
               children: [
                 Icon(
                   PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
-                  color: GenZTokens.success,
+                  color: secondaryColor,
                   size: 20,
                 ),
                 const SizedBox(width: 12),
@@ -458,9 +483,9 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                   child: Text(
                     'expense.scan_done'.tr(),
                     style: AppFonts.body(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: GenZTokens.success,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: secondaryColor,
                     ),
                   ),
                 ),
@@ -472,7 +497,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             _merchantName ?? 'expense.receipt_info'.tr(),
             style: AppFonts.heading(
               fontSize: 22,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w700,
               color: textPrimary,
             ),
           ),
@@ -480,9 +505,11 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
           Container(
             decoration: BoxDecoration(
               color: cardBg,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: textPrimary, width: 2),
-              boxShadow: GenZTokens.hardShadow(textPrimary),
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(
+                color: lineColor,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -501,17 +528,20 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                       title: Text(
                         item['name'] as String,
                         style: AppFonts.heading(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
                           color: textPrimary,
                         ),
                       ),
                       subtitle: Text(
-                        formatMoney(item['price'] as double, locale: context.locale.languageCode),
+                        formatMoney(
+                          item['price'] as double,
+                          locale: context.locale.languageCode,
+                        ),
                         style: AppFonts.body(
                           color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
                         ),
                       ),
                       value: isChecked,
@@ -523,23 +553,26 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                     );
                   },
                 ),
-                Divider(height: 24, color: textSecondary.withValues(alpha: 0.2)),
+                Divider(height: 24, color: lineColor),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'expense.your_share'.tr(),
                       style: AppFonts.heading(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                         color: textSecondary,
                       ),
                     ),
                     Text(
-                      formatMoney(_calculateTotalSelected(), locale: context.locale.languageCode),
+                      formatMoney(
+                        _calculateTotalSelected(),
+                        locale: context.locale.languageCode,
+                      ),
                       style: AppFonts.body(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
                         color: primaryColor,
                       ),
                     ),
@@ -563,12 +596,10 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
             },
             child: Container(
               width: double.infinity,
-              height: 50,
+              height: 48,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 color: primaryColor,
-                border: Border.all(color: textPrimary, width: 2),
-                boxShadow: GenZTokens.hardShadow(textPrimary),
               ),
               child: Center(
                 child: Row(
@@ -577,16 +608,15 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
                     Text(
                       'expense.apply_amount'.tr(),
                       style: AppFonts.heading(
-                        // Nen la accent: dung `GenZTokens.ink`
-                        color: GenZTokens.ink,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        color: onAccentColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Icon(
                       PhosphorIcons.checkCircle(),
-                      color: GenZTokens.ink,
+                      color: onAccentColor,
                       size: 18,
                     ),
                   ],

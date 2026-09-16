@@ -15,25 +15,29 @@ import '../data/ai_repository.dart';
 /// cả người chưa từng gọi AI, và không hề có tác vụ nào chạy phía sau. Nay đọc
 /// bảng yêu cầu AI thật qua `/ai/generation-queue`.
 class AiGenerationQueueScreen extends ConsumerWidget {
-  const AiGenerationQueueScreen({super.key});
+  final bool? isDarkMode;
+
+  const AiGenerationQueueScreen({super.key, this.isDarkMode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'ai.queue_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -83,19 +87,24 @@ class AiGenerationQueueScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+
     final color = item.isFailed
-        ? GenZTokens.danger
+        ? danger
         : item.isDone
-        ? GenZTokens.success
-        : GenZTokens.orange;
+        ? success
+        : accent;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
-        boxShadow: GenZTokens.hardShadow(ink),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,8 +127,8 @@ class AiGenerationQueueScreen extends ConsumerWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
                     color: ink,
                   ),
                 ),
@@ -132,7 +141,7 @@ class AiGenerationQueueScreen extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: item.progress / 100,
               minHeight: 8,
-              backgroundColor: inkSoft.withValues(alpha: 0.2),
+              backgroundColor: fill,
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),

@@ -1,12 +1,12 @@
 import 'dart:math' as math;
-import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../../../core/theme/theme.dart';
+
+import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/network/api_exception.dart';
 import '../../trips/application/trips_providers.dart';
@@ -60,8 +60,30 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
   late AnimationController _floatController1;
   late AnimationController _floatController2;
   late AnimationController _floatController3;
-  late AnimationController _glowController;
-  late AnimationController _pulseController;
+
+  bool _isDark(BuildContext context) =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+
+  Color _bgOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surfaceOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color _lineOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
+  Color _fillOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
+  Color _accentOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+  Color _onAccentOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color _accentSoftOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+  Color _textPriOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSecOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color _dangerOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.dangerDark : GenZTokens.danger;
 
   final List<Map<String, String>> _covers = const [
     {
@@ -100,17 +122,6 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-
-    // Glowing border animations
-    _glowController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8),
-    )..repeat();
-
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
   }
 
   @override
@@ -121,8 +132,6 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     _floatController1.dispose();
     _floatController2.dispose();
     _floatController3.dispose();
-    _glowController.dispose();
-    _pulseController.dispose();
     super.dispose();
   }
 
@@ -134,9 +143,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
       builder: (context, child) {
         return Theme(
-          data: widget.isDarkMode
-              ? TripMateTheme.darkTheme
-              : TripMateTheme.lightTheme,
+          data: Theme.of(context),
           child: child!,
         );
       },
@@ -231,7 +238,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.message),
-          backgroundColor: GenZTokens.danger,
+          backgroundColor: _dangerOf(context),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -241,7 +248,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('trips.generic_error_retry'.tr()),
-          backgroundColor: GenZTokens.danger,
+          backgroundColor: _dangerOf(context),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -251,35 +258,29 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
-
-    final primaryColor = isDark
-        ? TripMateTheme.darkPrimary
-        : TripMateTheme.lightPrimary;
-    final secondaryColor = isDark
-        ? TripMateTheme.darkSecondary
-        : TripMateTheme.lightSecondary;
-    final textPrimary = isDark
-        ? TripMateTheme.darkTextPrimary
-        : TripMateTheme.lightTextPrimary;
-    final textSecondary = isDark
-        ? TripMateTheme.darkTextSecondary
-        : TripMateTheme.lightTextSecondary;
-
-    final canvasBg = Theme.of(context).scaffoldBackgroundColor;
+    final isDark = _isDark(context);
+    final bg = _bgOf(context);
+    final surface = _surfaceOf(context);
+    final line = _lineOf(context);
+    final fill = _fillOf(context);
+    final accent = _accentOf(context);
+    final onAccent = _onAccentOf(context);
+    final accentSoft = _accentSoftOf(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
 
     return Scaffold(
-      backgroundColor: canvasBg,
+      backgroundColor: bg,
       extendBody: true,
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 600),
+        duration: const Duration(milliseconds: 300),
         switchInCurve: Curves.easeInOutCubic,
         switchOutCurve: Curves.easeInOutCubic,
         transitionBuilder: (Widget child, Animation<double> animation) {
           return FadeTransition(
             opacity: animation,
             child: ScaleTransition(
-              scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
+              scale: Tween<double>(begin: 0.98, end: 1.0).animate(animation),
               child: child,
             ),
           );
@@ -287,39 +288,60 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
         child: _showEmptyState
             ? _buildEmptyState(
                 context,
-                primaryColor,
-                secondaryColor,
-                textPrimary,
-                textSecondary,
                 isDark,
+                bg,
+                surface,
+                line,
+                fill,
+                accent,
+                onAccent,
+                accentSoft,
+                textPri,
+                textSec,
               )
             : _buildTripForm(
                 context,
-                primaryColor,
-                secondaryColor,
-                textPrimary,
-                textSecondary,
                 isDark,
+                bg,
+                surface,
+                line,
+                fill,
+                accent,
+                onAccent,
+                accentSoft,
+                textPri,
+                textSec,
               ),
       ),
       bottomNavigationBar: widget.hideNavigationBar
           ? null
-          : _buildBottomNavigationBar(isDark, primaryColor, secondaryColor),
+          : _buildBottomNavigationBar(
+              context,
+              isDark,
+              line,
+              surface,
+              accent,
+              accentSoft,
+              textPri,
+              textSec,
+            ),
     );
   }
 
   // SCREEN 29: EMPTY STATE - NO TRIPS
   Widget _buildEmptyState(
     BuildContext context,
-    Color primaryColor,
-    Color secondaryColor,
-    Color textPrimary,
-    Color textSecondary,
     bool isDark,
+    Color bg,
+    Color surface,
+    Color line,
+    Color fill,
+    Color accent,
+    Color onAccent,
+    Color accentSoft,
+    Color textPri,
+    Color textSec,
   ) {
-    final borderCol = (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-        .withValues(alpha: isDark ? 0.1 : 0.05);
-
     return Container(
       key: const ValueKey('empty_state_view'),
       decoration: const BoxDecoration(color: Colors.transparent),
@@ -327,61 +349,40 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
         bottom: false,
         child: Column(
           children: [
-            _buildCustomAppBar(primaryColor, isDark),
+            _buildCustomAppBar(context, isDark, bg, line, textPri, textSec),
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Dynamic Pulsing Diamond Vibe Icon
-                    AnimatedBuilder(
-                      animation: _pulseController,
-                      builder: (context, child) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-                                .withValues(alpha: 0.05),
-                            border: Border.all(color: borderCol, width: 1.5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: primaryColor.withValues(
-                                  alpha: 0.15 * _pulseController.value,
-                                ),
-                                blurRadius: 0,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            PhosphorIcons.diamond(PhosphorIconsStyle.fill),
-                            size: 38 + (4 * _pulseController.value),
-                            color: primaryColor,
-                          ),
-                        );
-                      },
+                    const SizedBox(height: 32),
+                    // Diamond Vibe Icon
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: fill,
+                        border: Border.all(color: line, width: 1),
+                      ),
+                      child: Icon(
+                        PhosphorIcons.diamond(PhosphorIconsStyle.fill),
+                        size: 38,
+                        color: accent,
+                      ),
                     ),
                     const SizedBox(height: 32),
-                    // Title "trip.mate" with high-impact font styling
+                    // Title "trip.mate"
                     Text(
                       'trip.mate',
                       style: AppFonts.heading(
-                        fontSize: 48,
+                        fontSize: 44,
                         fontWeight: FontWeight.w900,
                         fontStyle: FontStyle.italic,
-                        color: textPrimary,
-                        letterSpacing: -2,
-                        shadows: [
-                          Shadow(
-                            color: primaryColor.withValues(alpha: 0.3),
-                            blurRadius: 0,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                        color: textPri,
+                        letterSpacing: -1.5,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -390,91 +391,59 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                       'trips.roast_tagline'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFonts.heading(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: textSecondary,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: textPri,
                         height: 1.3,
-                        letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     // Body text: "Your chaos squad is missing. No trips planned yet."
                     Text(
                       'trips.no_trips_body'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFonts.body(
                         fontSize: 14,
-                        color: textSecondary.withValues(alpha: 0.7),
+                        color: textSec,
                         height: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 48),
-                    // GLOWING CAPSULE ACTION: "start the chaos"
+                    const SizedBox(height: 40),
+                    // ACTION BUTTON: "start the chaos" (Single Accent CTA)
                     GestureDetector(
                       onTap: () {
                         setState(() {
                           _showEmptyState = false;
                         });
                       },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          AnimatedBuilder(
-                            animation: _pulseController,
-                            builder: (context, child) {
-                              return Container(
-                                width: 260 + (10 * _pulseController.value),
-                                height: 66,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(33),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: primaryColor.withValues(
-                                        alpha: 0.25 * _pulseController.value,
-                                      ),
-                                      blurRadius: 0,
-                                      spreadRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                          Container(
-                            width: 250,
-                            height: 58,
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? GenZTokens.paperDark
-                                  : GenZTokens.paper,
-                              borderRadius: BorderRadius.circular(29),
-                              border: Border.all(
-                                color: primaryColor.withValues(alpha: 0.5),
-                                width: 1.5,
+                      child: Container(
+                        height: 48,
+                        constraints: const BoxConstraints(minWidth: 200),
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        decoration: BoxDecoration(
+                          color: accent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                              color: onAccent,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'trips.start_the_chaos'.tr(),
+                              style: AppFonts.heading(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: onAccent,
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                                  color: primaryColor,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'trips.start_the_chaos'.tr(),
-                                  style: AppFonts.heading(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w900,
-                                    color: textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 80),
@@ -493,15 +462,17 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     TextEditingController c,
     String hint,
     IconData icon,
-    Color textPrimary,
-    bool isDark, {
+    Color textPri,
+    Color textSec,
+    Color fill,
+    Color line, {
     bool number = false,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: textPrimary, width: 2),
+        color: fill,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: line, width: 1),
       ),
       child: TextField(
         controller: c,
@@ -510,19 +481,20 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
         inputFormatters: number
             ? [FilteringTextInputFormatter.digitsOnly]
             : null,
-        style: AppFonts.body(color: textPrimary, fontSize: 14),
+        style: AppFonts.body(color: textPri, fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: AppFonts.body(
-            color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+            color: textSec,
+            fontSize: 14,
           ),
           prefixIcon: Icon(
             icon,
-            color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+            color: textSec,
             size: 20,
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         ),
       ),
     );
@@ -530,877 +502,692 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
 
   Widget _buildTripForm(
     BuildContext context,
-    Color primaryColor,
-    Color secondaryColor,
-    Color textPrimary,
-    Color textSecondary,
     bool isDark,
+    Color bg,
+    Color surface,
+    Color line,
+    Color fill,
+    Color accent,
+    Color onAccent,
+    Color accentSoft,
+    Color textPri,
+    Color textSec,
   ) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final surfaceColor = isDark
-        ? TripMateTheme.darkSurface
-        : TripMateTheme.lightSurface;
 
     return Container(
       key: const ValueKey('trip_form_view'),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 100,
-              ), // Push down below custom glass appbar
-              // Header Title
-              Text(
-                'trips.set_the_vibe'.tr(),
-                style: AppFonts.heading(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  color: textPrimary,
-                  letterSpacing: -1,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'trips.where_to_next_form'.tr(),
-                style: AppFonts.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: textSecondary,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Inputs Form
-              Column(
-                children: [
-                  // Trip Name input
-                  Container(
-                    decoration: BoxDecoration(
-                      color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-                          .withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isDark
-                            ? GenZTokens.inkDark.withValues(alpha: 0.12)
-                            : GenZTokens.ink,
-                        width: 2,
-                      ),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 4,
-                    ),
-                    child: TextField(
-                      controller: _nameController,
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            _buildCustomAppBar(context, isDark, bg, line, textPri, textSec),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header Title
+                    Text(
+                      'trips.set_the_vibe'.tr(),
                       style: AppFonts.heading(
-                        color: textPrimary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'trips.name_your_trip'.tr(),
-                        hintStyle: TextStyle(
-                          color: textSecondary.withValues(alpha: 0.5),
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        color: textPri,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Dates Split Row
-                  Row(
-                    children: [
-                      // Start Date
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _selectDate(context, true),
-                          child: Container(
-                            height: 54,
-                            decoration: BoxDecoration(
-                              color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-                                  .withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isDark
-                                    ? GenZTokens.inkDark.withValues(alpha: 0.12)
-                                    : GenZTokens.ink,
-                                width: 2,
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _startDate == null
-                                      ? 'trips.start_date'.tr()
-                                      : _formatDate(_startDate),
-                                  style: TextStyle(
-                                    color: _startDate == null
-                                        ? textSecondary.withValues(alpha: 0.5)
-                                        : textPrimary,
-                                    fontSize: 13,
-                                    fontWeight: _startDate == null
-                                        ? FontWeight.normal
-                                        : FontWeight.bold,
-                                  ),
-                                ),
-                                Icon(
-                                  PhosphorIcons.calendar(),
-                                  size: 16,
-                                  color: primaryColor.withValues(alpha: 0.8),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-
-                      // End Date
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => _selectDate(context, false),
-                          child: Container(
-                            height: 54,
-                            decoration: BoxDecoration(
-                              color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-                                  .withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isDark
-                                    ? GenZTokens.inkDark.withValues(alpha: 0.12)
-                                    : GenZTokens.ink,
-                                width: 2,
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _endDate == null
-                                      ? 'trips.end_date'.tr()
-                                      : _formatDate(_endDate),
-                                  style: TextStyle(
-                                    color: _endDate == null
-                                        ? textSecondary.withValues(alpha: 0.5)
-                                        : textPrimary,
-                                    fontSize: 13,
-                                    fontWeight: _endDate == null
-                                        ? FontWeight.normal
-                                        : FontWeight.bold,
-                                  ),
-                                ),
-                                Icon(
-                                  PhosphorIcons.calendarCheck(),
-                                  size: 16,
-                                  color: primaryColor.withValues(alpha: 0.8),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 28),
-
-              // Cinematic Cover Selection
-              Text(
-                'trips.cover_mood'.tr(),
-                style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 220,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _covers.length,
-                  itemBuilder: (context, index) {
-                    final cover = _covers[index];
-                    final isSelected = _selectedCoverId == cover['id'];
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedCoverId = cover['id']!;
-                        });
-                      },
-                      child: Semantics(
-                        button: true,
-                        selected: isSelected,
-                        label: 'trips.cover_accessibility'.tr(
-                          namedArgs: {'title': cover['title']!},
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16),
-                          child: AnimatedBuilder(
-                            animation: _glowController,
-                            builder: (context, child) {
-                              return Container(
-                                width: 160,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24),
-                                  border: isSelected
-                                      ? Border.all(
-                                          color: secondaryColor,
-                                          width: 2.0,
-                                        )
-                                      : Border.all(
-                                          color: isDark
-                                              ? GenZTokens.inkDark.withValues(
-                                                  alpha: 0.12,
-                                                )
-                                              : GenZTokens.ink,
-                                          width: 2,
-                                        ),
-                                  boxShadow: isSelected
-                                      ? [
-                                          BoxShadow(
-                                            color: secondaryColor.withValues(
-                                              alpha: 0.35,
-                                            ),
-                                            blurRadius: 0,
-                                            spreadRadius: 1,
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                child: child,
-                              );
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(22),
-                              child: Stack(
-                                children: [
-                                  Positioned.fill(
-                                    child: ExcludeSemantics(
-                                      child: cover['image']!.startsWith('assets/')
-                                          ? Image.asset(
-                                              cover['image']!,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : CachedNetworkImage(
-                                              imageUrl: cover['image']!,
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                    color: (isDark
-                                                            ? GenZTokens.inkDark
-                                                            : GenZTokens.ink)
-                                                        .withValues(alpha: 0.08),
-                                                    child: const Center(
-                                                      child: SizedBox(
-                                                        width: 20,
-                                                        height: 20,
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                              strokeWidth: 2,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                              errorWidget: (context, url, error) =>
-                                                  Container(
-                                                    color: GenZTokens.ink
-                                                        .withValues(alpha: 0.38),
-                                                  ),
-                                            ),
-                                    ),
-                                  ),
-                                Positioned.fill(
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Colors.transparent,
-                                          Colors.black87,
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                if (isSelected)
-                                  Positioned(
-                                    top: 12,
-                                    right: 12,
-                                    child: Icon(
-                                      PhosphorIcons.checkCircle(
-                                        PhosphorIconsStyle.fill,
-                                      ),
-                                      color: secondaryColor,
-                                      size: 20,
-                                    ),
-                                  ),
-                                Positioned(
-                                  bottom: 16,
-                                  left: 16,
-                                  right: 16,
-                                  child: Text(
-                                    cover['title']!,
-                                    style: AppFonts.heading(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'trips.where_to_next_form'.tr(),
+                      style: AppFonts.body(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: textSec,
                       ),
                     ),
-                  );
-                  },
-                ),
-              ),
-              const SizedBox(height: 28),
+                    const SizedBox(height: 20),
 
-              // ── Điểm đến ──
-              Text(
-                'trips.destination'.tr(),
-                style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _extraField(
-                _destinationController,
-                'trips.destination_hint'.tr(),
-                PhosphorIcons.mapPin(),
-                textPrimary,
-                isDark,
-              ),
-              const SizedBox(height: 24),
-
-              // ── Vibe chuyến đi ──
-              Text(
-                'trips.vibe'.tr(),
-                style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _vibes.map((v) {
-                  final sel = _vibe == v.$1;
-                  return GestureDetector(
-                    onTap: () => setState(() => _vibe = sel ? null : v.$1),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: sel
-                            ? secondaryColor
-                            : (isDark
-                                  ? GenZTokens.paperDark
-                                  : GenZTokens.paper),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: textPrimary, width: 2),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            v.$3,
-                            size: 16,
-                            color: sel ? GenZTokens.ink : textPrimary,
+                    // Inputs Form
+                    Column(
+                      children: [
+                        // Trip Name input
+                        Container(
+                          decoration: BoxDecoration(
+                            color: fill,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: line, width: 1),
                           ),
-                          const SizedBox(width: 6),
-                          Text(
-                            v.$2.tr(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          child: TextField(
+                            controller: _nameController,
                             style: AppFonts.heading(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              color: sel ? GenZTokens.ink : textPrimary,
+                              color: textPri,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'trips.name_your_trip'.tr(),
+                              hintStyle: AppFonts.body(
+                                color: textSec,
+                                fontSize: 14,
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
                             ),
                           ),
-                        ],
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Dates Split Row
+                        Row(
+                          children: [
+                            // Start Date
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _selectDate(context, true),
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: fill,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: line, width: 1),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        _startDate == null
+                                            ? 'trips.start_date'.tr()
+                                            : _formatDate(_startDate),
+                                        style: AppFonts.body(
+                                          color: _startDate == null
+                                              ? textSec
+                                              : textPri,
+                                          fontSize: 13,
+                                          fontWeight: _startDate == null
+                                              ? FontWeight.normal
+                                              : FontWeight.w600,
+                                        ),
+                                      ),
+                                      Icon(
+                                        PhosphorIcons.calendar(),
+                                        size: 18,
+                                        color: textSec,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+
+                            // End Date
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _selectDate(context, false),
+                                child: Container(
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: fill,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: line, width: 1),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        _endDate == null
+                                            ? 'trips.end_date'.tr()
+                                            : _formatDate(_endDate),
+                                        style: AppFonts.body(
+                                          color: _endDate == null
+                                              ? textSec
+                                              : textPri,
+                                          fontSize: 13,
+                                          fontWeight: _endDate == null
+                                              ? FontWeight.normal
+                                              : FontWeight.w600,
+                                        ),
+                                      ),
+                                      Icon(
+                                        PhosphorIcons.calendarCheck(),
+                                        size: 18,
+                                        color: textSec,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Cinematic Cover Selection
+                    Text(
+                      'trips.cover_mood'.tr(),
+                      style: AppFonts.heading(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: textPri,
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 190,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: _covers.length,
+                        itemBuilder: (context, index) {
+                          final cover = _covers[index];
+                          final isSelected = _selectedCoverId == cover['id'];
 
-              // ── Ngân sách dự kiến ──
-              Text(
-                'trips.budget_per_head'.tr(),
-                style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _extraField(
-                _budgetController,
-                'trips.budget_hint'.tr(),
-                PhosphorIcons.wallet(),
-                textPrimary,
-                isDark,
-                number: true,
-              ),
-              const SizedBox(height: 28),
-
-              // Invite Crew Card
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 28,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? GenZTokens.paperDark
-                        : GenZTokens.paper,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: textPrimary, width: 2.5),
-                    boxShadow: [
-                      BoxShadow(color: textPrimary, offset: const Offset(0, 4)),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'trips.invite_the_crew'.tr(),
-                        style: AppFonts.heading(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // QR Box & Floating profiles
-                      SizedBox(
-                        height: 180,
-                        width: double.infinity,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Middle QR Code
-                            Container(
-                              width: 140,
-                              height: 140,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? GenZTokens.paperDark
-                                    : GenZTokens.paper,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: textPrimary,
-                                  width: 2,
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedCoverId = cover['id']!;
+                              });
+                            },
+                            child: Semantics(
+                              button: true,
+                              selected: isSelected,
+                              label: 'trips.cover_accessibility'.tr(
+                                namedArgs: {'title': cover['title']!},
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 14),
+                                child: Container(
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: isSelected ? accent : line,
+                                      width: isSelected ? 1.5 : 1.0,
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(13),
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: ExcludeSemantics(
+                                            child: cover['image']!.startsWith('assets/')
+                                                ? Image.asset(
+                                                    cover['image']!,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : CachedNetworkImage(
+                                                    imageUrl: cover['image']!,
+                                                    fit: BoxFit.cover,
+                                                    placeholder: (context, url) =>
+                                                        Container(
+                                                          color: fill,
+                                                          child: const Center(
+                                                            child: SizedBox(
+                                                              width: 20,
+                                                              height: 20,
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                                strokeWidth: 2,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                    errorWidget: (context, url, error) =>
+                                                        Container(
+                                                          color: fill,
+                                                        ),
+                                                  ),
+                                          ),
+                                        ),
+                                        Positioned.fill(
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: [
+                                                  Colors.transparent,
+                                                  Colors.black87,
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: accent,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                PhosphorIcons.check(PhosphorIconsStyle.bold),
+                                                color: onAccent,
+                                                size: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        Positioned(
+                                          bottom: 12,
+                                          left: 12,
+                                          right: 12,
+                                          child: Text(
+                                            cover['title']!,
+                                            style: AppFonts.heading(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: textPrimary,
-                                    offset: const Offset(0, 3),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Điểm đến
+                    Text(
+                      'trips.destination'.tr(),
+                      style: AppFonts.heading(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: textPri,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _extraField(
+                      _destinationController,
+                      'trips.destination_hint'.tr(),
+                      PhosphorIcons.mapPin(),
+                      textPri,
+                      textSec,
+                      fill,
+                      line,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Vibe chuyến đi
+                    Text(
+                      'trips.vibe'.tr(),
+                      style: AppFonts.heading(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: textPri,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _vibes.map((v) {
+                        final sel = _vibe == v.$1;
+                        return GestureDetector(
+                          onTap: () => setState(() => _vibe = sel ? null : v.$1),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: sel ? accentSoft : fill,
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: sel ? accent : line,
+                                width: sel ? 1.5 : 1.0,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  v.$3,
+                                  size: 15,
+                                  color: sel ? accent : textSec,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  v.$2.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 13,
+                                    fontWeight: sel ? FontWeight.w600 : FontWeight.w500,
+                                    color: sel ? accent : textPri,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Ngân sách dự kiến
+                    Text(
+                      'trips.budget_per_head'.tr(),
+                      style: AppFonts.heading(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: textPri,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _extraField(
+                      _budgetController,
+                      'trips.budget_hint'.tr(),
+                      PhosphorIcons.wallet(),
+                      textPri,
+                      textSec,
+                      fill,
+                      line,
+                      number: true,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Invite Crew Card
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: surface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: line, width: 1),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'trips.invite_the_crew'.tr(),
+                              style: AppFonts.heading(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                                color: textPri,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // QR Box & Floating profiles
+                            SizedBox(
+                              height: 180,
+                              width: double.infinity,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  // Middle QR Code
+                                  Container(
+                                    width: 140,
+                                    height: 140,
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: fill,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: line,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: line,
+                                          width: 2.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          PhosphorIcons.qrCode(),
+                                          size: 54,
+                                          color: textSec,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Avatar 1: Minh Nhật (Left-Floating)
+                                  AnimatedBuilder(
+                                    animation: _floatController1,
+                                    builder: (context, child) {
+                                      final offset =
+                                          math.sin(
+                                            _floatController1.value * math.pi * 2,
+                                          ) *
+                                          8;
+                                      return Positioned(
+                                        left: screenWidth * 0.08,
+                                        top: 15 + offset,
+                                        child: Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: surface,
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(22),
+                                            child: Semantics(
+                                              label: 'trips.avatar_minh_nhat'.tr(),
+                                              image: true,
+                                              child: 'assets/images/avatar_minh_nhat.webp'
+                                                      .startsWith('assets/')
+                                                  ? Image.asset(
+                                                      'assets/images/avatar_minh_nhat.webp',
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl:
+                                                          'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) =>
+                                                          ExcludeSemantics(
+                                                            child: Container(
+                                                              color: fill,
+                                                            ),
+                                                          ),
+                                                      errorWidget:
+                                                          (context, url, error) =>
+                                                              Icon(PhosphorIcons.user(), color: textSec),
+                                                    ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+
+                                  // Avatar 2: Thảo Ly (Right-Floating)
+                                  AnimatedBuilder(
+                                    animation: _floatController2,
+                                    builder: (context, child) {
+                                      final offset =
+                                          math.cos(
+                                            _floatController2.value * math.pi * 2,
+                                          ) *
+                                          10;
+                                      return Positioned(
+                                        right: screenWidth * 0.06,
+                                        top: 40 + offset,
+                                        child: Container(
+                                          width: 50,
+                                          height: 50,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: surface,
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(25),
+                                            child: Semantics(
+                                              label: 'trips.avatar_thao_ly'.tr(),
+                                              image: true,
+                                              child: 'assets/images/avatar_thao_ly.webp'
+                                                      .startsWith('assets/')
+                                                  ? Image.asset(
+                                                      'assets/images/avatar_thao_ly.webp',
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl:
+                                                          'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) =>
+                                                          ExcludeSemantics(
+                                                            child: Container(
+                                                              color: fill,
+                                                            ),
+                                                          ),
+                                                      errorWidget:
+                                                          (context, url, error) =>
+                                                              Icon(PhosphorIcons.user(), color: textSec),
+                                                    ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+
+                                  // Avatar 3: User (Bottom-Floating)
+                                  AnimatedBuilder(
+                                    animation: _floatController3,
+                                    builder: (context, child) {
+                                      final offset =
+                                          math.sin(
+                                            _floatController3.value * math.pi * 2,
+                                          ) *
+                                          6;
+                                      return Positioned(
+                                        left: screenWidth * 0.15,
+                                        bottom: 15 + offset,
+                                        child: Container(
+                                          width: 38,
+                                          height: 38,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: surface,
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(19),
+                                            child: Image.asset(
+                                              'assets/images/avatar_user.webp',
+                                              fit: BoxFit.cover,
+                                              semanticLabel: 'trips.avatar_user'.tr(),
+                                              errorBuilder:
+                                                  (context, error, stackTrace) =>
+                                                      Icon(PhosphorIcons.user(), color: textSec),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: (isDark
-                                            ? GenZTokens.inkDark
-                                            : GenZTokens.ink)
-                                        .withValues(alpha: 0.15),
-                                    width: 3.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    PhosphorIcons.qrCode(),
-                                    size: 54,
-                                    color: (isDark
-                                            ? GenZTokens.inkDark
-                                            : GenZTokens.ink)
-                                        .withValues(alpha: 0.6),
-                                  ),
-                                ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'trips.or_share_link'.tr(),
+                              style: AppFonts.body(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                color: textSec,
                               ),
-                            ),
-
-                            // Avatar 1: Minh Nhật (Left-Floating)
-                            AnimatedBuilder(
-                              animation: _floatController1,
-                              builder: (context, child) {
-                                final offset =
-                                    math.sin(
-                                      _floatController1.value * math.pi * 2,
-                                    ) *
-                                    8;
-                                return Positioned(
-                                  left: screenWidth * 0.08,
-                                  top: 15 + offset,
-                                  child: Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: surfaceColor,
-                                        width: 2.0,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: (isDark
-                                                  ? GenZTokens.inkDark
-                                                  : GenZTokens.ink)
-                                              .withValues(alpha: 0.15),
-                                          blurRadius: 0,
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(22),
-                                      child: Semantics(
-                                        label: 'trips.avatar_minh_nhat'.tr(),
-                                        image: true,
-                                        child: 'assets/images/avatar_minh_nhat.webp'
-                                                .startsWith('assets/')
-                                            ? Image.asset(
-                                                'assets/images/avatar_minh_nhat.webp',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                imageUrl:
-                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    ExcludeSemantics(
-                                                      child: Container(
-                                                        color: (isDark
-                                                                ? GenZTokens.inkDark
-                                                                : GenZTokens.ink)
-                                                            .withValues(alpha: 0.08),
-                                                      ),
-                                                    ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Icon(PhosphorIcons.user()),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-
-                            // Avatar 2: Thảo Ly (Right-Floating)
-                            AnimatedBuilder(
-                              animation: _floatController2,
-                              builder: (context, child) {
-                                final offset =
-                                    math.cos(
-                                      _floatController2.value * math.pi * 2,
-                                    ) *
-                                    10;
-                                return Positioned(
-                                  right: screenWidth * 0.06,
-                                  top: 40 + offset,
-                                  child: Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: surfaceColor,
-                                        width: 2.0,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: (isDark
-                                                  ? GenZTokens.inkDark
-                                                  : GenZTokens.ink)
-                                              .withValues(alpha: 0.15),
-                                          blurRadius: 0,
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(25),
-                                      child: Semantics(
-                                        label: 'trips.avatar_thao_ly'.tr(),
-                                        image: true,
-                                        child: 'assets/images/avatar_thao_ly.webp'
-                                                .startsWith('assets/')
-                                            ? Image.asset(
-                                                'assets/images/avatar_thao_ly.webp',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                imageUrl:
-                                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    ExcludeSemantics(
-                                                      child: Container(
-                                                        color: (isDark
-                                                                ? GenZTokens.inkDark
-                                                                : GenZTokens.ink)
-                                                            .withValues(alpha: 0.08),
-                                                      ),
-                                                    ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Icon(PhosphorIcons.user()),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-
-                            // Avatar 3: User (Bottom-Floating)
-                            AnimatedBuilder(
-                              animation: _floatController3,
-                              builder: (context, child) {
-                                final offset =
-                                    math.sin(
-                                      _floatController3.value * math.pi * 2,
-                                    ) *
-                                    6;
-                                return Positioned(
-                                  left: screenWidth * 0.15,
-                                  bottom: 15 + offset,
-                                  child: Container(
-                                    width: 38,
-                                    height: 38,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: surfaceColor,
-                                        width: 2.0,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: (isDark
-                                                  ? GenZTokens.inkDark
-                                                  : GenZTokens.ink)
-                                              .withValues(alpha: 0.15),
-                                          blurRadius: 0,
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(19),
-                                      child: Image.asset(
-                                        'assets/images/avatar_user.webp',
-                                        fit: BoxFit.cover,
-                                        semanticLabel: 'trips.avatar_user'.tr(),
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                Icon(PhosphorIcons.user()),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'trips.or_share_link'.tr(),
-                        style: AppFonts.body(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.2,
-                          color: textSecondary.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Primary Action Button "initialize" (Single Accent CTA)
+                    GestureDetector(
+                      onTap: _busy ? null : _submitCreate,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: _busy ? 0.7 : 1.0,
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: accent,
+                          ),
+                          child: _busy
+                              ? Center(
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: onAccent,
+                                    ),
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'trips.initialize'.tr(),
+                                      style: AppFonts.heading(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: onAccent,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Icon(
+                                      PhosphorIcons.rocketLaunch(
+                                        PhosphorIconsStyle.fill,
+                                      ),
+                                      color: onAccent,
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Magnetic Action Button "initialize"
-              GestureDetector(
-                onTap: _busy ? null : _submitCreate,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: _busy ? 0.7 : 1.0,
-                  child: Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28),
-                      color: primaryColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryColor.withValues(alpha: 0.3),
-                          blurRadius: 0,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
                     ),
-                    child: _busy
-                        ? Center(
-                            child: SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: GenZTokens.ink,
-                              ),
-                            ),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'trips.initialize'.tr(),
-                                style: AppFonts.heading(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w900,
-                                  color: GenZTokens.ink,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Icon(
-                                PhosphorIcons.rocketLaunch(
-                                  PhosphorIconsStyle.fill,
-                                ),
-                                color: GenZTokens.ink,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: widget.hideNavigationBar ? 40 : 120,
-              ), // Extra space for floating bottom navbar
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // APP BAR FOR EMPTY STATE
-  Widget _buildCustomAppBar(Color primaryColor, bool isDark) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-
-    return ClipRect(
-      child: Container(
-        padding: const EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 12,
-          bottom: 12,
-        ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          border: Border(bottom: BorderSide(color: ink, width: 2.5)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // User avatar
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-                      .withValues(alpha: 0.15),
-                  width: 1.5,
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  'assets/images/avatar_user.webp',
-                  fit: BoxFit.cover,
-                  semanticLabel: 'trips.avatar_user'.tr(),
-                  errorBuilder: (context, error, stackTrace) =>
-                      Icon(PhosphorIcons.circleDashed()),
-                ),
-              ),
-            ),
-            // Brand
-            Text(
-              'trip.mate',
-              style: AppFonts.heading(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                fontStyle: FontStyle.italic,
-                color: ink,
-                letterSpacing: -1.5,
-              ),
-            ),
-            // Actions
-            Row(
-              children: [
-                IconButton(
-                  tooltip: 'theme.toggle'.tr(),
-                  icon: Icon(
-                    isDark ? PhosphorIcons.sun() : PhosphorIcons.moon(),
-                    color: isDark
-                        ? GenZTokens.lilac
-                        : GenZTokens.orange,
-                    size: 22,
-                  ),
-                  onPressed: widget.onThemeToggle,
-                ),
-                const SizedBox(width: 8),
-                // Lối vào luồng tham gia chuyến bằng mã mời / link chia sẻ.
-                IconButton(
-                  tooltip: 'trips.join_by_code'.tr(),
-                  icon: Icon(
-                    PhosphorIcons.ticket(),
-                    color: ink,
-                    size: 22,
-                  ),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => JoinTripScreen(isDarkMode: isDark),
+                    SizedBox(
+                      height: widget.hideNavigationBar ? 32 : 100,
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
@@ -1408,61 +1195,150 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     );
   }
 
+  // APP BAR
+  Widget _buildCustomAppBar(
+    BuildContext context,
+    bool isDark,
+    Color bg,
+    Color line,
+    Color textPri,
+    Color textSec,
+  ) {
+    return Container(
+      padding: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: 12,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        border: Border(bottom: BorderSide(color: line, width: 1)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // User avatar
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: line,
+                width: 1,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Image.asset(
+                'assets/images/avatar_user.webp',
+                fit: BoxFit.cover,
+                semanticLabel: 'trips.avatar_user'.tr(),
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(PhosphorIcons.circleDashed(), size: 18, color: textSec),
+              ),
+            ),
+          ),
+          // Brand
+          Text(
+            'trip.mate',
+            style: AppFonts.heading(
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              fontStyle: FontStyle.italic,
+              color: textPri,
+              letterSpacing: -1,
+            ),
+          ),
+          // Actions
+          Row(
+            children: [
+              IconButton(
+                tooltip: 'theme.toggle'.tr(),
+                icon: Icon(
+                  isDark ? PhosphorIcons.sun() : PhosphorIcons.moon(),
+                  color: textPri,
+                  size: 20,
+                ),
+                onPressed: widget.onThemeToggle,
+              ),
+              const SizedBox(width: 4),
+              // Lối vào luồng tham gia chuyến bằng mã mời / link chia sẻ.
+              IconButton(
+                tooltip: 'trips.join_by_code'.tr(),
+                icon: Icon(
+                  PhosphorIcons.ticket(),
+                  color: textPri,
+                  size: 20,
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => JoinTripScreen(isDarkMode: isDark),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   // BOTTOM NAVIGATION BAR
   Widget _buildBottomNavigationBar(
+    BuildContext context,
     bool isDark,
-    Color primaryColor,
-    Color secondaryColor,
+    Color line,
+    Color surface,
+    Color accent,
+    Color accentSoft,
+    Color textPri,
+    Color textSec,
   ) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: ink, width: 2.5),
-              boxShadow: [BoxShadow(color: ink, offset: const Offset(0, 4))],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // Ba mục "map" / "search" / "person" đã được gỡ: chúng không
-                // điều hướng đi đâu, chỉ bắn snackbar debug "Switched to bottom
-                // item: ..." ra cho người dùng. Đây là thanh chuyển giữa hai
-                // chế độ của màn tạo chuyến nên chỉ giữ hai mục có thật.
-                _buildNavItem(
-                  PhosphorIcons.plusCircle(PhosphorIconsStyle.fill),
-                  'add_circle',
-                  !_showEmptyState,
-                  isDark,
-                  primaryColor,
-                  onTap: () {
-                    setState(() {
-                      _showEmptyState = false;
-                    });
-                  },
-                ),
-                _buildNavItem(
-                  PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                  'auto_awesome',
-                  _showEmptyState,
-                  isDark,
-                  primaryColor,
-                  onTap: () {
-                    setState(() {
-                      _showEmptyState = true;
-                    });
-                  },
-                ),
-              ],
-            ),
+        child: Container(
+          height: 64,
+          decoration: BoxDecoration(
+            color: surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: line, width: 1),
+            boxShadow: GenZTokens.hardShadow(textPri, isDark),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(
+                PhosphorIcons.plusCircle(PhosphorIconsStyle.fill),
+                'add_circle',
+                !_showEmptyState,
+                accent,
+                accentSoft,
+                textSec,
+                onTap: () {
+                  setState(() {
+                    _showEmptyState = false;
+                  });
+                },
+              ),
+              _buildNavItem(
+                PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                'auto_awesome',
+                _showEmptyState,
+                accent,
+                accentSoft,
+                textSec,
+                onTap: () {
+                  setState(() {
+                    _showEmptyState = true;
+                  });
+                },
+              ),
+            ],
           ),
         ),
       ),
@@ -1473,36 +1349,24 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     IconData icon,
     String label,
     bool isActive,
-    bool isDark,
-    Color primaryColor, {
+    Color accent,
+    Color accentSoft,
+    Color textSec, {
     VoidCallback? onTap,
   }) {
     return GestureDetector(
-      // Không còn nhánh dự phòng bắn snackbar debug: mục nào không có hành vi
-      // thật thì không nên tồn tại trên thanh này.
       onTap: onTap,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? primaryColor.withValues(alpha: 0.15)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              icon,
-              color: isActive
-                  ? primaryColor
-                  : (isDark
-                      ? GenZTokens.inkDark.withValues(alpha: 0.6)
-                      : GenZTokens.ink.withValues(alpha: 0.54)),
-              size: 24,
-            ),
-          ),
-        ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? accentSoft : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon,
+          color: isActive ? accent : textSec,
+          size: 22,
+        ),
       ),
     );
   }

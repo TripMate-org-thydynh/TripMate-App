@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import '../theme/gen_z_tokens.dart';
 
-/// Tag pill brutalist: radius 999, nền accent nhạt, viền ink 2px,
-/// chữ mono UPPERCASE.
+/// Tag pill: nền fill, chữ inkSoft; khi [selected] thì nền accentSoft, chữ accent.
+/// Bỏ chữ in hoa toàn bộ theo spec mục 6.
 class PillTag extends StatelessWidget {
   final String text;
   final Color? color;
   final IconData? icon;
   final VoidCallback? onTap;
+  final bool selected;
 
   const PillTag({
     super.key,
@@ -16,22 +17,21 @@ class PillTag extends StatelessWidget {
     this.color,
     this.icon,
     this.onTap,
+    this.selected = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final bg = color ?? Theme.of(context).colorScheme.secondary;
-    final isAccentBg =
-        bg == GenZTokens.yellow ||
-        bg == GenZTokens.pink ||
-        bg == GenZTokens.lilac ||
-        bg == GenZTokens.orange ||
-        bg == GenZTokens.magenta ||
-        bg == GenZTokens.blue ||
-        bg == GenZTokens.green;
-    final textIconColor = isAccentBg ? GenZTokens.ink : ink;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+
+    final bg = selected ? accentSoft : (color ?? fill);
+    final textIconColor = selected ? accent : inkSoft;
+    final borderColor = selected ? Colors.transparent : line;
 
     final pill = Container(
       padding: const EdgeInsets.symmetric(
@@ -41,7 +41,10 @@ class PillTag extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        border: Border.all(
+          color: borderColor,
+          width: GenZTokens.borderWidthThin,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -50,23 +53,15 @@ class PillTag extends StatelessWidget {
             Icon(icon, size: 14, color: textIconColor),
             const SizedBox(width: GenZTokens.space1),
           ],
-          // Chữ phải co lại được: nhãn dịch sang ngôn ngữ khác có thể dài hơn
-          // nhiều so với bản gốc và làm tràn thẻ cha (RenderFlex overflow).
           Flexible(
             child: Text(
-              text.toUpperCase(),
+              text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppFonts.mono(
+              style: AppFonts.body(
                 fontSize: 12,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.4,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                 color: textIconColor,
-                shadows: bg == GenZTokens.yellow
-                    ? GenZTokens.textOutline(
-                        GenZTokens.ink.withValues(alpha: 0.2),
-                      )
-                    : null,
               ),
             ),
           ),

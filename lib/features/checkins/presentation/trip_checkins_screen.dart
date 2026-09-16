@@ -22,14 +22,13 @@ class TripCheckinsScreen extends ConsumerWidget {
     required this.isDarkMode,
   });
 
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _ink =>
-      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _card =>
-      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _card => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
 
   static const _statusColors = {
     'GOING': GenZTokens.success,
@@ -58,7 +57,9 @@ class TripCheckinsScreen extends ConsumerWidget {
   Widget _statusChip(String status, bool selected, VoidCallback onTap) {
     final color = _statusColors[status] ?? GenZTokens.inkSoft;
     final textColor = selected
-        ? (color.computeLuminance() > 0.5 ? GenZTokens.ink : GenZTokens.paper)
+        ? (color.computeLuminance() > 0.5
+              ? GenZTokens.ink
+              : GenZTokens.onAccent)
         : color;
     return GestureDetector(
       onTap: onTap,
@@ -68,10 +69,7 @@ class TripCheckinsScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: selected ? color : color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(99),
-          border: Border.all(
-            color: selected ? color : color.withValues(alpha: 0.3),
-            width: selected ? 2 : 1,
-          ),
+          border: Border.all(color: selected ? color : _line, width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -107,15 +105,15 @@ class TripCheckinsScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: _bgOf(context),
+        backgroundColor: _bg,
         iconTheme: IconThemeData(color: _ink),
         elevation: 0,
         title: Text(
           'checkins.title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.w900,
             color: _ink,
           ),
@@ -129,14 +127,17 @@ class TripCheckinsScreen extends ConsumerWidget {
         ],
       ),
       body: checkinsAsync.when(
-        loading: () => Center(
-          child: CircularProgressIndicator(color: GenZTokens.orange),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            color: GenZTokens.accent,
+            strokeWidth: 2,
+          ),
         ),
         error: (e, _) => Center(
           child: Text(
             'checkins.load_failed'.tr(),
             style: AppFonts.heading(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.w700,
               color: _ink,
             ),
@@ -160,18 +161,9 @@ class TripCheckinsScreen extends ConsumerWidget {
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: _card,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: _ink.withValues(alpha: 0.12),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _ink.withValues(alpha: 0.06),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  border: Border.all(color: _line, width: 1),
+                  boxShadow: GenZTokens.hardShadow(_ink, isDarkMode),
                 ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -181,23 +173,20 @@ class TripCheckinsScreen extends ConsumerWidget {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                            horizontal: 10,
+                            vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: GenZTokens.orange,
+                            color: _fill,
                             borderRadius: BorderRadius.circular(99),
-                            border: Border.all(
-                              color: GenZTokens.ink,
-                              width: 2,
-                            ),
+                            border: Border.all(color: _line, width: 1),
                           ),
                           child: Text(
                             'common.day_n'.tr(namedArgs: {'n': '$day'}),
                             style: AppFonts.heading(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
-                              color: GenZTokens.ink,
+                              color: _ink,
                             ),
                           ),
                         ),
@@ -239,9 +228,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                                     ),
                                   )
                                 : CircleAvatar(
-                                    backgroundColor: color.withValues(
-                                      alpha: 0.2,
-                                    ),
+                                    backgroundColor: _fill,
                                     child: Text(
                                       c.userName.isNotEmpty
                                           ? c.userName[0].toUpperCase()
@@ -249,7 +236,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
-                                        color: color,
+                                        color: _ink,
                                       ),
                                     ),
                                   ),
@@ -272,9 +259,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                               ],
                             ),
                             backgroundColor: color.withValues(alpha: 0.12),
-                            side: BorderSide(
-                              color: color.withValues(alpha: 0.3),
-                            ),
+                            side: BorderSide(color: _line),
                           );
                         }).toList(),
                       ),
@@ -284,7 +269,7 @@ class TripCheckinsScreen extends ConsumerWidget {
                     Text(
                       'checkins.my_status'.tr(),
                       style: AppFonts.heading(
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: _textSec,
                       ),

@@ -114,7 +114,21 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   Color get _inkSoft =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _accentSoft =>
+      isDarkMode ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+  Color get _success =>
+      isDarkMode ? GenZTokens.successDark : GenZTokens.success;
+  Color get _warning =>
+      isDarkMode ? GenZTokens.warningDark : GenZTokens.warning;
+  Color get _danger => isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
+  Color get _info => isDarkMode ? GenZTokens.infoDark : GenZTokens.info;
+  Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
 
   // ─── Build ───────────────────────────────────────────────────────────────────
 
@@ -292,7 +306,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                       ),
                       Icon(
                         _weatherData?.icon ?? PhosphorIcons.sun(),
-                        color: _weatherData?.color ?? GenZTokens.yellow,
+                        color: _weatherData?.color ?? _warning,
                         size: 26,
                       ),
                     ],
@@ -326,28 +340,28 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   // Chỉ hiện số liệu khi THẬT SỰ có dữ liệu. Trước đây gọi API
                   // thất bại vẫn hiện "22°C · mây rải rác" từ fallback cứng.
                   if (_isLoadingWeather) ...[
-                    const PillTag(
+                    PillTag(
                       text: '-- °C',
                       icon: PhosphorIconsRegular.thermometer,
-                      color: GenZTokens.lilac,
+                      color: _fill,
                     ),
                     const SizedBox(height: 6),
                     PillTag(
                       text: 'dashboard.loading'.tr(),
                       icon: PhosphorIcons.cloud(),
-                      color: GenZTokens.yellow,
+                      color: _fill,
                     ),
                   ] else if (_weatherData != null) ...[
                     PillTag(
                       text: '${_weatherData!.temp.toStringAsFixed(0)}°C',
                       icon: PhosphorIcons.thermometer(),
-                      color: GenZTokens.lilac,
+                      color: _fill,
                     ),
                     const SizedBox(height: 6),
                     PillTag(
                       text: _weatherData!.description,
                       icon: _weatherData!.icon,
-                      color: _weatherData!.color,
+                      color: _fill,
                     ),
                   ],
                 ],
@@ -393,7 +407,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                   text: 'dashboard.up_next_day'.tr(
                                     namedArgs: {'day': '${item.day}'},
                                   ),
-                                  color: GenZTokens.pink,
+                                  selected: true,
                                 ),
                           orElse: () => const SizedBox.shrink(),
                         ),
@@ -552,14 +566,14 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             },
             child: _InkCircleButton(
               isDarkMode: isDarkMode,
-              color: GenZTokens.lilac,
+              color: _fill,
               child: Center(
                 child: Text(
                   context.locale.languageCode.toUpperCase(),
                   style: AppFonts.mono(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: GenZTokens.ink,
+                    color: _ink,
                   ),
                 ),
               ),
@@ -586,7 +600,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                       Icon(
                         PhosphorIcons.bell(),
                         size: 22,
-                        color: GenZTokens.ink,
+                        color: _ink,
                       ),
                       if (unread > 0)
                         Positioned(
@@ -602,10 +616,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               minHeight: 16,
                             ),
                             decoration: BoxDecoration(
-                              color: GenZTokens.red,
+                              color: _danger,
                               borderRadius: BorderRadius.circular(99),
                               border: Border.all(
-                                color: GenZTokens.ink,
+                                color: _paper,
                                 width: 1.5,
                               ),
                             ),
@@ -615,7 +629,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                 style: AppFonts.mono(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: GenZTokens.paper,
+                                  color: _paper,
                                 ),
                               ),
                             ),
@@ -666,7 +680,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     height: 32,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: GenZTokens.lilac,
+                      color: _fill,
                       border: Border.all(color: _ink, width: 2),
                     ),
                     child: ClipOval(
@@ -679,7 +693,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                 style: AppFonts.mono(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
-                                  color: GenZTokens.ink,
+                                  color: _ink,
                                 ),
                               ),
                             )
@@ -690,7 +704,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               errorWidget: (c, url, e) => Icon(
                                 PhosphorIcons.user(),
                                 size: 16,
-                                color: GenZTokens.ink,
+                                color: _ink,
                               ),
                             ),
                     ),
@@ -704,7 +718,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     height: 32,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).primaryColor,
+                      color: _fill,
                       border: Border.all(color: _ink, width: 2),
                     ),
                     child: Center(
@@ -713,7 +727,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                         style: AppFonts.mono(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: GenZTokens.ink,
+                          color: _ink,
                         ),
                       ),
                     ),
@@ -799,9 +813,9 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.3),
-                      Colors.black.withValues(alpha: 0.75),
+                      GenZTokens.paper.withValues(alpha: 0),
+                      GenZTokens.ink.withValues(alpha: 0.35),
+                      GenZTokens.ink.withValues(alpha: 0.85),
                     ],
                     stops: const [0.3, 0.6, 1.0],
                   ),
@@ -816,7 +830,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   namedArgs: {'count': '${t.memberCount}'},
                 ),
                 icon: PhosphorIcons.users(),
-                color: GenZTokens.yellow,
               ),
             ),
             Positioned(
@@ -832,20 +845,19 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                       PillTag(
                         text: daysLabel,
                         icon: PhosphorIcons.clock(),
-                        color: GenZTokens.lilac,
+                        selected: daysLeft >= 0,
                       ),
                       const SizedBox(width: 8),
                       PillTag(
                         text: t.inviteCode,
                         icon: PhosphorIcons.hash(),
-                        color: GenZTokens.pink,
                       ),
                       if (TripVibe.of(t.vibe) != null) ...[
                         const SizedBox(width: 8),
                         PillTag(
                           text: TripVibe.of(t.vibe)!.label,
                           icon: TripVibe.of(t.vibe)!.icon,
-                          color: GenZTokens.green,
+                          color: TripVibe.of(t.vibe)!.color,
                         ),
                       ],
                     ],
@@ -902,7 +914,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     return _tripCoverShell(
       onTap: () => ref.invalidate(tripsProvider),
       child: Container(
-        color: GenZTokens.red,
+        color: _danger,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1330,23 +1342,24 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
 class _InkCircleButton extends StatelessWidget {
   final bool isDarkMode;
   final Widget child;
-  final Color color;
+  final Color? color;
 
   const _InkCircleButton({
     required this.isDarkMode,
     required this.child,
-    this.color = GenZTokens.paper,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
     return Container(
       width: 42,
       height: 42,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color,
+        color: color ?? paper,
         border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
         boxShadow: [
           BoxShadow(color: ink, offset: const Offset(0, 3), blurRadius: 0),

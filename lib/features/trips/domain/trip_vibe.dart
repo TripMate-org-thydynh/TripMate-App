@@ -24,37 +24,37 @@ class TripVibe {
       'CHILL',
       'trips.vibe_chill',
       PhosphorIconsFill.cloud,
-      GenZTokens.blue,
+      GenZTokens.chart5,
     ),
     'PARTY': TripVibe(
       'PARTY',
       'trips.vibe_party',
       PhosphorIconsFill.confetti,
-      GenZTokens.magenta,
+      GenZTokens.chart6,
     ),
     'ADVENTURE': TripVibe(
       'ADVENTURE',
       'trips.vibe_adventure',
       PhosphorIconsFill.mountains,
-      GenZTokens.green,
+      GenZTokens.chart1,
     ),
     'FOODIE': TripVibe(
       'FOODIE',
       'trips.vibe_foodie',
       PhosphorIconsFill.forkKnife,
-      GenZTokens.orange,
+      GenZTokens.chart2,
     ),
     'CULTURE': TripVibe(
       'CULTURE',
       'trips.vibe_culture',
       PhosphorIconsFill.bank,
-      GenZTokens.purple,
+      GenZTokens.chart3,
     ),
     'AESTHETIC': TripVibe(
       'AESTHETIC',
       'trips.vibe_aesthetic',
       PhosphorIconsFill.cameraPlus,
-      GenZTokens.yellow,
+      GenZTokens.chart4,
     ),
   };
 

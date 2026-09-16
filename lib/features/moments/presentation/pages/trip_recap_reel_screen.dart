@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
+import '../../../../core/theme/gen_z_tokens.dart';
 
 import '../../../../core/widgets/state_views.dart';
 import '../../data/trip_recap_repository.dart';
@@ -28,12 +29,18 @@ class TripRecapReelScreen extends ConsumerWidget {
     return ref
         .watch(tripRecapProvider(tripId))
         .when(
-          loading: () => const Scaffold(
-            backgroundColor: Colors.black,
-            body: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          loading: () => Scaffold(
+            backgroundColor: isDarkMode
+                ? GenZTokens.creamDark
+                : GenZTokens.cream,
+            body: const Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
           ),
           error: (e, _) => Scaffold(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: isDarkMode
+                ? GenZTokens.creamDark
+                : GenZTokens.cream,
             appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
             body: AppErrorState(
               isDark: isDarkMode,
@@ -44,7 +51,9 @@ class TripRecapReelScreen extends ConsumerWidget {
           data: (recap) {
             if (!recap.hasData) {
               return Scaffold(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                backgroundColor: isDarkMode
+                    ? GenZTokens.creamDark
+                    : GenZTokens.cream,
                 appBar: AppBar(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
@@ -265,7 +274,7 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
     final slide = _slides[_index];
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: GenZTokens.creamDark,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: _onTapDown,
@@ -1610,7 +1619,7 @@ class _MiniStat extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppFonts.body(
                   color: Colors.white.withValues(alpha: 0.72),
-                  fontSize: 11.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0.8,
                 ),
@@ -1856,7 +1865,7 @@ class _UnitText extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       style: AppFonts.heading(
         color: Colors.white,
-        fontSize: 25,
+        fontSize: 22,
         height: 1,
         fontWeight: FontWeight.w900,
       ),
@@ -1879,7 +1888,7 @@ class _CaptionText extends StatelessWidget {
       textAlign: textAlign,
       style: AppFonts.body(
         color: Colors.white.withValues(alpha: 0.9),
-        fontSize: 16,
+        fontSize: 15,
         height: 1.35,
         fontWeight: FontWeight.w800,
       ),
@@ -1928,7 +1937,7 @@ class _Pill extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: AppFonts.body(
           color: Colors.white,
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: FontWeight.w900,
         ),
       ),

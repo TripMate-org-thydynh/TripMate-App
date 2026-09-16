@@ -107,16 +107,22 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
     return 'plane';
   }
 
+  Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _accent =>
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+
   Color _statusColor(String status, bool isDark) {
     switch (status) {
       case 'ONLINE':
-        return GenZTokens.green;
+        return isDark ? GenZTokens.successDark : GenZTokens.success;
       case 'IN_TRIP':
-        return GenZTokens.purple;
+        return isDark ? GenZTokens.accentDark : GenZTokens.accent;
       case 'IDLE':
-        return GenZTokens.yellow;
+        return isDark ? GenZTokens.warningDark : GenZTokens.warning;
       default:
-        return GenZTokens.inkSoft;
+        return isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     }
   }
 
@@ -128,7 +134,7 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,10 +154,10 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     fontSize: 18,
                     letterSpacing: -0.5,
-                    color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                    color: _ink,
                   ),
                 ),
               ),
@@ -161,7 +167,9 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                   text: 'dashboard.active_count'.tr(
                     namedArgs: {'count': '$_activeCount'},
                   ),
-                  color: GenZTokens.green,
+                  color: isDark
+                      ? GenZTokens.successDark
+                      : GenZTokens.success,
                 ),
             ],
           ),
@@ -198,9 +206,6 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                     return Padding(
                       padding: const EdgeInsets.only(right: 18),
                       child: GestureDetector(
-                        // Mở chat THẬT của chuyến. Trước đây chỗ này mở
-                        // `SquadChatScreen` — một màn demo với tin nhắn và người
-                        // gửi bịa, không nối với chat_repository nào.
                         onTap: () {
                           final tripId = _tripId;
                           if (tripId == null) return;
@@ -219,7 +224,6 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                             Stack(
                               clipBehavior: Clip.none,
                               children: [
-                                // Avatar nảy nhẹ liên tục, so le theo index
                                 Bobbing(
                                   amplitude: 3,
                                   phase: index * 0.9,
@@ -230,11 +234,11 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                                       shape: BoxShape.circle,
                                       color: isActive
                                           ? statusColor
-                                          : Colors.transparent,
+                                          : GenZTokens.paper.withValues(
+                                              alpha: 0,
+                                            ),
                                       border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.inkDark
-                                            : GenZTokens.ink,
+                                        color: _line,
                                         width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
@@ -246,21 +250,20 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                                               friend['avatarUrl'] as String,
                                             )
                                           : null,
-                                      backgroundColor: GenZTokens.lilac,
+                                      backgroundColor: _fill,
                                       child: friend['avatarUrl'] == null
                                           ? Text(
                                               friend['avatarChar'] as String,
                                               style: AppFonts.heading(
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w800,
-                                                color: GenZTokens.ink,
+                                                fontWeight: FontWeight.w700,
+                                                color: _ink,
                                               ),
                                             )
                                           : null,
                                     ),
                                   ),
                                 ),
-                                // Chấm online pulse cho thành viên đang hoạt động
                                 if (isActive)
                                   Positioned(
                                     top: -2,
@@ -270,24 +273,23 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                                       size: 9,
                                     ),
                                   ),
-                                // Vibe icon badge
                                 Positioned(
                                   right: 0,
                                   bottom: 0,
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: GenZTokens.yellow,
+                                      color: _fill,
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: GenZTokens.ink,
-                                        width: 1.5,
+                                        color: _line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
                                       _vibeIcon(friend['vibe'] as String),
                                       size: 10,
-                                      color: GenZTokens.ink,
+                                      color: _accent,
                                     ),
                                   ),
                                 ),
@@ -298,10 +300,8 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                               friend['name'] as String,
                               style: AppFonts.heading(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: isDark
-                                    ? GenZTokens.inkDark
-                                    : GenZTokens.ink,
+                                fontWeight: FontWeight.w600,
+                                color: _ink,
                               ),
                             ),
                           ],

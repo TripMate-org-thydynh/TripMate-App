@@ -20,29 +20,36 @@ import 'pages/ai_saved_prompts_screen.dart';
 import 'pages/matey_ai_emotional_chaos_screen.dart';
 
 class AiHubScreen extends StatelessWidget {
-  const AiHubScreen({super.key});
+  final bool? isDarkMode;
+
+  const AiHubScreen({super.key, this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = isDarkMode ?? (theme.brightness == Brightness.dark);
 
-    const primaryColor = GenZTokens.purple;
-    const secondaryColor = GenZTokens.yellow;
-    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: bg,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
-            expandedHeight: 220.0,
+            expandedHeight: 200.0,
             floating: false,
             pinned: true,
-            backgroundColor: backgroundColor,
+            backgroundColor: bg,
+            scrolledUnderElevation: 0,
             elevation: 0,
             leading: IconButton(
               icon: Icon(
@@ -57,92 +64,65 @@ class AiHubScreen extends StatelessWidget {
               title: Text(
                 'ai.hub_title'.tr(),
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
-                  letterSpacing: -0.5,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 17,
+                  letterSpacing: -0.2,
                   color: ink,
                 ),
               ),
               background: Container(
-                color: backgroundColor,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      right: -20,
-                      top: 20,
-                      child: Transform.rotate(
-                        angle: 0.15,
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(28),
-                            color: secondaryColor,
-                            border: Border.all(
-                              color: ink,
-                              width: GenZTokens.borderWidth,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: -30,
-                      bottom: 10,
-                      child: Container(
-                        width: 100,
-                        height: 100,
+                color: bg,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 24),
+                      Container(
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: GenZTokens.lilac,
-                          border: Border.all(
-                            color: ink,
-                            width: GenZTokens.borderWidth,
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusCard,
                           ),
+                          color: accentSoft,
+                          border: Border.all(
+                            color: line,
+                            width: GenZTokens.borderWidthThin,
+                          ),
+                        ),
+                        child: Icon(
+                          PhosphorIcons.robot(PhosphorIconsStyle.fill),
+                          size: 36,
+                          color: accent,
                         ),
                       ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 40),
-                        Container(
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              GenZTokens.radiusCard,
-                            ),
-                            color: primaryColor,
-                            border: Border.all(
-                              color: ink,
-                              width: GenZTokens.borderWidth,
-                            ),
-                            boxShadow: GenZTokens.hardShadow(ink),
-                          ),
-                          child: Icon(
-                            PhosphorIcons.robot(PhosphorIconsStyle.fill),
-                            size: 40,
-                            color: GenZTokens.paper,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
 
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            padding: const EdgeInsets.symmetric(
+              horizontal: GenZTokens.space4,
+              vertical: 20,
+            ),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 28),
-                  child: HardShadowBox(
-                    color: surfaceColor,
-                    padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: Container(
+                    padding: const EdgeInsets.all(GenZTokens.space4),
+                    decoration: BoxDecoration(
+                      color: surfaceColor,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusCard,
+                      ),
+                      border: Border.all(
+                        color: line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -150,12 +130,23 @@ class AiHubScreen extends StatelessWidget {
                           children: [
                             PillTag(
                               text: 'ai.companion_mode'.tr(),
-                              color: GenZTokens.lilac,
+                              selected: true,
                             ),
                             const Spacer(),
-                            PillTag(
-                              text: 'ai.online'.tr(),
-                              color: GenZTokens.green,
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                PulseDot(color: success),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'ai.online'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: success,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -163,21 +154,19 @@ class AiHubScreen extends StatelessWidget {
                         Text(
                           'ai.hub_welcome'.tr(),
                           style: AppFonts.heading(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 18,
-                            letterSpacing: -0.5,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17,
+                            letterSpacing: -0.2,
                             color: ink,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           'ai.hub_intro'.tr(),
                           style: AppFonts.body(
-                            color: isDark
-                                ? GenZTokens.inkSoftDark
-                                : GenZTokens.inkSoft,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            color: inkSoft,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
                             height: 1.45,
                           ),
                         ),
@@ -194,13 +183,13 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.matey_title'.tr(),
                   subtitle: 'ai.chat_sub'.tr(),
                   icon: PhosphorIcons.chatCircleDots(PhosphorIconsStyle.bold),
-                  color: primaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MateyAiEmotionalChaosScreen(),
+                      builder: (context) =>
+                          MateyAiEmotionalChaosScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),
@@ -209,7 +198,6 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.vibe_matcher_title'.tr(),
                   subtitle: 'ai.vibe_match_sub'.tr(),
                   icon: PhosphorIcons.heart(PhosphorIconsStyle.bold),
-                  color: GenZTokens.magenta,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
@@ -227,7 +215,6 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.planner_title'.tr(),
                   subtitle: 'ai.planner_sub'.tr(),
                   icon: PhosphorIcons.sparkle(PhosphorIconsStyle.bold),
-                  color: secondaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
@@ -245,7 +232,6 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.generate_captions'.tr(),
                   subtitle: 'ai.caption_tagline'.tr(),
                   icon: PhosphorIcons.textT(PhosphorIconsStyle.bold),
-                  color: GenZTokens.lilac,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
@@ -270,13 +256,13 @@ class AiHubScreen extends StatelessWidget {
                   icon: PhosphorIcons.currencyCircleDollar(
                     PhosphorIconsStyle.bold,
                   ),
-                  color: GenZTokens.green,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AiBudgetAssistantScreen(),
+                      builder: (context) =>
+                          AiBudgetAssistantScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),
@@ -285,13 +271,13 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.personality_title'.tr(),
                   subtitle: 'ai.personality_sub'.tr(),
                   icon: PhosphorIcons.brain(PhosphorIconsStyle.bold),
-                  color: GenZTokens.orange,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AiPersonalityAnalysisScreen(),
+                      builder: (context) =>
+                          AiPersonalityAnalysisScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),
@@ -300,13 +286,13 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.mood_title'.tr(),
                   subtitle: 'ai.drama_sub'.tr(),
                   icon: PhosphorIcons.smileyMeh(PhosphorIconsStyle.bold),
-                  color: GenZTokens.red,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AiMoodDetectionScreen(),
+                      builder: (context) =>
+                          AiMoodDetectionScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),
@@ -315,14 +301,13 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.timeline_title'.tr(),
                   subtitle: 'ai.hub_route_sub'.tr(),
                   icon: PhosphorIcons.path(PhosphorIconsStyle.bold),
-                  color: GenZTokens.blue,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const AiRecommendationTimelineScreen(),
+                          AiRecommendationTimelineScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),
@@ -331,7 +316,6 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.wrapped_title'.tr(),
                   subtitle: 'ai.hub_recap_sub'.tr(),
                   icon: PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                  color: secondaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () {
@@ -367,13 +351,13 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.queue_title'.tr(),
                   subtitle: 'ai.workspace_sub'.tr(),
                   icon: PhosphorIcons.queue(PhosphorIconsStyle.bold),
-                  color: GenZTokens.magenta,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AiGenerationQueueScreen(),
+                      builder: (context) =>
+                          AiGenerationQueueScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),
@@ -382,13 +366,13 @@ class AiHubScreen extends StatelessWidget {
                   title: 'ai.prompts_title'.tr(),
                   subtitle: 'ai.hub_prompts_sub'.tr(),
                   icon: PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.bold),
-                  color: GenZTokens.green,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AiSavedPromptsScreen(),
+                      builder: (context) =>
+                          AiSavedPromptsScreen(isDarkMode: isDark),
                     ),
                   ),
                 ),
@@ -399,7 +383,6 @@ class AiHubScreen extends StatelessWidget {
                   icon: PhosphorIcons.clockCounterClockwise(
                     PhosphorIconsStyle.bold,
                   ),
-                  color: primaryColor,
                   isDark: isDark,
                   surfaceColor: surfaceColor,
                   onTap: () => Navigator.push(
@@ -426,9 +409,9 @@ class AiHubScreen extends StatelessWidget {
       child: Text(
         title,
         style: AppFonts.heading(
-          fontWeight: FontWeight.w800,
-          fontSize: 18,
-          letterSpacing: -0.5,
+          fontWeight: FontWeight.w600,
+          fontSize: 17,
+          letterSpacing: -0.2,
           color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
         ),
       ),
@@ -440,31 +423,35 @@ class AiHubScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required IconData icon,
-    required Color color,
     required bool isDark,
     required Color surfaceColor,
     required VoidCallback onTap,
   }) {
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14.0),
+      padding: const EdgeInsets.only(bottom: 12.0),
       child: PressableCard(
         onTap: onTap,
         color: surfaceColor,
-        radius: 18,
-        padding: const EdgeInsets.all(16.0),
+        radius: GenZTokens.radiusCard,
+        padding: const EdgeInsets.all(GenZTokens.space4),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-                color: color,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                color: fill,
                 border: Border.all(
-                  color: GenZTokens.ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
-              child: Icon(icon, color: GenZTokens.ink, size: 22),
+              child: Icon(icon, color: ink, size: 20),
             ),
             const SizedBox(width: 16),
 
@@ -475,20 +462,18 @@ class AiHubScreen extends StatelessWidget {
                   Text(
                     title,
                     style: AppFonts.heading(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      color: ink,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: AppFonts.body(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w500,
-                      color: isDark
-                          ? GenZTokens.inkSoftDark
-                          : GenZTokens.inkSoft,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: inkSoft,
                       height: 1.35,
                     ),
                   ),
@@ -497,9 +482,9 @@ class AiHubScreen extends StatelessWidget {
             ),
 
             Icon(
-              PhosphorIcons.arrowRight(PhosphorIconsStyle.bold),
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-              size: 18,
+              PhosphorIcons.caretRight(PhosphorIconsStyle.bold),
+              color: inkSoft,
+              size: 16,
             ),
           ],
         ),

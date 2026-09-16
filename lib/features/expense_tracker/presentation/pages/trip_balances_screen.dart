@@ -30,18 +30,15 @@ class TripBalancesScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  /// Accent lấy từ theme đang chọn.
-  ///
-  /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
-  /// nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
-  /// Nguoi dung o mint (vang) van thay man nay mau cam, va doi theme khong
-  /// an. Doc tu `colorScheme` de mau di theo lua chon that.
-  Color _primaryOf(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
+  Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _primary => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _accentSoft =>
+      isDarkMode ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -51,10 +48,13 @@ class TripBalancesScreen extends ConsumerWidget {
     final async = ref.watch(tripBalancesProvider(tripId));
 
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: _bg,
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: _primaryOf(context),
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: _primary,
+        foregroundColor: _onAccent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+        ),
         onPressed: () {
           HapticFeedback.mediumImpact();
           AddExpenseSheet.show(context, tripId, isDarkMode);
@@ -62,7 +62,11 @@ class TripBalancesScreen extends ConsumerWidget {
         icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'expense.add'.tr(),
-          style: AppFonts.heading(fontWeight: FontWeight.w800),
+          style: AppFonts.heading(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            color: _onAccent,
+          ),
         ),
       ),
       appBar: AppBar(
@@ -74,8 +78,8 @@ class TripBalancesScreen extends ConsumerWidget {
             Text(
               'expense.split_title'.tr(),
               style: AppFonts.heading(
-                 fontSize: 17,
-                fontWeight: FontWeight.w800,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
                 color: _textPri,
               ),
             ),
@@ -106,7 +110,7 @@ class TripBalancesScreen extends ConsumerWidget {
           const OfflineBanner(),
           Expanded(
             child: RefreshIndicator(
-              color: _primaryOf(context),
+              color: _primary,
               onRefresh: () async => ref.refresh(tripBalancesProvider(tripId)),
               child: async.when(
                 loading: () => _skeleton(),
@@ -128,10 +132,8 @@ class TripBalancesScreen extends ConsumerWidget {
         height: 72,
         margin: const EdgeInsets.only(bottom: 14),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? GenZTokens.inkDark.withValues(alpha: 0.05)
-              : GenZTokens.ink.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(16),
+          color: _fill,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         ),
       ),
     ),
@@ -145,14 +147,15 @@ class TripBalancesScreen extends ConsumerWidget {
           children: [
             Icon(
               PhosphorIcons.cloudSlash(),
-              color: GenZTokens.danger,
+              color: isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
             Text(
               'expense.balances_failed'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
                 color: _textPri,
               ),
             ),
@@ -167,10 +170,19 @@ class TripBalancesScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
+              style: FilledButton.styleFrom(
+                backgroundColor: _primary,
+                foregroundColor: _onAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                ),
+              ),
               onPressed: () => ref.refresh(tripBalancesProvider(tripId)),
               icon: Icon(PhosphorIcons.arrowsClockwise()),
-              label: Text('general.retry'.tr()),
+              label: Text(
+                'general.retry'.tr(),
+                style: TextStyle(color: _onAccent),
+              ),
             ),
           ],
         ),
@@ -191,11 +203,15 @@ class TripBalancesScreen extends ConsumerWidget {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _primaryOf(context).withValues(alpha: 0.12),
+                    color: _fill,
+                    border: Border.all(
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                   child: Icon(
                     PhosphorIcons.scales(PhosphorIconsStyle.fill),
-                    color: _primaryOf(context),
+                    color: _primary,
                     size: 38,
                   ),
                 ),
@@ -204,7 +220,7 @@ class TripBalancesScreen extends ConsumerWidget {
                   'expense.empty'.tr(),
                   style: AppFonts.heading(
                     fontSize: 17,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w700,
                     color: _textPri,
                   ),
                 ),
@@ -230,8 +246,8 @@ class TripBalancesScreen extends ConsumerWidget {
           Text(
             'expense.settle_minimal'.tr(),
             style: AppFonts.heading(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
               color: _textPri,
             ),
           ),
@@ -251,8 +267,8 @@ class TripBalancesScreen extends ConsumerWidget {
         Text(
           'expense.per_person'.tr(),
           style: AppFonts.heading(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: _textPri,
           ),
         ),
@@ -268,13 +284,8 @@ class TripBalancesScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDarkMode
-              ? GenZTokens.inkDark.withValues(alpha: 0.15)
-              : GenZTokens.ink,
-          width: 2,
-        ),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
       ),
       child: Row(
         children: [
@@ -289,10 +300,12 @@ class TripBalancesScreen extends ConsumerWidget {
                       style: AppFonts.heading(
                         fontWeight: FontWeight.w700,
                         color: _textPri,
-                        fontSize: 14,
+                        fontSize: 15,
                       ),
                     ),
-                    Icon(PhosphorIcons.arrowRight(), size: 16, color: _primaryOf(context)),
+                    const SizedBox(width: 4),
+                    Icon(PhosphorIcons.arrowRight(), size: 16, color: _primary),
+                    const SizedBox(width: 4),
                     Flexible(
                       child: Text(
                         s.to.name,
@@ -300,7 +313,7 @@ class TripBalancesScreen extends ConsumerWidget {
                         style: AppFonts.heading(
                           fontWeight: FontWeight.w700,
                           color: _textPri,
-                          fontSize: 14,
+                          fontSize: 15,
                         ),
                       ),
                     ),
@@ -310,11 +323,9 @@ class TripBalancesScreen extends ConsumerWidget {
                 Text(
                   formatMoney(s.amount, locale: context.locale.languageCode),
                   style: AppFonts.heading(
-                    fontWeight: FontWeight.w900,
-                    // So tien la thong tin quan trong nhat man nay — phai doc
-                    // duoc. Accent mint la vang, dat tren nen trang thi khong.
+                    fontWeight: FontWeight.w700,
                     color: _textPri,
-                    fontSize: 16,
+                    fontSize: 17,
                   ),
                 ),
               ],
@@ -332,18 +343,20 @@ class TripBalancesScreen extends ConsumerWidget {
               );
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: _primaryOf(context),
-                borderRadius: BorderRadius.circular(12),
+                color: _accentSoft,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                border: Border.all(
+                  color: _primary,
+                  width: GenZTokens.borderWidthThin,
+                ),
               ),
               child: Text(
                 'expense.pay_now'.tr(),
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.w800,
-                  // Nen la accent: dung `onPrimary` cua preset thay vi trang cung,
-                  // vi accent mint la vang thi chu trang chim han.
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.w700,
+                  color: _primary,
                   fontSize: 13,
                 ),
               ),
@@ -356,30 +369,26 @@ class TripBalancesScreen extends ConsumerWidget {
 
   Widget _balanceRow(BuildContext context, MemberBalance b) {
     final positive = b.balance >= 0;
-    final color = positive ? GenZTokens.success : GenZTokens.danger;
+    final color = positive
+        ? (isDarkMode ? GenZTokens.successDark : GenZTokens.success)
+        : (isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger);
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isDarkMode
-              ? GenZTokens.inkDark.withValues(alpha: 0.15)
-              : GenZTokens.ink,
-          width: 2,
-        ),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: _primaryOf(context).withValues(alpha: 0.15),
+            backgroundColor: _fill,
             child: Text(
               b.user.name.isNotEmpty ? b.user.name.characters.first : '?',
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                // Chu vang tren nen vang nhat (alpha 0.15) gan nhu vo hinh.
+                fontWeight: FontWeight.w700,
                 color: _textPri,
               ),
             ),
@@ -391,7 +400,7 @@ class TripBalancesScreen extends ConsumerWidget {
               style: AppFonts.heading(
                 fontWeight: FontWeight.w700,
                 color: _textPri,
-                fontSize: 14,
+                fontSize: 15,
               ),
             ),
           ),
@@ -399,15 +408,16 @@ class TripBalancesScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                positive
-                    ? 'expense.is_owed'.tr()
-                    : 'expense.owes'.tr(),
+                positive ? 'expense.is_owed'.tr() : 'expense.owes'.tr(),
                 style: AppFonts.body(fontSize: 12, color: _textSec),
               ),
               Text(
-                formatMoney(b.balance.abs(), locale: context.locale.languageCode),
+                formatMoney(
+                  b.balance.abs(),
+                  locale: context.locale.languageCode,
+                ),
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   color: color,
                   fontSize: 15,
                 ),

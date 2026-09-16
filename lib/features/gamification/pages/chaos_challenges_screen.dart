@@ -126,6 +126,8 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
         Theme.of(context).brightness == Brightness.dark || widget.isDarkMode;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
@@ -137,8 +139,8 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
         title: Text(
           'games.chaos_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -147,27 +149,28 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
           ? null
           : FloatingActionButton.extended(
               onPressed: _busy ? null : () => _draw(),
-              backgroundColor: GenZTokens.yellow,
-              foregroundColor: GenZTokens.ink,
+              backgroundColor: accent,
+              foregroundColor: onAccent,
+              elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                side: BorderSide(color: ink, width: GenZTokens.borderWidth),
               ),
               icon: _busy
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: GenZTokens.ink,
+                        color: onAccent,
                       ),
                     )
                   : Icon(PhosphorIcons.diceFive(PhosphorIconsStyle.fill)),
               label: Text(
                 'games.chaos_draw'.tr(),
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.w800,
-                  color: GenZTokens.ink,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: onAccent,
                 ),
               ),
             ),
@@ -219,23 +222,32 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
     final done = _done.contains(index);
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+    final info = isDark ? GenZTokens.infoDark : GenZTokens.info;
+
     // Càng chaos càng nóng màu — đọc lướt là biết độ khó.
     final level = dare.chaosLevel;
-    final color = level >= 4
-        ? GenZTokens.red
+    final levelColor = level >= 4
+        ? danger
         : level == 3
-        ? GenZTokens.orange
-        : level == 2
-        ? GenZTokens.yellow
-        : GenZTokens.green;
+            ? danger
+            : level == 2
+                ? warning
+                : info;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space5),
       decoration: BoxDecoration(
-        color: done ? color.withValues(alpha: 0.18) : surface,
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidth),
-        boxShadow: GenZTokens.hardShadow(ink),
+        border: Border.all(
+          color: done ? success : line,
+          width: done ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,14 +258,14 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
                 Icon(
                   PhosphorIcons.fire(PhosphorIconsStyle.fill),
                   size: 16,
-                  color: color,
+                  color: levelColor,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   dare.chaosLabel,
                   style: AppFonts.heading(
                     fontSize: 13,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: ink,
                   ),
                 ),
@@ -267,7 +279,7 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
                       child: Icon(
                         PhosphorIcons.fire(PhosphorIconsStyle.fill),
                         size: 16,
-                        color: color,
+                        color: levelColor,
                       ),
                     ),
                   ),
@@ -279,19 +291,19 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(999),
+                  color: fill,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   border: Border.all(
-                    color: GenZTokens.ink,
+                    color: line,
                     width: GenZTokens.borderWidthThin,
                   ),
                 ),
                 child: Text(
                   '+${dare.xpReward} XP',
-                  style: AppFonts.heading(
+                  style: AppFonts.mono(
                     fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    color: GenZTokens.ink,
+                    fontWeight: FontWeight.w700,
+                    color: ink,
                   ),
                 ),
               ),
@@ -305,21 +317,23 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
           const SizedBox(height: GenZTokens.space4),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
+            height: 44,
+            child: OutlinedButton.icon(
               onPressed: done ? null : () => _complete(index),
               icon: Icon(
                 done
                     ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
                     : PhosphorIcons.lightning(PhosphorIconsStyle.fill),
                 size: 18,
+                color: done ? success : ink,
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: done ? color : GenZTokens.yellow,
-                foregroundColor: GenZTokens.ink,
-                disabledBackgroundColor: color,
-                disabledForegroundColor: GenZTokens.ink,
-                elevation: 0,
-                side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+              style: OutlinedButton.styleFrom(
+                backgroundColor: done ? fill : null,
+                disabledBackgroundColor: fill,
+                side: BorderSide(
+                  color: done ? success : line,
+                  width: GenZTokens.borderWidthThin,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 ),
@@ -327,9 +341,9 @@ class _ChaosChallengesScreenState extends ConsumerState<ChaosChallengesScreen> {
               label: Text(
                 done ? 'games.chaos_completed'.tr() : 'games.chaos_do'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: GenZTokens.ink,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: done ? success : ink,
                 ),
               ),
             ),

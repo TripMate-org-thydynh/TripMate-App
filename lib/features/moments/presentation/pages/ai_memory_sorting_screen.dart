@@ -109,19 +109,21 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
     final isDark =
         widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final tripId = ref.watch(activeTripIdProvider);
 
     return Scaffold(
-      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'moments.sorting_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -190,6 +192,10 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final suggestion = _suggested[m.id];
     final busy = _busy.contains(m.id);
 
@@ -198,24 +204,21 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 180,
-            width: double.infinity,
+          AspectRatio(
+            aspectRatio: 16 / 9,
             child: m.mediaUrl.startsWith('http')
                 ? CachedNetworkImage(
                     imageUrl: posterMedia(m.mediaUrl, m.type, width: 640),
                     fit: BoxFit.cover,
-                    placeholder: (_, _) =>
-                        const ColoredBox(color: GenZTokens.lilac),
-                    errorWidget: (_, _, _) =>
-                        const ColoredBox(color: GenZTokens.lilac),
+                    placeholder: (_, _) => ColoredBox(color: fill),
+                    errorWidget: (_, _, _) => ColoredBox(color: fill),
                   )
-                : const ColoredBox(color: GenZTokens.lilac),
+                : ColoredBox(color: fill),
           ),
           Padding(
             padding: const EdgeInsets.all(GenZTokens.space4),
@@ -226,7 +229,7 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                   m.placeName?.isNotEmpty == true
                       ? '${m.authorName} · ${m.placeName}'
                       : m.authorName,
-                  style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+                  style: AppFonts.body(fontSize: 12, color: inkSoft),
                 ),
                 const SizedBox(height: GenZTokens.space3),
                 if (suggestion != null)
@@ -234,18 +237,20 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(GenZTokens.space3),
                     decoration: BoxDecoration(
-                      color: GenZTokens.yellow,
-                      borderRadius: BorderRadius.circular(12),
+                      color: fill,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusInput,
+                      ),
                       border: Border.all(
-                        color: GenZTokens.ink,
+                        color: line,
                         width: GenZTokens.borderWidthThin,
                       ),
                     ),
                     child: Text(
                       suggestion,
                       style: AppFonts.body(
-                        fontSize: 14,
-                        color: GenZTokens.ink,
+                        fontSize: 15,
+                        color: ink,
                         height: 1.4,
                       ),
                     ),
@@ -262,11 +267,12 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                       child: OutlinedButton.icon(
                         onPressed: busy ? null : () => _suggest(tripId, m),
                         icon: busy
-                            ? const SizedBox(
+                            ? SizedBox(
                                 width: 16,
                                 height: 16,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
+                                  color: ink,
                                 ),
                               )
                             : Icon(
@@ -276,7 +282,7 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: ink,
                           side: BorderSide(
-                            color: ink,
+                            color: line,
                             width: GenZTokens.borderWidthThin,
                           ),
                           shape: RoundedRectangleBorder(
@@ -305,13 +311,11 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                             : () => _save(tripId, m),
                         icon: Icon(PhosphorIcons.check(), size: 16),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: GenZTokens.green,
-                          foregroundColor: GenZTokens.ink,
+                          backgroundColor: accent,
+                          foregroundColor: onAccent,
+                          disabledBackgroundColor: fill,
+                          disabledForegroundColor: inkSoft,
                           elevation: 0,
-                          side: BorderSide(
-                            color: ink,
-                            width: GenZTokens.borderWidthThin,
-                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                               GenZTokens.radiusButton,
@@ -323,7 +327,9 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
                           style: AppFonts.heading(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: GenZTokens.ink,
+                            color: suggestion == null || busy
+                                ? inkSoft
+                                : onAccent,
                           ),
                         ),
                       ),

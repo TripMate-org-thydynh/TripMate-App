@@ -33,14 +33,15 @@ class AiChatHistoryScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'ai.history_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -90,6 +91,9 @@ class AiChatHistoryScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
     final at = item.createdAt;
 
     return Container(
@@ -97,8 +101,7 @@ class AiChatHistoryScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
-        boxShadow: GenZTokens.hardShadow(ink),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +110,7 @@ class AiChatHistoryScreen extends ConsumerWidget {
             item.task,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
-            style: AppFonts.body(fontSize: 14, color: ink, height: 1.4),
+            style: AppFonts.body(fontSize: 15, color: ink, height: 1.4),
           ),
           const SizedBox(height: 6),
           Row(
@@ -119,7 +122,11 @@ class AiChatHistoryScreen extends ConsumerWidget {
                     ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
                     : PhosphorIcons.hourglass(PhosphorIconsStyle.fill),
                 size: 14,
-                color: item.isFailed ? GenZTokens.danger : inkSoft,
+                color: item.isFailed
+                    ? danger
+                    : item.isDone
+                    ? success
+                    : inkSoft,
               ),
               const SizedBox(width: 4),
               Expanded(

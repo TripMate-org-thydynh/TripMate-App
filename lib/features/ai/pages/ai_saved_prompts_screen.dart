@@ -17,25 +17,29 @@ import '../data/ai_repository.dart';
 /// là danh mục do team soạn, lấy từ `/ai/saved-prompts`, và tên màn nói đúng
 /// điều đó. Chạm để chép prompt rồi dán vào Matey AI.
 class AiSavedPromptsScreen extends ConsumerWidget {
-  const AiSavedPromptsScreen({super.key});
+  final bool? isDarkMode;
+
+  const AiSavedPromptsScreen({super.key, this.isDarkMode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'ai.prompts_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -82,6 +86,7 @@ class AiSavedPromptsScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     return GestureDetector(
       onTap: () async {
@@ -93,8 +98,7 @@ class AiSavedPromptsScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: surface,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
-          boxShadow: GenZTokens.hardShadow(ink),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +111,7 @@ class AiSavedPromptsScreen extends ConsumerWidget {
                     p.title,
                     style: AppFonts.heading(
                       fontSize: 15,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       color: ink,
                     ),
                   ),
@@ -115,7 +119,7 @@ class AiSavedPromptsScreen extends ConsumerWidget {
                   Text(
                     p.prompt,
                     style: AppFonts.body(
-                      fontSize: 12.5,
+                      fontSize: 13,
                       color: inkSoft,
                       height: 1.4,
                     ),

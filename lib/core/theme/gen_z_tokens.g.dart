@@ -1,54 +1,97 @@
-// GENERATED FROM design/tokens.json — DO NOT EDIT
+// Thư mục design/ và build-tokens.mjs không còn trong repo, file này nay bảo trì bằng tay.
 import 'package:flutter/material.dart';
 
-/// Token gốc sinh từ design/tokens.json.
-/// Không sửa file này — sửa tokens.json rồi chạy: node design/build-tokens.mjs
+/// Design system tokens (A×B: sáng kem, tối graphite).
+/// Nguồn sự thật duy nhất: REFACTOR_UI_SPEC.md.
 class DsTokens {
   DsTokens._();
 
-  // ── Base ──────────────────────────────────────────
-  static const Color ink = Color(0xFF141210);
-  static const Color inkSoft = Color(0xFF4A453E);
-  static const Color cream = Color(0xFFFDF6D3);
-  static const Color paper = Color(0xFFFFFDF5);
+  // ── Nền và chữ ────────────────────────────────────
+  static const Color cream = Color(0xFFF7F3EC);
+  static const Color paper = Color(0xFFFFFFFF);
+  static const Color ink = Color(0xFF1C1A17);
+  static const Color inkSoft = Color(0xFF6B655C);
 
   // ── Dark ──────────────────────────────────────────
-  static const Color inkDark = Color(0xFFFDF6D3);
-  static const Color inkSoftDark = Color(0xFFB8AE9C);
-  static const Color creamDark = Color(0xFF1A1712);
-  static const Color paperDark = Color(0xFF262019);
+  static const Color creamDark = Color(0xFF141617);
+  static const Color paperDark = Color(0xFF1D2022);
+  static const Color inkDark = Color(0xFFECE7DF);
+  static const Color inkSoftDark = Color(0xFF9A948B);
 
-  // ── Palette ───────────────────────────────────────
-  static const Color yellow = Color(0xFFFFD84D);
-  static const Color orange = Color(0xFFF5822B);
-  static const Color green = Color(0xFF1FA85C);
-  static const Color magenta = Color(0xFFD6248C);
-  static const Color purple = Color(0xFF8B4DE8);
-  static const Color red = Color(0xFFD8422B);
-  static const Color lilac = Color(0xFFC9B8FF);
-  static const Color blue = Color(0xFF3D8BFF);
-  static const Color pink = Color(0xFFFFA8D2);
+  // ── Đường kẻ và nền chìm ─────────────────────────
+  static const Color line = Color(0xFFE3DDD2);
+  static const Color lineDark = Color(0xFF2E3235);
+  static const Color fill = Color(0xFFF0EBE2);
+  static const Color fillDark = Color(0xFF25292B);
 
-  // ── Semantic ──────────────────────────────────────
-  static const Color success = Color(0xFF1FA85C);
-  static const Color warning = Color(0xFFFFD84D);
-  static const Color danger = Color(0xFFD8422B);
-  static const Color info = Color(0xFF8B4DE8);
+  // ── Màu nhấn (duy nhất) ──────────────────────────
+  static const Color accent = Color(0xFFB4543A);
+  static const Color accentDark = Color(0xFFD2775C);
+  static const Color onAccent = Color(0xFFFFFFFF);
+  static const Color onAccentDark = Color(0xFF1C1A17);
+  static const Color accentSoft = Color(0xFFF2E4DE);
+  static const Color accentSoftDark = Color(0xFF3A2A25);
+
+  // ── Màu ngữ nghĩa (trạng thái) ───────────────────
+  static const Color success = Color(0xFF2F6D4F);
+  static const Color successDark = Color(0xFF6FAF8C);
+  static const Color warning = Color(0xFF9A6B12);
+  static const Color warningDark = Color(0xFFD8A94A);
+  static const Color danger = Color(0xFFA33A2C);
+  static const Color dangerDark = Color(0xFFE0705C);
+  static const Color info = Color(0xFF3A6073);
+  static const Color infoDark = Color(0xFF84A9BC);
+
+  // ── Màu dữ liệu (biểu đồ, phân loại) ──────────────
+  static const Color chart1 = Color(0xFF4E7C6B);
+  static const Color chart2 = Color(0xFFB4543A);
+  static const Color chart3 = Color(0xFF7A6E8F);
+  static const Color chart4 = Color(0xFF9A6B12);
+  static const Color chart5 = Color(0xFF3A6073);
+  static const Color chart6 = Color(0xFF8C5A4A);
+
+  // ── 9 màu cũ (giữ tên, trỏ sang màu mới, bỏ dần) ──
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color yellow = warning;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color orange = accent;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color green = success;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color red = danger;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color blue = info;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color purple = chart3;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color magenta = chart6;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color lilac = accentSoft;
+
+  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
+  static const Color pink = accentSoft;
 
   // ── Border ────────────────────────────────────────
-  static const double borderWidthThin = 2;
-  static const double borderWidth = 2.5;
-  static const double borderWidthFocus = 3;
+  static const double borderWidthThin = 1;
+  static const double borderWidth = 1.5;
+  static const double borderWidthFocus = 2;
 
   // ── Shadow ────────────────────────────────────────
   static const double shadowOffsetX = 0;
-  static const double shadowOffsetY = 4;
-  static const double shadowBlur = 0;
+  static const double shadowOffsetY = 2;
+  static const double shadowBlur = 12;
 
   // ── Radius ────────────────────────────────────────
-  static const double radiusInput = 12;
-  static const double radiusButton = 14;
-  static const double radiusCard = 20;
+  static const double radiusInput = 10;
+  static const double radiusButton = 10;
+  static const double radiusCard = 14;
   static const double radiusPill = 999;
 
   // ── Spacing ───────────────────────────────────────
@@ -65,77 +108,96 @@ class DsTokens {
   static const int durationSlow = 400;
 
   // ── Font ──────────────────────────────────────────
-  static const String fontHeading = 'Baloo 2';
-  static const String fontBody = 'Nunito';
+  static const String fontHeading = 'Instrument Sans';
+  static const String fontBody = 'Instrument Sans';
   static const String fontMono = 'Space Mono';
 }
 
 /// Dữ liệu preset accent.
 class DsAccentPreset {
   final Color primary;
+  final Color primaryDark;
   final Color onPrimary;
+  final Color onPrimaryDark;
   final Color pair;
   final Color bg;
   final Color soft;
 
   const DsAccentPreset({
     required this.primary,
+    Color? primaryDark,
     required this.onPrimary,
+    Color? onPrimaryDark,
     required this.pair,
     required this.bg,
     required this.soft,
-  });
+  })  : primaryDark = primaryDark ?? primary,
+        onPrimaryDark = onPrimaryDark ?? onPrimary;
 }
 
-/// Map 4 preset accent — key khớp AppAccent.name.
+/// Map 7 preset accent — key khớp AppAccent.name.
 const Map<String, DsAccentPreset> dsAccents = {
   'mint': DsAccentPreset(
-    primary: Color(0xFFFFD84D),
-    onPrimary: Color(0xFF141210),
-    pair: Color(0xFF8B4DE8),
-    bg: Color(0xFFFDF6D3),
-    soft: Color(0xFFFFEFAE),
+    primary: Color(0xFFB4543A),
+    primaryDark: Color(0xFFD2775C),
+    onPrimary: Color(0xFFFFFFFF),
+    onPrimaryDark: Color(0xFF1C1A17),
+    pair: Color(0xFFB4543A),
+    bg: Color(0xFFF7F3EC),
+    soft: Color(0xFFF2E4DE),
   ),
   'sun': DsAccentPreset(
-    primary: Color(0xFF1FA85C),
-    onPrimary: Color(0xFF141210),
-    pair: Color(0xFFFFD84D),
-    bg: Color(0xFFEBF7DE),
-    soft: Color(0xFFC9EDBA),
+    primary: Color(0xFF9A6B12),
+    primaryDark: Color(0xFFD8A94A),
+    onPrimary: Color(0xFFFFFFFF),
+    onPrimaryDark: Color(0xFF1C1A17),
+    pair: Color(0xFF9A6B12),
+    bg: Color(0xFFF7F3EC),
+    soft: Color(0xFFF5EEDD),
   ),
   'pastel': DsAccentPreset(
-    primary: Color(0xFF3D8BFF),
-    onPrimary: Color(0xFF141210),
-    pair: Color(0xFFFFA8D2),
-    bg: Color(0xFFE7F1FD),
-    soft: Color(0xFFC5DEFF),
+    primary: Color(0xFF3A6073),
+    primaryDark: Color(0xFF84A9BC),
+    onPrimary: Color(0xFFFFFFFF),
+    onPrimaryDark: Color(0xFF1C1A17),
+    pair: Color(0xFF3A6073),
+    bg: Color(0xFFF7F3EC),
+    soft: Color(0xFFE6ECEF),
   ),
   'grape': DsAccentPreset(
-    primary: Color(0xFFF5822B),
-    onPrimary: Color(0xFF141210),
-    pair: Color(0xFF141210),
-    bg: Color(0xFFFDEEDC),
-    soft: Color(0xFFFFD9B3),
+    primary: Color(0xFF6E4459),
+    primaryDark: Color(0xFFB08098),
+    onPrimary: Color(0xFFFFFFFF),
+    onPrimaryDark: Color(0xFF1C1A17),
+    pair: Color(0xFF6E4459),
+    bg: Color(0xFFF7F3EC),
+    soft: Color(0xFFEEE6EA),
   ),
   'neon': DsAccentPreset(
-    primary: Color(0xFFFF2E93),
-    onPrimary: Color(0xFF141210),
-    pair: Color(0xFF3D8BFF),
-    bg: Color(0xFFFDE7F1),
-    soft: Color(0xFFFFC2DE),
+    primary: Color(0xFF4E7C6B),
+    primaryDark: Color(0xFF84B7A3),
+    onPrimary: Color(0xFFFFFFFF),
+    onPrimaryDark: Color(0xFF1C1A17),
+    pair: Color(0xFF4E7C6B),
+    bg: Color(0xFFF7F3EC),
+    soft: Color(0xFFE9EFEA),
   ),
   'pine': DsAccentPreset(
-    primary: Color(0xFF0F766E),
+    primary: Color(0xFF2F5D4F),
+    primaryDark: Color(0xFF78A895),
     onPrimary: Color(0xFFFFFFFF),
-    pair: Color(0xFFFFD84D),
-    bg: Color(0xFFE4F2F0),
-    soft: Color(0xFFB9DDD9),
+    onPrimaryDark: Color(0xFF1C1A17),
+    pair: Color(0xFF2F5D4F),
+    bg: Color(0xFFF7F3EC),
+    soft: Color(0xFFE5ECE8),
   ),
   'cyber': DsAccentPreset(
-    primary: Color(0xFF3D8BFF),
-    onPrimary: Color(0xFF141210),
-    pair: Color(0xFFFF2E93),
-    bg: Color(0xFFE4EEFD),
-    soft: Color(0xFFBBD5FF),
+    primary: Color(0xFF414A57),
+    primaryDark: Color(0xFF93A1B0),
+    onPrimary: Color(0xFFFFFFFF),
+    onPrimaryDark: Color(0xFF1C1A17),
+    pair: Color(0xFF414A57),
+    bg: Color(0xFFF7F3EC),
+    soft: Color(0xFFE7E9EC),
   ),
 };

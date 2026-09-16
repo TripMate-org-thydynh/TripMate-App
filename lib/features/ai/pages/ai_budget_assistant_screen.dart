@@ -38,34 +38,24 @@ class AiBudgetAssistantScreen extends ConsumerStatefulWidget {
 class _AiBudgetAssistantScreenState
     extends ConsumerState<AiBudgetAssistantScreen>
     with TickerProviderStateMixin {
-  late AnimationController _pulseController;
   late AnimationController _marqueeController;
   late AnimationController _progressController;
-  late Animation<double> _pulseAnim;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
     _marqueeController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 20),
     )..repeat();
     _progressController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(milliseconds: 600),
     )..forward();
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
     _marqueeController.dispose();
     _progressController.dispose();
     super.dispose();
@@ -77,75 +67,71 @@ class _AiBudgetAssistantScreenState
         widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final surfaceHigh = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final primary = isDark ? GenZTokens.lilac : GenZTokens.purple;
-    final secondary = GenZTokens.green;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textMuted = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final errorColor = GenZTokens.danger;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final info = isDark ? GenZTokens.infoDark : GenZTokens.info;
+    final errorColor = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
     return Scaffold(
       backgroundColor: bg,
-      body: Stack(
-        children: [
-          // Aurora background
-          Positioned.fill(
-            child: CustomPaint(
-              painter: _AuroraPainter(
-                isDark: isDark,
-                primary: primary,
-                secondary: secondary,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            _buildTopBar(textPrimary, line, surface, isDark),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(
+                  GenZTokens.space4,
+                  0,
+                  GenZTokens.space4,
+                  32,
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 24),
+                    // Hero: Matey orb + total damage
+                    _buildHeroSection(
+                      accent,
+                      accentSoft,
+                      textPrimary,
+                      textMuted,
+                      errorColor,
+                      line,
+                      isDark,
+                    ),
+                    const SizedBox(height: 24),
+                    // Marquee ticker
+                    if (_roast != null) ...[
+                      _buildMarquee(info, textMuted, surface, line, isDark),
+                      const SizedBox(height: 24),
+                    ],
+                    // Insights grid
+                    _buildInsightsGrid(
+                      accent,
+                      success,
+                      textPrimary,
+                      textMuted,
+                      errorColor,
+                      surface,
+                      line,
+                      fill,
+                      isDark,
+                    ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                _buildTopBar(textPrimary, primary, secondary, isDark),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 32),
-                        // Hero: Matey orb + total damage
-                        _buildHeroSection(
-                          primary,
-                          secondary,
-                          textPrimary,
-                          textMuted,
-                          errorColor,
-                          isDark,
-                        ),
-                        const SizedBox(height: 24),
-                        // Marquee ticker
-                        if (_roast != null) ...[
-                          _buildMarquee(secondary, textMuted, surface, isDark),
-                          const SizedBox(height: 24),
-                        ],
-                        // Insights grid
-                        _buildInsightsGrid(
-                          primary,
-                          secondary,
-                          textPrimary,
-                          textMuted,
-                          errorColor,
-                          surface,
-                          surfaceHigh,
-                          isDark,
-                        ),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -292,44 +278,31 @@ class _AiBudgetAssistantScreenState
 
   Widget _buildTopBar(
     Color textPrimary,
-    Color primary,
-    Color secondary,
+    Color line,
+    Color surface,
     bool isDark,
   ) {
-    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: surface,
-              border: Border.all(
-                color: textPrimary,
-                width: GenZTokens.borderWidthThin,
-              ),
+          IconButton(
+            icon: Icon(
+              PhosphorIcons.caretLeft(PhosphorIconsStyle.bold),
+              color: textPrimary,
+              size: 20,
             ),
-            child: Icon(
-              PhosphorIcons.users(PhosphorIconsStyle.bold),
-              color: primary,
-              size: 18,
-            ),
+            onPressed: () => Navigator.maybePop(context),
+            tooltip: 'common.back'.tr(),
           ),
-          ShaderMask(
-            shaderCallback: (bounds) =>
-                LinearGradient(colors: [primary, primary]).createShader(bounds),
-            child: Text(
-              'trip.mate',
-              style: AppFonts.heading(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -1.0,
-                color: textPrimary,
-              ),
+          Text(
+            'trip.mate',
+            style: AppFonts.heading(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.5,
+              color: textPrimary,
             ),
           ),
           Row(
@@ -348,23 +321,6 @@ class _AiBudgetAssistantScreenState
                       ? 'theme.switch_light'.tr()
                       : 'theme.switch_dark'.tr(),
                 ),
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: surface,
-                  border: Border.all(
-                    color: textPrimary,
-                    width: GenZTokens.borderWidthThin,
-                  ),
-                ),
-                child: Icon(
-                  PhosphorIcons.lightning(PhosphorIconsStyle.fill),
-                  color: primary,
-                  size: 20,
-                ),
-              ),
             ],
           ),
         ],
@@ -373,106 +329,105 @@ class _AiBudgetAssistantScreenState
   }
 
   Widget _buildHeroSection(
-    Color primary,
-    Color secondary,
+    Color accent,
+    Color accentSoft,
     Color textPrimary,
     Color textMuted,
     Color errorColor,
+    Color line,
     bool isDark,
   ) {
     return Column(
       children: [
-        // Pulsing AI Orb
-        ScaleTransition(
-          scale: _pulseAnim,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: primary,
-                  border: Border.all(
-                    color: textPrimary,
-                    width: GenZTokens.borderWidth,
-                  ),
-                  boxShadow: GenZTokens.hardShadow(textPrimary),
-                ),
-                child: Icon(
-                  PhosphorIcons.robot(PhosphorIconsStyle.fill),
-                  color: GenZTokens.paper,
-                  size: 48,
+        // AI Robot Avatar
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: accentSoft,
+                border: Border.all(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
                 ),
               ),
-              Positioned(
-                top: -8,
-                right: -16,
-                child: Transform.rotate(
-                  angle: 12 * math.pi / 180,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+              child: Icon(
+                PhosphorIcons.robot(PhosphorIconsStyle.fill),
+                color: accent,
+                size: 44,
+              ),
+            ),
+            Positioned(
+              top: -6,
+              right: -12,
+              child: Transform.rotate(
+                angle: 10 * math.pi / 180,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: errorColor,
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusPill,
                     ),
-                    decoration: BoxDecoration(
-                      color: GenZTokens.danger,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: textPrimary,
-                        width: GenZTokens.borderWidthThin,
-                      ),
+                    border: Border.all(
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
                     ),
-                    child: Text(
-                      'ai.judging_you'.tr(),
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: GenZTokens.paper,
-                      ),
+                  ),
+                  child: Text(
+                    'ai.judging_you'.tr(),
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: GenZTokens.onAccent,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
 
         Text(
           'ai.budget_total'.tr(),
-          style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+          style: AppFonts.body(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
             color: textMuted,
           ),
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
 
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
           children: [
-            Text(
-              _currency == 'VND' ? '' : '\$',
-              style: AppFonts.heading(
-                fontSize: 36,
-                fontWeight: FontWeight.w800,
-                color: primary,
+            if (_currency != 'VND')
+              Text(
+                '\$',
+                style: AppFonts.heading(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimary,
+                ),
               ),
-            ),
             Text(
               _money(_totalSpent),
               style: AppFonts.heading(
-                fontSize: 52,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -2,
+                fontSize: 34,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -1.0,
                 color: textPrimary,
-                shadows: [
-                  Shadow(color: primary.withValues(alpha: 0.6), blurRadius: 0),
-                ],
               ),
             ),
           ],
@@ -482,21 +437,22 @@ class _AiBudgetAssistantScreenState
   }
 
   Widget _buildMarquee(
-    Color secondary,
+    Color infoColor,
     Color textMuted,
     Color surface,
+    Color line,
     bool isDark,
   ) {
     final tickerText = '${_roast!}  •  ';
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
       child: Container(
-        height: 52,
+        height: 48,
         decoration: BoxDecoration(
           color: surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: secondary,
+            color: line,
             width: GenZTokens.borderWidthThin,
           ),
         ),
@@ -510,7 +466,7 @@ class _AiBudgetAssistantScreenState
                 children: [
                   Icon(
                     PhosphorIcons.megaphone(PhosphorIconsStyle.fill),
-                    color: secondary,
+                    color: infoColor,
                     size: 16,
                   ),
                   const SizedBox(width: 6),
@@ -518,9 +474,8 @@ class _AiBudgetAssistantScreenState
                     'ai.matey_says'.tr(),
                     style: AppFonts.body(
                       fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2,
-                      color: secondary,
+                      fontWeight: FontWeight.w700,
+                      color: infoColor,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -561,13 +516,14 @@ class _AiBudgetAssistantScreenState
   }
 
   Widget _buildInsightsGrid(
-    Color primary,
-    Color secondary,
+    Color accent,
+    Color success,
     Color textPrimary,
     Color textMuted,
     Color errorColor,
     Color surface,
-    Color surfaceHigh,
+    Color line,
+    Color fill,
     bool isDark,
   ) {
     return Row(
@@ -575,8 +531,9 @@ class _AiBudgetAssistantScreenState
       children: [
         // Critical Insight card
         Expanded(
-          child: _glassCard(
-            isDark: isDark,
+          child: _contentCard(
+            surface: surface,
+            line: line,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -585,7 +542,7 @@ class _AiBudgetAssistantScreenState
                     Icon(
                       PhosphorIcons.flame(PhosphorIconsStyle.fill),
                       color: errorColor,
-                      size: 20,
+                      size: 18,
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -594,23 +551,21 @@ class _AiBudgetAssistantScreenState
                         style: AppFonts.body(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 1.0,
                           color: errorColor,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 Builder(
                   builder: (_) {
                     final top = _topCategory;
                     if (top == null) {
                       return Text(
                         'ai.budget_no_expense'.tr(),
-                        style: AppFonts.heading(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                        style: AppFonts.body(
+                          fontSize: 13,
                           color: textMuted,
                           height: 1.4,
                         ),
@@ -618,9 +573,9 @@ class _AiBudgetAssistantScreenState
                     }
                     return RichText(
                       text: TextSpan(
-                        style: AppFonts.heading(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                        style: AppFonts.body(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                           color: textPrimary,
                           height: 1.4,
                         ),
@@ -628,9 +583,9 @@ class _AiBudgetAssistantScreenState
                           TextSpan(text: '${'ai.budget_top_pre'.tr()} '),
                           TextSpan(
                             text: '${top.$3}%',
-                            style: AppFonts.heading(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
+                            style: AppFonts.body(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
                               color: errorColor,
                             ),
                           ),
@@ -652,9 +607,9 @@ class _AiBudgetAssistantScreenState
 
         // Vibe Check / Budget meter card
         Expanded(
-          child: _glassCard(
-            isDark: isDark,
-            glowColor: primary,
+          child: _contentCard(
+            surface: surface,
+            line: line,
             child: Column(
               children: [
                 Align(
@@ -664,16 +619,15 @@ class _AiBudgetAssistantScreenState
                     style: AppFonts.body(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 1.0,
                       color: textMuted,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 // Circular progress
                 SizedBox(
-                  width: 120,
-                  height: 120,
+                  width: 108,
+                  height: 108,
                   child: AnimatedBuilder(
                     animation: _progressController,
                     builder: (ctx, child) {
@@ -682,10 +636,10 @@ class _AiBudgetAssistantScreenState
                           progress:
                               _progressController.value *
                               (_budgetUsedPct / 100),
-                          trackColor: isDark
-                              ? GenZTokens.paperDark
-                              : GenZTokens.cream,
-                          progressColor: GenZTokens.green,
+                          trackColor: fill,
+                          progressColor: _budgetUsedPct >= 75
+                              ? errorColor
+                              : success,
                         ),
                         child: Center(
                           child: Column(
@@ -694,8 +648,8 @@ class _AiBudgetAssistantScreenState
                               Text(
                                 _hasBudget ? '$_budgetUsedPct%' : '—',
                                 style: AppFonts.heading(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w800,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
                                   color: textPrimary,
                                 ),
                               ),
@@ -704,9 +658,11 @@ class _AiBudgetAssistantScreenState
                                     ? 'ai.budget_used'.tr()
                                     : 'ai.budget_unset'.tr(),
                                 style: AppFonts.body(
-                                  fontSize: 11.5,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: GenZTokens.green,
+                                  color: _budgetUsedPct >= 75
+                                      ? errorColor
+                                      : success,
                                 ),
                               ),
                             ],
@@ -716,7 +672,7 @@ class _AiBudgetAssistantScreenState
                     },
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -774,69 +730,21 @@ class _AiBudgetAssistantScreenState
     );
   }
 
-  Widget _glassCard({
-    required bool isDark,
+  Widget _contentCard({
+    required Color surface,
+    required Color line,
     required Widget child,
-    Color? glowColor,
   }) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
-        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
-        boxShadow: [
-          BoxShadow(
-            color: (glowColor ?? ink).withValues(alpha: 0.18),
-            blurRadius: 0,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: child,
     );
   }
-}
-
-class _AuroraPainter extends CustomPainter {
-  final bool isDark;
-  final Color primary;
-  final Color secondary;
-
-  _AuroraPainter({
-    required this.isDark,
-    required this.primary,
-    required this.secondary,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p1 = Paint()
-      ..shader = RadialGradient(
-        colors: [primary.withValues(alpha: 0.15), Colors.transparent],
-      ).createShader(
-        Rect.fromCircle(
-          center: Offset(size.width * 0.15, size.height * 0.3),
-          radius: size.width * 0.6,
-        ),
-      );
-    canvas.drawRect(Offset.zero & size, p1);
-
-    final p2 = Paint()
-      ..shader = RadialGradient(
-        colors: [secondary.withValues(alpha: 0.1), Colors.transparent],
-      ).createShader(
-        Rect.fromCircle(
-          center: Offset(size.width * 0.85, size.height * 0.7),
-          radius: size.width * 0.6,
-        ),
-      );
-    canvas.drawRect(Offset.zero & size, p2);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _CircularProgressPainter extends CustomPainter {
@@ -853,8 +761,8 @@ class _CircularProgressPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width / 2) - 10;
-    const strokeWidth = 10.0;
+    final radius = (size.width / 2) - 8;
+    const strokeWidth = 8.0;
     const startAngle = -math.pi / 2;
 
     // Track
@@ -870,21 +778,24 @@ class _CircularProgressPainter extends CustomPainter {
     );
 
     // Progress
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      2 * math.pi * progress,
-      false,
-      Paint()
-        ..color = progressColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = strokeWidth
-        ..strokeCap = StrokeCap.round
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
-    );
+    if (progress > 0) {
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        2 * math.pi * progress.clamp(0.0, 1.0),
+        false,
+        Paint()
+          ..color = progressColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round,
+      );
+    }
   }
 
   @override
   bool shouldRepaint(covariant _CircularProgressPainter old) =>
-      old.progress != progress;
+      old.progress != progress ||
+      old.trackColor != trackColor ||
+      old.progressColor != progressColor;
 }

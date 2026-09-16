@@ -15,28 +15,45 @@ class UpcomingReservationsWidget extends ConsumerWidget {
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _inkSoft =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
-  static const _meta = <ReservationType, (IconData, Color)>{
-    ReservationType.flight: (PhosphorIconsFill.airplaneTilt, GenZTokens.blue),
-    ReservationType.train: (PhosphorIconsFill.train, GenZTokens.info),
-    ReservationType.bus: (PhosphorIconsFill.bus, GenZTokens.green),
-    ReservationType.hotel: (PhosphorIconsFill.buildings, GenZTokens.purple),
-    ReservationType.restaurant: (
-      PhosphorIconsFill.forkKnife,
-      GenZTokens.orange,
-    ),
-    ReservationType.car: (PhosphorIconsFill.car, GenZTokens.magenta),
-    ReservationType.event: (PhosphorIconsFill.ticket, GenZTokens.yellow),
-    ReservationType.attraction: (PhosphorIconsFill.mapPin, GenZTokens.red),
-    ReservationType.other: (
-      PhosphorIconsFill.bookmarkSimple,
-      GenZTokens.lilac,
-    ),
+  static const _icons = <ReservationType, IconData>{
+    ReservationType.flight: PhosphorIconsFill.airplaneTilt,
+    ReservationType.train: PhosphorIconsFill.train,
+    ReservationType.bus: PhosphorIconsFill.bus,
+    ReservationType.hotel: PhosphorIconsFill.buildings,
+    ReservationType.restaurant: PhosphorIconsFill.forkKnife,
+    ReservationType.car: PhosphorIconsFill.car,
+    ReservationType.event: PhosphorIconsFill.ticket,
+    ReservationType.attraction: PhosphorIconsFill.mapPin,
+    ReservationType.other: PhosphorIconsFill.bookmarkSimple,
   };
 
-  (IconData, Color) _typeMeta(ReservationType t) =>
-      _meta[t] ?? _meta[ReservationType.other]!;
+  Color _typeColor(ReservationType t) {
+    switch (t) {
+      case ReservationType.flight:
+        return GenZTokens.chart4;
+      case ReservationType.train:
+        return isDarkMode ? GenZTokens.infoDark : GenZTokens.info;
+      case ReservationType.bus:
+        return GenZTokens.chart1;
+      case ReservationType.hotel:
+        return GenZTokens.chart5;
+      case ReservationType.restaurant:
+        return GenZTokens.chart3;
+      case ReservationType.car:
+        return GenZTokens.chart6;
+      case ReservationType.event:
+        return isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+      case ReservationType.attraction:
+        return GenZTokens.chart2;
+      case ReservationType.other:
+        return isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    }
+  }
 
   String _countdown(DateTime d) {
     final diff = d.difference(DateTime.now());
@@ -67,13 +84,13 @@ class UpcomingReservationsWidget extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Icon(PhosphorIconsFill.ticket, size: 20, color: _ink),
+            Icon(PhosphorIconsFill.ticket, size: 20, color: _accent),
             const SizedBox(width: 8),
             Text(
               'general.upcoming_tickets'.tr(),
               style: AppFonts.heading(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
                 color: _ink,
                 letterSpacing: -0.5,
               ),
@@ -96,14 +113,16 @@ class UpcomingReservationsWidget extends ConsumerWidget {
   }
 
   Widget _card(BuildContext context, Reservation r) {
-    final meta = _typeMeta(r.type);
+    final icon = _icons[r.type] ?? PhosphorIconsFill.bookmarkSimple;
+    final color = _typeColor(r.type);
     return Container(
       width: 250,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: _paper,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: _ink.withValues(alpha: 0.08)),
+        color: _surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(_ink, isDarkMode),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,10 +132,14 @@ class UpcomingReservationsWidget extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: meta.$2.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
+                  color: _fill,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                  border: Border.all(
+                    color: _line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
-                child: Icon(meta.$1, color: meta.$2, size: 18),
+                child: Icon(icon, color: color, size: 18),
               ),
               const Spacer(),
               if (r.startTime != null)
@@ -126,15 +149,19 @@ class UpcomingReservationsWidget extends ConsumerWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: meta.$2,
-                    borderRadius: BorderRadius.circular(99),
+                    color: _fill,
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                    border: Border.all(
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                   child: Text(
                     _countdown(r.startTime!.toLocal()),
                     style: AppFonts.mono(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: GenZTokens.ink,
+                      color: color,
                     ),
                   ),
                 ),
@@ -146,7 +173,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppFonts.heading(
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w700,
               fontSize: 14,
               color: _ink,
             ),
@@ -161,7 +188,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
             overflow: TextOverflow.ellipsis,
             style: AppFonts.body(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w400,
               color: _inkSoft,
             ),
           ),

@@ -36,19 +36,18 @@ class TripHubScreen extends StatelessWidget {
   const TripHubScreen({super.key, required this.trip, this.isDarkMode = false});
 
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
+      isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
 
-  /// Accent lay tu theme dang chon.
-  ///
-  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*,
-  /// nen doi theme khong an o man nay.
-  Color _primaryOf(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
-  Color get _ink =>
-      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _surface =>
+      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textPri => _ink;
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _accent =>
+      isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
   // Rút gọn tiền: 3.000.000 → "3tr", 500000 → "500k".
   String _fmtMoney(double v) {
@@ -101,20 +100,22 @@ class TripHubScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppFonts.heading(
                   fontSize: 18,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   // Có ảnh bìa → nền tối, chữ phải trắng mới đọc được.
                   color: (trip.coverImage?.isNotEmpty ?? false)
                       ? Colors.white
-                      : GenZTokens.ink,
+                      : _textPri,
                 ),
               ),
               // Ảnh bìa chuyến (nếu có) phủ toàn header, phía dưới là lớp tối
-              // để chữ tiêu đề luôn đọc được. Chưa chọn bìa thì về khối cam đặc
-              // kèm hoạ tiết máy bay như cũ.
+              // để chữ tiêu đề luôn đọc được.
               background: DecoratedBox(
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: BorderSide(color: _ink, width: 2.5),
+                    bottom: BorderSide(
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                 ),
                 child: Stack(
@@ -122,7 +123,7 @@ class TripHubScreen extends StatelessWidget {
                   children: [
                     TripCoverImage(
                       source: trip.coverImage,
-                      fallbackColor: _primaryOf(context),
+                      fallbackColor: _accent,
                     ),
                     if (trip.coverImage == null || trip.coverImage!.isEmpty)
                       Align(
@@ -131,18 +132,21 @@ class TripHubScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(20),
                           child: Icon(
                             PhosphorIcons.airplaneTilt(PhosphorIconsStyle.fill),
-                            color: _ink.withValues(alpha: 0.25),
+                            color: _ink.withValues(alpha: 0.15),
                             size: 80,
                           ),
                         ),
                       )
                     else
-                      const DecoratedBox(
+                      DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Color(0xCC141210)],
+                            colors: [
+                              GenZTokens.paper.withValues(alpha: 0),
+                              GenZTokens.ink.withValues(alpha: 0.55),
+                            ],
                           ),
                         ),
                       ),
@@ -190,7 +194,7 @@ class TripHubScreen extends StatelessWidget {
                           Icon(
                             PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                             size: 16,
-                            color: GenZTokens.orange,
+                            color: _accent,
                           ),
                           const SizedBox(width: 4),
                           Flexible(
@@ -210,7 +214,9 @@ class TripHubScreen extends StatelessWidget {
                           Icon(
                             PhosphorIcons.wallet(PhosphorIconsStyle.fill),
                             size: 16,
-                            color: GenZTokens.green,
+                            color: isDarkMode
+                                ? GenZTokens.successDark
+                                : GenZTokens.success,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -232,26 +238,31 @@ class TripHubScreen extends StatelessWidget {
                         final v = TripVibe.of(trip.vibe)!;
                         return Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 7,
+                            horizontal: 10,
+                            vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: v.color.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(99),
-                            border: Border.all(color: v.color, width: 1.5),
+                            color: v.color.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusPill,
+                            ),
+                            border: Border.all(
+                              color: v.color.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(v.icon, size: 15, color: v.color),
-                              const SizedBox(width: 6),
+                              Icon(v.icon, size: 14, color: v.color),
+                              const SizedBox(width: 5),
                               Text(
                                 'trips.vibe_display'.tr(
                                   namedArgs: {'vibe': v.label},
                                 ),
                                 style: AppFonts.heading(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                   color: _ink,
                                 ),
                               ),
@@ -265,8 +276,8 @@ class TripHubScreen extends StatelessWidget {
                   Text(
                     'trips.manage'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                       color: _textPri,
                     ),
                   ),
@@ -284,7 +295,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.scales(PhosphorIconsStyle.fill),
                         'expense.split_title'.tr(),
                         'hub.balances'.tr(),
-                        GenZTokens.orange,
                         () => TripBalancesScreen(
                           tripId: trip.id,
                           tripName: trip.name,
@@ -296,7 +306,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.piggyBank(PhosphorIconsStyle.fill),
                         'fund.title'.tr(),
                         'hub.fund_sub'.tr(),
-                        GenZTokens.green,
                         () => TripFundScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -307,7 +316,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
                         'hub.polls'.tr(),
                         'hub.polls_sub'.tr(),
-                        GenZTokens.purple,
                         () => TripPollsScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -318,7 +326,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.heart(PhosphorIconsStyle.fill),
                         'trips.hub_wishlist'.tr(),
                         'hub.wishlist_sub'.tr(),
-                        GenZTokens.green,
                         () => TripWishlistScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -329,7 +336,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
                         'itinerary.title'.tr(),
                         'hub.itinerary_sub'.tr(),
-                        GenZTokens.blue,
                         () => TripItineraryScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -340,7 +346,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
                         'hub.map'.tr(),
                         'hub.map_sub'.tr(),
-                        GenZTokens.green,
                         () => TripMapScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -351,7 +356,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.camera(PhosphorIconsStyle.fill),
                         'moments.title'.tr(),
                         'hub.moments'.tr(),
-                        GenZTokens.magenta,
                         () => TripMomentsFeedScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -362,7 +366,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.chatCircle(PhosphorIconsStyle.fill),
                         'trips.hub_squad_chat'.tr(),
                         'hub.chat_sub'.tr(),
-                        GenZTokens.purple,
                         () => TripChatLiveScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -373,7 +376,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.suitcaseRolling(PhosphorIconsStyle.fill),
                         'packing.title'.tr(),
                         'hub.packing_sub'.tr(),
-                        GenZTokens.blue,
                         () => TripPackingScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -384,7 +386,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.listChecks(PhosphorIconsStyle.fill),
                         'hub.todos'.tr(),
                         'hub.todos_sub'.tr(),
-                        GenZTokens.purple,
                         () => TripTodosScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -395,7 +396,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.ticket(PhosphorIconsStyle.fill),
                         'reservations.title'.tr(),
                         'hub.reservations_sub'.tr(),
-                        GenZTokens.purple,
                         () => TripReservationsScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -406,7 +406,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.note(PhosphorIconsStyle.fill),
                         'hub.notes'.tr(),
                         'hub.notes_sub'.tr(),
-                        GenZTokens.yellow,
                         () => TripNotesScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -417,7 +416,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.checkSquare(PhosphorIconsStyle.fill),
                         'checkins.title'.tr(),
                         'hub.checkins_sub'.tr(),
-                        GenZTokens.green,
                         () => TripCheckinsScreen(
                           tripId: trip.id,
                           tripDays: trip.durationDays,
@@ -428,11 +426,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.file(PhosphorIconsStyle.fill),
                         'trips.hub_documents'.tr(),
-                        // Truoc day o day dung 'hub.reservations' ("Kho ve &
-                        // Booking") — do la phu de cua tile Dat cho, khong phai
-                        // cua Tai lieu.
                         'hub.documents_sub'.tr(),
-                        GenZTokens.blue,
                         () => TripDocumentsScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -442,10 +436,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
                         'trips.hub_journal'.tr(),
-                        // Truoc day dung 'hub.moments_sub' ("Anh & Ky niem
-                        // nhom") — phu de cua tile Khoanh khac.
                         'hub.journal_sub'.tr(),
-                        GenZTokens.lilac,
                         () => TripJournalScreen(
                           tripId: trip.id,
                           isDarkMode: isDarkMode,
@@ -456,7 +447,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.calendar(PhosphorIconsStyle.fill),
                         'trips.hub_leave_days'.tr(),
                         'hub.vacay'.tr(),
-                        GenZTokens.orange,
                         () => VacayScreen(isDarkMode: isDarkMode),
                       ),
                       _tile(
@@ -464,7 +454,6 @@ class TripHubScreen extends StatelessWidget {
                         PhosphorIcons.link(PhosphorIconsStyle.fill),
                         'invites.limited_code'.tr(),
                         'invites.manage'.tr(),
-                        GenZTokens.red,
                         () => TripInvitesScreen(
                           tripId: trip.id,
                           tripName: trip.name,
@@ -478,7 +467,6 @@ class TripHubScreen extends StatelessWidget {
                         'trips.code_label'.tr(
                           namedArgs: {'code': trip.inviteCode},
                         ),
-                        GenZTokens.yellow,
                         null,
                       ),
                     ],
@@ -506,10 +494,10 @@ class TripHubScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _ink, width: 2),
-          boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 3))],
+          color: _surface,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+          boxShadow: GenZTokens.hardShadow(_ink, isDarkMode),
         ),
         child: Column(
           children: [
@@ -521,7 +509,7 @@ class TripHubScreen extends StatelessWidget {
                   ? AppFonts.mono(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: _primaryOf(context),
+                      color: _accent,
                     )
                   : AppFonts.heading(
                       fontSize: 20,
@@ -541,7 +529,6 @@ class TripHubScreen extends StatelessWidget {
     IconData icon,
     String title,
     String sub,
-    Color color,
     Widget Function()? builder,
   ) {
     return PressableCard(
@@ -558,10 +545,10 @@ class TripHubScreen extends StatelessWidget {
         }
         Navigator.push(context, MaterialPageRoute(builder: (_) => builder()));
       },
-      color: isDarkMode ? GenZTokens.paperDark : GenZTokens.paper,
-      radius: 18,
-      borderWidth: 2,
-      depth: 3,
+      color: _surface,
+      radius: GenZTokens.radiusCard,
+      borderWidth: GenZTokens.borderWidthThin,
+      depth: 1,
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -570,21 +557,16 @@ class TripHubScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: _ink, width: 2),
+              color: _fill,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
             ),
-            // Chữ/icon trên accent sáng (vàng, lilac) phải là ink
             child: Icon(
               icon,
-              color: color.computeLuminance() > 0.5
-                  ? GenZTokens.ink
-                  : (isDarkMode ? GenZTokens.inkDark : GenZTokens.paper),
+              color: _accent,
               size: 20,
             ),
           ),
-          // Bọc Flexible + ellipsis: tile không được tràn dù đổi tỉ lệ lưới hay
-          // gặp nhãn dài sau khi dịch sang ngôn ngữ khác.
           Flexible(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -596,7 +578,7 @@ class TripHubScreen extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: _textPri,
                   ),
                 ),

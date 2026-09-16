@@ -32,19 +32,20 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
   /// Chuyến đang xem. `null` = chưa chọn → dùng chuyến đầu danh sách.
   String? _selectedTripId;
 
-  Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
-
   @override
   Widget build(BuildContext context) {
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final tripsAsync = ref.watch(tripsProvider);
 
     return tripsAsync.when(
       loading: () => Container(
-        color: _bg,
+        color: bg,
         child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
       error: (e, _) => _message(
+        isDark: isDark,
         icon: PhosphorIcons.wifiSlash(),
         title: 'errors.load_failed'.tr(),
         body: '',
@@ -54,6 +55,7 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
       data: (trips) {
         if (trips.isEmpty) {
           return _message(
+            isDark: isDark,
             icon: PhosphorIcons.mapTrifold(),
             title: 'itinerary.no_trip_title'.tr(),
             body: 'itinerary.no_trip_body'.tr(),
@@ -69,7 +71,7 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
 
         return Column(
           children: [
-            if (trips.length > 1) _tripSwitcher(trips, current),
+            if (trips.length > 1) _tripSwitcher(isDark, trips, current),
             Expanded(
               child: TripItineraryScreen(
                 // Key theo tripId để đổi chuyến là dựng lại nội dung.
@@ -85,10 +87,18 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
   }
 
   /// Thanh chọn chuyến khi user có nhiều hơn một chuyến.
-  Widget _tripSwitcher(List<Trip> trips, Trip current) {
+  Widget _tripSwitcher(bool isDark, List<Trip> trips, Trip current) {
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+
     return Container(
       height: 52,
-      color: _bg,
+      color: bg,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(
@@ -108,11 +118,13 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
                 vertical: 6,
               ),
               decoration: BoxDecoration(
-                color: selected ? GenZTokens.yellow : Colors.transparent,
+                color: selected ? accentSoft : fill,
                 borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                 border: Border.all(
-                  color: selected ? _ink : _ink.withValues(alpha: 0.3),
-                  width: GenZTokens.borderWidthThin,
+                  color: selected ? accent : line,
+                  width: selected
+                      ? GenZTokens.borderWidth
+                      : GenZTokens.borderWidthThin,
                 ),
               ),
               child: Center(
@@ -120,8 +132,8 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
                   t.name,
                   style: AppFonts.heading(
                     fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: selected ? GenZTokens.ink : _ink,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? accent : inkSoft,
                   ),
                 ),
               ),
@@ -133,14 +145,23 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
   }
 
   Widget _message({
+    required bool isDark,
     required IconData icon,
     required String title,
     required String body,
     required String actionLabel,
     required VoidCallback onAction,
   }) {
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+
     return Container(
-      color: _bg,
+      color: bg,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(GenZTokens.space6),
@@ -150,23 +171,24 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
               Container(
                 padding: const EdgeInsets.all(GenZTokens.space5),
                 decoration: BoxDecoration(
-                  color: GenZTokens.yellow,
+                  color: fill,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: _ink,
-                    width: GenZTokens.borderWidth,
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
                   ),
                 ),
-                child: Icon(icon, size: 34, color: GenZTokens.ink),
+                child: Icon(icon, size: 34, color: accent),
               ),
               const SizedBox(height: GenZTokens.space5),
               Text(
                 title,
                 textAlign: TextAlign.center,
                 style: AppFonts.heading(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: _ink,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: ink,
+                  letterSpacing: -0.2,
                 ),
               ),
               if (body.isNotEmpty) ...[
@@ -175,9 +197,9 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
                   body,
                   textAlign: TextAlign.center,
                   style: AppFonts.body(
-                    fontSize: 14,
+                    fontSize: 15,
                     height: 1.45,
-                    color: _ink.withValues(alpha: 0.65),
+                    color: inkSoft,
                   ),
                 ),
               ],
@@ -185,14 +207,13 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
               ElevatedButton(
                 onPressed: onAction,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: GenZTokens.green,
-                  foregroundColor: GenZTokens.ink,
+                  backgroundColor: accent,
+                  foregroundColor: onAccent,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: GenZTokens.space6,
                     vertical: GenZTokens.space4,
                   ),
-                  side: BorderSide(color: _ink, width: GenZTokens.borderWidth),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
                       GenZTokens.radiusButton,
@@ -203,8 +224,8 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
                   actionLabel,
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: GenZTokens.ink,
+                    fontWeight: FontWeight.w600,
+                    color: onAccent,
                   ),
                 ),
               ),

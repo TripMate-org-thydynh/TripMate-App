@@ -25,56 +25,75 @@ class GamificationScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final paper = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
 
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: bg,
         elevation: 0,
+        iconTheme: IconThemeData(color: ink),
         title: Text(
           'gamification.hub_title'.tr(),
           style: AppFonts.heading(
             color: ink,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(
+          horizontal: GenZTokens.space4,
+          vertical: GenZTokens.space4,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Banner visual game
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(GenZTokens.space5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                color: GenZTokens.yellow,
-                border: Border.all(color: ink, width: GenZTokens.borderWidth),
-                boxShadow: GenZTokens.hardShadow(ink),
+                color: paper,
+                border: Border.all(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'games.hub_kicker'.tr(),
-                    style: AppFonts.heading(
-                      color: GenZTokens.ink,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                      height: 1.05,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: GenZTokens.space3,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: accentSoft,
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                    ),
+                    child: Text(
+                      'games.hub_kicker'.tr(),
+                      style: AppFonts.heading(
+                        color: accent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: GenZTokens.space3),
                   Text(
                     'gamification.hub_desc'.tr(),
                     style: AppFonts.body(
-                      color: GenZTokens.ink.withValues(alpha: 0.85),
-                      fontWeight: FontWeight.w600,
+                      color: inkSoft,
+                      fontWeight: FontWeight.w500,
                       fontSize: 13,
                       height: 1.4,
                     ),
@@ -83,24 +102,23 @@ class GamificationScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: GenZTokens.space5),
 
             Text(
               'gamification.hub_title'.tr(),
               style: AppFonts.heading(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
                 color: ink,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: GenZTokens.space3),
 
             GridView.count(
               shrinkWrap: true,
               crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
+              crossAxisSpacing: GenZTokens.space3,
+              mainAxisSpacing: GenZTokens.space3,
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 _buildGameCard(
@@ -110,7 +128,6 @@ class GamificationScreen extends StatelessWidget {
                   PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
                   const WhoPaysWheelScreen(),
                   isDark,
-                  GenZTokens.red,
                 ),
                 _buildGameCard(
                   context,
@@ -119,7 +136,6 @@ class GamificationScreen extends StatelessWidget {
                   PhosphorIcons.lightning(PhosphorIconsStyle.fill),
                   const RandomDareGeneratorScreen(),
                   isDark,
-                  GenZTokens.orange,
                 ),
                 _buildGameCard(
                   context,
@@ -128,7 +144,6 @@ class GamificationScreen extends StatelessWidget {
                   PhosphorIcons.gridFour(PhosphorIconsStyle.fill),
                   const TripBingoScreen(),
                   isDark,
-                  GenZTokens.green,
                 ),
                 _buildGameCard(
                   context,
@@ -137,23 +152,21 @@ class GamificationScreen extends StatelessWidget {
                   PhosphorIcons.fire(PhosphorIconsStyle.fill),
                   const ChaosChallengesScreen(),
                   isDark,
-                  GenZTokens.purple,
                 ),
               ],
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: GenZTokens.space5),
 
             Text(
               'gamification.xp_ranks'.tr(),
               style: AppFonts.heading(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
                 color: ink,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: GenZTokens.space3),
 
             _buildListAction(
               context,
@@ -224,9 +237,12 @@ class GamificationScreen extends StatelessWidget {
     IconData icon,
     Widget target,
     bool isDark,
-    Color accentColor,
   ) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final paper = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
     return GestureDetector(
       onTap: () {
@@ -236,33 +252,32 @@ class GamificationScreen extends StatelessWidget {
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(GenZTokens.space4),
         decoration: BoxDecoration(
-          color: accentColor,
+          color: paper,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: ink,
-            width: GenZTokens.borderWidth,
+            color: line,
+            width: GenZTokens.borderWidthThin,
           ),
-          boxShadow: GenZTokens.hardShadow(ink),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(GenZTokens.space2),
               decoration: BoxDecoration(
-                color: GenZTokens.paper,
-                borderRadius: BorderRadius.circular(10),
+                color: fill,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 border: Border.all(
-                  color: GenZTokens.ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
               child: Icon(
                 icon,
-                color: GenZTokens.ink,
+                color: ink,
                 size: 24,
               ),
             ),
@@ -272,9 +287,9 @@ class GamificationScreen extends StatelessWidget {
                 Text(
                   title,
                   style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
-                    color: GenZTokens.ink,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: ink,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -283,8 +298,8 @@ class GamificationScreen extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.body(
-                    color: GenZTokens.ink.withValues(alpha: 0.8),
-                    fontWeight: FontWeight.w600,
+                    color: inkSoft,
+                    fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
                 ),
@@ -305,18 +320,21 @@ class GamificationScreen extends StatelessWidget {
     bool isDark,
   ) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final paper = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: GenZTokens.space3),
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-          borderRadius: BorderRadius.circular(16),
+          color: paper,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: ink,
+            color: line,
             width: GenZTokens.borderWidthThin,
           ),
-          boxShadow: GenZTokens.hardShadow(ink),
         ),
         child: ListTile(
           onTap: () {
@@ -328,19 +346,20 @@ class GamificationScreen extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: GenZTokens.lilac,
-              borderRadius: BorderRadius.circular(12),
+              color: fill,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
               border: Border.all(
-                color: GenZTokens.ink,
+                color: line,
                 width: GenZTokens.borderWidthThin,
               ),
             ),
-            child: Icon(icon, color: GenZTokens.ink),
+            child: Icon(icon, color: ink, size: 20),
           ),
           title: Text(
             title,
             style: AppFonts.heading(
               fontWeight: FontWeight.w700,
+              fontSize: 15,
               color: ink,
             ),
           ),
@@ -349,13 +368,13 @@ class GamificationScreen extends StatelessWidget {
             style: AppFonts.body(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+              color: inkSoft,
             ),
           ),
           trailing: Icon(
             PhosphorIcons.caretRight(),
             size: 16,
-            color: ink,
+            color: inkSoft,
           ),
         ),
       ),

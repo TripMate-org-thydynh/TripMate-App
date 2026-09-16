@@ -32,8 +32,8 @@ class AchievementUnlockScreen extends ConsumerWidget {
         title: Text(
           'games.badges_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -69,10 +69,10 @@ class AchievementUnlockScreen extends ConsumerWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(GenZTokens.space5),
                   children: [
-                    _summary(isDark, ink, unlocked, badges.length),
+                    _summary(isDark, unlocked, badges.length),
                     const SizedBox(height: GenZTokens.space5),
                     for (final b in badges) ...[
-                      _card(isDark, ink, b),
+                      _card(isDark, b),
                       const SizedBox(height: GenZTokens.space4),
                     ],
                   ],
@@ -83,54 +83,63 @@ class AchievementUnlockScreen extends ConsumerWidget {
     );
   }
 
-  Widget _summary(bool isDark, Color ink, int unlocked, int total) {
+  Widget _summary(bool isDark, int unlocked, int total) {
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(GenZTokens.space5),
       decoration: BoxDecoration(
-        color: GenZTokens.yellow,
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: ink,
-          width: GenZTokens.borderWidth,
+          color: line,
+          width: GenZTokens.borderWidthThin,
         ),
-        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         children: [
           Text(
             '$unlocked / $total',
             style: AppFonts.heading(
-              fontSize: 34,
-              fontWeight: FontWeight.w900,
-              color: GenZTokens.ink,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: accent,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             'games.badges_unlocked'.tr(),
-            style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
+            style: AppFonts.body(fontSize: 13, color: inkSoft),
           ),
         ],
       ),
     );
   }
 
-  Widget _card(bool isDark, Color ink, TripBadge b) {
+  Widget _card(bool isDark, TripBadge b) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
-        color: b.unlocked ? GenZTokens.green.withValues(alpha: 0.18) : surface,
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: ink,
+          color: b.unlocked ? success : line,
           width: b.unlocked
               ? GenZTokens.borderWidth
               : GenZTokens.borderWidthThin,
         ),
-        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +151,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
                     ? PhosphorIcons.trophy(PhosphorIconsStyle.fill)
                     : PhosphorIcons.lockKey(),
                 size: 20,
-                color: b.unlocked ? GenZTokens.success : inkSoft,
+                color: b.unlocked ? success : inkSoft,
               ),
               const SizedBox(width: GenZTokens.space3),
               Expanded(
@@ -152,7 +161,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: ink,
                   ),
                 ),
@@ -162,24 +171,24 @@ class AchievementUnlockScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             b.desc,
-            style: AppFonts.body(fontSize: 12.5, color: inkSoft, height: 1.4),
+            style: AppFonts.body(fontSize: 13, color: inkSoft, height: 1.4),
           ),
           const SizedBox(height: GenZTokens.space3),
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
             child: LinearProgressIndicator(
               value: b.percent / 100,
               minHeight: 8,
-              backgroundColor: inkSoft.withValues(alpha: 0.2),
+              backgroundColor: fill,
               valueColor: AlwaysStoppedAnimation<Color>(
-                b.unlocked ? GenZTokens.success : GenZTokens.orange,
+                b.unlocked ? success : accent,
               ),
             ),
           ),
           const SizedBox(height: 4),
           Text(
             '${b.current} / ${b.target}',
-            style: AppFonts.body(fontSize: 12, color: inkSoft),
+            style: AppFonts.mono(fontSize: 12, color: inkSoft),
           ),
         ],
       ),

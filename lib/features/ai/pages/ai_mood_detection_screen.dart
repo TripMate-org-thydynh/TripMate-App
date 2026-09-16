@@ -15,11 +15,14 @@ import '../data/ai_repository.dart';
 /// Loạn" — không gọi API nào, nên mọi chuyến và mọi tài khoản đều thấy y hệt.
 /// Nay lấy từ `/ai/trips/:id/mood`, AI đánh giá theo chi tiêu và quy mô nhóm.
 class AiMoodDetectionScreen extends ConsumerWidget {
-  const AiMoodDetectionScreen({super.key});
+  final bool? isDarkMode;
+
+  const AiMoodDetectionScreen({super.key, this.isDarkMode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final tripId = ref.watch(activeTripIdProvider);
@@ -27,14 +30,15 @@ class AiMoodDetectionScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'ai.mood_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -74,6 +78,12 @@ class AiMoodDetectionScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+
     // Kẹp về 0..5 phòng khi AI trả số ngoài thang.
     final level = mood.tensionLevel.clamp(0, 5);
 
@@ -85,8 +95,7 @@ class AiMoodDetectionScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: surface,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(color: ink, width: GenZTokens.borderWidth),
-          boxShadow: GenZTokens.hardShadow(ink),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
         ),
         child: Column(
           children: [
@@ -99,13 +108,13 @@ class AiMoodDetectionScreen extends ConsumerWidget {
                   child: CircularProgressIndicator(
                     value: level / 5,
                     strokeWidth: 10,
-                    backgroundColor: inkSoft.withValues(alpha: 0.2),
+                    backgroundColor: fill,
                     valueColor: AlwaysStoppedAnimation<Color>(
                       level >= 4
-                          ? GenZTokens.danger
+                          ? danger
                           : level >= 3
-                          ? GenZTokens.orange
-                          : GenZTokens.success,
+                          ? warning
+                          : success,
                     ),
                   ),
                 ),
@@ -115,8 +124,8 @@ class AiMoodDetectionScreen extends ConsumerWidget {
                     Text(
                       '$level/5',
                       style: AppFonts.heading(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
                         color: ink,
                       ),
                     ),
@@ -134,8 +143,8 @@ class AiMoodDetectionScreen extends ConsumerWidget {
                 mood.overallMood,
                 textAlign: TextAlign.center,
                 style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
                   color: ink,
                 ),
               ),
@@ -146,7 +155,7 @@ class AiMoodDetectionScreen extends ConsumerWidget {
                 mood.moodAnalysis,
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
-                  fontSize: 13.5,
+                  fontSize: 13,
                   color: inkSoft,
                   height: 1.45,
                 ),

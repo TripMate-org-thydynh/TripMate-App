@@ -6,10 +6,7 @@ import '../network/api_exception.dart';
 import '../theme/app_fonts.dart';
 import '../theme/gen_z_tokens.dart';
 
-/// Trạng thái rỗng dùng chung cho mọi màn hình.
-///
-/// Nhiều màn trước đây luôn hiển thị số liệu và người bịa; nay khi chưa có
-/// dữ liệu thật thì hiện khối này để người dùng biết cần làm gì tiếp.
+/// Trạng thái rỗng dùng chung cho mọi màn hình (A×B: sáng kem, tối graphite).
 class AppEmptyState extends StatelessWidget {
   final bool isDark;
   final IconData icon;
@@ -28,6 +25,9 @@ class AppEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Center(
       child: Padding(
@@ -38,19 +38,22 @@ class AppEmptyState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(GenZTokens.space5),
               decoration: BoxDecoration(
-                color: GenZTokens.yellow,
+                color: fill,
                 shape: BoxShape.circle,
-                border: Border.all(color: ink, width: GenZTokens.borderWidth),
+                border: Border.all(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
+                ),
               ),
-              child: Icon(icon, size: 34, color: GenZTokens.ink),
+              child: Icon(icon, size: 32, color: accent),
             ),
             const SizedBox(height: GenZTokens.space5),
             Text(
               title,
               textAlign: TextAlign.center,
               style: AppFonts.heading(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
                 color: ink,
               ),
             ),
@@ -58,7 +61,7 @@ class AppEmptyState extends StatelessWidget {
             Text(
               body,
               textAlign: TextAlign.center,
-              style: AppFonts.body(fontSize: 14, color: inkSoft, height: 1.45),
+              style: AppFonts.body(fontSize: 13, color: inkSoft, height: 1.45),
             ),
           ],
         ),
@@ -68,15 +71,11 @@ class AppEmptyState extends StatelessWidget {
 }
 
 /// Trạng thái lỗi dùng chung, có nút thử lại.
-///
-/// Trước đây các màn game nuốt lỗi và hiện dữ liệu cứng, nên người dùng không
-/// bao giờ biết là tải hỏng.
 class AppErrorState extends StatelessWidget {
   final bool isDark;
   final VoidCallback onRetry;
 
-  /// Lỗi bắt được — truyền vào để hiện đúng câu BE trả về (hết quota AI, chuyến
-  /// không tồn tại...) thay vì một câu chung chung.
+  /// Lỗi bắt được — truyền vào để hiện đúng câu BE trả về thay vì một câu chung chung.
   final Object? error;
 
   const AppErrorState({
@@ -86,14 +85,15 @@ class AppErrorState extends StatelessWidget {
     this.error,
   });
 
-  /// Câu thông báo: ưu tiên message của [ApiException]; mất mạng thì đổi icon.
   ApiException? get _api =>
       error is ApiException ? error as ApiException : null;
 
   @override
   Widget build(BuildContext context) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     return Center(
       child: Padding(
@@ -106,15 +106,15 @@ class AppErrorState extends StatelessWidget {
                   ? PhosphorIcons.wifiSlash()
                   : PhosphorIcons.warningCircle(),
               size: 40,
-              color: inkSoft.withValues(alpha: 0.8),
+              color: danger,
             ),
             const SizedBox(height: GenZTokens.space4),
             Text(
               _api?.message ?? 'errors.load_failed'.tr(),
               textAlign: TextAlign.center,
               style: AppFonts.heading(
-                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
                 color: ink,
               ),
             ),
@@ -123,10 +123,10 @@ class AppErrorState extends StatelessWidget {
               onPressed: onRetry,
               icon: Icon(PhosphorIcons.arrowClockwise(), size: 18),
               style: ElevatedButton.styleFrom(
-                backgroundColor: GenZTokens.yellow,
-                foregroundColor: GenZTokens.ink,
+                backgroundColor: accent,
+                foregroundColor: onAccent,
                 elevation: 0,
-                side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+                side: BorderSide.none,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 ),
@@ -135,8 +135,8 @@ class AppErrorState extends StatelessWidget {
                 'common.retry'.tr(),
                 style: AppFonts.heading(
                   fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: GenZTokens.ink,
+                  fontWeight: FontWeight.w600,
+                  color: onAccent,
                 ),
               ),
             ),

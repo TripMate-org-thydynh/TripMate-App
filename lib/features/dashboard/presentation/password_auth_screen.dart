@@ -36,12 +36,18 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
     super.dispose();
   }
 
-  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
+  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _sub =>
       widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _surface =>
-      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill =>
+      widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line =>
+      widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent =>
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      widget.isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
   Future<void> _submit() async {
     final username = _username.text.trim();
@@ -92,7 +98,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: GenZTokens.paper.withValues(alpha: 0),
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
       ),
@@ -103,12 +109,14 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _isRegister ? 'auth.register_title'.tr() : 'auth.login_title'.tr(),
+                _isRegister
+                    ? 'auth.register_title'.tr()
+                    : 'auth.login_title'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
                   color: _ink,
-                  letterSpacing: -1,
+                  letterSpacing: -0.5,
                 ),
               ),
               const SizedBox(height: 6),
@@ -147,48 +155,39 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
               ],
               const SizedBox(height: 28),
 
-              // Nút submit brutalist
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                  border: Border.all(
-                    color: _ink,
-                    width: GenZTokens.borderWidth,
-                  ),
-                  boxShadow: GenZTokens.hardShadow(_ink),
-                ),
-                child: ElevatedButton(
-                  onPressed: _loading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: GenZTokens.yellow,
-                    foregroundColor: GenZTokens.ink,
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        GenZTokens.radiusButton,
-                      ),
+              // Nút submit accent duy nhất
+              ElevatedButton(
+                onPressed: _loading ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _accent,
+                  foregroundColor: _onAccent,
+                  elevation: 0,
+                  minimumSize: const Size(double.infinity, 52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
                     ),
                   ),
-                  child: _loading
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: GenZTokens.ink,
-                          ),
-                        )
-                      : Text(
-                          _isRegister ? 'auth.register_cta'.tr() : 'auth.sign_in'.tr(),
-                          style: AppFonts.heading(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: GenZTokens.ink,
-                          ),
-                        ),
                 ),
+                child: _loading
+                    ? SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: _onAccent,
+                        ),
+                      )
+                    : Text(
+                        _isRegister
+                            ? 'auth.register_cta'.tr()
+                            : 'auth.sign_in'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: _onAccent,
+                        ),
+                      ),
               ),
               const SizedBox(height: 18),
 
@@ -205,10 +204,12 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                       style: AppFonts.body(color: _sub, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: _isRegister ? 'auth.sign_in'.tr() : 'auth.sign_up'.tr(),
+                          text: _isRegister
+                              ? 'auth.sign_in'.tr()
+                              : 'auth.sign_up'.tr(),
                           style: AppFonts.heading(
-                            color: _ink,
-                            fontWeight: FontWeight.w800,
+                            color: _accent,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -232,9 +233,9 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: _surface,
+        color: _fill,
         borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-        border: Border.all(color: _ink, width: GenZTokens.borderWidthThin),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextField(
@@ -242,15 +243,15 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
         obscureText: obscure,
         style: AppFonts.body(
           color: _ink,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           fontSize: 15,
         ),
         decoration: InputDecoration(
-          icon: Icon(icon, color: _ink.withValues(alpha: 0.5), size: 20),
+          icon: Icon(icon, color: _sub, size: 20),
           hintText: hint,
           hintStyle: AppFonts.body(
-            color: _ink.withValues(alpha: 0.4),
-            fontWeight: FontWeight.w600,
+            color: _sub,
+            fontWeight: FontWeight.w400,
             fontSize: 15,
           ),
           border: InputBorder.none,
