@@ -362,7 +362,7 @@ class ExportPdfButton extends ConsumerWidget {
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
         backgroundColor: GenZTokens.purple,
-        foregroundColor: Colors.white,
+        foregroundColor: GenZTokens.ink,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
@@ -410,7 +410,7 @@ class ExportPdfButton extends ConsumerWidget {
         style: AppFonts.heading(
           fontSize: 14,
           fontWeight: FontWeight.w800,
-          color: Colors.white,
+          color: GenZTokens.ink,
         ),
       ),
     );

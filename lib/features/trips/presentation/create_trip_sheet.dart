@@ -437,9 +437,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
           runSpacing: 8,
           children: _vibes.map((v) {
             final sel = _vibe == v.$1;
-            final onSel = _primary.computeLuminance() > 0.5
-                ? GenZTokens.ink
-                : Colors.white;
+            final onSel = GenZTokens.ink;
             return GestureDetector(
               onTap: () => setState(() => _vibe = sel ? null : v.$1),
               child: Container(

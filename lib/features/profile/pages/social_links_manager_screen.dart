@@ -236,8 +236,8 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
                       child: ElevatedButton(
                         onPressed: _saveSocialLinks,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: GenZTokens.purple,
-                          foregroundColor: Colors.white,
+                          backgroundColor: GenZTokens.yellow,
+                          foregroundColor: GenZTokens.ink,
                           elevation: 0,
                           shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
@@ -248,7 +248,7 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
                           'profile.social_save'.tr(),
                           style: AppFonts.heading(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: GenZTokens.ink,
                           ),
                         ),
                       ),

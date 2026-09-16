@@ -190,8 +190,16 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
       HapticFeedback.heavyImpact();
       _showBingoCelebrationDialog();
       // Ăn được một hàng thì XP vào squad thật, không chỉ hiện dialog.
+      // Đồng thời kết thúc ván hiện tại trên server để lần sau vào màn tạo ván mới.
       final tripId = ref.read(activeTripIdProvider);
+      final sessionId = _sessionId;
       if (tripId != null) {
+        if (sessionId != null) {
+          ref
+              .read(gamesRepositoryProvider)
+              .endBingo(tripId, sessionId)
+              .catchError((_) {});
+        }
         ref
             .read(gamesRepositoryProvider)
             .createSession(

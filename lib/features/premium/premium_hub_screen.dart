@@ -22,10 +22,7 @@ class PremiumHubScreen extends StatefulWidget {
   State<PremiumHubScreen> createState() => _PremiumHubScreenState();
 }
 
-class _PremiumHubScreenState extends State<PremiumHubScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _shimmerController;
-
+class _PremiumHubScreenState extends State<PremiumHubScreen> {
   /// Theo đúng chế độ sáng/tối của app thay vì giữ cờ riêng — cờ riêng làm màn
   /// này lệch pha với theme người dùng đã chọn.
   bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
@@ -37,21 +34,6 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
     'Retro Film',
     'Cyber Night',
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _shimmerController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -284,76 +266,54 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
 
                         const SizedBox(height: 28),
 
-                        // Shimmering payment/join button (GenZ style with yellow accent)
-                        AnimatedBuilder(
-                          animation: _shimmerController,
-                          builder: (context, child) {
-                            return ShaderMask(
-                              shaderCallback: (bounds) {
-                                return LinearGradient(
-                                  colors: [
-                                    Colors.white.withValues(alpha: 0.1),
-                                    Colors.white.withValues(alpha: 0.9),
-                                    Colors.white.withValues(alpha: 0.1),
-                                  ],
-                                  stops: const [0.35, 0.5, 0.65],
-                                  transform: SlideGradientTransform(
-                                    percent: _shimmerController.value,
-                                  ),
-                                ).createShader(bounds);
-                              },
-                              blendMode: BlendMode.srcATop,
-                              child: child,
+                        // Join button (GenZ style with yellow accent)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SubscriptionCheckoutScreen(),
+                              ),
                             );
                           },
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SubscriptionCheckoutScreen(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: GenZTokens.yellow,
-                                borderRadius: BorderRadius.circular(28),
-                                border: Border.all(
+                          child: Container(
+                            width: double.infinity,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: GenZTokens.yellow,
+                              borderRadius: BorderRadius.circular(28),
+                              border: Border.all(
+                                color: textPrimary,
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
                                   color: textPrimary,
-                                  width: 2,
+                                  blurRadius: 0,
+                                  offset: const Offset(0, 4),
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: textPrimary,
-                                    blurRadius: 0,
-                                    offset: const Offset(0, 4),
+                              ],
+                            ),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    tr('premium.join_elite'),
+                                    style: AppFonts.heading(
+                                      color: GenZTokens.ink,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    PhosphorIcons.arrowRight(),
+                                    color: GenZTokens.ink,
+                                    size: 20,
                                   ),
                                 ],
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      tr('premium.join_elite'),
-                                      style: AppFonts.heading(
-                                        color: GenZTokens.ink,
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      PhosphorIcons.arrowRight(),
-                                      color: GenZTokens.ink,
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                           ),
@@ -576,16 +536,5 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
         ),
       ),
     );
-  }
-}
-
-class SlideGradientTransform extends GradientTransform {
-  final double percent;
-  const SlideGradientTransform({required this.percent});
-
-  @override
-  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    final double dx = bounds.width * (percent * 2.0 - 1.0);
-    return Matrix4.translationValues(dx, 0.0, 0.0);
   }
 }

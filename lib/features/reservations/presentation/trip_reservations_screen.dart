@@ -46,7 +46,7 @@ class TripReservationsScreen extends ConsumerWidget {
     ReservationType.train: (
       'reservations.type_train',
       PhosphorIconsFill.train,
-      Color(0xFF06B6D4),
+      GenZTokens.info,
     ),
     ReservationType.bus: (
       'reservations.type_bus',
@@ -81,7 +81,7 @@ class TripReservationsScreen extends ConsumerWidget {
     ReservationType.other: (
       'expense.cat_other',
       PhosphorIconsFill.bookmarkSimple,
-      Color(0xFF64748B),
+      GenZTokens.inkSoft,
     ),
   };
 

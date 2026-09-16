@@ -105,7 +105,7 @@ class TripHubScreen extends StatelessWidget {
                   // Có ảnh bìa → nền tối, chữ phải trắng mới đọc được.
                   color: (trip.coverImage?.isNotEmpty ?? false)
                       ? Colors.white
-                      : _textPri,
+                      : GenZTokens.ink,
                 ),
               ),
               // Ảnh bìa chuyến (nếu có) phủ toàn header, phía dưới là lớp tối

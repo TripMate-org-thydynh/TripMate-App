@@ -46,7 +46,7 @@ class TripPackingScreen extends ConsumerWidget {
     'TOILETRIES': (
       'packing.cat_toiletries',
       PhosphorIconsFill.drop,
-      Color(0xFF06B6D4),
+      GenZTokens.info,
     ),
     'GADGETS': (
       'packing.cat_gadgets',

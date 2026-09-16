@@ -275,15 +275,22 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                       errorBuilder: (context, error, stackTrace) => Container(
                         width: 220,
                         height: 220,
-                        color: Colors.grey.shade100,
+                        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(PhosphorIcons.qrCode(),
-                                size: 64, color: Colors.grey),
+                            Icon(
+                              PhosphorIcons.qrCode(),
+                              size: 64,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
                             const SizedBox(height: 8),
-                            Text(tr('premium.vietqr_error_image'),
-                                style: const TextStyle(color: Colors.grey)),
+                            Text(
+                              tr('premium.vietqr_error_image'),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                         ),
                       ),
