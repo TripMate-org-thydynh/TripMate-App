@@ -66,8 +66,8 @@ class _SubscriptionSettingsScreenState
         title: Text(
           'premium.settings_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -97,6 +97,10 @@ class _SubscriptionSettingsScreenState
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
     final price = (_sub?['price'] as num?)?.toInt() ?? 0;
     // `activeUntil`, không phải `nextBillingDate`: backend chưa từng trả về
     // trường đó, nên trước đây ngày hết hạn luôn null và dòng này không bao giờ
@@ -112,12 +116,12 @@ class _SubscriptionSettingsScreenState
         padding: const EdgeInsets.all(GenZTokens.space5),
         children: [
           Container(
-            padding: const EdgeInsets.all(GenZTokens.space5),
+            padding: const EdgeInsets.all(GenZTokens.space4),
             decoration: BoxDecoration(
-              color: GenZTokens.lilac,
+              color: accentSoft,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
               border: Border.all(
-                color: ink,
+                color: accent,
                 width: GenZTokens.borderWidth,
               ),
             ),
@@ -128,8 +132,8 @@ class _SubscriptionSettingsScreenState
                   'premium.plan_$plan'.tr(),
                   style: AppFonts.heading(
                     fontSize: 17,
-                    fontWeight: FontWeight.w900,
-                    color: GenZTokens.ink,
+                    fontWeight: FontWeight.w700,
+                    color: ink,
                   ),
                 ),
                 const SizedBox(height: GenZTokens.space2),
@@ -139,10 +143,14 @@ class _SubscriptionSettingsScreenState
                   isTrial
                       ? 'trial.badge'.tr()
                       : 'premium.price_monthly'.tr(args: [_money(price)]),
-                  style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
+                  style: AppFonts.body(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: accent,
+                  ),
                 ),
                 if (next != null) ...[
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     'premium.active_until'.tr(
                       args: [
@@ -151,7 +159,7 @@ class _SubscriptionSettingsScreenState
                         ).format(next),
                       ],
                     ),
-                    style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
+                    style: AppFonts.body(fontSize: 13, color: inkSoft),
                   ),
                 ],
               ],
@@ -160,30 +168,26 @@ class _SubscriptionSettingsScreenState
           if (isTrial) ...[
             const SizedBox(height: GenZTokens.space4),
             // Nút dừng đặt ngay đây, ngang hàng với thẻ gói.
-            //
-            // Chôn nó vào ba lớp menu chẳng giữ được ai: người muốn dừng sẽ
-            // dừng, chỉ là bằng cách gỡ app thay vì bấm nút. Ở đây họ dừng
-            // xong vẫn còn là người dùng.
             SizedBox(
               height: 48,
               child: OutlinedButton(
                 onPressed: _cancelTrial,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: ink,
+                  foregroundColor: danger,
+                  side: BorderSide(
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-                    side: BorderSide(
-                      color: ink,
-                      width: GenZTokens.borderWidthThin,
-                    ),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                   ),
                 ),
                 child: Text(
                   'trial.cancel_cta'.tr(),
                   style: AppFonts.heading(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: ink,
+                    fontWeight: FontWeight.w600,
+                    color: danger,
                   ),
                 ),
               ),
@@ -191,15 +195,13 @@ class _SubscriptionSettingsScreenState
           ],
           const SizedBox(height: GenZTokens.space5),
           // Gói mua qua ví là trả một lần cho một kỳ, KHÔNG tự động gia hạn —
-          // ví Việt Nam không có cơ chế trừ tiền định kỳ. Nên ở đây không có
-          // nút huỷ: không có gì để huỷ. Nói thẳng điều đó thay vì dựng một
-          // công tắc "tự động gia hạn" không nối vào đâu, như bản trước.
+          // ví Việt Nam không có cơ chế trừ tiền định kỳ.
           Container(
             padding: const EdgeInsets.all(GenZTokens.space4),
             decoration: BoxDecoration(
               color: surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+              border: Border.all(color: line, width: GenZTokens.borderWidthThin),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,23 +231,22 @@ class _SubscriptionSettingsScreenState
   }
 
   /// Dừng dùng thử, có xác nhận một lần.
-  ///
-  /// Hỏi lại một câu vì thao tác này cắt quyền ngay lập tức và không lấy lại
-  /// được — nhưng chỉ một câu, và nút đồng ý không bị làm mờ đi.
   Future<void> _cancelTrial() async {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
 
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         backgroundColor: isDark ? GenZTokens.paperDark : GenZTokens.paper,
         title: Text(
           'trial.cancel_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -262,7 +263,8 @@ class _SubscriptionSettingsScreenState
             child: Text(
               'trial.cancel_keep'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
                 color: inkSoft,
               ),
             ),
@@ -272,8 +274,9 @@ class _SubscriptionSettingsScreenState
             child: Text(
               'trial.cancel_confirm'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.bold,
-                color: GenZTokens.danger,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: danger,
               ),
             ),
           ),

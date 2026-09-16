@@ -32,8 +32,8 @@ class SquadLeaderboardScreen extends ConsumerWidget {
         title: Text(
           'games.leaderboard_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -93,28 +93,27 @@ class SquadLeaderboardScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final isPodium = r.rank <= 3;
-    final statColor = isPodium
-        ? GenZTokens.ink.withValues(alpha: 0.7)
-        : inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final isFirst = r.rank == 1;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
-        color: isPodium ? GenZTokens.yellow : surface,
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: ink,
-          width: isPodium ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
+          color: isFirst ? accent : line,
+          width: isFirst ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
         ),
-        boxShadow: GenZTokens.hardShadow(ink),
       ),
       child: Row(
         children: [
           SizedBox(
             width: 34,
             child: Center(
-              child: _rankWidget(r.rank, isPodium, inkSoft),
+              child: _rankWidget(r.rank, ink, inkSoft, accent),
             ),
           ),
           const SizedBox(width: GenZTokens.space3),
@@ -128,8 +127,8 @@ class SquadLeaderboardScreen extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: isPodium ? GenZTokens.ink : ink,
+                    fontWeight: FontWeight.w700,
+                    color: ink,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -140,25 +139,25 @@ class SquadLeaderboardScreen extends ConsumerWidget {
                       _statChip(
                         PhosphorIcons.camera(),
                         '${r.moments}',
-                        statColor,
+                        inkSoft,
                       ),
                       const SizedBox(width: 8),
                       _statChip(
                         PhosphorIcons.money(),
                         '${r.expenses}',
-                        statColor,
+                        inkSoft,
                       ),
                       const SizedBox(width: 8),
                       _statChip(
                         PhosphorIcons.mapTrifold(),
                         '${r.plans}',
-                        statColor,
+                        inkSoft,
                       ),
                       const SizedBox(width: 8),
                       _statChip(
                         PhosphorIcons.notepad(),
                         '${r.notes}',
-                        statColor,
+                        inkSoft,
                       ),
                     ],
                   ),
@@ -172,7 +171,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
             style: AppFonts.mono(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: isPodium ? GenZTokens.ink : GenZTokens.green,
+              color: isFirst ? accent : success,
             ),
           ),
         ],
@@ -180,26 +179,26 @@ class SquadLeaderboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _rankWidget(int rank, bool isPodium, Color inkSoft) {
+  Widget _rankWidget(int rank, Color ink, Color inkSoft, Color accent) {
     if (rank == 1) {
       return Icon(
         PhosphorIcons.trophy(PhosphorIconsStyle.fill),
         size: 22,
-        color: GenZTokens.ink,
+        color: accent,
       );
     }
     if (rank == 2) {
       return Icon(
         PhosphorIcons.medal(PhosphorIconsStyle.fill),
         size: 22,
-        color: GenZTokens.ink,
+        color: inkSoft,
       );
     }
     if (rank == 3) {
       return Icon(
         PhosphorIcons.medal(),
         size: 22,
-        color: GenZTokens.ink,
+        color: inkSoft,
       );
     }
     return Text(

@@ -35,8 +35,8 @@ class SquadXpSystemScreen extends ConsumerWidget {
         title: Text(
           'games.xp_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -49,18 +49,18 @@ class SquadXpSystemScreen extends ConsumerWidget {
               body: 'games.need_trip_body'.tr(),
             )
           : ref
-                .watch(squadXpProvider(tripId))
-                .when(
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  error: (e, _) => AppErrorState(
-                    isDark: isDark,
-                    error: e,
-                    onRetry: () => ref.invalidate(squadXpProvider(tripId)),
-                  ),
-                  data: (xp) => _content(context, isDark, xp),
+              .watch(squadXpProvider(tripId))
+              .when(
+                loading: () => const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
+                error: (e, _) => AppErrorState(
+                  isDark: isDark,
+                  error: e,
+                  onRetry: () => ref.invalidate(squadXpProvider(tripId)),
+                ),
+                data: (xp) => _content(context, isDark, xp),
+              ),
     );
   }
 
@@ -68,18 +68,24 @@ class SquadXpSystemScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
 
     return ListView(
-      padding: const EdgeInsets.all(GenZTokens.space5),
+      padding: const EdgeInsets.all(GenZTokens.space4),
       children: [
         // ── Vòng tiến độ level ──
         Container(
           padding: const EdgeInsets.all(GenZTokens.space5),
           decoration: BoxDecoration(
-            color: GenZTokens.yellow,
+            color: surface,
             borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-            border: Border.all(color: ink, width: GenZTokens.borderWidth),
-            boxShadow: GenZTokens.hardShadow(ink),
+            border: Border.all(
+              color: line,
+              width: GenZTokens.borderWidthThin,
+            ),
           ),
           child: Column(
             children: [
@@ -94,11 +100,9 @@ class SquadXpSystemScreen extends ConsumerWidget {
                       height: 140,
                       child: CircularProgressIndicator(
                         value: xp.levelProgress,
-                        strokeWidth: 12,
-                        backgroundColor: GenZTokens.ink.withValues(alpha: 0.15),
-                        valueColor: const AlwaysStoppedAnimation(
-                          GenZTokens.ink,
-                        ),
+                        strokeWidth: 10,
+                        backgroundColor: fill,
+                        valueColor: AlwaysStoppedAnimation(accent),
                       ),
                     ),
                     Column(
@@ -108,16 +112,16 @@ class SquadXpSystemScreen extends ConsumerWidget {
                           'games.level_short'.tr(),
                           style: AppFonts.mono(
                             fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: GenZTokens.ink.withValues(alpha: 0.7),
+                            fontWeight: FontWeight.w600,
+                            color: inkSoft,
                           ),
                         ),
                         Text(
                           '${xp.squadLevel}',
                           style: AppFonts.heading(
-                            fontSize: 44,
-                            fontWeight: FontWeight.w900,
-                            color: GenZTokens.ink,
+                            fontSize: 40,
+                            fontWeight: FontWeight.w700,
+                            color: ink,
                           ),
                         ),
                       ],
@@ -131,7 +135,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                 style: AppFonts.mono(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: GenZTokens.ink,
+                  color: ink,
                 ),
               ),
               const SizedBox(height: 4),
@@ -144,7 +148,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
                   fontSize: 13,
-                  color: GenZTokens.ink.withValues(alpha: 0.8),
+                  color: inkSoft,
                 ),
               ),
             ],
@@ -156,8 +160,8 @@ class SquadXpSystemScreen extends ConsumerWidget {
         Text(
           'games.xp_breakdown'.tr(),
           style: AppFonts.heading(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -170,7 +174,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
               color: surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
               border: Border.all(
-                color: ink.withValues(alpha: 0.25),
+                color: line,
                 width: GenZTokens.borderWidthThin,
               ),
             ),
@@ -194,10 +198,10 @@ class SquadXpSystemScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: surface,
                       borderRadius: BorderRadius.circular(
-                        GenZTokens.radiusInput,
+                        GenZTokens.radiusCard,
                       ),
                       border: Border.all(
-                        color: ink,
+                        color: line,
                         width: GenZTokens.borderWidthThin,
                       ),
                     ),
@@ -209,8 +213,8 @@ class SquadXpSystemScreen extends ConsumerWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppFonts.body(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
                               color: ink,
                             ),
                           ),
@@ -225,7 +229,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                           style: AppFonts.mono(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: GenZTokens.green,
+                            color: success,
                           ),
                         ),
                       ],

@@ -186,7 +186,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         centerIndex: 2,
         bg: bg,
         ink: ink,
+        inkSoft: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+        line: isDark ? GenZTokens.lineDark : GenZTokens.line,
         accent: accent,
+        onAccent: isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent,
+        isDark: isDark,
         onTap: (index) {
           HapticFeedback.selectionClick();
           setState(() => _selectedIndex = index);
@@ -358,7 +362,11 @@ class _NotchedNavBar extends StatelessWidget {
   final int centerIndex;
   final Color bg;
   final Color ink;
+  final Color inkSoft;
+  final Color line;
   final Color accent;
+  final Color onAccent;
+  final bool isDark;
   final ValueChanged<int> onTap;
 
   const _NotchedNavBar({
@@ -367,7 +375,11 @@ class _NotchedNavBar extends StatelessWidget {
     required this.centerIndex,
     required this.bg,
     required this.ink,
+    required this.inkSoft,
+    required this.line,
     required this.accent,
+    required this.onAccent,
+    required this.isDark,
     required this.onTap,
   });
 
@@ -435,7 +447,7 @@ class _NotchedNavBar extends StatelessWidget {
                     child: CustomPaint(
                       painter: _NotchPainter(
                         bg: bg,
-                        ink: ink,
+                        line: line,
                         notchRadius: _fabRadius + _fabGap,
                         notchCenterX: notchX,
                         notchLift: _fabFloat,
@@ -492,7 +504,7 @@ class _NotchedNavBar extends StatelessWidget {
                 : Icon(
                     item.icon,
                     size: 22,
-                    color: ink.withValues(alpha: 0.55),
+                    color: inkSoft,
                   ),
           ),
           const SizedBox(height: 2),
@@ -502,9 +514,9 @@ class _NotchedNavBar extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: AppFonts.heading(
-              fontSize: 11.5,
+              fontSize: 12,
               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              color: selected ? ink : ink.withValues(alpha: 0.55),
+              color: selected ? ink : inkSoft,
             ),
           ),
         ],
@@ -523,15 +535,10 @@ class _NotchedNavBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: accent,
           shape: BoxShape.circle,
-          border: Border.all(color: ink, width: GenZTokens.borderWidth),
-          // Bóng cứng kiểu brutalist. Trước đây nút chìm vào hốc nên bóng chỉ
-          // chồng thêm một lớp đen; nay nút đã tách hẳn ra, bóng mới có việc:
-          // nói cho mắt biết nó đang bay phía trên thanh.
-          boxShadow: [
-            BoxShadow(color: ink, offset: const Offset(0, 4), blurRadius: 0),
-          ],
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+          boxShadow: GenZTokens.hardShadow(ink, isDark),
         ),
-        child: Icon(item.active, size: 26, color: GenZTokens.ink),
+        child: Icon(item.active, size: 26, color: onAccent),
       ),
     );
   }
@@ -540,7 +547,7 @@ class _NotchedNavBar extends StatelessWidget {
 /// Vẽ mặt thanh với một vết lõm hình cung, tâm tại [notchCenterX].
 class _NotchPainter extends CustomPainter {
   final Color bg;
-  final Color ink;
+  final Color line;
   final double notchRadius;
   final double notchCenterX;
 
@@ -552,7 +559,7 @@ class _NotchPainter extends CustomPainter {
 
   const _NotchPainter({
     required this.bg,
-    required this.ink,
+    required this.line,
     required this.notchRadius,
     required this.notchCenterX,
     required this.notchLift,
@@ -561,18 +568,7 @@ class _NotchPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Dùng `CircularNotchedRectangle` của Flutter thay vì tự ghép cung.
-    //
-    // Bản tự vẽ nối cung vào đường kẻ bằng một góc gãy, nên hai đầu hốc nhô lên
-    // thành hai cái "sừng" phía trên vạch ngăn cách navbar với màn hình. Lớp
-    // này dựng sẵn hai đoạn cong chuyển tiếp ở hai bên, cho đúng dáng hốc liền
-    // mạch — cũng chính là thứ Material dùng cho `BottomAppBar`.
     final host = Rect.fromLTWH(0, 0, size.width, size.height);
-    // Tâm hốc đặt SÁT mặt thanh, không theo tâm nút.
-    //
-    // Nút được cho bay cao hẳn lên, nên nếu lấy đúng tâm nút thì đường tròn chỉ
-    // cắt mặt thanh một đoạn rất nông — hốc gần như phẳng, nhìn không ra chỗ
-    // lõm. Hạ tâm xuống mép thanh thì cắt được gần trọn nửa dưới đường tròn, ra
-    // đúng dáng hõm ôm lấy nút.
     final guest = Rect.fromCircle(
       center: Offset(notchCenterX, -notchLift * 0.45),
       radius: notchRadius,
@@ -583,16 +579,16 @@ class _NotchPainter extends CustomPainter {
     canvas.drawPath(
       path,
       Paint()
-        ..color = ink
+        ..color = line
         ..style = PaintingStyle.stroke
-        ..strokeWidth = GenZTokens.borderWidth,
+        ..strokeWidth = GenZTokens.borderWidthThin,
     );
   }
 
   @override
   bool shouldRepaint(covariant _NotchPainter old) =>
       old.bg != bg ||
-      old.ink != ink ||
+      old.line != line ||
       old.notchRadius != notchRadius ||
       old.notchCenterX != notchCenterX ||
       old.notchLift != notchLift;

@@ -114,7 +114,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   Color get _inkSoft =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
   Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
@@ -127,7 +126,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   Color get _warning =>
       isDarkMode ? GenZTokens.warningDark : GenZTokens.warning;
   Color get _danger => isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
-  Color get _info => isDarkMode ? GenZTokens.infoDark : GenZTokens.info;
   Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
 
   // ─── Build ───────────────────────────────────────────────────────────────────

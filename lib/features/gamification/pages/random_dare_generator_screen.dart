@@ -136,23 +136,34 @@ class _RandomDareGeneratorScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final Color bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final Color inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final Color inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final Color surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final Color activeColor = _selectedLevel == 'chill'
-        ? GenZTokens.green
+    final Color lineColor = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final Color fillColor = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final Color accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final Color onAccent =
+        isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final Color accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+
+    final Color semanticColor = _selectedLevel == 'chill'
+        ? (isDark ? GenZTokens.successDark : GenZTokens.success)
         : _selectedLevel == 'chaos'
-        ? GenZTokens.orange
-        : GenZTokens.red;
+        ? (isDark ? GenZTokens.warningDark : GenZTokens.warning)
+        : (isDark ? GenZTokens.dangerDark : GenZTokens.danger);
 
     return Scaffold(
       backgroundColor: bgColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          padding: const EdgeInsets.symmetric(
+            horizontal: GenZTokens.space4,
+            vertical: GenZTokens.space2,
+          ),
           child: Column(
             children: [
               // Navigation bar
@@ -163,58 +174,54 @@ class _RandomDareGeneratorScreenState
                     onPressed: () => Navigator.pop(context),
                     icon: Icon(PhosphorIcons.arrowLeft(), color: inkColor),
                     style: IconButton.styleFrom(
-                      backgroundColor: surfaceColor.withValues(
-                        alpha: isDark ? 0.3 : 0.8,
-                      ),
+                      backgroundColor: fillColor,
                       shape: const CircleBorder(),
-                      side: BorderSide(color: inkColor, width: 1.5),
+                      side: BorderSide(
+                        color: lineColor,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                   ),
                   Text(
                     'trip.mate',
                     style: AppFonts.heading(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 18,
-                      color: activeColor,
-                      letterSpacing: -0.5,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                      color: accent,
+                      letterSpacing: -0.2,
                     ),
                   ),
                   const SizedBox(width: 48),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: GenZTokens.space5),
 
               // Title block
               Text(
                 'games.dare_title'.tr(),
                 style: AppFonts.heading(
                   fontSize: 28,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: inkColor,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: GenZTokens.space2),
               Text(
                 'games.dare_sub'.tr(),
                 textAlign: TextAlign.center,
                 style: AppFonts.body(
                   fontSize: 13,
-                  color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+                  color: inkSoft,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: GenZTokens.space5),
 
               // Difficulty/Vibe level selector
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: _daresByLevel.keys.map((level) {
                   final isSelected = _selectedLevel == level;
-                  final levelColor = level == 'chill'
-                      ? GenZTokens.green
-                      : level == 'chaos'
-                      ? GenZTokens.orange
-                      : GenZTokens.red;
                   final levelIcon = level == 'chill'
                       ? PhosphorIcons.smiley()
                       : level == 'chaos'
@@ -222,12 +229,12 @@ class _RandomDareGeneratorScreenState
                       : PhosphorIcons.skull(PhosphorIconsStyle.fill);
 
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
                     child: GestureDetector(
                       onTap: _isGenerating
                           ? null
                           : () {
-                              HapticFeedback.mediumImpact();
+                              HapticFeedback.selectionClick();
                               setState(() {
                                 _selectedLevel = level;
                                 _currentDare = 'games.dare_press'.tr();
@@ -236,20 +243,19 @@ class _RandomDareGeneratorScreenState
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
-                          vertical: 10,
+                          vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: isSelected ? levelColor : surfaceColor,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: inkColor, width: 2),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: inkColor,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ]
-                              : null,
+                          color: isSelected ? accentSoft : fillColor,
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusPill,
+                          ),
+                          border: Border.all(
+                            color: isSelected ? accent : lineColor,
+                            width: isSelected
+                                ? GenZTokens.borderWidth
+                                : GenZTokens.borderWidthThin,
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -257,15 +263,17 @@ class _RandomDareGeneratorScreenState
                             Icon(
                               levelIcon,
                               size: 16,
-                              color: isSelected ? GenZTokens.ink : inkColor,
+                              color: isSelected ? accent : inkSoft,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               'games.dare_level_$level'.tr(),
                               style: AppFonts.heading(
                                 fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                                color: isSelected ? GenZTokens.ink : inkColor,
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                                color: isSelected ? accent : inkSoft,
                               ),
                             ),
                           ],
@@ -275,18 +283,21 @@ class _RandomDareGeneratorScreenState
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: GenZTokens.space5),
 
-              // Comical warning text
+              // Warning badge
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
-                  vertical: 8,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: activeColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: activeColor, width: 1.5),
+                  color: semanticColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                  border: Border.all(
+                    color: semanticColor.withValues(alpha: 0.4),
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -297,8 +308,8 @@ class _RandomDareGeneratorScreenState
                           : _selectedLevel == 'chaos'
                           ? PhosphorIcons.warning()
                           : PhosphorIcons.warningOctagon(),
-                      color: activeColor,
-                      size: 18,
+                      color: semanticColor,
+                      size: 16,
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -308,30 +319,32 @@ class _RandomDareGeneratorScreenState
                           ? 'games.mode_chaos'.tr()
                           : 'games.mode_extreme'.tr(),
                       style: AppFonts.heading(
-                        color: activeColor,
+                        color: semanticColor,
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: GenZTokens.space4),
 
-              // Glowing Neo-Brutalist card
+              // Card
               Expanded(
                 child: Transform.translate(
                   offset: Offset(_shakeX, _shakeY),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(28),
+                    padding: const EdgeInsets.all(GenZTokens.space5),
                     decoration: BoxDecoration(
                       color: surfaceColor,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: inkColor, width: 2.5),
-                      boxShadow: [
-                        BoxShadow(color: inkColor, offset: const Offset(0, 6)),
-                      ],
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusCard,
+                      ),
+                      border: Border.all(
+                        color: lineColor,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -340,23 +353,27 @@ class _RandomDareGeneratorScreenState
                           _selectedLevel == 'chill'
                               ? PhosphorIcons.smiley()
                               : _selectedLevel == 'chaos'
-                              ? PhosphorIcons.lightning(PhosphorIconsStyle.fill)
+                              ? PhosphorIcons.lightning(
+                                  PhosphorIconsStyle.fill,
+                                )
                               : PhosphorIcons.skull(PhosphorIconsStyle.fill),
-                          color: activeColor,
-                          size: 64,
+                          color: semanticColor,
+                          size: 56,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: GenZTokens.space5),
                         AnimatedOpacity(
                           opacity: _isGenerating ? 0.4 : 1.0,
-                          duration: const Duration(milliseconds: 150),
+                          duration: const Duration(
+                            milliseconds: GenZTokens.durationFast,
+                          ),
                           child: Text(
                             _currentDare,
                             textAlign: TextAlign.center,
                             style: AppFonts.heading(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
                               color: inkColor,
-                              height: 1.4,
+                              height: 1.35,
                             ),
                           ),
                         ),
@@ -365,59 +382,54 @@ class _RandomDareGeneratorScreenState
                   ),
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: GenZTokens.space5),
 
               // Draw Dare button
               GestureDetector(
                 onTap: _generateDare,
                 child: Container(
                   width: double.infinity,
-                  height: 60,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: activeColor,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: inkColor, width: 2.5),
-                    boxShadow: [
-                      BoxShadow(color: inkColor, offset: const Offset(0, 5)),
-                    ],
+                    color: accent,
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (_isGenerating)
-                        const SizedBox(
-                          width: 22,
-                          height: 22,
+                        SizedBox(
+                          width: 20,
+                          height: 20,
                           child: CircularProgressIndicator(
-                            strokeWidth: 3.0,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              GenZTokens.ink,
-                            ),
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(onAccent),
                           ),
                         )
                       else
                         Icon(
                           PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
-                          color: GenZTokens.ink,
-                          size: 24,
+                          color: onAccent,
+                          size: 20,
                         ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       Text(
                         _isGenerating
                             ? 'games.dare_drawing'.tr()
                             : 'games.dare_draw_now'.tr(),
                         style: AppFonts.heading(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: GenZTokens.ink,
-                          letterSpacing: 1.0,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: onAccent,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: GenZTokens.space3),
             ],
           ),
         ),
