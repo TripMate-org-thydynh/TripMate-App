@@ -153,7 +153,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       // thấy nội dung xuyên qua. Nền doodle phía sau cũng nhờ đó phủ liền mạch
       // tới đáy màn.
       extendBody: true,
+      // Home và Cá nhân tự chừa thanh trạng thái: ảnh của chúng tràn lên tận mép trên.
       body: SafeArea(
+        top: _selectedIndex != 0 && _selectedIndex != 4,
         child: Column(
           children: [
             // Banner offline dùng chung cho mọi tab — không phải mỗi màn

@@ -8,6 +8,7 @@ import '../../../moments/data/moments_repository.dart';
 import '../../data/home_feed_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../core/widgets/faded_image.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
 import '../../../../core/widgets/trip_cover_image.dart';
 import '../../../../core/services/weather_service.dart';
@@ -130,13 +131,93 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
 
   // ─── Build ───────────────────────────────────────────────────────────────────
 
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  static const double _heroImageHeight = 360;
+
   @override
   Widget build(BuildContext context) {
+    final cover = ref
+        .watch(tripsProvider)
+        .maybeWhen(
+          data: (trips) => trips.isEmpty ? null : trips.first.coverImage,
+          orElse: () => null,
+        );
+    final topInset = MediaQuery.paddingOf(context).top;
+
+    // Ảnh bìa + vệt loang là LỚP NỀN nằm sau cả danh sách, dịch theo độ cuộn.
+    //
+    // Không đặt trong sliver hero: viewport vẽ sliver đầu SAU CÙNG, nên phần
+    // vệt loang tràn ra khỏi hero sẽ đè lên các mục bên dưới.
+    return Stack(
+      children: [
+        if (cover != null && cover.isNotEmpty)
+          AnimatedBuilder(
+            animation: _scroll,
+            builder: (context, child) => Transform.translate(
+              offset: Offset(0, -(_scroll.hasClients ? _scroll.offset : 0.0)),
+              child: child,
+            ),
+            child: FadedImage(
+              imageUrl: cover,
+              fadeTo: _bg,
+              height: topInset + _heroImageHeight,
+              glowExtent: 420,
+              topFade: true,
+            ),
+          ),
+        _buildScroll(context),
+        // Nền mờ dưới thanh trạng thái: nội dung cuộn lên không đè vào giờ/pin.
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: topInset + 20,
+          child: IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _scroll,
+              // Chỉ hiện khi đã cuộn — ở đầu trang để ảnh tràn trọn lên mép trên.
+              builder: (context, child) => Opacity(
+                opacity: _scroll.hasClients
+                    ? (_scroll.offset / 80).clamp(0.0, 1.0)
+                    : 0,
+                child: child,
+              ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0, topInset / (topInset + 20), 1],
+                    colors: [_bg, _bg, _bg.withValues(alpha: 0)],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScroll(BuildContext context) {
     return CustomScrollView(
+      controller: _scroll,
       physics: const BouncingScrollPhysics(),
       slivers: [
-        // ── 1. HEADER ──
-        SliverToBoxAdapter(child: _buildHeader(context)),
+        // ── 1. HERO: ảnh bìa tràn viền + header nằm đè lên ──
+        SliverToBoxAdapter(child: _buildHero(context)),
+
+        // ── Dải tin squad chạy ngang — ngay dưới hero cho thấy nhóm đang sôi động.
+        const SliverToBoxAdapter(
+          child: Column(children: [SocialChaosMarquee(), SizedBox(height: 24)]),
+        ),
 
         // ── 2. TRIP COVER CARD (PRIMARY FOCUS) ──
         // Đồng hồ đếm ngược dùng thử, ngay đầu màn chính.
@@ -145,15 +226,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         // mình còn bao nhiêu ngày mà không cần đi tìm. Tự ẩn khi không có lần
         // dùng thử nào đang chạy.
         const SliverToBoxAdapter(child: TrialBanner()),
-
-        SliverToBoxAdapter(
-          child: Column(
-            children: [
-              PopIn(index: 0, child: _buildTripCoverCard(context)),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
 
         // ── 3. QUICK ACTIONS 2×2 ──
         SliverToBoxAdapter(
@@ -228,11 +300,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
               const SizedBox(height: 24),
             ],
           ),
-        ),
-
-        // ── 8. SOCIAL CHAOS MARQUEE (Below fold) ──
-        const SliverToBoxAdapter(
-          child: Column(children: [SocialChaosMarquee(), SizedBox(height: 20)]),
         ),
 
         // ── 9. THE ROAST PANEL (Below fold) ──
@@ -312,11 +379,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(
-                        PhosphorIcons.brain(),
-                        color: _inkSoft,
-                        size: 12,
-                      ),
+                      Icon(PhosphorIcons.brain(), color: _inkSoft, size: 12),
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
@@ -531,6 +594,58 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
 
   // ─── HEADER ─────────────────────────────────────────────────────────────────
 
+  /// Phần đầu Home theo concept: ảnh bìa chuyến tràn hết bề ngang, lên tận
+  /// mép trên (sau thanh trạng thái), tan dần xuống màu nền; header và thông
+  /// tin chuyến nằm trên nền đã tan. Không có chuyến/ảnh → header thường.
+  Widget _buildHero(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
+    return Consumer(
+      builder: (context, ref, _) {
+        final trip = ref
+            .watch(tripsProvider)
+            .maybeWhen(
+              data: (trips) => trips.isEmpty ? null : trips.first,
+              orElse: () => null,
+            );
+        final hasCover = trip?.coverImage?.isNotEmpty ?? false;
+        if (trip == null || !hasCover) {
+          return Column(
+            children: [
+              SizedBox(height: topInset),
+              _buildHeader(context),
+              const TrialBanner(),
+              PopIn(index: 0, child: _buildTripCoverCard(context)),
+              const SizedBox(height: 24),
+            ],
+          );
+        }
+
+        // Ảnh nằm ở lớp nền (xem build); đây chỉ chừa chỗ cho nó.
+        const imageHeight = _heroImageHeight;
+        return Stack(
+          children: [
+            Column(
+              children: [
+                SizedBox(height: topInset),
+                _buildHeader(context),
+                const TrialBanner(),
+                SizedBox(height: imageHeight - 150),
+                PopIn(
+                  index: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: _tripInfo(context, trip),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
@@ -541,12 +656,18 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           Expanded(
             child: Text(
               'trip.mate',
-              style: AppFonts.heading(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.2,
-                color: _ink,
-              ),
+              style:
+                  AppFonts.heading(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
+                    color: _ink,
+                  ).copyWith(
+                    // Logo nằm trên ảnh bìa: bóng mảnh cùng tông nền để luôn đọc được.
+                    shadows: [
+                      Shadow(color: _bg.withValues(alpha: 0.6), blurRadius: 12),
+                    ],
+                  ),
             ),
           ),
 
@@ -596,11 +717,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      Icon(
-                        PhosphorIcons.bell(),
-                        size: 20,
-                        color: _inkSoft,
-                      ),
+                      Icon(PhosphorIcons.bell(), size: 20, color: _inkSoft),
                       if (unread > 0)
                         Positioned(
                           right: -4,
@@ -617,10 +734,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                             decoration: BoxDecoration(
                               color: _danger,
                               borderRadius: BorderRadius.circular(99),
-                              border: Border.all(
-                                color: _paper,
-                                width: 1.5,
-                              ),
+                              border: Border.all(color: _paper, width: 1.5),
                             ),
                             child: Center(
                               child: Text(
@@ -664,7 +778,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         const maxShown = 2;
         final shown = members.take(maxShown).toList();
         final overflow = members.length - shown.length;
-        final width = shown.length * 20.0 + (overflow > 0 ? 32.0 : 12.0);
+        final overflowLabel = overflow > 99 ? '99+' : '+$overflow';
+        final overflowWidth = overflowLabel.length <= 2 ? 32.0 : 44.0;
+        final width =
+            shown.length * 20.0 + (overflow > 0 ? overflowWidth : 12.0);
 
         return SizedBox(
           width: width,
@@ -713,16 +830,18 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 Positioned(
                   left: shown.length * 20.0,
                   child: Container(
-                    width: 32,
+                    width: overflowWidth,
                     height: 32,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(16),
                       color: _fill,
                       border: Border.all(color: _paper, width: 1.5),
                     ),
                     child: Center(
                       child: Text(
-                        '+$overflow',
+                        overflowLabel,
+                        maxLines: 1,
+                        softWrap: false,
                         style: AppFonts.mono(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -792,117 +911,186 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         : (daysLeft == 0
               ? 'dashboard.days_today'.tr()
               : 'dashboard.days_ended'.tr());
-    return _tripCoverShell(
+    final vibe = TripVibe.of(t.vibe);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
         ),
       ),
-      child: SizedBox(
-        height: 280,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            TripCoverImage(source: t.coverImage),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.55),
-                    ],
-                    stops: const [0.6, 1.0],
-                  ),
-                ),
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Ảnh bìa tan dần xuống màu nền (concept A/B) — không khung, không lớp đen.
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(GenZTokens.radiusCard),
             ),
-            Positioned(
-              top: 16,
-              left: 16,
-              child: PillTag(
-                text: 'dashboard.member_count'.tr(
-                  namedArgs: {'count': '${t.memberCount}'},
-                ),
-                icon: PhosphorIcons.users(),
-              ),
-            ),
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+            child: SizedBox(
+              height: 230,
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Row(
-                    children: [
-                      PillTag(
-                        text: daysLabel,
-                        icon: PhosphorIcons.clock(),
-                        selected: daysLeft >= 0,
+                  TripCoverImage(source: t.coverImage),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.45, 0.8, 1.0],
+                        colors: [
+                          _bg.withValues(alpha: 0),
+                          _bg.withValues(alpha: 0.7),
+                          _bg,
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      PillTag(
-                        text: t.inviteCode,
-                        icon: PhosphorIcons.hash(),
-                      ),
-                      if (TripVibe.of(t.vibe) != null) ...[
-                        const SizedBox(width: 8),
-                        PillTag(
-                          text: TripVibe.of(t.vibe)!.label,
-                          icon: TripVibe.of(t.vibe)!.icon,
-                          color: TripVibe.of(t.vibe)!.color,
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    t.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppFonts.heading(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: -0.8,
-                      height: 1.05,
                     ),
                   ),
-                  if (t.destination != null && t.destination!.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            t.destination!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppFonts.body(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: PillTag(
+                      text: 'dashboard.member_count'.tr(
+                        namedArgs: {'count': '${t.memberCount}'},
+                      ),
+                      icon: PhosphorIcons.users(),
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),
+          ),
+          Text(
+            t.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppFonts.heading(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: _ink,
+              letterSpacing: -0.8,
+              height: 1.1,
+            ),
+          ),
+          if (t.destination != null && t.destination!.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(PhosphorIcons.mapPin(), size: 16, color: _inkSoft),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    t.destination!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppFonts.body(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: _inkSoft,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              PillTag(
+                text: daysLabel,
+                icon: PhosphorIcons.clock(),
+                selected: daysLeft >= 0,
+              ),
+              PillTag(text: t.inviteCode, icon: PhosphorIcons.hash()),
+              if (vibe != null)
+                PillTag(text: vibe.label, icon: vibe.icon, color: vibe.color),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Tên, điểm đến và các nhãn của chuyến — nằm dưới ảnh đã tan.
+  Widget _tripInfo(BuildContext context, Trip t) {
+    final daysLeft = t.endDate.difference(DateTime.now()).inDays;
+    final daysLabel = daysLeft > 0
+        ? 'dashboard.days_left'.tr(namedArgs: {'days': '$daysLeft'})
+        : (daysLeft == 0
+              ? 'dashboard.days_today'.tr()
+              : 'dashboard.days_ended'.tr());
+    final vibe = TripVibe.of(t.vibe);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PillTag(
+            text: 'dashboard.member_count'.tr(
+              namedArgs: {'count': '${t.memberCount}'},
+            ),
+            icon: PhosphorIcons.users(),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            t.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppFonts.heading(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              color: _ink,
+              letterSpacing: -0.8,
+              height: 1.1,
+            ),
+          ),
+          if (t.destination != null && t.destination!.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(PhosphorIcons.mapPin(), size: 16, color: _inkSoft),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    t.destination!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppFonts.body(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: _inkSoft,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              PillTag(
+                text: daysLabel,
+                icon: PhosphorIcons.clock(),
+                selected: daysLeft >= 0,
+              ),
+              PillTag(text: t.inviteCode, icon: PhosphorIcons.hash()),
+              if (vibe != null)
+                PillTag(text: vibe.label, icon: vibe.icon, color: vibe.color),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -949,10 +1137,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 const SizedBox(height: GenZTokens.space1),
                 Text(
                   'common.tap_to_retry'.tr(),
-                  style: AppFonts.body(
-                    fontSize: 12,
-                    color: _inkSoft,
-                  ),
+                  style: AppFonts.body(fontSize: 12, color: _inkSoft),
                 ),
               ],
             ),
@@ -1160,193 +1345,193 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       children: [
         // Section heading
         Row(
-           children: [
-             Text(
-               'dashboard.scrapbook'.tr(),
-               style: AppFonts.heading(
-                 fontSize: 22,
-                 fontWeight: FontWeight.w800,
-                 color: _ink,
-                 letterSpacing: -0.5,
-               ),
-             ),
-             const SizedBox(width: 8),
-             Icon(PhosphorIcons.camera(), size: 20, color: _ink),
-           ],
-         ),
-         const SizedBox(height: 16),
+          children: [
+            Text(
+              'dashboard.scrapbook'.tr(),
+              style: AppFonts.heading(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: _ink,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(PhosphorIcons.camera(), size: 20, color: _ink),
+          ],
+        ),
+        const SizedBox(height: 16),
 
-         // Scrapbook lấy kỷ niệm THẬT mới nhất trên mọi chuyến của user.
-         // Trước đây khối này là 2 tấm polaroid cứng (ảnh Unsplash + tên bịa)
-         // hiển thị y hệt nhau cho mọi tài khoản.
-         Consumer(
-           builder: (context, ref, _) {
-             final async = ref.watch(recentMomentsProvider);
-             return async.when(
-               loading: () => const SizedBox(
-                 height: 200,
-                 child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-               ),
-               error: (_, _) =>
-                   _scrapbookPlaceholder('dashboard.scrapbook_error'.tr()),
-               data: (moments) {
-                 if (moments.isEmpty) {
-                   return _scrapbookPlaceholder(
-                     'dashboard.scrapbook_empty'.tr(),
-                   );
-                 }
-                 final shown = moments.take(2).toList();
-                 return Row(
-                   children: [
-                     for (var i = 0; i < shown.length; i++) ...[
-                       if (i > 0) const SizedBox(width: 16),
-                       Expanded(
-                         child: Transform.rotate(
-                           angle: i.isEven ? -0.06 : 0.05,
-                           child: GestureDetector(
-                             onTap: () => Navigator.push(
-                               context,
-                               MaterialPageRoute(
-                                 builder: (_) => MemoryWallScreen(
-                                   isDarkMode: isDarkMode,
-                                   onThemeToggle: onThemeToggle,
-                                 ),
-                               ),
-                             ),
-                             child: _buildPolaroidCard(
-                               context: context,
-                               title: shown[i].title,
-                               author: '- ${shown[i].authorName} -',
-                               location: shown[i].location,
-                               fallbackColor: _fill,
-                               // Polaroid nhỏ trong scrapbook.
-                               imageUrl: optimizedMedia(
-                                 shown[i].mediaUrl,
-                                 width: 320,
-                               ),
-                             ),
-                           ),
-                         ),
-                       ),
-                     ],
-                     // Chỉ có 1 kỷ niệm → chừa chỗ để tấm polaroid không bị kéo giãn.
-                     if (shown.length == 1) ...[
-                       const SizedBox(width: 16),
-                       const Spacer(),
-                     ],
-                   ],
-                 );
-               },
-             );
-           },
-         ),
-       ],
-     );
-   }
+        // Scrapbook lấy kỷ niệm THẬT mới nhất trên mọi chuyến của user.
+        // Trước đây khối này là 2 tấm polaroid cứng (ảnh Unsplash + tên bịa)
+        // hiển thị y hệt nhau cho mọi tài khoản.
+        Consumer(
+          builder: (context, ref, _) {
+            final async = ref.watch(recentMomentsProvider);
+            return async.when(
+              loading: () => const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              ),
+              error: (_, _) =>
+                  _scrapbookPlaceholder('dashboard.scrapbook_error'.tr()),
+              data: (moments) {
+                if (moments.isEmpty) {
+                  return _scrapbookPlaceholder(
+                    'dashboard.scrapbook_empty'.tr(),
+                  );
+                }
+                final shown = moments.take(2).toList();
+                return Row(
+                  children: [
+                    for (var i = 0; i < shown.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 16),
+                      Expanded(
+                        child: Transform.rotate(
+                          angle: i.isEven ? -0.06 : 0.05,
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MemoryWallScreen(
+                                  isDarkMode: isDarkMode,
+                                  onThemeToggle: onThemeToggle,
+                                ),
+                              ),
+                            ),
+                            child: _buildPolaroidCard(
+                              context: context,
+                              title: shown[i].title,
+                              author: '- ${shown[i].authorName} -',
+                              location: shown[i].location,
+                              fallbackColor: _fill,
+                              // Polaroid nhỏ trong scrapbook.
+                              imageUrl: optimizedMedia(
+                                shown[i].mediaUrl,
+                                width: 320,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    // Chỉ có 1 kỷ niệm → chừa chỗ để tấm polaroid không bị kéo giãn.
+                    if (shown.length == 1) ...[
+                      const SizedBox(width: 16),
+                      const Spacer(),
+                    ],
+                  ],
+                );
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
 
-   /// Khung thay thế khi chưa có kỷ niệm nào hoặc tải lỗi.
-   Widget _scrapbookPlaceholder(String message) {
-     return Container(
-       width: double.infinity,
-       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
-       decoration: BoxDecoration(
-         color: _paper,
-         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-         border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
-       ),
-       child: Column(
-         children: [
-           Icon(
-             PhosphorIcons.camera(),
-             size: 28,
-             color: _ink.withValues(alpha: 0.5),
-           ),
-           const SizedBox(height: 8),
-           Text(
-             message,
-             textAlign: TextAlign.center,
-             style: AppFonts.body(
-               fontSize: 13,
-               color: _ink.withValues(alpha: 0.6),
-             ),
-           ),
-         ],
-       ),
-     );
-   }
+  /// Khung thay thế khi chưa có kỷ niệm nào hoặc tải lỗi.
+  Widget _scrapbookPlaceholder(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      decoration: BoxDecoration(
+        color: _paper,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            PhosphorIcons.camera(),
+            size: 28,
+            color: _ink.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: AppFonts.body(
+              fontSize: 13,
+              color: _ink.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-   Widget _buildPolaroidCard({
-     required BuildContext context,
-     required String title,
-     required String author,
-     required String location,
-     required Color fallbackColor,
-     required String imageUrl,
-   }) {
-     return HardShadowBox(
-       color: _paper,
-       radius: 10,
-       padding: const EdgeInsets.all(10),
-       child: Column(
-         crossAxisAlignment: CrossAxisAlignment.start,
-         children: [
-           ClipRRect(
-             borderRadius: BorderRadius.circular(4),
-             child: CachedNetworkImage(
-               imageUrl: imageUrl,
-               height: 130,
-               width: double.infinity,
-               fit: BoxFit.cover,
-               placeholder: (context, url) => Container(
-                 height: 130,
-                 color: fallbackColor,
-                 child: const Center(
-                   child: SizedBox(
-                     width: 20,
-                     height: 20,
-                     child: CircularProgressIndicator(
-                       strokeWidth: 2,
-                       valueColor: AlwaysStoppedAnimation<Color>(GenZTokens.ink),
-                     ),
-                   ),
-                 ),
-               ),
-               errorWidget: (context, url, error) => Container(
-                 height: 130,
-                 color: fallbackColor,
-                 child: Center(
-                   child: Icon(
-                     PhosphorIcons.image(),
-                     color: GenZTokens.ink,
-                     size: 28,
-                   ),
-                 ),
-               ),
-             ),
-           ),
-           const SizedBox(height: 12),
-           Text(
-             title,
-             style: GoogleFonts.caveat(
-               fontSize: 18,
-               fontWeight: FontWeight.bold,
-               color: _ink,
-             ),
-           ),
-           const SizedBox(height: 2),
-           Text(
-             author,
-             style: GoogleFonts.caveat(fontSize: 14, color: _inkSoft),
-           ),
-           const SizedBox(height: 4),
-           Row(
-             children: [
-               Icon(
-                 PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-                 size: 12,
-                 color: _danger,
-               ),
-               const SizedBox(width: 2),
+  Widget _buildPolaroidCard({
+    required BuildContext context,
+    required String title,
+    required String author,
+    required String location,
+    required Color fallbackColor,
+    required String imageUrl,
+  }) {
+    return HardShadowBox(
+      color: _paper,
+      radius: 10,
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              height: 130,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                height: 130,
+                color: fallbackColor,
+                child: const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(GenZTokens.ink),
+                    ),
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                height: 130,
+                color: fallbackColor,
+                child: Center(
+                  child: Icon(
+                    PhosphorIcons.image(),
+                    color: GenZTokens.ink,
+                    size: 28,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: GoogleFonts.patrickHand(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: _ink,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            author,
+            style: GoogleFonts.patrickHand(fontSize: 14, color: _inkSoft),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(
+                PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
+                size: 12,
+                color: _danger,
+              ),
+              const SizedBox(width: 2),
               Expanded(
                 child: Text(
                   location.toUpperCase(),

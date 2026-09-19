@@ -410,7 +410,14 @@
     "active_count": "{count} đang hoạt động",
     "quick_tag": "Nhanh",
     "wrapped_reel": "Wrapped Reel",
-    "currency_tr": "tr"
+    "currency_tr": "tr",
+    "split_money_desc": "Ai nợ ai, quyết toán gọn",
+    "memories_desc": "Ảnh và khoảnh khắc của squad",
+    "bingo_desc": "Mini game cho cả nhóm",
+    "vibe_match_desc": "Quẹt tìm chuyến hợp gu",
+    "squad_empty_title": "Chưa ai online",
+    "squad_empty_body": "Rủ bạn bè vào chuyến để thấy ai đang hoạt động",
+    "squad_invite": "Mời bạn"
   },
   "discovery": {
     "add_to_trip": "Thêm vào chuyến",
@@ -1329,7 +1336,7 @@
     },
     "buddies_title": "Đã đi chung 👥",
     "countries": "Quốc gia",
-    "default_bio": "Sẵn sàng lên đường ✈️",
+    "default_bio": "Sẵn sàng lên đường",
     "distance": "Quãng đường",
     "edit_title": "Chỉnh Sửa Profile ✏️",
     "export_badges": {
@@ -1360,7 +1367,7 @@
     "memories_empty": "Chưa có kỷ niệm nào. Đăng ảnh trong chuyến để lưu lại nha!",
     "name_required": "⚠️ Tên và Username không được để trống!",
     "nomad_tag": "Dân du mục",
-    "open_travel_atlas": "MỞ BẢN ĐỒ TRAVEL ATLAS 🌍",
+    "open_travel_atlas": "Mở bản đồ Travel Atlas",
     "place_count": "{n} địa điểm",
     "preview_sample_badge": "🔥 Đang cháy",
     "preview_sample_sub": "Nhóm đang online",
@@ -1447,7 +1454,7 @@
     "reel_title": "Tua lại từ đầu",
     "replay_tagline": "Chuyến đó đáng xem lại lắm.",
     "share_cta": "Chia sẻ Wrapped",
-    "share_text": "Chuyến {} của tụi mình: {} địa điểm, {} khoảnh khắc, {} ngày. Lên đồ đi chơi với TripMate nào! ✈️",
+    "share_text": "Chuyến {} của tụi mình: {} địa điểm, {} khoảnh khắc, {} ngày. Lên đồ đi chơi với TripMate nào!",
     "unit_days": "ngày",
     "unit_moments": "khoảnh khắc",
     "unit_places": "địa điểm",

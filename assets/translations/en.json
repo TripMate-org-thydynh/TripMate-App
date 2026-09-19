@@ -410,7 +410,14 @@
     "active_count": "{count} active",
     "quick_tag": "Quick",
     "wrapped_reel": "Wrapped Reel",
-    "currency_tr": "M"
+    "currency_tr": "M",
+    "split_money_desc": "Who owes who, settle fast",
+    "memories_desc": "Your squad's photos and moments",
+    "bingo_desc": "Mini games for the group",
+    "vibe_match_desc": "Swipe to find your kind of trip",
+    "squad_empty_title": "No one online yet",
+    "squad_empty_body": "Invite friends to a trip to see who's active",
+    "squad_invite": "Invite"
   },
   "discovery": {
     "add_to_trip": "Add to Trip",
@@ -1360,7 +1367,7 @@
     "memories_empty": "No memories yet. Post photos during a trip to save them!",
     "name_required": "⚠️ Name and username cannot be empty.",
     "nomad_tag": "Global nomad",
-    "open_travel_atlas": "OPEN TRAVEL ATLAS 🌍",
+    "open_travel_atlas": "Open Travel Atlas",
     "place_count": "{n} places",
     "preview_sample_badge": "🔥 On fire",
     "preview_sample_sub": "Squad is online",
@@ -1447,7 +1454,7 @@
     "reel_title": "Rewinding it all",
     "replay_tagline": "That trip deserves a replay.",
     "share_cta": "Share your Wrapped",
-    "share_text": "Our {} trip: {} places, {} moments, {} days. Come travel with TripMate! ✈️",
+    "share_text": "Our {} trip: {} places, {} moments, {} days. Come travel with TripMate!",
     "unit_days": "days",
     "unit_moments": "moments",
     "unit_places": "places",

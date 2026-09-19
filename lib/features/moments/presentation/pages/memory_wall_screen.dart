@@ -747,7 +747,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: Text(
                       caption,
-                      style: GoogleFonts.caveat(
+                      style: GoogleFonts.patrickHand(
                         color: textColor,
                         fontSize: 15,
                         fontWeight: FontWeight.bold,

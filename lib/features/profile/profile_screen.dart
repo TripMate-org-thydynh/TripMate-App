@@ -16,6 +16,8 @@ import '../../core/theme/gen_z_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'data/profile_provider.dart';
 
+import '../../core/widgets/faded_image.dart';
+import '../trips/application/trips_providers.dart';
 import 'pages/badge_collection_screen.dart';
 import 'pages/edit_profile_screen.dart';
 import 'pages/friends_list_screen.dart';
@@ -692,26 +694,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       body: Stack(
         children: [
 
-          // 2. Cinematic Karst Landscape Backdrop
-          Positioned.fill(
-            child: ExcludeSemantics(
-              child: Opacity(
-                opacity: 0.08,
-                child: CachedNetworkImage(
-                  imageUrl:
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const SizedBox(),
-                  errorWidget: (context, url, error) => const SizedBox(),
-                ),
+          // Ảnh bìa chuyến gần nhất tràn đầu trang, tan dần xuống màu nền.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: FadedImage(
+              imageUrl: ref.watch(tripsProvider).maybeWhen(
+                data: (trips) => trips
+                    .map((t) => t.coverImage)
+                    .firstWhere(
+                      (c) => c != null && c.startsWith('http'),
+                      orElse: () => null,
+                    ),
+                orElse: () => null,
               ),
-            ),
-          ),
-
-          // Blur overlay
-          Positioned.fill(
-            child: Container(
-              color: (isDark ? GenZTokens.inkDark : GenZTokens.ink).withValues(alpha: isDark ? 0.15 : 0.02),
+              topFade: true,
+              fadeTo: backgroundColor,
+              height: 460,
+              glowExtent: 360,
             ),
           ),
 
@@ -725,8 +726,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                     SliverAppBar(
                       expandedHeight: 88.0,
                       floating: false,
-                      pinned: true,
-                      backgroundColor: backgroundColor,
+                      // Trong suốt, cuộn đi cùng nội dung — để ảnh đầu trang
+                      // tràn lên tận mép trên thay vì bị thanh này che.
+                      pinned: false,
+                      backgroundColor: Colors.transparent,
+                      surfaceTintColor: Colors.transparent,
                       elevation: 0,
                       centerTitle: false,
                       titleSpacing: 4,
@@ -1034,7 +1038,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                               .tr()
                                                         : 'profile.badge_new_member'
                                                               .tr()),
-                                              secondaryColor,
+                                              textSecondaryColor,
                                               isDark,
                                               surfaceColor,
                                             ),

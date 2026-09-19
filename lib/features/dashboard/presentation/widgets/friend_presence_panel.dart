@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/api_service.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
 import '../../../social/presentation/pages/trip_chat_live_screen.dart';
+import '../../../invites/presentation/trip_invites_screen.dart';
 
 class FriendPresencePanel extends StatefulWidget {
   final bool isDarkMode;
@@ -130,6 +131,121 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
       .where((m) => m['status'] == 'ONLINE' || m['status'] == 'IN_TRIP')
       .length;
 
+  /// Chưa ai online (hoặc chưa có chuyến): hàng avatar giữ chỗ + lời rủ mời bạn,
+  /// thay vì để trống một khoảng không.
+  Widget _buildEmpty(BuildContext context, bool isDark) {
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final tripId = _tripId;
+
+    Widget ghost(int i) => Transform.translate(
+      offset: Offset(-12.0 * i, 0),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _fill,
+          border: Border.all(color: surface, width: 2),
+        ),
+        child: Icon(
+          PhosphorIcons.user(),
+          size: 20,
+          color: inkSoft.withValues(alpha: 0.6 - i * 0.12),
+        ),
+      ),
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 44.0 + 32 * 3,
+                height: 44,
+                child: Stack(
+                  children: [
+                    for (int i = 3; i >= 0; i--)
+                      Positioned(left: 44.0 * i, child: ghost(i)),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              if (tripId != null)
+                PressableCard(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TripInvitesScreen(
+                        tripId: tripId,
+                        tripName: _tripName,
+                        isDarkMode: isDark,
+                      ),
+                    ),
+                  ),
+                  color: _accent,
+                  borderColor: _accent,
+                  shadowColor: _ink,
+                  borderWidth: GenZTokens.borderWidthThin,
+                  radius: GenZTokens.radiusPill,
+                  depth: 1,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        PhosphorIcons.userPlus(),
+                        size: 16,
+                        color: isDark
+                            ? GenZTokens.onAccentDark
+                            : GenZTokens.onAccent,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'dashboard.squad_invite'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? GenZTokens.onAccentDark
+                              : GenZTokens.onAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: GenZTokens.space3),
+          Text(
+            'dashboard.squad_empty_title'.tr(),
+            style: AppFonts.heading(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: _ink,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'dashboard.squad_empty_body'.tr(),
+            style: AppFonts.body(fontSize: 13, color: inkSoft, height: 1.35),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
@@ -169,7 +285,9 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                   decoration: BoxDecoration(
                     color: _activeCount == 0
                         ? (isDark ? GenZTokens.fillDark : GenZTokens.fill)
-                        : (isDark ? GenZTokens.successDark : GenZTokens.success),
+                        : (isDark
+                              ? GenZTokens.successDark
+                              : GenZTokens.success),
                     borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                     border: Border.all(
                       color: _activeCount == 0
@@ -201,11 +319,11 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                               : FontWeight.w500,
                           color: _activeCount == 0
                               ? (isDark
-                                  ? GenZTokens.inkSoftDark
-                                  : GenZTokens.inkSoft)
+                                    ? GenZTokens.inkSoftDark
+                                    : GenZTokens.inkSoft)
                               : (isDark
-                                  ? GenZTokens.onAccentDark
-                                  : GenZTokens.onAccent),
+                                    ? GenZTokens.onAccentDark
+                                    : GenZTokens.onAccent),
                         ),
                       ),
                     ],
@@ -215,136 +333,137 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 90,
-          child: _isLoading
-              ? Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _accent,
+        if (!_isLoading && _members.isEmpty)
+          _buildEmpty(context, isDark)
+        else
+          SizedBox(
+            height: 90,
+            child: _isLoading
+                ? Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(_accent),
                       ),
                     ),
-                  ),
-                )
-              : ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _members.length,
-                  itemBuilder: (context, index) {
-                    final friend = _members[index];
-                    final status = friend['status'] as String? ?? 'OFFLINE';
-                    final isActive =
-                        status == 'ONLINE' ||
-                        status == 'IN_TRIP' ||
-                        status == 'IDLE';
-                    final statusColor = _statusColor(status, isDark);
+                  )
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: _members.length,
+                    itemBuilder: (context, index) {
+                      final friend = _members[index];
+                      final status = friend['status'] as String? ?? 'OFFLINE';
+                      final isActive =
+                          status == 'ONLINE' ||
+                          status == 'IN_TRIP' ||
+                          status == 'IDLE';
+                      final statusColor = _statusColor(status, isDark);
 
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 18),
-                      child: GestureDetector(
-                        onTap: () {
-                          final tripId = _tripId;
-                          if (tripId == null) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TripChatLiveScreen(
-                                tripId: tripId,
-                                isDarkMode: widget.isDarkMode,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 350),
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: isActive
-                                        ? statusColor
-                                        : Colors.transparent,
-                                    border: Border.all(
-                                      color: _line,
-                                      width: GenZTokens.borderWidthThin,
-                                    ),
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 24,
-                                    backgroundImage:
-                                        friend['avatarUrl'] != null
-                                        ? NetworkImage(
-                                            friend['avatarUrl'] as String,
-                                          )
-                                        : null,
-                                    backgroundColor: _fill,
-                                    child: friend['avatarUrl'] == null
-                                        ? Text(
-                                            friend['avatarChar'] as String,
-                                            style: AppFonts.heading(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                              color: _ink,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 18),
+                        child: GestureDetector(
+                          onTap: () {
+                            final tripId = _tripId;
+                            if (tripId == null) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TripChatLiveScreen(
+                                  tripId: tripId,
+                                  isDarkMode: widget.isDarkMode,
                                 ),
-                                if (isActive)
-                                  Positioned(
-                                    top: -2,
-                                    left: -2,
-                                    child: PulseDot(
-                                      color: statusColor,
-                                      size: 9,
-                                    ),
-                                  ),
-                                Positioned(
-                                  right: 0,
-                                  bottom: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
+                              ),
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 350),
+                                    padding: const EdgeInsets.all(3),
                                     decoration: BoxDecoration(
-                                      color: _fill,
                                       shape: BoxShape.circle,
+                                      color: isActive
+                                          ? statusColor
+                                          : Colors.transparent,
                                       border: Border.all(
                                         color: _line,
                                         width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
-                                    child: Icon(
-                                      _vibeIcon(friend['vibe'] as String),
-                                      size: 10,
-                                      color: _accent,
+                                    child: CircleAvatar(
+                                      radius: 24,
+                                      backgroundImage:
+                                          friend['avatarUrl'] != null
+                                          ? NetworkImage(
+                                              friend['avatarUrl'] as String,
+                                            )
+                                          : null,
+                                      backgroundColor: _fill,
+                                      child: friend['avatarUrl'] == null
+                                          ? Text(
+                                              friend['avatarChar'] as String,
+                                              style: AppFonts.heading(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                                color: _ink,
+                                              ),
+                                            )
+                                          : null,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              friend['name'] as String,
-                              style: AppFonts.heading(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: _ink,
+                                  if (isActive)
+                                    Positioned(
+                                      top: -2,
+                                      left: -2,
+                                      child: PulseDot(
+                                        color: statusColor,
+                                        size: 9,
+                                      ),
+                                    ),
+                                  Positioned(
+                                    right: 0,
+                                    bottom: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: _fill,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: _line,
+                                          width: GenZTokens.borderWidthThin,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        _vibeIcon(friend['vibe'] as String),
+                                        size: 10,
+                                        color: _accent,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 6),
+                              Text(
+                                friend['name'] as String,
+                                style: AppFonts.heading(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: _ink,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-        ),
+                      );
+                    },
+                  ),
+          ),
       ],
     );
   }

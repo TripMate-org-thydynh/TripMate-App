@@ -100,23 +100,12 @@ class TripHubScreen extends StatelessWidget {
                 style: AppFonts.heading(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  // Có ảnh bìa → nền tối, chữ phải trắng mới đọc được.
-                  color: (trip.coverImage?.isNotEmpty ?? false)
-                      ? Colors.white
-                      : _textPri,
+                  // Ảnh tan xuống màu nền ở mép dưới → chữ thường đọc được.
+                  color: _textPri,
                 ),
               ),
-              // Ảnh bìa chuyến (nếu có) phủ toàn header, phía dưới là lớp tối
-              // để chữ tiêu đề luôn đọc được.
-              background: DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: _line,
-                      width: GenZTokens.borderWidthThin,
-                    ),
-                  ),
-                ),
+              // Ảnh bìa chuyến phủ header, tan dần xuống màu nền (concept A/B).
+              background: SizedBox.expand(
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -142,9 +131,11 @@ class TripHubScreen extends StatelessWidget {
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
+                            stops: const [0.4, 0.78, 1.0],
                             colors: [
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.55),
+                              _bgOf(context).withValues(alpha: 0),
+                              _bgOf(context).withValues(alpha: 0.75),
+                              _bgOf(context),
                             ],
                           ),
                         ),

@@ -167,6 +167,8 @@ class QuickActionsPanel extends StatelessWidget {
   Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
   Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
   void _showAllActionsSheet(BuildContext context) {
     showModalBottomSheet(
@@ -305,67 +307,96 @@ class QuickActionsPanel extends StatelessWidget {
 
         // ── Primary 2×2 Cards ────────────────────────────────────────────────
         GridView.builder(
+          // Home không có SafeArea trên → phải tắt padding tự động theo thanh trạng thái.
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio: 1.9,
+            childAspectRatio: 1.25,
           ),
           itemCount: _primaryActions.length,
           itemBuilder: (context, index) {
             final action = _primaryActions[index];
             final type = action['type'] as String;
 
+            // Ô đầu (Chia tiền) là hành động chính → tô màu nhấn.
+            final hero = index == 0;
+            final bg = hero ? _accent : _surface;
+            final fg = hero ? _onAccent : _textPri;
+            final fgSoft = hero ? _onAccent.withValues(alpha: 0.8) : _textSec;
+            final iconBg = hero
+                ? _onAccent.withValues(alpha: 0.16)
+                : Theme.of(context).colorScheme.primaryContainer;
+            final iconFg = hero
+                ? _onAccent
+                : Theme.of(context).colorScheme.onPrimaryContainer;
+
             return PopIn(
               index: index,
               child: PressableCard(
                 onTap: () => _handleTap(context, type),
-                color: _surface,
-                borderColor: _line,
+                color: bg,
+                borderColor: hero ? bg : _line,
                 shadowColor: _textPri,
                 borderWidth: GenZTokens.borderWidthThin,
                 depth: 1,
                 radius: GenZTokens.radiusCard,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
-                  ),
-                  child: Row(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: _fill,
-                          borderRadius: BorderRadius.circular(
-                            GenZTokens.radiusButton,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: iconBg,
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusButton,
+                              ),
+                            ),
+                            child: Icon(
+                              _primaryIcon(type),
+                              size: 22,
+                              color: iconFg,
+                            ),
                           ),
-                          border: Border.all(
-                            color: _line,
-                            width: GenZTokens.borderWidthThin,
+                          const Spacer(),
+                          Icon(
+                            PhosphorIcons.arrowUpRight(),
+                            size: 18,
+                            color: fgSoft,
                           ),
-                        ),
-                        child: Icon(
-                          _primaryIcon(type),
-                          size: 18,
-                          color: _accent,
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          (action['labelKey'] as String).tr(),
-                          style: AppFonts.heading(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: _textPri,
-                            letterSpacing: -0.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      const Spacer(),
+                      Text(
+                        (action['labelKey'] as String).tr(),
+                        style: AppFonts.heading(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: fg,
+                          letterSpacing: -0.3,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${action['labelKey']}_desc'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 12,
+                          color: fgSoft,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
