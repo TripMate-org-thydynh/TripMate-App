@@ -20,19 +20,23 @@ class XpWalletScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'xp.wallet'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -46,25 +50,30 @@ class XpWalletScreen extends ConsumerWidget {
       body: ref
           .watch(xpWalletProvider)
           .when(
-            loading: () =>
-                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            loading: () => Center(
+              child: CircularProgressIndicator(
+                color: accent,
+                strokeWidth: 2,
+              ),
+            ),
             error: (e, _) => AppErrorState(
               isDark: isDark,
               error: e,
               onRetry: () => ref.invalidate(xpWalletProvider),
             ),
             data: (w) => RefreshIndicator(
+              color: accent,
               onRefresh: () async => ref.invalidate(xpWalletProvider),
               child: ListView(
-                padding: const EdgeInsets.all(GenZTokens.space5),
+                padding: const EdgeInsets.all(GenZTokens.space4),
                 children: [
                   _summary(isDark, w),
                   const SizedBox(height: GenZTokens.space5),
                   Text(
                     'xp.history'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
                       color: ink,
                     ),
                   ),
@@ -74,9 +83,7 @@ class XpWalletScreen extends ConsumerWidget {
                       'xp.history_empty'.tr(),
                       style: AppFonts.body(
                         fontSize: 13,
-                        color: isDark
-                            ? GenZTokens.inkSoftDark
-                            : GenZTokens.inkSoft,
+                        color: inkSoft,
                       ),
                     )
                   else
@@ -89,66 +96,74 @@ class XpWalletScreen extends ConsumerWidget {
   }
 
   Widget _summary(bool isDark, XpWallet w) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+
     // Còn bao nhiêu XP nữa lên cấp — tính từ tổng đã kiếm, không phải số dư.
     final toNext = w.xpPerLevel - (w.earned % w.xpPerLevel);
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(GenZTokens.space6),
+      padding: const EdgeInsets.all(GenZTokens.space5),
       decoration: BoxDecoration(
-        color: GenZTokens.yellow,
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: GenZTokens.ink,
-          width: GenZTokens.borderWidth,
+          color: line,
+          width: GenZTokens.borderWidthThin,
         ),
       ),
       child: Column(
         children: [
           Text(
             '${w.balance}',
-            style: AppFonts.heading(
-              fontSize: 46,
-              fontWeight: FontWeight.w900,
-              color: GenZTokens.ink,
+            style: AppFonts.mono(
+              fontSize: 40,
+              fontWeight: FontWeight.w700,
+              color: ink,
             ),
           ),
+          const SizedBox(height: 2),
           Text(
             'xp.balance'.tr(),
-            style: AppFonts.body(fontSize: 13, color: GenZTokens.ink),
+            style: AppFonts.body(fontSize: 13, color: inkSoft),
           ),
-          const SizedBox(height: GenZTokens.space5),
+          const SizedBox(height: GenZTokens.space4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'xp.level'.tr(args: ['${w.level}']),
                 style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: GenZTokens.ink,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: ink,
                 ),
               ),
               Text(
                 'xp.to_next'.tr(args: ['$toNext']),
-                style: AppFonts.body(fontSize: 12.5, color: GenZTokens.ink),
+                style: AppFonts.body(fontSize: 12, color: inkSoft),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
             child: LinearProgressIndicator(
               value: w.levelProgress / 100,
-              minHeight: 10,
-              backgroundColor: GenZTokens.ink.withValues(alpha: 0.15),
-              valueColor: const AlwaysStoppedAnimation<Color>(GenZTokens.ink),
+              minHeight: 8,
+              backgroundColor: fill,
+              valueColor: AlwaysStoppedAnimation<Color>(accent),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             '${'xp.earned'.tr()}: ${w.earned}',
-            style: AppFonts.body(fontSize: 12, color: GenZTokens.ink),
+            style: AppFonts.body(fontSize: 12, color: inkSoft),
           ),
         ],
       ),
@@ -159,7 +174,11 @@ class XpWalletScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
     final at = e.createdAt;
+    final deltaColor = e.isEarn ? success : danger;
 
     return Container(
       margin: const EdgeInsets.only(bottom: GenZTokens.space2),
@@ -170,14 +189,14 @@ class XpWalletScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Row(
         children: [
           Icon(
             e.isEarn ? PhosphorIcons.plusCircle() : PhosphorIcons.minusCircle(),
-            size: 18,
-            color: e.isEarn ? GenZTokens.success : GenZTokens.orange,
+            size: 20,
+            color: deltaColor,
           ),
           const SizedBox(width: GenZTokens.space3),
           Expanded(
@@ -189,25 +208,25 @@ class XpWalletScreen extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     color: ink,
                   ),
                 ),
                 if (at != null)
                   Text(
                     DateFormat.yMMMd().add_Hm().format(at.toLocal()),
-                    style: AppFonts.body(fontSize: 11.5, color: inkSoft),
+                    style: AppFonts.body(fontSize: 12, color: inkSoft),
                   ),
               ],
             ),
           ),
           Text(
             e.isEarn ? '+${e.delta}' : '${e.delta}',
-            style: AppFonts.heading(
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              color: e.isEarn ? GenZTokens.success : GenZTokens.orange,
+            style: AppFonts.mono(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: deltaColor,
             ),
           ),
         ],

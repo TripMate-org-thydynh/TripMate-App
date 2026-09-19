@@ -22,20 +22,25 @@ class StickerInventoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'xp.my_stickers'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -51,19 +56,31 @@ class StickerInventoryScreen extends ConsumerWidget {
             builder: (_) => StickerStoreScreen(isDarkMode: isDark),
           ),
         ),
-        backgroundColor: GenZTokens.yellow,
-        foregroundColor: GenZTokens.ink,
+        backgroundColor: accent,
+        foregroundColor: onAccent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+        ),
         icon: Icon(PhosphorIcons.storefront()),
         label: Text(
           'xp.open_store'.tr(),
-          style: AppFonts.heading(fontWeight: FontWeight.w800),
+          style: AppFonts.heading(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: onAccent,
+          ),
         ),
       ),
       body: ref
           .watch(myStickersProvider)
           .when(
-            loading: () =>
-                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            loading: () => Center(
+              child: CircularProgressIndicator(
+                color: accent,
+                strokeWidth: 2,
+              ),
+            ),
             error: (e, _) => AppErrorState(
               isDark: isDark,
               error: e,
@@ -79,15 +96,17 @@ class StickerInventoryScreen extends ConsumerWidget {
                 );
               }
               return RefreshIndicator(
+                color: accent,
                 onRefresh: () async => invalidateXp(ref),
                 child: GridView.builder(
                   padding: const EdgeInsets.fromLTRB(
-                    GenZTokens.space5,
-                    GenZTokens.space5,
-                    GenZTokens.space5,
+                    GenZTokens.space4,
+                    GenZTokens.space4,
+                    GenZTokens.space4,
                     96,
                   ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: GenZTokens.space3,
                     mainAxisSpacing: GenZTokens.space3,
@@ -103,16 +122,16 @@ class StickerInventoryScreen extends ConsumerWidget {
   }
 
   Widget _tile(bool isDark, StoreItem item) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space3),
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +143,7 @@ class StickerInventoryScreen extends ConsumerWidget {
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
-            style: AppFonts.body(fontSize: 11.5, color: inkSoft),
+            style: AppFonts.body(fontSize: 12, color: inkSoft),
           ),
         ],
       ),

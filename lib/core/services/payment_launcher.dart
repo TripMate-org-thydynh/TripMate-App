@@ -99,7 +99,7 @@ class _PaymentSheet extends StatelessWidget {
     required this.isDark,
   });
 
-  Color get _primary => GenZTokens.orange;
+  Color get _primary => GenZTokens.accent;
   Color get _surface => isDark ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _bg => isDark ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _textPri => isDark ? GenZTokens.inkDark : GenZTokens.ink;

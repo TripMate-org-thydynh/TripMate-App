@@ -53,33 +53,14 @@ class DsTokens {
   static const Color chart5 = Color(0xFF3A6073);
   static const Color chart6 = Color(0xFF8C5A4A);
 
-  // ── 9 màu cũ (giữ tên, trỏ sang màu mới, bỏ dần) ──
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color yellow = warning;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color orange = accent;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color green = success;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color red = danger;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color blue = info;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color purple = chart3;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color magenta = chart6;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color lilac = accentSoft;
 
-  @Deprecated('Dùng accent/semantic/chart — xem REFACTOR_UI_SPEC.md')
-  static const Color pink = accentSoft;
 
   // ── Border ────────────────────────────────────────
   static const double borderWidthThin = 1;

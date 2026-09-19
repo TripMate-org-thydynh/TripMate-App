@@ -188,9 +188,7 @@ class TripPollsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: primary,
         foregroundColor: onAccent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         onPressed: () => _createPoll(context, ref),
         icon: Icon(PhosphorIcons.plus()),
         label: Text(
@@ -203,7 +201,7 @@ class TripPollsScreen extends ConsumerWidget {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context),
         elevation: 0,
         title: Text(
           'polls.title'.tr(),
@@ -364,10 +362,7 @@ class TripPollsScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: line,
-          width: 1,
-        ),
+        border: Border.all(color: line, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,10 +397,7 @@ class TripPollsScreen extends ConsumerWidget {
                           curve: Curves.easeOutCubic,
                           builder: (context, v, _) => FractionallySizedBox(
                             widthFactor: v.clamp(0.0, 1.0),
-                            child: Container(
-                              height: 46,
-                              color: accentSoft,
-                            ),
+                            child: Container(height: 46, color: accentSoft),
                           ),
                         ),
                       ),
@@ -415,10 +407,7 @@ class TripPollsScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: line,
-                          width: 1,
-                        ),
+                        border: Border.all(color: line, width: 1),
                       ),
                       child: Row(
                         children: [

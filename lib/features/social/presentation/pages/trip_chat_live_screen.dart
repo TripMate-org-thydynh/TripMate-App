@@ -206,7 +206,10 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                         Text(
                           'xp.inventory_empty'.tr(),
                           textAlign: TextAlign.center,
-                          style: AppFonts.body(color: _textSecOf(context), height: 1.4),
+                          style: AppFonts.body(
+                            color: _textSecOf(context),
+                            height: 1.4,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
@@ -222,9 +225,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => StickerStoreScreen(
-                                  isDarkMode: dark,
-                                ),
+                                builder: (_) =>
+                                    StickerStoreScreen(isDarkMode: dark),
                               ),
                             );
                           },
@@ -315,7 +317,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
     return Scaffold(
       backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context),
         elevation: 0,
         title: Row(
           children: [
@@ -470,12 +472,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 bottomRight: isMe ? const Radius.circular(4) : null,
                 bottomLeft: isMe ? null : const Radius.circular(4),
               ),
-              border: isMe
-                  ? null
-                  : Border.all(
-                      color: line,
-                      width: 1,
-                    ),
+              border: isMe ? null : Border.all(color: line, width: 1),
             ),
             // Tin nhắn sticker: `content` là MÃ sticker (stk-fire), không phải
             // chữ để đọc. Đổi sang emoji cỡ lớn, nếu không người nhận sẽ thấy

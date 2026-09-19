@@ -26,18 +26,20 @@ class TripTodosScreen extends ConsumerWidget {
       _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
   Color _surface(BuildContext context) =>
       _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _primary => GenZTokens.purple;
+  Color _primary(BuildContext context) =>
+      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+  Color _onAccent(BuildContext context) =>
+      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color _textPri(BuildContext context) =>
       _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
   Color _textSec(BuildContext context) =>
       _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color _border(BuildContext context) => _isDark(context)
-      ? GenZTokens.inkDark.withValues(alpha: 0.1)
-      : GenZTokens.ink.withValues(alpha: 0.06);
+  Color _border(BuildContext context) =>
+      _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
 
   static const _prio = <String, (String, Color)>{
     'HIGH': ('todos.priority_urgent', GenZTokens.danger),
-    'NORMAL': ('todos.priority_normal', GenZTokens.blue),
+    'NORMAL': ('todos.priority_normal', GenZTokens.info),
     'LOW': ('todos.priority_relaxed', GenZTokens.inkSoft),
   };
 
@@ -70,13 +72,16 @@ class TripTodosScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: _surface(context),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(color: _border(context)),
+        ),
         title: Text(
           'common.delete_confirm'.tr(namedArgs: {'name': it.title}),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             color: _textPri(context),
-            fontSize: 16,
+            fontSize: 17,
           ),
         ),
         actions: [
@@ -84,15 +89,25 @@ class TripTodosScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: AppFonts.body(color: _textSec(context)),
+              style: AppFonts.body(color: _textSec(context), fontSize: 15),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: GenZTokens.danger,
+              foregroundColor: GenZTokens.paper,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('general.delete2'.tr()),
+            child: Text(
+              'general.delete2'.tr(),
+              style: AppFonts.heading(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -111,8 +126,9 @@ class TripTodosScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: _surface(context),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+        side: BorderSide(color: _border(context)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
@@ -130,7 +146,7 @@ class TripTodosScreen extends ConsumerWidget {
                 'todos.add'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
-                  fontSize: 18,
+                  fontSize: 17,
                   color: _textPri(context),
                 ),
               ),
@@ -145,8 +161,19 @@ class TripTodosScreen extends ConsumerWidget {
                   filled: true,
                   fillColor: _bgOf(context),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: _border(context)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: _border(context)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: _primary(context),
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
@@ -174,11 +201,9 @@ class TripTodosScreen extends ConsumerWidget {
                         ),
                         decoration: BoxDecoration(
                           color: sel ? e.value.$2 : _bgOf(context),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: sel
-                                ? e.value.$2
-                                : _textSec(context).withValues(alpha: 0.3),
+                            color: sel ? e.value.$2 : _border(context),
                           ),
                         ),
                         child: Text(
@@ -212,11 +237,16 @@ class TripTodosScreen extends ConsumerWidget {
                   ),
                   decoration: BoxDecoration(
                     color: _bgOf(context),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: _border(context)),
                   ),
                   child: Row(
                     children: [
-                      Icon(PhosphorIcons.calendar(), size: 18, color: _primary),
+                      Icon(
+                        PhosphorIcons.calendar(),
+                        size: 18,
+                        color: _primary(context),
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         due == null
@@ -224,7 +254,9 @@ class TripTodosScreen extends ConsumerWidget {
                             : '${due!.day.toString().padLeft(2, '0')}/${due!.month.toString().padLeft(2, '0')}/${due!.year}',
                         style: AppFonts.body(
                           fontWeight: FontWeight.w600,
-                          color: due == null ? _textSec(context) : _textPri(context),
+                          color: due == null
+                              ? _textSec(context)
+                              : _textPri(context),
                         ),
                       ),
                     ],
@@ -236,10 +268,11 @@ class TripTodosScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: _primary,
+                    backgroundColor: _primary(context),
+                    foregroundColor: _onAccent(context),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   onPressed: () => Navigator.pop(ctx, true),
@@ -247,6 +280,7 @@ class TripTodosScreen extends ConsumerWidget {
                     'todos.add'.tr(),
                     style: AppFonts.heading(
                       fontWeight: FontWeight.w800,
+                      fontSize: 15,
                     ),
                   ),
                 ),
@@ -270,17 +304,18 @@ class TripTodosScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: _primary,
-        foregroundColor: GenZTokens.paper,
+        backgroundColor: _primary(context),
+        foregroundColor: _onAccent(context),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
         onPressed: () => _addTodo(context, ref),
         icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'todos.add'.tr(),
-          style: AppFonts.heading(fontWeight: FontWeight.w800),
+          style: AppFonts.heading(fontWeight: FontWeight.w800, fontSize: 15),
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context),
         elevation: 0,
         title: Text(
           'todos.title'.tr(),
@@ -292,7 +327,7 @@ class TripTodosScreen extends ConsumerWidget {
         ),
       ),
       body: RefreshIndicator(
-        color: _primary,
+        color: _primary(context),
         onRefresh: () => ref.read(todosProvider(tripId).notifier).refresh(),
         child: async.when(
           loading: () => _skeleton(context),
@@ -318,7 +353,7 @@ class TripTodosScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: _surface(context),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: _border(context)),
       ),
       child: Column(
@@ -330,7 +365,7 @@ class TripTodosScreen extends ConsumerWidget {
                 done
                     ? PhosphorIconsFill.checkCircle
                     : PhosphorIconsFill.listChecks,
-                color: _primary,
+                color: _primary(context),
                 size: 26,
               ),
               const SizedBox(width: 10),
@@ -355,20 +390,20 @@ class TripTodosScreen extends ConsumerWidget {
                 '${list.percent}%',
                 style: AppFonts.mono(
                   fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  color: _primary,
+                  fontSize: 17,
+                  color: _primary(context),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(999),
             child: LinearProgressIndicator(
               value: list.total == 0 ? 0 : list.done / list.total,
               minHeight: 10,
               backgroundColor: _bgOf(context),
-              valueColor: AlwaysStoppedAnimation(_primary),
+              valueColor: AlwaysStoppedAnimation(_primary(context)),
             ),
           ),
         ],
@@ -387,7 +422,7 @@ class TripTodosScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: _surface(context),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: _border(context)),
         ),
         child: Row(
@@ -399,17 +434,19 @@ class TripTodosScreen extends ConsumerWidget {
                 width: 26,
                 height: 26,
                 decoration: BoxDecoration(
-                  color: it.isDone ? _primary : Colors.transparent,
+                  color: it.isDone ? _primary(context) : _bgOf(context),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: it.isDone
-                        ? _primary
-                        : _textSec(context).withValues(alpha: 0.5),
-                    width: 2,
+                    color: it.isDone ? _primary(context) : _border(context),
+                    width: 1.5,
                   ),
                 ),
                 child: it.isDone
-                    ? Icon(PhosphorIcons.check(), size: 18, color: GenZTokens.paper)
+                    ? Icon(
+                        PhosphorIcons.check(),
+                        size: 16,
+                        color: _onAccent(context),
+                      )
                     : null,
               ),
             ),
@@ -422,7 +459,7 @@ class TripTodosScreen extends ConsumerWidget {
                     it.title,
                     style: AppFonts.body(
                       fontWeight: FontWeight.w600,
-                      fontSize: 14.5,
+                      fontSize: 15,
                       color: it.isDone ? _textSec(context) : _textPri(context),
                       decoration: it.isDone ? TextDecoration.lineThrough : null,
                     ),
@@ -438,11 +475,14 @@ class TripTodosScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           color: pm.$2.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: pm.$2.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Text(
                           pm.$1,
                           style: AppFonts.mono(
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: pm.$2,
                           ),
@@ -488,10 +528,7 @@ class TripTodosScreen extends ConsumerWidget {
         height: 30,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(
-            color: _textSec(context).withValues(alpha: 0.4),
-            width: 1.5,
-          ),
+          border: Border.all(color: _border(context), width: 1.5),
         ),
         child: Icon(
           PhosphorIcons.userPlus(),
@@ -509,7 +546,11 @@ class TripTodosScreen extends ConsumerWidget {
       height: 30,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: mine ? _primary : _textSec(context),
+        color: mine ? _primary(context) : _surface(context),
+        border: Border.all(
+          color: mine ? _primary(context) : _border(context),
+          width: 1.5,
+        ),
         image: (url != null && url.isNotEmpty)
             ? DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
             : null,
@@ -520,8 +561,8 @@ class TripTodosScreen extends ConsumerWidget {
               initial,
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
-                fontSize: 13,
-                color: GenZTokens.paper,
+                fontSize: 12,
+                color: mine ? _onAccent(context) : _textPri(context),
               ),
             )
           : null,
@@ -532,14 +573,14 @@ class TripTodosScreen extends ConsumerWidget {
     padding: const EdgeInsets.all(24),
     children: [
       const SizedBox(height: 50),
-      Icon(PhosphorIconsFill.listChecks, size: 60, color: _primary),
+      Icon(PhosphorIconsFill.listChecks, size: 60, color: _primary(context)),
       const SizedBox(height: 16),
       Text(
         'todos.empty'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.heading(
           fontWeight: FontWeight.w800,
-          fontSize: 20,
+          fontSize: 22,
           color: _textPri(context),
         ),
       ),
@@ -547,7 +588,7 @@ class TripTodosScreen extends ConsumerWidget {
       Text(
         'todos.empty_sub'.tr(),
         textAlign: TextAlign.center,
-        style: AppFonts.body(fontSize: 14, color: _textSec(context)),
+        style: AppFonts.body(fontSize: 13, color: _textSec(context)),
       ),
     ],
   );
@@ -560,10 +601,9 @@ class TripTodosScreen extends ConsumerWidget {
         height: 56,
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: _isDark(context)
-              ? GenZTokens.inkDark.withValues(alpha: 0.06)
-              : GenZTokens.ink.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(16),
+          color: _surface(context),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _border(context)),
         ),
       ),
     ),

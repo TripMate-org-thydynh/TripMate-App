@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../system_states/application/tripmate_mcp_config.dart';
 
@@ -21,63 +21,66 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
 
   bool get _isDark =>
       widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
+  Color get _bg =>
+      _isDark ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _surface =>
       _isDark ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill =>
+      _isDark ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _ink =>
       _isDark ? GenZTokens.inkDark : GenZTokens.ink;
-
-  /// Accent lay tu theme dang chon.
-  ///
-  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*.
-  /// Day la State nen doc thang `context` duoc.
-  Color get _primary => Theme.of(context).colorScheme.primary;
+  Color get _line =>
+      _isDark ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent =>
+      _isDark ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      _isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color get _textSec =>
       _isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _success =>
+      _isDark ? GenZTokens.successDark : GenZTokens.success;
+  Color get _codeColor =>
+      _isDark ? GenZTokens.infoDark : GenZTokens.info;
 
   @override
   Widget build(BuildContext context) {
-    final borderCol = _ink;
     final jsonString = const JsonEncoder.withIndent(
       '  ',
     ).convert(TripMateMcpConfig.schema);
 
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(PhosphorIcons.arrowLeft(), color: _ink),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'system_phases.mcp_title'.tr(),
-          style: GoogleFonts.spaceGrotesk(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
+          style: AppFonts.heading(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: _ink,
           ),
         ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(GenZTokens.space4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Status Banner Card
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(GenZTokens.space4),
               decoration: BoxDecoration(
                 color: _surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: borderCol, width: 2.5),
-                boxShadow: [
-                  BoxShadow(color: borderCol, offset: const Offset(0, 4)),
-                ],
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,14 +91,11 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                       Row(
                         children: [
                           Container(
-                            width: 14,
-                            height: 14,
+                            width: 12,
+                            height: 12,
                             decoration: BoxDecoration(
-                              color: _mcpEnabled
-                                  ? GenZTokens.green
-                                  : _textSec,
+                              color: _mcpEnabled ? _success : _textSec,
                               shape: BoxShape.circle,
-                              border: Border.all(color: _ink, width: 1.5),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -103,9 +103,9 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                             _mcpEnabled
                                 ? 'system_phases.mcp_active'.tr()
                                 : 'profile.mcp_inactive'.tr(),
-                            style: GoogleFonts.spaceMono(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 12,
+                            style: AppFonts.heading(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
                               color: _ink,
                             ),
                           ),
@@ -117,45 +117,43 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                           HapticFeedback.mediumImpact();
                           setState(() => _mcpEnabled = val);
                         },
-                        activeThumbColor: GenZTokens.yellow,
-                        activeTrackColor: _primary.withValues(alpha: 0.3),
+                        activeThumbColor: _accent,
+                        activeTrackColor: _accent.withValues(alpha: 0.3),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: GenZTokens.space2),
                   Text(
                     'system_phases.mcp_desc'.tr(),
-                    style: GoogleFonts.outfit(
+                    style: AppFonts.body(
                       fontSize: 13,
                       color: _textSec,
-                      height: 1.3,
+                      height: 1.4,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: GenZTokens.space5),
 
             // Schema terminal-like code block
             Text(
               'profile.mcp_schema'.tr(),
-              style: GoogleFonts.spaceGrotesk(
+              style: AppFonts.heading(
                 fontSize: 15,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
                 color: _ink,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: GenZTokens.space2),
 
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(GenZTokens.space4),
               decoration: BoxDecoration(
-                color: _isDark
-                    ? GenZTokens.inkDark
-                    : GenZTokens.ink,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: borderCol, width: 2),
+                color: _fill,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
               ),
               child: Stack(
                 children: [
@@ -163,9 +161,9 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                     scrollDirection: Axis.horizontal,
                     child: SelectableText(
                       jsonString,
-                      style: GoogleFonts.spaceMono(
+                      style: AppFonts.mono(
                         fontSize: 12,
-                        color: GenZTokens.blue,
+                        color: _codeColor,
                       ),
                     ),
                   ),
@@ -175,7 +173,7 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                     child: IconButton(
                       icon: Icon(
                         PhosphorIcons.copy(),
-                        color: _isDark ? GenZTokens.ink : GenZTokens.paper.withValues(alpha: 0.7),
+                        color: _textSec,
                         size: 18,
                       ),
                       tooltip: 'settings.copy_schema'.tr(),
@@ -193,28 +191,29 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: GenZTokens.space5),
 
-            // Action Docs Button
+            // Action Docs Button - single accent button on screen
             SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: GenZTokens.yellow,
-                  foregroundColor: GenZTokens.ink,
+                  backgroundColor: _accent,
+                  foregroundColor: _onAccent,
                   elevation: 0,
+                  side: BorderSide.none,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: borderCol, width: 2),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                   ),
                 ),
                 icon: Icon(PhosphorIcons.bookOpen()),
                 label: Text(
                   'system_phases.mcp_docs'.tr(),
-                  style: GoogleFonts.spaceGrotesk(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                  style: AppFonts.heading(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    color: _onAccent,
                   ),
                 ),
                 onPressed: () {
@@ -224,28 +223,30 @@ class _TripmateMcpScreenState extends State<TripmateMcpScreen> {
                     builder: (context) => AlertDialog(
                       backgroundColor: _surface,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(color: _ink, width: 2.5),
+                        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                        side: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
                       ),
                       title: Text(
                         'profile.mcp_docs'.tr(),
-                        style: GoogleFonts.spaceGrotesk(
-                          fontWeight: FontWeight.bold,
+                        style: AppFonts.heading(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 17,
                           color: _ink,
                         ),
                       ),
                       content: Text(
                         'settings.mcp_intro'.tr(),
-                        style: GoogleFonts.outfit(color: _ink),
+                        style: AppFonts.body(fontSize: 13, color: _ink, height: 1.4),
                       ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: Text(
                             'common.got_it'.tr(),
-                            style: GoogleFonts.spaceGrotesk(
-                              fontWeight: FontWeight.bold,
-                              color: _primary,
+                            style: AppFonts.heading(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: _accent,
                             ),
                           ),
                         ),

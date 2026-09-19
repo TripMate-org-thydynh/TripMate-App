@@ -33,12 +33,18 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
   Map<String, dynamic>?
   _result; // {source, latitude, longitude, placeName, ...}
 
-  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
+  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _sub =>
       widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _surface =>
       widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _accent =>
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      widget.isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
   Future<void> _pick(ImageSource source) async {
     try {
@@ -107,16 +113,15 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bg,
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
         title: Text(
           'photo.where_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.w800,
-            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: _ink,
-            letterSpacing: -0.5,
           ),
         ),
       ),
@@ -143,14 +148,17 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                         markers: [
                           Marker(
                             point: center,
-                            width: 54,
-                            height: 54,
+                            width: 48,
+                            height: 48,
                             child: Icon(
                               PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-                              size: 54,
-                              color: GenZTokens.red,
+                              size: 48,
+                              color: _accent,
                               shadows: [
-                                Shadow(color: GenZTokens.ink.withValues(alpha: 0.45), blurRadius: 4),
+                                Shadow(
+                                  color: _ink.withValues(alpha: 0.25),
+                                  blurRadius: 4,
+                                ),
                               ],
                             ),
                           ),
@@ -165,13 +173,17 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(color: _ink),
-                          const SizedBox(height: 14),
+                          CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(_accent),
+                          ),
+                          const SizedBox(height: GenZTokens.space3),
                           Text(
                             'photo.scanning'.tr(),
                             style: AppFonts.body(
                               color: _ink,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
                             ),
                           ),
                         ],
@@ -188,14 +200,17 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
             decoration: BoxDecoration(
               color: _surface,
               border: Border(
-                top: BorderSide(color: _ink, width: GenZTokens.borderWidth),
+                top: BorderSide(
+                  color: _line,
+                  width: GenZTokens.borderWidthThin,
+                ),
               ),
             ),
             padding: EdgeInsets.fromLTRB(
-              20,
-              16,
-              20,
-              16 + MediaQuery.of(context).padding.bottom,
+              GenZTokens.space4,
+              GenZTokens.space4,
+              GenZTokens.space4,
+              GenZTokens.space4 + MediaQuery.of(context).padding.bottom,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -205,7 +220,9 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                   Row(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusButton,
+                        ),
                         child: Image.memory(
                           _preview!,
                           width: 60,
@@ -213,17 +230,17 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: GenZTokens.space3),
                       Expanded(child: _resultBody()),
                     ],
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: GenZTokens.space3),
                 ] else
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    padding: const EdgeInsets.only(bottom: GenZTokens.space3),
                     child: Text(
                       'photo.where_sub'.tr(),
-                      style: AppFonts.body(color: _sub, fontSize: 14),
+                      style: AppFonts.body(color: _sub, fontSize: 13),
                     ),
                   ),
                 Row(
@@ -232,16 +249,16 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                       child: _pickBtn(
                         icon: PhosphorIcons.image(),
                         label: 'common.gallery'.tr(),
-                        color: GenZTokens.yellow,
+                        isPrimary: true,
                         onTap: () => _pick(ImageSource.gallery),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: GenZTokens.space3),
                     Expanded(
                       child: _pickBtn(
                         icon: PhosphorIcons.camera(),
                         label: 'general.capture'.tr(),
-                        color: GenZTokens.lilac,
+                        isPrimary: false,
                         onTap: () => _pick(ImageSource.camera),
                       ),
                     ),
@@ -260,7 +277,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
       return Text(
         _error!,
         style: AppFonts.body(
-          color: GenZTokens.red,
+          color: widget.isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger,
           fontWeight: FontWeight.w600,
           fontSize: 13,
         ),
@@ -271,6 +288,10 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
       return Text('common.analyzing'.tr(), style: AppFonts.body(color: _sub));
     }
     final isExif = r['source'] == 'exif';
+    final srcColor = isExif
+        ? (widget.isDarkMode ? GenZTokens.successDark : GenZTokens.success)
+        : (widget.isDarkMode ? GenZTokens.infoDark : GenZTokens.info);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -280,25 +301,28 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: AppFonts.heading(
-            fontWeight: FontWeight.w800,
-            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: _ink,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: GenZTokens.space1),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: isExif ? GenZTokens.green : GenZTokens.orange,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _ink, width: 1.5),
+            color: srcColor.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+            border: Border.all(
+              color: srcColor.withValues(alpha: 0.3),
+              width: GenZTokens.borderWidthThin,
+            ),
           ),
           child: Text(
             isExif ? 'photo.src_gps'.tr() : 'photo.src_ai'.tr(),
             style: AppFonts.mono(
               fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: GenZTokens.ink,
+              fontWeight: FontWeight.w600,
+              color: srcColor,
             ),
           ),
         ),
@@ -309,29 +333,38 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
   Widget _pickBtn({
     required IconData icon,
     required String label,
-    required Color color,
+    required bool isPrimary,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: _loading ? null : onTap,
-      child: Container(
-        height: 52,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-          border: Border.all(color: _ink, width: GenZTokens.borderWidth),
-          boxShadow: GenZTokens.hardShadow(_ink),
+    final bg = isPrimary ? _accent : _fill;
+    final fg = isPrimary ? _onAccent : _ink;
+    final border = isPrimary
+        ? BorderSide.none
+        : BorderSide(color: _line, width: GenZTokens.borderWidthThin);
+
+    return SizedBox(
+      height: 48,
+      child: ElevatedButton(
+        onPressed: _loading ? null : onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bg,
+          foregroundColor: fg,
+          elevation: 0,
+          side: border,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: GenZTokens.ink, size: 20),
-            const SizedBox(width: 8),
+            Icon(icon, color: fg, size: 20),
+            const SizedBox(width: GenZTokens.space2),
             Text(
               label,
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                color: GenZTokens.ink,
+                fontWeight: FontWeight.w600,
+                color: fg,
                 fontSize: 14,
               ),
             ),

@@ -47,6 +47,10 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
   }
 
   Future<void> _saveSocialLinks() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+
     setState(() {
       _isLoading = true;
     });
@@ -68,7 +72,7 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('profile.social_saved'.tr()),
-            backgroundColor: GenZTokens.purple,
+            backgroundColor: success,
           ),
         );
         Navigator.pop(context);
@@ -76,7 +80,7 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('errors.server_unreachable'.tr()),
-            backgroundColor: GenZTokens.danger,
+            backgroundColor: danger,
           ),
         );
       }
@@ -93,17 +97,21 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(
             PhosphorIcons.arrowLeft(),
@@ -114,99 +122,118 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
         title: Text(
           'profile.social_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: ink,
           ),
         ),
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: GenZTokens.purple),
+          ? Center(
+              child: CircularProgressIndicator(
+                color: accent,
+                strokeWidth: 2,
+              ),
             )
           : SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(GenZTokens.space4),
               child: Column(
                 children: [
                   Card(
                     elevation: 0,
                     color: surface,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: ink, width: 2.5),
+                      borderRadius:
+                          BorderRadius.circular(GenZTokens.radiusCard),
+                      side: BorderSide(
+                        color: line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(GenZTokens.space4),
                       child: Column(
                         children: [
                           TextField(
                             controller: _fbController,
-                            style: AppFonts.body(color: ink),
+                            style: AppFonts.body(fontSize: 15, color: ink),
                             decoration: InputDecoration(
                               labelText: 'Facebook',
-                              labelStyle: AppFonts.body(color: inkSoft),
+                              labelStyle: AppFonts.body(
+                                fontSize: 13,
+                                color: inkSoft,
+                              ),
                               prefixIcon: Icon(
                                 PhosphorIcons.link(),
                                 color: inkSoft,
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: inkSoft.withValues(alpha: 0.3),
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
-                              focusedBorder: const UnderlineInputBorder(
+                              focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: GenZTokens.purple,
-                                  width: 2,
+                                  color: accent,
+                                  width: GenZTokens.borderWidthFocus,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: GenZTokens.space4),
                           TextField(
                             controller: _igController,
-                            style: AppFonts.body(color: ink),
+                            style: AppFonts.body(fontSize: 15, color: ink),
                             decoration: InputDecoration(
                               labelText: 'Instagram',
-                              labelStyle: AppFonts.body(color: inkSoft),
+                              labelStyle: AppFonts.body(
+                                fontSize: 13,
+                                color: inkSoft,
+                              ),
                               prefixIcon: Icon(
                                 PhosphorIcons.link(),
                                 color: inkSoft,
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: inkSoft.withValues(alpha: 0.3),
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
-                              focusedBorder: const UnderlineInputBorder(
+                              focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: GenZTokens.purple,
-                                  width: 2,
+                                  color: accent,
+                                  width: GenZTokens.borderWidthFocus,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: GenZTokens.space4),
                           TextField(
                             controller: _ttController,
-                            style: AppFonts.body(color: ink),
+                            style: AppFonts.body(fontSize: 15, color: ink),
                             decoration: InputDecoration(
                               labelText: 'TikTok',
-                              labelStyle: AppFonts.body(color: inkSoft),
+                              labelStyle: AppFonts.body(
+                                fontSize: 13,
+                                color: inkSoft,
+                              ),
                               prefixIcon: Icon(
                                 PhosphorIcons.link(),
                                 color: inkSoft,
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: inkSoft.withValues(alpha: 0.3),
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
-                              focusedBorder: const UnderlineInputBorder(
+                              focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: GenZTokens.purple,
-                                  width: 2,
+                                  color: accent,
+                                  width: GenZTokens.borderWidthFocus,
                                 ),
                               ),
                             ),
@@ -216,40 +243,28 @@ class _SocialLinksManagerScreenState extends State<SocialLinksManagerScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 36),
+                  const SizedBox(height: GenZTokens.space5),
 
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: ink, width: 2.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: ink,
-                          blurRadius: 0,
-                          offset: const Offset(0, 4),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: _saveSocialLinks,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accent,
+                        foregroundColor: onAccent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(GenZTokens.radiusButton),
                         ),
-                      ],
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _saveSocialLinks,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: GenZTokens.yellow,
-                          foregroundColor: GenZTokens.ink,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: Text(
-                          'profile.social_save'.tr(),
-                          style: AppFonts.heading(
-                            fontWeight: FontWeight.bold,
-                            color: GenZTokens.ink,
-                          ),
+                      ),
+                      child: Text(
+                        'profile.social_save'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: onAccent,
                         ),
                       ),
                     ),

@@ -56,16 +56,6 @@ class GenZTokens {
   static const Color chart5 = DsTokens.chart5;
   static const Color chart6 = DsTokens.chart6;
 
-  // ── 9 màu cũ (trỏ sang màu mới theo spec mục 1, giữ API để feature refactor dần) ──
-  static const Color yellow = DsTokens.yellow;
-  static const Color orange = DsTokens.orange;
-  static const Color green = DsTokens.green;
-  static const Color magenta = DsTokens.magenta;
-  static const Color purple = DsTokens.purple;
-  static const Color red = DsTokens.red;
-  static const Color lilac = DsTokens.lilac;
-  static const Color blue = DsTokens.blue;
-  static const Color pink = DsTokens.pink;
 
   // ── Border & shadow ───────────────────────────────────────────────────────
   static const double borderWidth = DsTokens.borderWidth;

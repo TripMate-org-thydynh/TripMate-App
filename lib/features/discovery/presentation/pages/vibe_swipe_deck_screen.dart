@@ -40,7 +40,6 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   String? _loadError;
   String? _tripId;
 
-
   bool _saving = false;
   bool _saved = false;
 
@@ -124,7 +123,12 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
         _loading = false;
       });
     } on ApiException catch (e) {
-      if (mounted) setState(() { _loadError = e.message; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _loadError = e.message;
+          _loading = false;
+        });
+      }
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -138,11 +142,12 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   /// Màu thẻ suy từ id để mỗi địa điểm có một màu ổn định giữa các lần mở.
   static List<Color> _gradientFor(String id) {
     const palettes = [
-      [GenZTokens.green, GenZTokens.blue],
-      [GenZTokens.orange, GenZTokens.red],
-      [GenZTokens.purple, GenZTokens.orange],
-      [GenZTokens.yellow, GenZTokens.orange],
-      [GenZTokens.magenta, GenZTokens.purple],
+      [GenZTokens.chart1, GenZTokens.chart5],
+      [GenZTokens.chart2, GenZTokens.chart4],
+      [GenZTokens.chart3, GenZTokens.chart1],
+      [GenZTokens.chart4, GenZTokens.chart5],
+      [GenZTokens.chart5, GenZTokens.chart6],
+      [GenZTokens.chart6, GenZTokens.chart3],
     ];
     return palettes[id.hashCode.abs() % palettes.length];
   }
@@ -151,16 +156,16 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   Offset _drag = Offset.zero;
   final List<_Place> _liked = [];
 
-  /// Accent lay tu theme dang chon.
-  ///
-  /// Truoc day la `widget.isDarkMode ? Color(0xFFF5822B) : Color(0xFFF5822B)` —
-  /// hai nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
-  /// Day la State nen doc thang `context` duoc.
-  Color get _primary => Theme.of(context).colorScheme.primary;
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _textPri =>
-      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
+  Color get _surface =>
+      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _accent =>
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      widget.isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _textPri => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
       widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
@@ -187,7 +192,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   Widget build(BuildContext context) {
     if (_loading || _loadError != null || _places.isEmpty) {
       return Scaffold(
-        backgroundColor: _bgOf(context),
+        backgroundColor: _bg,
         body: SafeArea(
           child: Column(
             children: [
@@ -200,7 +205,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
     }
     final done = _index >= _places.length;
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: _bg,
       body: SafeArea(
         child: Column(
           children: [
@@ -229,21 +234,18 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 Text(
                   'vibe_deck.title'.tr(),
                   style: AppFonts.heading(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
                     color: _textPri,
-                    letterSpacing: -0.4,
                   ),
                 ),
                 Text(
-                  // Deck rong thi khong the "Xong roi!" — truoc day header van
-                  // bao xong trong khi than man dang noi la chua co gi de vuot.
                   _places.isEmpty
                       ? ''
                       : (_index < _places.length
                             ? '${_index + 1} / ${_places.length}'
                             : 'common.done_excl'.tr()),
-                  style: AppFonts.body(fontSize: 12, color: _textSec),
+                  style: AppFonts.body(fontSize: 13, color: _textSec),
                 ),
               ],
             ),
@@ -304,7 +306,13 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 left: 28,
                 child: Opacity(
                   opacity: likeOpacity,
-                  child: _stamp('vibe_deck.like'.tr(), GenZTokens.success, -0.3),
+                  child: _stamp(
+                    'vibe_deck.like'.tr(),
+                    widget.isDarkMode
+                        ? GenZTokens.successDark
+                        : GenZTokens.success,
+                    -0.3,
+                  ),
                 ),
               ),
               // NOPE stamp
@@ -315,7 +323,9 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   opacity: nopeOpacity,
                   child: _stamp(
                     'common.skip_caps'.tr(),
-                    GenZTokens.danger,
+                    widget.isDarkMode
+                        ? GenZTokens.dangerDark
+                        : GenZTokens.danger,
                     0.3,
                   ),
                 ),
@@ -333,16 +343,15 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          border: Border.all(color: color, width: 4),
-          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color, width: 2.5),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
         ),
         child: Text(
           text,
           style: AppFonts.heading(
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
             color: color,
-            letterSpacing: 1,
           ),
         ),
       ),
@@ -350,20 +359,18 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   }
 
   Widget _card(_Place place, {bool behind = false}) {
-    final ink = widget.isDarkMode
-        ? GenZTokens.inkDark
-        : GenZTokens.ink;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: ink, width: 2.5),
+        color: _surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
         boxShadow: behind
             ? null
-            : [BoxShadow(color: ink, offset: const Offset(0, 6))],
+            : GenZTokens.hardShadow(_textPri, widget.isDarkMode),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(21),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard - 1),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -381,7 +388,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
               child: Image.network(
                 place.image,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) => const SizedBox.shrink(),
+                errorBuilder: (context, error, stack) =>
+                    const SizedBox.shrink(),
                 loadingBuilder: (context, child, progress) =>
                     progress == null ? child : const SizedBox.shrink(),
               ),
@@ -390,9 +398,10 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.center,
+                  begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black87],
+                  stops: [0.6, 1.0],
+                  colors: [Colors.transparent, Color.fromRGBO(0, 0, 0, 0.55)],
                 ),
               ),
             ),
@@ -406,17 +415,20 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: GenZTokens.yellow,
-                  borderRadius: BorderRadius.circular(99),
-                  border: Border.all(color: GenZTokens.ink, width: 2),
+                  color: _surface.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                  border: Border.all(
+                    color: _line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                      color: GenZTokens.ink,
-                      size: 13,
+                      color: _accent,
+                      size: 14,
                     ),
                     const SizedBox(width: 5),
                     Text(
@@ -425,8 +437,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                       ),
                       style: AppFonts.mono(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: GenZTokens.ink,
+                        fontWeight: FontWeight.w600,
+                        color: _textPri,
                       ),
                     ),
                   ],
@@ -444,10 +456,9 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   Text(
                     place.name,
                     style: AppFonts.heading(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white,
-                      letterSpacing: -0.8,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -462,7 +473,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                       Text(
                         place.location,
                         style: AppFonts.body(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: Colors.white70,
                         ),
                       ),
@@ -471,23 +482,25 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      horizontal: 10,
+                      vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: GenZTokens.lilac,
-                      borderRadius: BorderRadius.circular(99),
+                      color: _surface.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusPill,
+                      ),
                       border: Border.all(
-                        color: GenZTokens.ink,
-                        width: 2,
+                        color: _line,
+                        width: GenZTokens.borderWidthThin,
                       ),
                     ),
                     child: Text(
-                      place.tags.toUpperCase(),
-                      style: AppFonts.mono(
+                      place.tags,
+                      style: AppFonts.body(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: GenZTokens.ink,
+                        fontWeight: FontWeight.w600,
+                        color: _textPri,
                       ),
                     ),
                   ),
@@ -508,16 +521,22 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
         children: [
           _circleBtn(
             icon: PhosphorIcons.x(),
-            color: GenZTokens.danger,
-            size: 64,
+            color: _surface,
+            iconColor: widget.isDarkMode
+                ? GenZTokens.dangerDark
+                : GenZTokens.danger,
+            borderColor: _line,
+            size: 56,
             label: 'common.skip_caps'.tr(),
             onTap: () => _swipe(false),
           ),
-          const SizedBox(width: 28),
+          const SizedBox(width: 24),
           _circleBtn(
             icon: PhosphorIcons.heart(PhosphorIconsStyle.fill),
-            color: GenZTokens.success,
-            size: 72,
+            color: _accent,
+            iconColor: _onAccent,
+            borderColor: _accent,
+            size: 64,
             label: 'vibe_deck.like'.tr(),
             onTap: () => _swipe(true),
           ),
@@ -529,6 +548,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   Widget _circleBtn({
     required IconData icon,
     required Color color,
+    required Color iconColor,
+    required Color borderColor,
     required double size,
     required VoidCallback onTap,
     required String label,
@@ -545,27 +566,12 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
             shape: BoxShape.circle,
             color: color,
             border: Border.all(
-              color: widget.isDarkMode
-                  ? GenZTokens.inkDark
-                  : GenZTokens.ink,
-              width: 2.5,
+              color: borderColor,
+              width: GenZTokens.borderWidthThin,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: widget.isDarkMode
-                  ? GenZTokens.inkDark
-                  : GenZTokens.ink,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            boxShadow: GenZTokens.hardShadow(_textPri, widget.isDarkMode),
           ),
-          child: Icon(
-            icon,
-            color: color == GenZTokens.danger
-                ? GenZTokens.paper
-                : GenZTokens.ink,
-            size: size * 0.42,
-          ),
+          child: Icon(icon, color: iconColor, size: size * 0.44),
         ),
       ),
     );
@@ -574,35 +580,38 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   Widget _buildResult() {
     final top = (_liked.toList()..sort((a, b) => b.match.compareTo(a.match)));
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(GenZTokens.space5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _primary,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: GenZTokens.ink, width: 2.5),
-              boxShadow: [
-                BoxShadow(color: GenZTokens.ink, offset: const Offset(0, 4)),
-              ],
+              color: widget.isDarkMode
+                  ? GenZTokens.accentSoftDark
+                  : GenZTokens.accentSoft,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(
+                color: _line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Icon(
               PhosphorIcons.confetti(PhosphorIconsStyle.fill),
-              color: GenZTokens.ink,
-              size: 30,
+              color: _accent,
+              size: 28,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: GenZTokens.space4),
           Text(
-            _liked.isEmpty ? 'vibe_deck.picky'.tr() : 'vibe_deck.squad_done'.tr(),
+            _liked.isEmpty
+                ? 'vibe_deck.picky'.tr()
+                : 'vibe_deck.squad_done'.tr(),
             style: AppFonts.heading(
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
               color: _textPri,
-              letterSpacing: -0.8,
             ),
           ),
           const SizedBox(height: 6),
@@ -614,7 +623,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   ),
             style: AppFonts.body(fontSize: 14, color: _textSec, height: 1.4),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: GenZTokens.space4),
           Expanded(
             child: ListView.separated(
               itemCount: top.length,
@@ -625,31 +634,39 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
           if (_liked.isNotEmpty && !_saved) ...[
             SizedBox(
               width: double.infinity,
+              height: 48,
               child: ElevatedButton.icon(
                 onPressed: _saving ? null : _saveLikedToBucket,
                 icon: _saving
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: GenZTokens.ink,
+                          valueColor: AlwaysStoppedAnimation<Color>(_onAccent),
                         ),
                       )
-                    : Icon(PhosphorIcons.bookmarkSimple(), size: 18),
+                    : Icon(
+                        PhosphorIcons.bookmarkSimple(),
+                        size: 18,
+                        color: _onAccent,
+                      ),
                 label: Text(
                   'vibe_deck.save_to_bucket'.tr(),
                   style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     fontSize: 15,
+                    color: _onAccent,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: GenZTokens.success,
-                  foregroundColor: GenZTokens.ink,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: _accent,
+                  foregroundColor: _onAccent,
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
                   ),
                 ),
               ),
@@ -658,32 +675,69 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
           ],
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                setState(() {
-                  _index = 0;
-                  _liked.clear();
-                  _saved = false;
-                  _drag = Offset.zero;
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _primary,
-                foregroundColor: GenZTokens.ink,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                'discovery.swipe_again'.tr(),
-                style: AppFonts.heading(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                ),
-              ),
-            ),
+            height: 48,
+            child: (_liked.isNotEmpty && !_saved)
+                ? OutlinedButton(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      setState(() {
+                        _index = 0;
+                        _liked.clear();
+                        _saved = false;
+                        _drag = Offset.zero;
+                      });
+                    },
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: _fill,
+                      foregroundColor: _textPri,
+                      side: BorderSide(
+                        color: _line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusButton,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      'discovery.swipe_again'.tr(),
+                      style: AppFonts.heading(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: _textPri,
+                      ),
+                    ),
+                  )
+                : ElevatedButton(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      setState(() {
+                        _index = 0;
+                        _liked.clear();
+                        _saved = false;
+                        _drag = Offset.zero;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _accent,
+                      foregroundColor: _onAccent,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusButton,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      'discovery.swipe_again'.tr(),
+                      style: AppFonts.heading(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: _onAccent,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -694,41 +748,30 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: widget.isDarkMode
-            ? GenZTokens.paperDark
-            : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: widget.isDarkMode
-              ? GenZTokens.inkDark
-              : GenZTokens.ink,
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: widget.isDarkMode
-                ? GenZTokens.inkDark
-                : GenZTokens.ink,
-            offset: const Offset(0, 3),
-          ),
-        ],
+        color: _surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(colors: place.gradient),
+              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              color: _fill,
+              border: Border.all(
+                color: _line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Center(
               child: Text(
                 '#${rank + 1}',
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.w900,
-                  color: GenZTokens.ink,
-                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: _textPri,
+                  fontSize: 15,
                 ),
               ),
             ),
@@ -742,7 +785,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                   place.name,
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: _textPri,
                   ),
                 ),
@@ -756,9 +799,8 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
           Text(
             '${place.match}%',
             style: AppFonts.heading(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              // Accent chi hop lam nen; lam mau chu tren nen sang thi khong doc ra.
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
               color: _textPri,
             ),
           ),
@@ -770,7 +812,14 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   /// Trạng thái nạp / lỗi / chưa có dữ liệu — thay cho việc luôn có sẵn 5 thẻ
   /// giả để màn hình "trông như đang chạy".
   Widget _buildDeckPlaceholder() {
-    if (_loading) return const CircularProgressIndicator();
+    if (_loading) {
+      return Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(_accent),
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
@@ -799,6 +848,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 });
                 _loadDeck();
               },
+              style: TextButton.styleFrom(foregroundColor: _accent),
               child: Text('common.tap_to_retry'.tr()),
             ),
           ],
@@ -807,6 +857,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
     );
   }
 }
+
 class _Place {
   final String name;
   final String location;

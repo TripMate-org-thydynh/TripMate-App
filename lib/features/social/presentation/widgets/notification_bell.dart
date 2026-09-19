@@ -17,10 +17,10 @@ class NotificationBell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final unread = ref.watch(unreadCountProvider);
-    final iconColor =
-        color ?? (isDark ? GenZTokens.inkDark : GenZTokens.ink);
+    final iconColor = color ?? (isDark ? GenZTokens.inkDark : GenZTokens.ink);
 
     return Semantics(
       button: true,

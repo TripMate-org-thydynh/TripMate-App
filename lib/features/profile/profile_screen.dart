@@ -84,23 +84,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color surfaceColor,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(32),
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
       child: Container(
         decoration: BoxDecoration(
           color: surfaceColor,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-            width: 2.5,
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
           ),
-          // Hard shadow brutalist (đặc, không blur).
-          boxShadow: [
-            BoxShadow(
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-              blurRadius: 0,
-              offset: const Offset(0, 6),
-            ),
-          ],
         ),
         child: child,
       ),
@@ -126,13 +118,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final int emptyFlex = 100 - fillFlex;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
         color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-          width: 2,
+          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+          width: GenZTokens.borderWidthThin,
         ),
       ),
       child: Column(
@@ -177,14 +169,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           ),
           const SizedBox(height: 10),
 
-          // Custom Glowing Progress Bar
+          // Progress Bar
           Container(
             height: 8,
             decoration: BoxDecoration(
               color: isDark
-                  ? GenZTokens.creamDark
-                  : GenZTokens.cream,
-              borderRadius: BorderRadius.circular(4),
+                  ? GenZTokens.fillDark
+                  : GenZTokens.fill,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
             ),
             child: Row(
               children: [
@@ -193,15 +185,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   child: Container(
                     decoration: BoxDecoration(
                       color: primaryColor,
-                      borderRadius: BorderRadius.circular(4),
-                      boxShadow: isDark
-                          ? [
-                              BoxShadow(
-                                color: primaryColor.withValues(alpha: 0.5),
-                                blurRadius: 0,
-                              ),
-                            ]
-                          : null,
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                     ),
                   ),
                 ),
@@ -264,19 +248,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     Color surface,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent, width: 2),
-        boxShadow: GenZTokens.hardShadow(isDark ? GenZTokens.inkDark : GenZTokens.ink),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+        border: Border.all(color: accent, width: 1.5),
       ),
       child: Text(
         label,
         style: AppFonts.body(
           fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: isDark ? accent : GenZTokens.ink,
+          fontWeight: FontWeight.w600,
+          color: accent,
         ),
       ),
     );
@@ -337,18 +320,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           color: surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: ink, width: 2),
-          // Hard shadow brutalist cho card đã mở khoá.
-          boxShadow: isLocked
-              ? null
-              : [
-                  BoxShadow(
-                    color: ink,
-                    blurRadius: 0,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
         child: Opacity(
           opacity: isLocked ? 0.55 : 1.0,
@@ -378,7 +354,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               Text(
                 tier,
                 style: AppFonts.body(
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: sub,
                 ),
@@ -398,16 +374,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color textPrimary,
   }) {
     final isDark = widget.isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: surfaceColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: ink, width: 2),
-          boxShadow: GenZTokens.hardShadow(ink),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
         child: Column(
           children: [
@@ -481,15 +458,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color surfaceColor,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isDark ? surfaceColor : GenZTokens.paper,
-          borderRadius: BorderRadius.circular(20),
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-            width: 2,
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
           ),
         ),
         child: Row(
@@ -501,9 +478,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isDark
-                    ? GenZTokens.creamDark
-                    : GenZTokens.cream,
-                border: Border.all(color: accentColor, width: 1.5),
+                    ? GenZTokens.fillDark
+                    : GenZTokens.fill,
+                border: Border.all(
+                  color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                  width: GenZTokens.borderWidthThin,
+                ),
               ),
               child: Icon(icon, color: accentColor, size: 20),
             ),
@@ -519,7 +499,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   Text(
                     description,
                     style: AppFonts.body(
-                      fontSize: 13.5,
+                      fontSize: 13,
                       color: textPrimaryColor,
                       height: 1.4,
                     ),
@@ -566,7 +546,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-                                      width: 2.0,
+                                      width: GenZTokens.borderWidth,
                                     ),
                                   ),
                                   child: ClipRRect(
@@ -611,20 +591,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? GenZTokens.creamDark
-                                  : GenZTokens.cream,
-                              borderRadius: BorderRadius.circular(10),
+                                  ? GenZTokens.fillDark
+                                  : GenZTokens.fill,
+                              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                               border: Border.all(
-                                color: GenZTokens.green,
-                                width: 2,
+                                color: isDark ? GenZTokens.successDark : GenZTokens.success,
+                                width: GenZTokens.borderWidthThin,
                               ),
                             ),
                             child: Text(
                               '+$extraFriends',
                               style: AppFonts.body(
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: GenZTokens.green,
+                                color: isDark ? GenZTokens.successDark : GenZTokens.success,
                               ),
                             ),
                           ),
@@ -653,13 +633,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final currentAccent = ref.watch(accentProvider);
     final currentMode = ref.watch(themeProvider);
 
-    // standard design tokens — driven by selected accent
-    final primaryColor = currentAccent.accent;
-    final secondaryColor = currentAccent.lightSoft;
-    final tertiaryColor = currentAccent.accent;
+    // standard design tokens
+    final primaryColor = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final secondaryColor = isDark
+        ? GenZTokens.accentDark.withValues(alpha: 0.15)
+        : GenZTokens.accentSoft;
+    final tertiaryColor = primaryColor;
     final backgroundColor = isDark
         ? GenZTokens.creamDark
-        : currentAccent.lightBackground;
+        : GenZTokens.cream;
     final surfaceColor = isDark
         ? GenZTokens.paperDark
         : GenZTokens.paper;
@@ -729,7 +711,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           // Blur overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
+              color: (isDark ? GenZTokens.inkDark : GenZTokens.ink).withValues(alpha: isDark ? 0.15 : 0.02),
             ),
           ),
 
@@ -748,8 +730,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       elevation: 0,
                       centerTitle: false,
                       titleSpacing: 4,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Container(color: Colors.transparent),
+                      flexibleSpace: const FlexibleSpaceBar(
+                        background: SizedBox(),
                       ),
                       leading: Padding(
                         padding: const EdgeInsets.only(left: 16.0, top: 12.0),
@@ -769,8 +751,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         shape: BoxShape.circle,
                                         color: surfaceColor,
                                         border: Border.all(
-                                          color: textPrimaryColor,
-                                          width: 2.5,
+                                          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                                          width: GenZTokens.borderWidthThin,
                                         ),
                                       ),
                                       child: Icon(
@@ -787,8 +769,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: textPrimaryColor,
-                                      width: 2.5,
+                                      color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                                      width: GenZTokens.borderWidthThin,
                                     ),
                                   ),
                                   child: ClipRRect(
@@ -844,8 +826,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                 shape: BoxShape.circle,
                                 color: surfaceColor,
                                 border: Border.all(
-                                  color: textPrimaryColor,
-                                  width: 2.0,
+                                  color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Center(
@@ -1038,7 +1020,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                   ? 'profile.badge_rookie'.tr()
                                                   : 'profile.badge_planner'
                                                         .tr(),
-                                              GenZTokens.orange,
+                                              primaryColor,
                                               isDark,
                                               surfaceColor,
                                             ),
@@ -1060,7 +1042,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         ),
                                         const SizedBox(height: 24),
                                         Divider(
-                                          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                                          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
                                           height: 1,
                                         ),
                                         const SizedBox(height: 20),
@@ -1085,15 +1067,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               horizontal: 16,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: GenZTokens.yellow,
+                                              color: isDark
+                                                  ? GenZTokens.fillDark
+                                                  : GenZTokens.fill,
                                               borderRadius:
-                                                  BorderRadius.circular(16),
+                                                  BorderRadius.circular(GenZTokens.radiusCard),
                                               border: Border.all(
-                                                color: GenZTokens.ink,
-                                                width: 2,
-                                              ),
-                                              boxShadow: GenZTokens.hardShadow(
-                                                GenZTokens.ink,
+                                                color: isDark
+                                                    ? GenZTokens.lineDark
+                                                    : GenZTokens.line,
+                                                width: GenZTokens.borderWidthThin,
                                               ),
                                             ),
                                             child: Row(
@@ -1102,16 +1085,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               children: [
                                                 Icon(
                                                   PhosphorIcons.compass(),
-                                                  color: GenZTokens.ink,
+                                                  color: textPrimaryColor,
+                                                  size: 18,
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Text(
                                                   'profile.open_travel_atlas'
                                                       .tr(),
-                                                  style: AppFonts.heading(
-                                                    fontWeight: FontWeight.w900,
-                                                    fontSize: 12,
-                                                    color: GenZTokens.ink,
+                                                  style: AppFonts.body(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: textPrimaryColor,
                                                   ),
                                                 ),
                                               ],
@@ -1174,7 +1158,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   child: Stack(
                                     clipBehavior: Clip.none,
                                     children: [
-                                      // Glowing avatar container
+                                      // Clean avatar container
                                       GestureDetector(
                                         onTap: () {
                                           Navigator.push(
@@ -1191,39 +1175,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         child: AnimatedBuilder(
                                           animation: _pulseController,
                                           builder: (context, child) {
-                                            final glowVal =
-                                                20.0 +
-                                                (_pulseController.value * 20.0);
                                             return Container(
                                               width: 128,
                                               height: 128,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
+                                                color: surfaceColor,
                                                 border: Border.all(
-                                                  color: backgroundColor,
-                                                  width: 4.0,
+                                                  color: primaryColor,
+                                                  width: GenZTokens.borderWidth,
                                                 ),
-                                                boxShadow: isDark
-                                                    ? [
-                                                        BoxShadow(
-                                                          color: primaryColor
-                                                              .withValues(
-                                                                alpha: 0.5,
-                                                              ),
-                                                          blurRadius: glowVal,
-                                                          spreadRadius: 2,
-                                                        ),
-                                                      ]
-                                                    : [
-                                                        BoxShadow(
-                                                          color: primaryColor
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              ),
-                                                          blurRadius: 0,
-                                                          spreadRadius: 1,
-                                                        ),
-                                                      ],
                                               ),
                                               child: ClipRRect(
                                                 borderRadius:
@@ -1270,19 +1231,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? GenZTokens.creamDark
-                                                  : GenZTokens.paper,
+                                              color: surfaceColor,
                                               borderRadius:
-                                                  BorderRadius.circular(16),
+                                                  BorderRadius.circular(GenZTokens.radiusPill),
                                               border: Border.all(
                                                 color: isDark
-                                                    ? GenZTokens.inkDark
-                                                    : GenZTokens.ink,
-                                                width: 1.5,
-                                              ),
-                                              boxShadow: GenZTokens.hardShadow(
-                                                isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                                                    ? GenZTokens.lineDark
+                                                    : GenZTokens.line,
+                                                width: GenZTokens.borderWidthThin,
                                               ),
                                             ),
                                             child: Row(
@@ -1335,13 +1291,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: isDark
-                                          ? GenZTokens.paperDark.withValues(alpha: 0.6)
-                                          : GenZTokens.paper,
+                                      color: surfaceColor,
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 2,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
@@ -1724,17 +1680,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           ),
                           const SizedBox(height: 16),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : GenZTokens.paper,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? GenZTokens.inkDark
-                                      : GenZTokens.ink,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -1745,11 +1701,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? GenZTokens.creamDark
-                                          : GenZTokens.cream,
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
@@ -1829,13 +1787,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : GenZTokens.paper,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? GenZTokens.inkDark
-                                      : GenZTokens.ink,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -1846,11 +1804,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? GenZTokens.creamDark
-                                          : GenZTokens.cream,
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
@@ -1907,13 +1867,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : GenZTokens.paper,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? GenZTokens.inkDark
-                                      : GenZTokens.ink,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -1924,11 +1884,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? GenZTokens.creamDark
-                                          : GenZTokens.cream,
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
@@ -1985,13 +1947,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : GenZTokens.paper,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? GenZTokens.inkDark
-                                      : GenZTokens.ink,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -2002,11 +1964,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? GenZTokens.creamDark
-                                          : GenZTokens.cream,
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
@@ -2070,17 +2034,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required AppAccent currentAccent,
     required ThemeMode currentMode,
   }) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final currentFont = ref.watch(fontProvider);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: ink, width: GenZTokens.borderWidth),
-          boxShadow: GenZTokens.hardShadow(ink),
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2094,9 +2058,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isDark
-                        ? GenZTokens.creamDark
-                        : GenZTokens.cream,
-                    border: Border.all(color: primaryColor, width: 1.5),
+                        ? GenZTokens.fillDark
+                        : GenZTokens.fill,
+                    border: Border.all(color: line, width: GenZTokens.borderWidthThin),
                   ),
                   child: Icon(
                     PhosphorIcons.palette(),
@@ -2132,12 +2096,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 Container(
                   decoration: BoxDecoration(
                     color: isDark
-                        ? GenZTokens.creamDark
-                        : GenZTokens.cream,
-                    borderRadius: BorderRadius.circular(999),
+                        ? GenZTokens.fillDark
+                        : GenZTokens.fill,
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                     border: Border.all(
-                      color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-                      width: 1.5,
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
                   padding: const EdgeInsets.all(2),
@@ -2189,7 +2153,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             ),
 
             const SizedBox(height: 16),
-            Divider(color: ink, thickness: 1.5),
+            Divider(color: line, thickness: 1.0),
             const SizedBox(height: 16),
 
             Text(
@@ -2207,10 +2171,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 final isSelected = fontOpt == currentFont;
 
                 final textColor = isSelected
-                    ? currentAccent.onAccent
+                    ? onAccent
                     : textPrimaryColor;
                 final textSecColor = isSelected
-                    ? currentAccent.onAccent.withValues(alpha: 0.7)
+                    ? onAccent.withValues(alpha: 0.75)
                     : textSecondaryColor;
 
                 // Preview styles for each font option
@@ -2305,25 +2269,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                     decoration: BoxDecoration(
                       color: isSelected
                           ? primaryColor
-                          : isDark
-                          ? GenZTokens.paperDark
-                          : GenZTokens.paper,
-                      borderRadius: BorderRadius.circular(14),
+                          : surfaceColor,
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                       border: Border.all(
                         color: isSelected
                             ? primaryColor
-                            : (isDark ? GenZTokens.inkDark : GenZTokens.ink),
-                        width: isSelected ? 2.5 : 1.5,
+                            : line,
+                        width: isSelected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
                       ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: ink,
-                                offset: const Offset(0, 3),
-                                blurRadius: 0,
-                              ),
-                            ]
-                          : null,
                     ),
                     child: Row(
                       children: [
@@ -2342,7 +2295,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: ink,
+                              color: onAccent,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -2384,16 +2337,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         decoration: BoxDecoration(
           color: selected
               ? (isDark ? GenZTokens.paperDark : GenZTokens.paper)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(999),
-          boxShadow: selected
-              ? [
-                  BoxShadow(
-                    color: GenZTokens.ink.withValues(alpha: 0.08),
-                    blurRadius: 0,
-                  ),
-                ]
-              : null,
+              : (isDark ? GenZTokens.fillDark : GenZTokens.fill),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -2436,16 +2381,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? primaryColor.withValues(alpha: 0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+              ? (isDark ? GenZTokens.accentDark.withValues(alpha: 0.15) : GenZTokens.accentSoft)
+              : (isDark ? GenZTokens.fillDark : GenZTokens.fill),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
           border: Border.all(
             color: isSelected
                 ? primaryColor
-                : (isDark
-                    ? GenZTokens.inkDark.withValues(alpha: 0.24)
-                    : GenZTokens.ink.withValues(alpha: 0.12)),
-            width: 1.2,
+                : (isDark ? GenZTokens.lineDark : GenZTokens.line),
+            width: isSelected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
           ),
         ),
         child: Text(
@@ -2456,8 +2399,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             color: isSelected
                 ? primaryColor
                 : (isDark
-                    ? GenZTokens.inkDark.withValues(alpha: 0.7)
-                    : GenZTokens.ink.withValues(alpha: 0.54)),
+                    ? GenZTokens.inkSoftDark
+                    : GenZTokens.inkSoft),
           ),
         ),
       ),

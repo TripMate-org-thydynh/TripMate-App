@@ -28,7 +28,10 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
 
   List<_Question> get _questions => [
     _Question('onboarding.q_trip'.tr(), [
-      _Choice('onboarding.a_chill'.tr(), PhosphorIcons.leaf(PhosphorIconsStyle.fill)),
+      _Choice(
+        'onboarding.a_chill'.tr(),
+        PhosphorIcons.leaf(PhosphorIconsStyle.fill),
+      ),
       _Choice(
         'onboarding.a_chaos'.tr(),
         PhosphorIcons.flame(PhosphorIconsStyle.fill),
@@ -120,14 +123,19 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final paper = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final accent = Theme.of(context).colorScheme.primary;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
     final q = _questions[_step];
 
     return Scaffold(
       backgroundColor: bg,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+          padding: const EdgeInsets.fromLTRB(
+            GenZTokens.space5,
+            GenZTokens.space4,
+            GenZTokens.space5,
+            GenZTokens.space6,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -156,7 +164,7 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 36),
 
               PillTag(
                 text: 'onboarding.question_n'.tr(
@@ -169,20 +177,22 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
               ),
               const SizedBox(height: GenZTokens.space3),
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: GenZTokens.durationBase),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeOutCubic,
                 child: Text(
                   q.text,
                   key: ValueKey(_step),
                   style: AppFonts.heading(
-                    fontSize: 32,
+                    fontSize: 28,
                     fontWeight: FontWeight.w700,
                     color: ink,
                     letterSpacing: -0.5,
-                    height: 1.1,
+                    height: 1.15,
                   ),
                 ),
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: 32),
 
               Expanded(
                 child: Column(
@@ -196,7 +206,6 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                         fill: fill,
                         ink: ink,
                         inkSoft: inkSoft,
-                        accent: accent,
                       ),
                     ),
                     const SizedBox(height: GenZTokens.space4),
@@ -209,7 +218,6 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                         fill: fill,
                         ink: ink,
                         inkSoft: inkSoft,
-                        accent: accent,
                       ),
                     ),
                   ],
@@ -230,12 +238,11 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
     required Color fill,
     required Color ink,
     required Color inkSoft,
-    required Color accent,
   }) {
     return GestureDetector(
       onTap: () => _pick(idx),
       child: Container(
-        padding: const EdgeInsets.all(22),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: paper,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
@@ -244,8 +251,8 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
         child: Row(
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: fill,
                 borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
@@ -254,25 +261,20 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
-              child: Icon(choice.icon, color: accent, size: 28),
+              child: Icon(choice.icon, color: ink, size: 26),
             ),
-            const SizedBox(width: 18),
+            const SizedBox(width: 16),
             Expanded(
               child: Text(
                 choice.label,
                 style: AppFonts.heading(
-                  fontSize: 18,
+                  fontSize: 17,
                   fontWeight: FontWeight.w700,
                   color: ink,
-                  letterSpacing: -0.3,
                 ),
               ),
             ),
-            Icon(
-              PhosphorIcons.arrowRight(),
-              size: 20,
-              color: inkSoft,
-            ),
+            Icon(PhosphorIcons.arrowRight(), size: 20, color: inkSoft),
           ],
         ),
       ),

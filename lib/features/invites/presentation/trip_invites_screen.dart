@@ -61,17 +61,14 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: cardBg,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: line, width: 1),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+      ),
       builder: (ctx) => StatefulBuilder(
         builder: (context, setModalState) {
-          return Container(
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(14),
-              ),
-              border: Border.all(color: line, width: 1),
-            ),
+          return Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -91,7 +88,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 Text(
                   'invites.create_title'.tr(),
                   style: AppFonts.heading(
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: textPri,
                   ),
@@ -290,13 +287,13 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
     return Scaffold(
       backgroundColor: _bgOf(context),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context),
         iconTheme: IconThemeData(color: textPri),
         elevation: 0,
         title: Text(
           'invites.title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.w700,
             color: textPri,
           ),
@@ -316,28 +313,24 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
         },
         backgroundColor: primary,
         foregroundColor: onAccent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         icon: Icon(PhosphorIcons.link(), color: onAccent),
         label: Text(
           'invites.create_short'.tr(),
           style: AppFonts.heading(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w700,
             color: onAccent,
           ),
         ),
       ),
       body: invitesAsync.when(
-        loading: () => Center(
-          child: CircularProgressIndicator(color: primary),
-        ),
+        loading: () => Center(child: CircularProgressIndicator(color: primary)),
         error: (e, _) => Center(
           child: Text(
             'invites.load_failed'.tr(),
             style: AppFonts.heading(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.w700,
               color: textPri,
             ),
@@ -389,10 +382,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                 decoration: BoxDecoration(
                   color: cardBg,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: line,
-                    width: 1,
-                  ),
+                  border: Border.all(color: line, width: 1),
                 ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -405,7 +395,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           child: Text(
                             invite.code,
                             style: AppFonts.mono(
-                              fontSize: 18,
+                              fontSize: 17,
                               fontWeight: FontWeight.w700,
                               color: textPri,
                             ),
@@ -436,11 +426,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                     Row(
                       children: [
                         if (invite.expiresAt != null) ...[
-                          Icon(
-                            PhosphorIcons.clock(),
-                            size: 14,
-                            color: textSec,
-                          ),
+                          Icon(PhosphorIcons.clock(), size: 14, color: textSec),
                           const SizedBox(width: 4),
                           Text(
                             'invites.expires_at'.tr(
@@ -455,11 +441,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                           const SizedBox(width: 12),
                         ],
                         if (invite.maxUses != null) ...[
-                          Icon(
-                            PhosphorIcons.users(),
-                            size: 14,
-                            color: textSec,
-                          ),
+                          Icon(PhosphorIcons.users(), size: 14, color: textSec),
                           const SizedBox(width: 4),
                           Text(
                             'invites.uses_count'.tr(
@@ -491,10 +473,7 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                                   vertical: 10,
                                   horizontal: 16,
                                 ),
-                                side: BorderSide(
-                                  color: line,
-                                  width: 1,
-                                ),
+                                side: BorderSide(color: line, width: 1),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -539,7 +518,9 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
                         IconButton(
                           icon: Icon(
                             PhosphorIcons.trash(),
-                            color: dark ? GenZTokens.dangerDark : GenZTokens.danger,
+                            color: dark
+                                ? GenZTokens.dangerDark
+                                : GenZTokens.danger,
                             size: 20,
                           ),
                           onPressed: () async {

@@ -25,14 +25,11 @@ class NotificationsScreen extends ConsumerWidget {
       isDark ? GenZTokens.accentDark : GenZTokens.accent;
   Color _onAccentOf(bool isDark) =>
       isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
-  Color _inkOf(bool isDark) =>
-      isDark ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _inkOf(bool isDark) => isDark ? GenZTokens.inkDark : GenZTokens.ink;
   Color _inkSoftOf(bool isDark) =>
       isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color _lineOf(bool isDark) =>
-      isDark ? GenZTokens.lineDark : GenZTokens.line;
-  Color _fillOf(bool isDark) =>
-      isDark ? GenZTokens.fillDark : GenZTokens.fill;
+  Color _lineOf(bool isDark) => isDark ? GenZTokens.lineDark : GenZTokens.line;
+  Color _fillOf(bool isDark) => isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
   IconData _iconFor(String type) {
     switch (type) {
@@ -54,7 +51,8 @@ class NotificationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final async = ref.watch(notificationsProvider);
     final textPri = _inkOf(isDark);
     final textSec = _inkSoftOf(isDark);
@@ -62,7 +60,7 @@ class NotificationsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: _bgOf(context, isDark),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context, isDark),
         elevation: 0,
         title: Text(
           'notifications.title'.tr(),
@@ -76,7 +74,8 @@ class NotificationsScreen extends ConsumerWidget {
           IconButton(
             icon: Icon(PhosphorIcons.slidersHorizontal(), color: textPri),
             tooltip: 'notifications.settings_title'.tr(),
-            onPressed: () => _showNotificationSettingsModal(context, ref, isDark),
+            onPressed: () =>
+                _showNotificationSettingsModal(context, ref, isDark),
           ),
           TextButton(
             onPressed: () async {
@@ -105,14 +104,20 @@ class NotificationsScreen extends ConsumerWidget {
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: list.length,
-                  itemBuilder: (context, i) => _tile(context, ref, list[i], isDark),
+                  itemBuilder: (context, i) =>
+                      _tile(context, ref, list[i], isDark),
                 ),
         ),
       ),
     );
   }
 
-  Widget _tile(BuildContext context, WidgetRef ref, AppNotification n, bool isDark) {
+  Widget _tile(
+    BuildContext context,
+    WidgetRef ref,
+    AppNotification n,
+    bool isDark,
+  ) {
     final textPri = _inkOf(isDark);
     final textSec = _inkSoftOf(isDark);
     final unreadBg = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
@@ -209,44 +214,45 @@ class NotificationsScreen extends ConsumerWidget {
     ),
   );
 
-  Widget _error(BuildContext context, WidgetRef ref, Object e, bool isDark) => ListView(
-    children: [
-      const SizedBox(height: 120),
-      Center(
-        child: Column(
-          children: [
-            Icon(
-              PhosphorIcons.cloudSlash(),
-              color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
-              size: 40,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'notifications.load_failed'.tr(),
-              style: AppFonts.heading(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: _inkOf(isDark),
-              ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: _primaryOf(isDark),
-                foregroundColor: _onAccentOf(isDark),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+  Widget _error(BuildContext context, WidgetRef ref, Object e, bool isDark) =>
+      ListView(
+        children: [
+          const SizedBox(height: 120),
+          Center(
+            child: Column(
+              children: [
+                Icon(
+                  PhosphorIcons.cloudSlash(),
+                  color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
+                  size: 40,
                 ),
-              ),
-              onPressed: () => ref.invalidate(notificationsProvider),
-              icon: Icon(PhosphorIcons.arrowsClockwise()),
-              label: Text('general.retry'.tr()),
+                const SizedBox(height: 12),
+                Text(
+                  'notifications.load_failed'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: _inkOf(isDark),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _primaryOf(isDark),
+                    foregroundColor: _onAccentOf(isDark),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () => ref.invalidate(notificationsProvider),
+                  icon: Icon(PhosphorIcons.arrowsClockwise()),
+                  label: Text('general.retry'.tr()),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ],
-  );
+          ),
+        ],
+      );
 
   Widget _empty(bool isDark, Color textPri, Color textSec) => ListView(
     children: [
@@ -288,7 +294,11 @@ class NotificationsScreen extends ConsumerWidget {
     ],
   );
 
-  void _showNotificationSettingsModal(BuildContext context, WidgetRef ref, bool isDark) {
+  void _showNotificationSettingsModal(
+    BuildContext context,
+    WidgetRef ref,
+    bool isDark,
+  ) {
     final borderCol = _lineOf(isDark);
     final cardBgCol = _surfaceOf(isDark);
     final textPri = _inkOf(isDark);

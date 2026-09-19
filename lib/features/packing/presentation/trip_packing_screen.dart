@@ -27,21 +27,23 @@ class TripPackingScreen extends ConsumerWidget {
       _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
   Color _surface(BuildContext context) =>
       _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _primary => GenZTokens.green;
+  Color _primary(BuildContext context) =>
+      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+  Color _onAccent(BuildContext context) =>
+      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color _textPri(BuildContext context) =>
       _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
   Color _textSec(BuildContext context) =>
       _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color _border(BuildContext context) => _isDark(context)
-      ? GenZTokens.inkDark.withValues(alpha: 0.1)
-      : GenZTokens.ink.withValues(alpha: 0.06);
+  Color _border(BuildContext context) =>
+      _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
 
   // ── Category metadata (label + icon + color) ──
   static const _categories = <String, (String, IconData, Color)>{
     'CLOTHES': (
       'packing.cat_clothes',
       PhosphorIconsFill.tShirt,
-      GenZTokens.blue,
+      GenZTokens.chart5,
     ),
     'TOILETRIES': (
       'packing.cat_toiletries',
@@ -51,22 +53,22 @@ class TripPackingScreen extends ConsumerWidget {
     'GADGETS': (
       'packing.cat_gadgets',
       PhosphorIconsFill.plugCharging,
-      GenZTokens.purple,
+      GenZTokens.chart3,
     ),
     'DOCS': (
       'packing.cat_documents',
       PhosphorIconsFill.identificationCard,
-      GenZTokens.orange,
+      GenZTokens.chart2,
     ),
     'MEDICINE': (
       'packing.cat_medicine',
       PhosphorIconsFill.firstAid,
-      GenZTokens.red,
+      GenZTokens.danger,
     ),
     'OTHER': (
       'expense.cat_other',
       PhosphorIconsFill.package,
-      GenZTokens.magenta,
+      GenZTokens.chart6,
     ),
   };
 
@@ -142,13 +144,16 @@ class TripPackingScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: _surface(context),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(color: _border(context)),
+        ),
         title: Text(
           'common.delete_confirm'.tr(namedArgs: {'name': item.name}),
           style: AppFonts.heading(
             fontWeight: FontWeight.w800,
             color: _textPri(context),
-            fontSize: 16,
+            fontSize: 17,
           ),
         ),
         actions: [
@@ -156,15 +161,25 @@ class TripPackingScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: AppFonts.body(color: _textSec(context)),
+              style: AppFonts.body(color: _textSec(context), fontSize: 15),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: GenZTokens.danger,
+              foregroundColor: GenZTokens.paper,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('general.delete2'.tr()),
+            child: Text(
+              'general.delete2'.tr(),
+              style: AppFonts.heading(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ],
       ),
@@ -183,8 +198,9 @@ class TripPackingScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: _surface(context),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+        side: BorderSide(color: _border(context)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
@@ -202,7 +218,7 @@ class TripPackingScreen extends ConsumerWidget {
                 'packing.add_title'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w800,
-                  fontSize: 18,
+                  fontSize: 17,
                   color: _textPri(context),
                 ),
               ),
@@ -217,8 +233,19 @@ class TripPackingScreen extends ConsumerWidget {
                   filled: true,
                   fillColor: _bgOf(context),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: _border(context)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: _border(context)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: _primary(context),
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
@@ -246,11 +273,9 @@ class TripPackingScreen extends ConsumerWidget {
                       ),
                       decoration: BoxDecoration(
                         color: selected ? e.value.$3 : _bgOf(context),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: selected
-                              ? e.value.$3
-                              : _textSec(context).withValues(alpha: 0.3),
+                          color: selected ? e.value.$3 : _border(context),
                         ),
                       ),
                       child: Row(
@@ -259,7 +284,9 @@ class TripPackingScreen extends ConsumerWidget {
                           Icon(
                             e.value.$2,
                             size: 15,
-                            color: selected ? GenZTokens.paper : _textSec(context),
+                            color: selected
+                                ? GenZTokens.paper
+                                : _textSec(context),
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -267,7 +294,9 @@ class TripPackingScreen extends ConsumerWidget {
                             style: AppFonts.body(
                               fontWeight: FontWeight.w700,
                               fontSize: 12,
-                              color: selected ? GenZTokens.paper : _textPri(context),
+                              color: selected
+                                  ? GenZTokens.paper
+                                  : _textPri(context),
                             ),
                           ),
                         ],
@@ -297,7 +326,7 @@ class TripPackingScreen extends ConsumerWidget {
                       '$quantity',
                       style: AppFonts.heading(
                         fontWeight: FontWeight.w800,
-                        fontSize: 18,
+                        fontSize: 17,
                         color: _textPri(context),
                       ),
                     ),
@@ -314,16 +343,20 @@ class TripPackingScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: _primary,
+                    backgroundColor: _primary(context),
+                    foregroundColor: _onAccent(context),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   onPressed: () => Navigator.pop(ctx, true),
                   child: Text(
                     'packing.add_to_list'.tr(),
-                    style: AppFonts.heading(fontWeight: FontWeight.w800),
+                    style: AppFonts.heading(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
@@ -348,12 +381,12 @@ class TripPackingScreen extends ConsumerWidget {
       GestureDetector(
         onTap: onTap,
         child: Container(
-          width: 34,
-          height: 34,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(
             color: _bgOf(context),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: _textSec(context).withValues(alpha: 0.3)),
+            border: Border.all(color: _border(context)),
           ),
           child: Icon(icon, size: 18, color: _textPri(context)),
         ),
@@ -365,17 +398,18 @@ class TripPackingScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: _primary,
-        foregroundColor: GenZTokens.paper,
+        backgroundColor: _primary(context),
+        foregroundColor: _onAccent(context),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
         onPressed: () => _addItem(context, ref),
         icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'packing.add'.tr(),
-          style: AppFonts.heading(fontWeight: FontWeight.w800),
+          style: AppFonts.heading(fontWeight: FontWeight.w800, fontSize: 15),
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context),
         elevation: 0,
         title: Text(
           'packing.title'.tr(),
@@ -387,7 +421,7 @@ class TripPackingScreen extends ConsumerWidget {
         ),
       ),
       body: RefreshIndicator(
-        color: _primary,
+        color: _primary(context),
         onRefresh: () => ref.read(packingProvider(tripId).notifier).refresh(),
         child: async.when(
           loading: () => _skeleton(context),
@@ -432,7 +466,7 @@ class TripPackingScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: _surface(context),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: _border(context)),
       ),
       child: Column(
@@ -444,7 +478,7 @@ class TripPackingScreen extends ConsumerWidget {
                 done
                     ? PhosphorIconsFill.checkCircle
                     : PhosphorIconsFill.suitcaseRolling,
-                color: _primary,
+                color: _primary(context),
                 size: 26,
               ),
               const SizedBox(width: 10),
@@ -469,20 +503,20 @@ class TripPackingScreen extends ConsumerWidget {
                 '${list.percent}%',
                 style: AppFonts.mono(
                   fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  color: _primary,
+                  fontSize: 17,
+                  color: _primary(context),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(999),
             child: LinearProgressIndicator(
               value: list.total == 0 ? 0 : list.packed / list.total,
               minHeight: 10,
               backgroundColor: _bgOf(context),
-              valueColor: AlwaysStoppedAnimation(_primary),
+              valueColor: AlwaysStoppedAnimation(_primary(context)),
             ),
           ),
         ],
@@ -527,7 +561,7 @@ class TripPackingScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: _surface(context),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: _border(context)),
         ),
         child: Row(
@@ -540,17 +574,19 @@ class TripPackingScreen extends ConsumerWidget {
                 width: 26,
                 height: 26,
                 decoration: BoxDecoration(
-                  color: item.isPacked ? _primary : Colors.transparent,
+                  color: item.isPacked ? _primary(context) : _bgOf(context),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: item.isPacked
-                        ? _primary
-                        : _textSec(context).withValues(alpha: 0.5),
-                    width: 2,
+                    color: item.isPacked ? _primary(context) : _border(context),
+                    width: 1.5,
                   ),
                 ),
                 child: item.isPacked
-                    ? Icon(PhosphorIcons.check(), size: 18, color: GenZTokens.paper)
+                    ? Icon(
+                        PhosphorIcons.check(),
+                        size: 16,
+                        color: _onAccent(context),
+                      )
                     : null,
               ),
             ),
@@ -560,7 +596,7 @@ class TripPackingScreen extends ConsumerWidget {
                 item.name,
                 style: AppFonts.body(
                   fontWeight: FontWeight.w600,
-                  fontSize: 14.5,
+                  fontSize: 15,
                   color: item.isPacked ? _textSec(context) : _textPri(context),
                   decoration: item.isPacked ? TextDecoration.lineThrough : null,
                 ),
@@ -573,6 +609,7 @@ class TripPackingScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: _bgOf(context),
                   borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: _border(context)),
                 ),
                 child: Text(
                   'x${item.quantity}',
@@ -594,17 +631,18 @@ class TripPackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _assigneeAvatar(BuildContext context, PackingItem item, bool assignedToMe) {
+  Widget _assigneeAvatar(
+    BuildContext context,
+    PackingItem item,
+    bool assignedToMe,
+  ) {
     if (item.assignee == null) {
       return Container(
         width: 30,
         height: 30,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(
-            color: _textSec(context).withValues(alpha: 0.4),
-            width: 1.5,
-          ),
+          border: Border.all(color: _border(context), width: 1.5),
         ),
         child: Icon(
           PhosphorIcons.userPlus(),
@@ -621,10 +659,10 @@ class TripPackingScreen extends ConsumerWidget {
       height: 30,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: assignedToMe ? _primary : _textSec(context),
+        color: assignedToMe ? _primary(context) : _surface(context),
         border: Border.all(
-          color: assignedToMe ? _primary : Colors.transparent,
-          width: 2,
+          color: assignedToMe ? _primary(context) : _border(context),
+          width: 1.5,
         ),
         image: (url != null && url.isNotEmpty)
             ? DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)
@@ -636,8 +674,8 @@ class TripPackingScreen extends ConsumerWidget {
               initial,
               style: AppFonts.heading(
                 fontWeight: FontWeight.w800,
-                fontSize: 13,
-                color: GenZTokens.paper,
+                fontSize: 12,
+                color: assignedToMe ? _onAccent(context) : _textPri(context),
               ),
             )
           : null,
@@ -648,14 +686,18 @@ class TripPackingScreen extends ConsumerWidget {
     padding: const EdgeInsets.all(24),
     children: [
       const SizedBox(height: 40),
-      Icon(PhosphorIconsFill.suitcaseRolling, size: 64, color: _primary),
+      Icon(
+        PhosphorIconsFill.suitcaseRolling,
+        size: 64,
+        color: _primary(context),
+      ),
       const SizedBox(height: 16),
       Text(
         'packing.empty'.tr(),
         textAlign: TextAlign.center,
         style: AppFonts.heading(
           fontWeight: FontWeight.w800,
-          fontSize: 20,
+          fontSize: 22,
           color: _textPri(context),
         ),
       ),
@@ -663,7 +705,7 @@ class TripPackingScreen extends ConsumerWidget {
       Text(
         'packing.empty_sub'.tr(),
         textAlign: TextAlign.center,
-        style: AppFonts.body(fontSize: 14, color: _textSec(context)),
+        style: AppFonts.body(fontSize: 13, color: _textSec(context)),
       ),
       const SizedBox(height: 24),
       Wrap(
@@ -671,32 +713,46 @@ class TripPackingScreen extends ConsumerWidget {
         spacing: 10,
         runSpacing: 10,
         children: _templates.entries
-            .map((e) => _templateChip(context, ref, e.key, e.value.$1.tr(), e.value.$2))
+            .map(
+              (e) => _templateChip(
+                context,
+                ref,
+                e.key,
+                e.value.$1.tr(),
+                e.value.$2,
+              ),
+            )
             .toList(),
       ),
     ],
   );
 
-  Widget _templateChip(BuildContext context, WidgetRef ref, String key, String label, IconData icon) {
+  Widget _templateChip(
+    BuildContext context,
+    WidgetRef ref,
+    String key,
+    String label,
+    IconData icon,
+  ) {
     return GestureDetector(
       onTap: () => _applyTemplate(ref, key),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: _surface(context),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _primary, width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _border(context)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: _primary),
+            Icon(icon, size: 18, color: _textPri(context)),
             const SizedBox(width: 8),
             Text(
               label,
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
                 color: _textPri(context),
               ),
             ),
@@ -714,10 +770,9 @@ class TripPackingScreen extends ConsumerWidget {
         height: 56,
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: _isDark(context)
-              ? GenZTokens.inkDark.withValues(alpha: 0.06)
-              : GenZTokens.ink.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(16),
+          color: _surface(context),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _border(context)),
         ),
       ),
     ),

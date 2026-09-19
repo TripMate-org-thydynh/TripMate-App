@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+
 // Model ChatMessage — khớp BE `chat` module.
 class ChatMessage {
   final String id;

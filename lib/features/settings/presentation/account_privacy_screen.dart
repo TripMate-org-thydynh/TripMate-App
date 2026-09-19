@@ -70,7 +70,8 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: _danger,
-              foregroundColor: GenZTokens.paper,
+              foregroundColor:
+                  _isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
               ),
@@ -200,7 +201,9 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(
                       backgroundColor: _danger,
-                      foregroundColor: GenZTokens.paper,
+                      foregroundColor: _isDark
+                          ? GenZTokens.onAccentDark
+                          : GenZTokens.onAccent,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
@@ -215,7 +218,9 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                             height: 18,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: GenZTokens.paper,
+                              color: _isDark
+                                  ? GenZTokens.onAccentDark
+                                  : GenZTokens.onAccent,
                             ),
                           )
                         : Icon(PhosphorIcons.trash(PhosphorIconsStyle.fill)),
