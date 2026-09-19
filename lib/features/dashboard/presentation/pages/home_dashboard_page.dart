@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/services/media_uploader.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -155,54 +156,60 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     //
     // Không đặt trong sliver hero: viewport vẽ sliver đầu SAU CÙNG, nên phần
     // vệt loang tràn ra khỏi hero sẽ đè lên các mục bên dưới.
-    return Stack(
-      children: [
-        if (cover != null && cover.isNotEmpty)
-          AnimatedBuilder(
-            animation: _scroll,
-            builder: (context, child) => Transform.translate(
-              offset: Offset(0, -(_scroll.hasClients ? _scroll.offset : 0.0)),
-              child: child,
-            ),
-            child: FadedImage(
-              imageUrl: cover,
-              fadeTo: _bg,
-              height: topInset + _heroImageHeight,
-              glowExtent: 420,
-              topFade: true,
-            ),
-          ),
-        _buildScroll(context),
-        // Nền mờ dưới thanh trạng thái: nội dung cuộn lên không đè vào giờ/pin.
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: topInset + 20,
-          child: IgnorePointer(
-            child: AnimatedBuilder(
+    // Ảnh tràn lên sau thanh trạng thái → tự chọn màu icon giờ/pin theo chế độ.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDarkMode
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark,
+      child: Stack(
+        children: [
+          if (cover != null && cover.isNotEmpty)
+            AnimatedBuilder(
               animation: _scroll,
-              // Chỉ hiện khi đã cuộn — ở đầu trang để ảnh tràn trọn lên mép trên.
-              builder: (context, child) => Opacity(
-                opacity: _scroll.hasClients
-                    ? (_scroll.offset / 80).clamp(0.0, 1.0)
-                    : 0,
+              builder: (context, child) => Transform.translate(
+                offset: Offset(0, -(_scroll.hasClients ? _scroll.offset : 0.0)),
                 child: child,
               ),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: [0, topInset / (topInset + 20), 1],
-                    colors: [_bg, _bg, _bg.withValues(alpha: 0)],
+              child: FadedImage(
+                imageUrl: cover,
+                fadeTo: _bg,
+                height: topInset + _heroImageHeight,
+                glowExtent: 420,
+                topFade: true,
+              ),
+            ),
+          _buildScroll(context),
+          // Nền mờ dưới thanh trạng thái: nội dung cuộn lên không đè vào giờ/pin.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: topInset + 20,
+            child: IgnorePointer(
+              child: AnimatedBuilder(
+                animation: _scroll,
+                // Chỉ hiện khi đã cuộn — ở đầu trang để ảnh tràn trọn lên mép trên.
+                builder: (context, child) => Opacity(
+                  opacity: _scroll.hasClients
+                      ? (_scroll.offset / 80).clamp(0.0, 1.0)
+                      : 0,
+                  child: child,
+                ),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [0, topInset / (topInset + 20), 1],
+                      colors: [_bg, _bg, _bg.withValues(alpha: 0)],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -213,11 +220,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       slivers: [
         // ── 1. HERO: ảnh bìa tràn viền + header nằm đè lên ──
         SliverToBoxAdapter(child: _buildHero(context)),
-
-        // ── Dải tin squad chạy ngang — ngay dưới hero cho thấy nhóm đang sôi động.
-        const SliverToBoxAdapter(
-          child: Column(children: [SocialChaosMarquee(), SizedBox(height: 24)]),
-        ),
 
         // ── 2. TRIP COVER CARD (PRIMARY FOCUS) ──
         // Đồng hồ đếm ngược dùng thử, ngay đầu màn chính.
@@ -628,8 +630,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
               children: [
                 SizedBox(height: topInset),
                 _buildHeader(context),
+                // Dải tin squad chạy ngang, nằm đè lên ảnh ngay dưới header.
+                const SocialChaosMarquee(),
                 const TrialBanner(),
-                SizedBox(height: imageHeight - 150),
+                SizedBox(height: imageHeight - 150 - 42),
                 PopIn(
                   index: 0,
                   child: Padding(

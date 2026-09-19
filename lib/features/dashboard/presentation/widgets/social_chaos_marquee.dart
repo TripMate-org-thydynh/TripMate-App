@@ -84,10 +84,11 @@ class _MarqueeStripState extends State<_MarqueeStrip> {
       height: 42,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: fill,
+        // Bán trong suốt: dải này nằm đè lên ảnh bìa ở đầu Home.
+        color: fill.withValues(alpha: 0.55),
         border: Border.symmetric(
           horizontal: BorderSide(
-            color: line,
+            color: line.withValues(alpha: 0.5),
             width: GenZTokens.borderWidthThin,
           ),
         ),
