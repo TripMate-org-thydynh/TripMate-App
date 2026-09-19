@@ -179,7 +179,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
         title: Text(
           'trips.join'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
+            fontSize: 17,
             fontWeight: FontWeight.w700,
             color: _ink,
           ),
@@ -213,7 +213,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                       'trips.join_title'.tr(),
                       textAlign: TextAlign.center,
                       style: AppFonts.heading(
-                        fontSize: 20,
+                        fontSize: 22,
                         fontWeight: FontWeight.w700,
                         color: _ink,
                       ),
@@ -250,7 +250,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                 decoration: InputDecoration(
                   hintText: 'trips.join_code_hint'.tr(),
                   hintStyle: AppFonts.body(
-                    fontSize: 14,
+                    fontSize: 15,
                     color: _inkSoft,
                   ),
                   filled: true,

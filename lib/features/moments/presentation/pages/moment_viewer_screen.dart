@@ -276,7 +276,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
   Widget _reactionBar(WidgetMoment m, bool isDark, Color ink) {
     final picked = _reacted[m.id];
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
     final accentSoft = isDark
         ? GenZTokens.accentSoftDark
         : GenZTokens.accentSoft;

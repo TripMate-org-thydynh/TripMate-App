@@ -124,10 +124,8 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
-    final primaryColor = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccentColor = isDark
-        ? GenZTokens.onAccentDark
-        : GenZTokens.onAccent;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onAccentColor = Theme.of(context).colorScheme.onPrimary;
     final secondaryColor = isDark ? GenZTokens.successDark : GenZTokens.success;
     final infoColor = isDark ? GenZTokens.infoDark : GenZTokens.info;
     final lineColor = isDark ? GenZTokens.lineDark : GenZTokens.line;

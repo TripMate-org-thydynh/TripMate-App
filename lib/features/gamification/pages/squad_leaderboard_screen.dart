@@ -169,7 +169,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
           Text(
             '${r.xp} XP',
             style: AppFonts.mono(
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
               color: isFirst ? accent : success,
             ),
@@ -204,7 +204,7 @@ class SquadLeaderboardScreen extends ConsumerWidget {
     return Text(
       '#$rank',
       style: AppFonts.mono(
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: FontWeight.w700,
         color: inkSoft,
       ),

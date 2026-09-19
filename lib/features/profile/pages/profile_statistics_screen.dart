@@ -21,17 +21,21 @@ class ProfileStatisticsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
     final state = ref.watch(profileDataProvider);
     final stats = state.stats;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
           onPressed: () => Navigator.pop(context),
@@ -39,32 +43,36 @@ class ProfileStatisticsScreen extends ConsumerWidget {
         title: Text(
           'profile.stats_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: ink,
           ),
         ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(GenZTokens.space4),
         child: Column(
           children: [
             Card(
               elevation: 0,
               color: surface,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: ink, width: 2.5),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                side: BorderSide(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
+                ),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(GenZTokens.space4),
                 child: state.isLoading && stats == null
-                    ? const Center(
+                    ? Center(
                         child: Padding(
-                          padding: EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(GenZTokens.space4),
                           child: CircularProgressIndicator(
-                            color: GenZTokens.orange,
+                            color: accent,
+                            strokeWidth: 2,
                           ),
                         ),
                       )
@@ -75,44 +83,49 @@ class ProfileStatisticsScreen extends ConsumerWidget {
                             'profile.trip_count'.tr(
                               namedArgs: {'n': '${_int(stats, 'totalTrips')}'},
                             ),
+                            ink,
                             inkSoft,
                           ),
                           Divider(
-                            height: 24,
-                            color: inkSoft.withValues(alpha: 0.2),
+                            height: GenZTokens.space5,
+                            color: line,
                           ),
                           _row(
                             'profile.stat_distance_done'.tr(),
                             '${_int(stats, 'totalDistanceKm')} km',
+                            ink,
                             inkSoft,
                           ),
                           Divider(
-                            height: 24,
-                            color: inkSoft.withValues(alpha: 0.2),
+                            height: GenZTokens.space5,
+                            color: line,
                           ),
                           _row(
                             'profile.stat_places_done'.tr(),
                             'profile.place_count'.tr(
                               namedArgs: {'n': '${_int(stats, 'totalPlaces')}'},
                             ),
+                            ink,
                             inkSoft,
                           ),
                           Divider(
-                            height: 24,
-                            color: inkSoft.withValues(alpha: 0.2),
+                            height: GenZTokens.space5,
+                            color: line,
                           ),
                           _row(
                             'profile.stat_xp'.tr(),
                             '${formatMoney(_int(stats, 'achievementPoints'), locale: context.locale.languageCode).replaceAll(RegExp(r'\s*[đ₫]$'), '')} XP',
+                            ink,
                             inkSoft,
                           ),
                           Divider(
-                            height: 24,
-                            color: inkSoft.withValues(alpha: 0.2),
+                            height: GenZTokens.space5,
+                            color: line,
                           ),
                           _row(
                             'profile.stat_reputation'.tr(),
                             '${_int(stats, 'squadReputationScore')}%',
+                            ink,
                             inkSoft,
                           ),
                         ],
@@ -129,22 +142,23 @@ class ProfileStatisticsScreen extends ConsumerWidget {
   static int _int(Map<String, dynamic>? stats, String key) =>
       (stats?[key] as num?)?.toInt() ?? 0;
 
-  Widget _row(String title, String val, Color inkSoft) {
+  Widget _row(String title, String val, Color ink, Color inkSoft) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: Text(
             title,
-            style: AppFonts.body(color: inkSoft),
+            style: AppFonts.body(fontSize: 15, color: inkSoft),
           ),
         ),
         const SizedBox(width: 12),
         Text(
           val,
-          style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
-            color: GenZTokens.purple,
+          style: AppFonts.mono(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: ink,
           ),
         ),
       ],

@@ -116,7 +116,7 @@ class _MateyAiEmotionalChaosScreenState
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
     final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
 
     showModalBottomSheet(
@@ -253,10 +253,10 @@ class _MateyAiEmotionalChaosScreenState
   @override
   Widget build(BuildContext context) {
     final isDark = _isDarkMode;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
     final accentSoft =
         isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     final backgroundColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;

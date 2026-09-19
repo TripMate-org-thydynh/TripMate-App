@@ -148,11 +148,9 @@ class TrialActions {
   /// Chỉ gửi `deviceId`. Số ngày và gói do server quyết định — gửi lên cũng bị
   /// bỏ qua, và không nên tạo cảm giác là client có tiếng nói ở đó.
   Future<void> start() async {
-    await _ref
-        .read(apiClientProvider)
-        .postData('/premium/trial/start', {
-          'deviceId': await deviceInstallId(),
-        });
+    await _ref.read(apiClientProvider).postData('/premium/trial/start', {
+      'deviceId': await deviceInstallId(),
+    });
     _invalidate();
   }
 

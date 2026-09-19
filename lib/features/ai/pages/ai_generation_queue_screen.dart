@@ -75,7 +75,7 @@ class AiGenerationQueueScreen extends ConsumerWidget {
                   itemCount: items.length,
                   separatorBuilder: (_, _) =>
                       const SizedBox(height: GenZTokens.space3),
-                  itemBuilder: (_, i) => _tile(isDark, items[i]),
+                  itemBuilder: (ctx, i) => _tile(ctx, isDark, items[i]),
                 ),
               );
             },
@@ -83,7 +83,7 @@ class AiGenerationQueueScreen extends ConsumerWidget {
     );
   }
 
-  Widget _tile(bool isDark, AiQueueItem item) {
+  Widget _tile(BuildContext context, bool isDark, AiQueueItem item) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
@@ -91,7 +91,7 @@ class AiGenerationQueueScreen extends ConsumerWidget {
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final success = isDark ? GenZTokens.successDark : GenZTokens.success;
     final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
 
     final color = item.isFailed
         ? danger

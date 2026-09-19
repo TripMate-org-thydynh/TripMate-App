@@ -19,7 +19,7 @@ class WeatherForecastSheet extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: GenZTokens.paper.withValues(alpha: 0),
+      backgroundColor: Colors.transparent,
       builder: (_) =>
           WeatherForecastSheet(weather: weather, isDarkMode: isDarkMode),
     );
@@ -96,7 +96,7 @@ class WeatherForecastSheet extends StatelessWidget {
                         Text(
                           'weather.forecast_16'.tr(),
                           style: AppFonts.heading(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.w700,
                             color: _ink,
                           ),

@@ -37,7 +37,6 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
   Color get _surface => _isDark ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _ink => _isDark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _line => _isDark ? GenZTokens.lineDark : GenZTokens.line;
-  Color get _accent => _isDark ? GenZTokens.accentDark : GenZTokens.accent;
   Color get _danger => _isDark ? GenZTokens.dangerDark : GenZTokens.danger;
   Color get _textPri => _ink;
   Color get _textSec => _isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -251,7 +250,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: _accent, size: 24),
+          Icon(icon, color: _textPri, size: 24),
           const SizedBox(width: GenZTokens.space3),
           Expanded(
             child: Column(
@@ -332,7 +331,7 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
                 child: Text(
                   label,
                   style: AppFonts.body(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: _textPri,
                   ),

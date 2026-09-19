@@ -78,7 +78,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final isDark = ref.watch(themeProvider) == ThemeMode.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = theme.scaffoldBackgroundColor;
-    final accent = theme.colorScheme.primary;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     // Body pages representing Home flow, Itinerary map, Create trip, Live crew tracking, and Profile
     final List<Widget> pages = [
@@ -152,23 +153,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       // thấy nội dung xuyên qua. Nền doodle phía sau cũng nhờ đó phủ liền mạch
       // tới đáy màn.
       extendBody: true,
-      body: Stack(
-        children: [
-          // Nền cream phẳng + doodle sparkle xoay/nhấp nhẹ liên tục
-          Positioned.fill(child: AnimatedDoodleBackground(ink: ink)),
-          SafeArea(
-            child: Column(
-              children: [
-                // Banner offline dùng chung cho mọi tab — không phải mỗi màn
-                // tự nhớ hiển thị.
-                const OfflineBanner(),
-                Expanded(
-                  child: IndexedStack(index: _selectedIndex, children: pages),
-                ),
-              ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Banner offline dùng chung cho mọi tab — không phải mỗi màn
+            // tự nhớ hiển thị.
+            const OfflineBanner(),
+            Expanded(
+              child: IndexedStack(index: _selectedIndex, children: pages),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       // Bottom nav: nút giữa nhô lên khỏi thanh, thanh lõm ôm quanh nó.
       //
@@ -189,7 +184,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         inkSoft: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
         line: isDark ? GenZTokens.lineDark : GenZTokens.line,
         accent: accent,
-        onAccent: isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent,
+        onAccent: onAccent,
         isDark: isDark,
         onTap: (index) {
           HapticFeedback.selectionClick();
@@ -259,92 +254,6 @@ class InvertedCircleClipper extends CustomClipper<Path> {
   }
 }
 
-/// Nền doodle brutalist: sparkle ✦ và dấu + rải rác, opacity thấp.
-/// Thay cho aurora mesh gradient cũ — Design DNA là khối màu phẳng.
-/// Nền doodle sparkle xoay/nhấp nhẹ liên tục — chuyển động sinh động nhưng
-/// tinh tế (opacity thấp). Tự chứa ticker + RepaintBoundary để không kéo
-/// theo repaint toàn màn hình.
-class AnimatedDoodleBackground extends StatefulWidget {
-  final Color ink;
-  const AnimatedDoodleBackground({super.key, required this.ink});
-
-  @override
-  State<AnimatedDoodleBackground> createState() =>
-      _AnimatedDoodleBackgroundState();
-}
-
-class _AnimatedDoodleBackgroundState extends State<AnimatedDoodleBackground>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 24),
-  )..repeat();
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, _) => CustomPaint(
-          painter: DoodleBackgroundPainter(ink: widget.ink, progress: _c.value),
-        ),
-      ),
-    );
-  }
-}
-
-class DoodleBackgroundPainter extends CustomPainter {
-  final Color ink;
-  final double progress;
-
-  DoodleBackgroundPainter({required this.ink, this.progress = 0});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = ink.withValues(alpha: 0.06)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    final rng = math.Random(7); // seed cố định để nền ổn định giữa các frame
-    for (var i = 0; i < 14; i++) {
-      final cx = rng.nextDouble() * size.width;
-      final cy = rng.nextDouble() * size.height;
-      final baseR = 5 + rng.nextDouble() * 7;
-      // Mỗi sparkle xoay + nhấp nhẹ theo pha riêng.
-      final phase = i * 0.7;
-      final spin = progress * math.pi * 2 * (i.isEven ? 1 : -1) + phase;
-      final r =
-          baseR * (0.85 + 0.15 * math.sin(progress * math.pi * 2 + phase));
-
-      canvas.save();
-      canvas.translate(cx, cy);
-      canvas.rotate(spin);
-      if (i.isEven) {
-        // Sparkle 4 cánh ✦
-        canvas.drawLine(Offset(-r, 0), Offset(r, 0), paint);
-        canvas.drawLine(Offset(0, -r), Offset(0, r), paint);
-      } else {
-        // Dấu + xoay 45°
-        final d = r * 0.7;
-        canvas.drawLine(Offset(-d, -d), Offset(d, d), paint);
-        canvas.drawLine(Offset(-d, d), Offset(d, -d), paint);
-      }
-      canvas.restore();
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant DoodleBackgroundPainter oldDelegate) =>
-      oldDelegate.ink != ink || oldDelegate.progress != progress;
-}
 
 /// Thanh điều hướng có vết lõm **bám theo tab đang chọn**.
 ///
@@ -437,7 +346,7 @@ class _NotchedNavBar extends StatelessWidget {
           // cùng nhịp, lệch một khung hình là thấy ngay nút rời khỏi hốc.
           return TweenAnimationBuilder<double>(
             tween: Tween(begin: targetX, end: targetX),
-            duration: const Duration(milliseconds: 320),
+            duration: const Duration(milliseconds: GenZTokens.durationBase),
             curve: Curves.easeOutCubic,
             builder: (context, notchX, _) {
               return Stack(

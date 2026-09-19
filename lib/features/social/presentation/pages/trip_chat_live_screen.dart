@@ -43,16 +43,24 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
   bool _hasMore = true;
   String? _error;
 
-  bool get _dark => widget.isDarkMode;
+  bool _isDark(BuildContext context) =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      _dark ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _primary =>
-      Theme.of(context).colorScheme.primary;
-  Color get _textPri => _dark ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _textSec =>
-      _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surfaceOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color _lineOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
+  Color _fillOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
+  Color _primaryOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+  Color _onAccentOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color _textPriOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSecOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   @override
   void initState() {
@@ -166,11 +174,12 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
   /// Mở bảng chọn sticker — chỉ hiện sticker THẬT SỰ đã sở hữu.
   void _openStickerPicker() {
     HapticFeedback.selectionClick();
+    final dark = _isDark(context);
     showModalBottomSheet(
       context: context,
-      backgroundColor: _surface,
+      backgroundColor: _surfaceOf(context),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
       ),
       builder: (sheetCtx) => Consumer(
         builder: (context, ref, _) => ref
@@ -184,7 +193,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 padding: const EdgeInsets.all(28),
                 child: Text(
                   'errors.load_failed'.tr(),
-                  style: AppFonts.body(color: _textSec),
+                  style: AppFonts.body(color: _textSecOf(context)),
                 ),
               ),
               data: (stickers) {
@@ -197,17 +206,24 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                         Text(
                           'xp.inventory_empty'.tr(),
                           textAlign: TextAlign.center,
-                          style: AppFonts.body(color: _textSec, height: 1.4),
+                          style: AppFonts.body(color: _textSecOf(context), height: 1.4),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _primaryOf(context),
+                            foregroundColor: _onAccentOf(context),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
                           onPressed: () {
                             Navigator.pop(sheetCtx);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => StickerStoreScreen(
-                                  isDarkMode: widget.isDarkMode,
+                                  isDarkMode: dark,
                                 ),
                               ),
                             );
@@ -291,6 +307,11 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dark = _isDark(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
+    final successColor = dark ? GenZTokens.successDark : GenZTokens.success;
+
     return Scaffold(
       backgroundColor: _bgOf(context),
       appBar: AppBar(
@@ -302,8 +323,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               'chat.title'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: _textPri,
+                fontWeight: FontWeight.w700,
+                color: textPri,
               ),
             ),
             const SizedBox(width: 8),
@@ -312,29 +333,34 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _connected ? GenZTokens.success : _textSec,
+                color: _connected ? successColor : textSec,
               ),
             ),
             const SizedBox(width: 5),
             Text(
               _connected ? 'chat.live'.tr() : 'common.connecting'.tr(),
-              style: AppFonts.body(fontSize: 12, color: _textSec),
+              style: AppFonts.body(fontSize: 12, color: textSec),
             ),
           ],
         ),
       ),
       body: Column(
         children: [
-          Expanded(child: _body()),
-          _composer(),
+          Expanded(child: _body(context)),
+          _composer(context),
         ],
       ),
     );
   }
 
-  Widget _body() {
+  Widget _body(BuildContext context) {
+    final dark = _isDark(context);
+    final primary = _primaryOf(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
+
     if (_loading) {
-      return Center(child: CircularProgressIndicator(color: _primary));
+      return Center(child: CircularProgressIndicator(color: primary));
     }
     if (_error != null && _messages.isEmpty) {
       return Center(
@@ -343,15 +369,16 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
           children: [
             Icon(
               PhosphorIcons.cloudSlash(),
-              color: GenZTokens.danger,
+              color: dark ? GenZTokens.dangerDark : GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
             Text(
               'chat.load_failed'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                color: _textPri,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: textPri,
               ),
             ),
           ],
@@ -368,26 +395,28 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _primary.withValues(alpha: 0.12),
+                color: _fillOf(context),
+                border: Border.all(color: _lineOf(context), width: 1),
               ),
               child: Icon(
                 PhosphorIcons.chatCircle(PhosphorIconsStyle.fill),
-                color: _primary,
-                size: 34,
+                color: primary,
+                size: 32,
               ),
             ),
             const SizedBox(height: 14),
             Text(
               'chat.empty'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                color: _textPri,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: textPri,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               'chat.empty_sub'.tr(),
-              style: AppFonts.body(fontSize: 13, color: _textSec),
+              style: AppFonts.body(fontSize: 13, color: textSec),
             ),
           ],
         ),
@@ -397,12 +426,19 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
       controller: _scroll,
       padding: const EdgeInsets.all(16),
       itemCount: _messages.length,
-      itemBuilder: (context, i) => _bubble(_messages[i]),
+      itemBuilder: (context, i) => _bubble(context, _messages[i]),
     );
   }
 
-  Widget _bubble(ChatMessage m) {
+  Widget _bubble(BuildContext context, ChatMessage m) {
     final isMe = m.senderId == _myId;
+    final primary = _primaryOf(context);
+    final onAccent = _onAccentOf(context);
+    final surface = _surfaceOf(context);
+    final line = _lineOf(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Column(
@@ -418,7 +454,7 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 style: AppFonts.body(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: _textSec,
+                  color: textSec,
                 ),
               ),
             ),
@@ -429,18 +465,16 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               maxWidth: MediaQuery.of(context).size.width * 0.72,
             ),
             decoration: BoxDecoration(
-              color: isMe ? _primary : _surface,
-              borderRadius: BorderRadius.circular(18).copyWith(
+              color: isMe ? primary : surface,
+              borderRadius: BorderRadius.circular(14).copyWith(
                 bottomRight: isMe ? const Radius.circular(4) : null,
                 bottomLeft: isMe ? null : const Radius.circular(4),
               ),
               border: isMe
                   ? null
                   : Border.all(
-                      color: _dark
-                          ? GenZTokens.paperDark
-                          : GenZTokens.ink,
-                      width: 2,
+                      color: line,
+                      width: 1,
                     ),
             ),
             // Tin nhắn sticker: `content` là MÃ sticker (stk-fire), không phải
@@ -454,8 +488,8 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 : Text(
                     m.content ?? '',
                     style: AppFonts.body(
-                      fontSize: 14,
-                      color: isMe ? GenZTokens.ink : _textPri,
+                      fontSize: 15,
+                      color: isMe ? onAccent : textPri,
                       height: 1.3,
                     ),
                   ),
@@ -486,7 +520,14 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
     }[stickerId];
   }
 
-  Widget _composer() {
+  Widget _composer(BuildContext context) {
+    final primary = _primaryOf(context);
+    final onAccent = _onAccentOf(context);
+    final surface = _surfaceOf(context);
+    final line = _lineOf(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
@@ -501,12 +542,13 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 height: 40,
                 margin: const EdgeInsets.only(right: 6),
                 decoration: BoxDecoration(
-                  color: _surface,
+                  color: surface,
                   shape: BoxShape.circle,
+                  border: Border.all(color: line, width: 1),
                 ),
                 child: Icon(
                   PhosphorIcons.smiley(PhosphorIconsStyle.fill),
-                  color: _primary,
+                  color: textSec,
                   size: 22,
                 ),
               ),
@@ -516,20 +558,28 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 controller: _input,
                 minLines: 1,
                 maxLines: 4,
-                style: AppFonts.body(color: _textPri),
+                style: AppFonts.body(color: textPri),
                 onSubmitted: (_) => _send(),
                 decoration: InputDecoration(
                   hintText: 'chat.input_hint'.tr(),
-                  hintStyle: AppFonts.body(color: _textSec),
+                  hintStyle: AppFonts.body(color: textSec),
                   filled: true,
-                  fillColor: _surface,
+                  fillColor: surface,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: line, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: line, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: primary, width: 1.5),
                   ),
                 ),
               ),
@@ -538,16 +588,16 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
             GestureDetector(
               onTap: _send,
               child: Container(
-                width: 48,
-                height: 48,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: _primary,
-                  shape: BoxShape.circle,
+                  color: primary,
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   PhosphorIcons.paperPlaneRight(PhosphorIconsStyle.fill),
-                  color: GenZTokens.ink,
-                  size: 22,
+                  color: onAccent,
+                  size: 20,
                 ),
               ),
             ),

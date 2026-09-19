@@ -34,7 +34,7 @@ class AiHubScreen extends StatelessWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = theme.colorScheme.primary;
     final accentSoft =
         isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
     final success = isDark ? GenZTokens.successDark : GenZTokens.success;

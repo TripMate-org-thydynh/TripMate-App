@@ -98,7 +98,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: GenZTokens.paper.withValues(alpha: 0),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
       ),
@@ -113,7 +113,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                     ? 'auth.register_title'.tr()
                     : 'auth.login_title'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 26,
+                  fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: _ink,
                   letterSpacing: -0.5,
@@ -124,7 +124,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                 _isRegister
                     ? 'auth.register_sub'.tr()
                     : 'auth.login_sub'.tr(),
-                style: AppFonts.body(color: _sub, fontSize: 14),
+                style: AppFonts.body(color: _sub, fontSize: 15),
               ),
               const SizedBox(height: 32),
 
@@ -183,7 +183,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                             ? 'auth.register_cta'.tr()
                             : 'auth.sign_in'.tr(),
                         style: AppFonts.heading(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: _onAccent,
                         ),
@@ -201,7 +201,7 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
                       text: _isRegister
                           ? 'auth.have_account'.tr()
                           : 'auth.no_account_prefix'.tr(),
-                      style: AppFonts.body(color: _sub, fontSize: 14),
+                      style: AppFonts.body(color: _sub, fontSize: 15),
                       children: [
                         TextSpan(
                           text: _isRegister

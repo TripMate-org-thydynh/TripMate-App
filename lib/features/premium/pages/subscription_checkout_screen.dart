@@ -431,36 +431,46 @@ class _SubscriptionCheckoutScreenState
   void _showSuccess() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final accent = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
 
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
+        ),
+        backgroundColor: surface,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 12),
+            const SizedBox(height: GenZTokens.space3),
             Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
+              padding: const EdgeInsets.all(GenZTokens.space4),
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: GenZTokens.success,
+                color: success.withValues(alpha: isDark ? 0.2 : 0.12),
+                border: Border.all(
+                  color: success,
+                  width: GenZTokens.borderWidth,
+                ),
               ),
               child: Icon(
                 PhosphorIcons.check(PhosphorIconsStyle.bold),
-                color: GenZTokens.ink,
-                size: 36,
+                color: success,
+                size: 32,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: GenZTokens.space4),
             Text(
               'premium.joined_elite'.tr(),
               textAlign: TextAlign.center,
               style: AppFonts.heading(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
                 color: ink,
               ),
             ),
@@ -476,7 +486,8 @@ class _SubscriptionCheckoutScreenState
               'common.got_it'.tr(),
               style: AppFonts.heading(
                 color: accent,
-                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -489,9 +500,10 @@ class _SubscriptionCheckoutScreenState
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final cream = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
-      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      backgroundColor: cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -499,8 +511,8 @@ class _SubscriptionCheckoutScreenState
         title: Text(
           'premium.upgrade_elite'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -510,8 +522,12 @@ class _SubscriptionCheckoutScreenState
   }
 
   Widget _body(bool isDark) {
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+      return Center(
+        child: CircularProgressIndicator(strokeWidth: 2, color: accent),
+      );
     }
     if (_failed) return AppErrorState(isDark: isDark, onRetry: _fetch);
 
@@ -528,6 +544,7 @@ class _SubscriptionCheckoutScreenState
 
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return ListView(
       padding: const EdgeInsets.all(GenZTokens.space5),
@@ -574,10 +591,7 @@ class _SubscriptionCheckoutScreenState
             },
           ),
           textAlign: TextAlign.center,
-          style: AppFonts.body(
-            fontSize: 12,
-            color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
-          ),
+          style: AppFonts.body(fontSize: 12, color: inkSoft),
         ),
       ],
     );
@@ -586,8 +600,8 @@ class _SubscriptionCheckoutScreenState
   Widget _sectionLabel(String text, Color ink) => Text(
     text,
     style: AppFonts.heading(
-      fontSize: 14,
-      fontWeight: FontWeight.w800,
+      fontSize: 15,
+      fontWeight: FontWeight.w600,
       color: ink,
     ),
   );
@@ -651,6 +665,12 @@ class _SubscriptionCheckoutScreenState
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: GenZTokens.space3),
       child: InkWell(
@@ -659,10 +679,10 @@ class _SubscriptionCheckoutScreenState
         child: Container(
           padding: const EdgeInsets.all(GenZTokens.space4),
           decoration: BoxDecoration(
-            color: selected ? GenZTokens.lilac : surface,
+            color: selected ? accentSoft : surface,
             borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
             border: Border.all(
-              color: ink,
+              color: selected ? accent : line,
               width: selected
                   ? GenZTokens.borderWidth
                   : GenZTokens.borderWidthThin,
@@ -674,7 +694,7 @@ class _SubscriptionCheckoutScreenState
                 selected
                     ? PhosphorIcons.radioButton(PhosphorIconsStyle.fill)
                     : PhosphorIcons.circle(),
-                color: selected ? GenZTokens.ink : inkSoft,
+                color: selected ? accent : inkSoft,
                 size: 20,
               ),
               const SizedBox(width: GenZTokens.space3),
@@ -686,26 +706,23 @@ class _SubscriptionCheckoutScreenState
                       title,
                       style: AppFonts.heading(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: selected ? GenZTokens.ink : ink,
+                        fontWeight: FontWeight.w600,
+                        color: ink,
                       ),
                     ),
                     Text(
                       subtitle,
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        color: selected ? GenZTokens.ink : inkSoft,
-                      ),
+                      style: AppFonts.body(fontSize: 12, color: inkSoft),
                     ),
                   ],
                 ),
               ),
               Text(
                 trailing,
-                style: AppFonts.heading(
+                style: AppFonts.mono(
                   fontSize: 15,
-                  fontWeight: FontWeight.w900,
-                  color: selected ? GenZTokens.ink : ink,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? accent : ink,
                 ),
               ),
             ],
@@ -718,7 +735,14 @@ class _SubscriptionCheckoutScreenState
   Widget _walletChip(String gateway, bool isDark) {
     final selected = gateway == _gateway;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+
     return InkWell(
       onTap: () => setState(() => _gateway = gateway),
       borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
@@ -726,10 +750,10 @@ class _SubscriptionCheckoutScreenState
         padding: const EdgeInsets.symmetric(vertical: GenZTokens.space3),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: selected ? GenZTokens.pink : surface,
+          color: selected ? accentSoft : surface,
           borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
           border: Border.all(
-            color: ink,
+            color: selected ? accent : line,
             width: selected
                 ? GenZTokens.borderWidth
                 : GenZTokens.borderWidthThin,
@@ -744,9 +768,9 @@ class _SubscriptionCheckoutScreenState
             _ => gateway,
           },
           style: AppFonts.heading(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: selected ? GenZTokens.ink : ink,
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+            color: selected ? accent : (isDark ? ink : inkSoft),
           ),
         ),
       ),
@@ -754,34 +778,32 @@ class _SubscriptionCheckoutScreenState
   }
 
   Widget _payButton(bool isDark, String locale) {
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+
     // Qua Play thì giá do Google định và đã gồm thuế của nước người mua, nên
-    // hiển thị đúng chuỗi Google trả về. Vẽ giá VND của mình ở đây là hứa một
-    // con số mà hộp thoại thanh toán ngay sau đó sẽ nói khác.
+    // hiển thị đúng chuỗi Google trả về.
     if (_gateway == 'GOOGLE_PLAY') {
       final price = _playPrice;
       return SizedBox(
-        height: 56,
+        height: 48,
         child: ElevatedButton(
           onPressed: _processing || price == null ? null : _buy,
           style: ElevatedButton.styleFrom(
-            backgroundColor: GenZTokens.yellow,
-            foregroundColor: GenZTokens.ink,
+            backgroundColor: accent,
+            foregroundColor: onAccent,
             elevation: 0,
-            side: BorderSide(
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-              width: GenZTokens.borderWidth,
-            ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
             ),
           ),
           child: _processing
-              ? const SizedBox(
+              ? SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: GenZTokens.ink,
+                    color: onAccent,
                   ),
                 )
               : Text(
@@ -789,9 +811,9 @@ class _SubscriptionCheckoutScreenState
                       ? 'premium.play_product_missing'.tr()
                       : 'premium.pay_now'.tr(namedArgs: {'amount': price}),
                   style: AppFonts.heading(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    color: GenZTokens.ink,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: onAccent,
                   ),
                 ),
         ),
@@ -800,28 +822,24 @@ class _SubscriptionCheckoutScreenState
 
     final total = _payable;
     return SizedBox(
-      height: 56,
+      height: 48,
       child: ElevatedButton(
         onPressed: _processing ? null : _buy,
         style: ElevatedButton.styleFrom(
-          backgroundColor: GenZTokens.yellow,
-          foregroundColor: GenZTokens.ink,
+          backgroundColor: accent,
+          foregroundColor: onAccent,
           elevation: 0,
-          side: BorderSide(
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-            width: GenZTokens.borderWidth,
-          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+            borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
           ),
         ),
         child: _processing
-            ? const SizedBox(
+            ? SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: GenZTokens.ink,
+                  color: onAccent,
                 ),
               )
             : Text(
@@ -829,9 +847,9 @@ class _SubscriptionCheckoutScreenState
                   namedArgs: {'amount': formatMoney(total, locale: locale)},
                 ),
                 style: AppFonts.heading(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: GenZTokens.ink,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: onAccent,
                 ),
               ),
       ),
@@ -839,24 +857,28 @@ class _SubscriptionCheckoutScreenState
   }
 
   /// Ô nhập mã giảm giá.
-  ///
-  /// Khi mã được chấp nhận, hiện thẳng số tiền được giảm chứ không hiện "giảm
-  /// 50%": người dùng cần biết mình trả bao nhiêu, không phải làm phép nhân.
   Widget _promoField(bool isDark, String locale) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
     final promo = _promo;
 
     if (promo != null) {
       return Container(
-        padding: const EdgeInsets.all(GenZTokens.space4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: GenZTokens.space4,
+          vertical: GenZTokens.space3,
+        ),
         decoration: BoxDecoration(
-          color: GenZTokens.green,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          color: success.withValues(alpha: isDark ? 0.18 : 0.12),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
           border: Border.all(
-            color: GenZTokens.ink,
-            width: GenZTokens.borderWidth,
+            color: success.withValues(alpha: 0.4),
+            width: GenZTokens.borderWidthThin,
           ),
         ),
         child: Row(
@@ -864,7 +886,7 @@ class _SubscriptionCheckoutScreenState
             Icon(
               PhosphorIcons.tag(PhosphorIconsStyle.fill),
               size: 18,
-              color: GenZTokens.ink,
+              color: success,
             ),
             const SizedBox(width: GenZTokens.space3),
             Expanded(
@@ -873,10 +895,10 @@ class _SubscriptionCheckoutScreenState
                 children: [
                   Text(
                     promo['code'] as String? ?? '',
-                    style: AppFonts.heading(
+                    style: AppFonts.mono(
                       fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      color: GenZTokens.ink,
+                      fontWeight: FontWeight.w700,
+                      color: ink,
                     ),
                   ),
                   Text(
@@ -888,15 +910,14 @@ class _SubscriptionCheckoutScreenState
                         ),
                       },
                     ),
-                    style: AppFonts.body(fontSize: 12, color: GenZTokens.ink),
+                    style: AppFonts.body(fontSize: 12, color: inkSoft),
                   ),
                 ],
               ),
             ),
-            // Gỡ mã phải dễ như áp mã.
             IconButton(
               onPressed: _clearPromo,
-              icon: Icon(PhosphorIcons.x(), size: 18, color: GenZTokens.ink),
+              icon: Icon(PhosphorIcons.x(), size: 18, color: inkSoft),
               tooltip: 'premium.promo_remove'.tr(),
             ),
           ],
@@ -910,9 +931,9 @@ class _SubscriptionCheckoutScreenState
         Container(
           padding: const EdgeInsets.only(left: GenZTokens.space4),
           decoration: BoxDecoration(
-            color: surface,
-            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-            border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+            color: fill,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+            border: Border.all(color: line, width: GenZTokens.borderWidthThin),
           ),
           child: Row(
             children: [
@@ -920,9 +941,9 @@ class _SubscriptionCheckoutScreenState
                 child: TextField(
                   controller: _promoController,
                   textCapitalization: TextCapitalization.characters,
-                  style: AppFonts.heading(
+                  style: AppFonts.mono(
                     fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: ink,
                   ),
                   decoration: InputDecoration(
@@ -934,12 +955,15 @@ class _SubscriptionCheckoutScreenState
                 ),
               ),
               _checkingPromo
-                  ? const Padding(
-                      padding: EdgeInsets.all(14),
+                  ? Padding(
+                      padding: const EdgeInsets.all(14),
                       child: SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: accent,
+                        ),
                       ),
                     )
                   : TextButton(
@@ -947,9 +971,9 @@ class _SubscriptionCheckoutScreenState
                       child: Text(
                         'premium.promo_apply'.tr(),
                         style: AppFonts.heading(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: ink,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: accent,
                         ),
                       ),
                     ),
@@ -961,7 +985,7 @@ class _SubscriptionCheckoutScreenState
             padding: const EdgeInsets.only(top: 6, left: 4),
             child: Text(
               _promoError!,
-              style: AppFonts.body(fontSize: 12, color: GenZTokens.danger),
+              style: AppFonts.body(fontSize: 12, color: danger),
             ),
           ),
       ],

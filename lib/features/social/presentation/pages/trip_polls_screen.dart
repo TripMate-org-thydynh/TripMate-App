@@ -22,21 +22,26 @@ class TripPollsScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
+  bool _isDark(BuildContext context) =>
+      isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  /// Accent lấy từ theme đang chọn.
-  ///
-  /// Truoc day la `isDark ? Color(0xFFF5822B) : Color(0xFFF5822B)` — hai
-  /// nhanh y het nhau, va 0xFFF5822B chinh la accent cua preset *grape*.
-  /// Nguoi dung o mint (vang) van thay man nay mau cam, va doi theme khong
-  /// an. Doc tu `colorScheme` de mau di theo lua chon that.
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surfaceOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color _lineOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
+  Color _fillOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
   Color _primaryOf(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
-  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _textSec =>
-      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+  Color _onAccentOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color _accentSoftOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+  Color _textPriOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSecOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   void _vote(WidgetRef ref, String optionId) {
     HapticFeedback.mediumImpact();
@@ -47,14 +52,28 @@ class TripPollsScreen extends ConsumerWidget {
   Future<void> _createPoll(BuildContext context, WidgetRef ref) async {
     final qCtrl = TextEditingController();
     final optsCtrl = TextEditingController();
+    final dark = _isDark(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
+    final line = _lineOf(context);
+    final primary = _primaryOf(context);
+    final onAccent = _onAccentOf(context);
+
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: _surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: _surfaceOf(context),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(color: line, width: 1),
+        ),
         title: Text(
           'polls.create'.tr(),
-          style: AppFonts.heading(fontWeight: FontWeight.w800, color: _textPri),
+          style: AppFonts.heading(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: textPri,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -62,10 +81,24 @@ class TripPollsScreen extends ConsumerWidget {
             TextField(
               controller: qCtrl,
               autofocus: true,
-              style: AppFonts.body(color: _textPri),
+              style: AppFonts.body(color: textPri),
               decoration: InputDecoration(
                 hintText: 'polls.question_hint'.tr(),
-                hintStyle: AppFonts.body(color: _textSec),
+                hintStyle: AppFonts.body(color: textSec),
+                filled: true,
+                fillColor: _fillOf(context),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: line, width: 1),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: line, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: primary, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 10),
@@ -73,10 +106,24 @@ class TripPollsScreen extends ConsumerWidget {
               controller: optsCtrl,
               minLines: 2,
               maxLines: 5,
-              style: AppFonts.body(color: _textPri),
+              style: AppFonts.body(color: textPri),
               decoration: InputDecoration(
                 hintText: 'polls.options_hint'.tr(),
-                hintStyle: AppFonts.body(color: _textSec),
+                hintStyle: AppFonts.body(color: textSec),
+                filled: true,
+                fillColor: _fillOf(context),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: line, width: 1),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: line, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: primary, width: 1.5),
+                ),
               ),
             ),
           ],
@@ -86,11 +133,17 @@ class TripPollsScreen extends ConsumerWidget {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: AppFonts.body(color: _textSec),
+              style: AppFonts.body(color: textSec),
             ),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
+            style: FilledButton.styleFrom(
+              backgroundColor: primary,
+              foregroundColor: onAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text('polls.create'.tr()),
           ),
@@ -110,7 +163,7 @@ class TripPollsScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('polls.need_options'.tr()),
-            backgroundColor: GenZTokens.danger,
+            backgroundColor: dark ? GenZTokens.dangerDark : GenZTokens.danger,
           ),
         );
       }
@@ -126,16 +179,27 @@ class TripPollsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(pollsProvider(tripId));
+    final primary = _primaryOf(context);
+    final onAccent = _onAccentOf(context);
+    final textPri = _textPriOf(context);
+
     return Scaffold(
       backgroundColor: _bgOf(context),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: _primaryOf(context),
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: primary,
+        foregroundColor: onAccent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         onPressed: () => _createPoll(context, ref),
         icon: Icon(PhosphorIcons.plus()),
         label: Text(
           'polls.create_poll'.tr(),
-          style: AppFonts.heading(fontWeight: FontWeight.w800),
+          style: AppFonts.heading(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: onAccent,
+          ),
         ),
       ),
       appBar: AppBar(
@@ -145,16 +209,16 @@ class TripPollsScreen extends ConsumerWidget {
           'polls.title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
-            fontWeight: FontWeight.w800,
-            color: _textPri,
+            fontWeight: FontWeight.w700,
+            color: textPri,
           ),
         ),
       ),
       body: RefreshIndicator(
-        color: _primaryOf(context),
+        color: primary,
         onRefresh: () async => ref.invalidate(pollsProvider(tripId)),
         child: async.when(
-          loading: () => _skeleton(),
+          loading: () => _skeleton(context),
           error: (e, _) => _error(context, ref, e),
           data: (polls) =>
               polls.isEmpty ? _empty(context) : _list(context, ref, polls),
@@ -163,93 +227,119 @@ class TripPollsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _skeleton() => ListView(
-    padding: const EdgeInsets.all(20),
-    children: List.generate(
-      3,
-      (i) => Container(
-        height: 160,
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: isDarkMode
-              ? GenZTokens.inkDark.withValues(alpha: 0.05)
-              : GenZTokens.ink.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(20),
+  Widget _skeleton(BuildContext context) {
+    final fill = _fillOf(context);
+    final line = _lineOf(context);
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: List.generate(
+        3,
+        (i) => Container(
+          height: 160,
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: line, width: 1),
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
-  Widget _error(BuildContext context, WidgetRef ref, Object e) => ListView(
-    children: [
-      const SizedBox(height: 120),
-      Center(
-        child: Column(
-          children: [
-            Icon(
-              PhosphorIcons.cloudSlash(),
-              color: GenZTokens.danger,
-              size: 40,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'polls.load_failed'.tr(),
-              style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                color: _textPri,
-              ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(backgroundColor: _primaryOf(context)),
-              onPressed: () => ref.invalidate(pollsProvider(tripId)),
-              icon: Icon(PhosphorIcons.arrowsClockwise()),
-              label: Text('general.retry'.tr()),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
+  Widget _error(BuildContext context, WidgetRef ref, Object e) {
+    final dark = _isDark(context);
+    final textPri = _textPriOf(context);
+    final primary = _primaryOf(context);
+    final onAccent = _onAccentOf(context);
 
-  Widget _empty(BuildContext context) => ListView(
-    children: [
-      const SizedBox(height: 130),
-      Center(
-        child: Column(
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _primaryOf(context).withValues(alpha: 0.12),
+    return ListView(
+      children: [
+        const SizedBox(height: 120),
+        Center(
+          child: Column(
+            children: [
+              Icon(
+                PhosphorIcons.cloudSlash(),
+                color: dark ? GenZTokens.dangerDark : GenZTokens.danger,
+                size: 40,
               ),
-              child: Icon(
-                PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
-                color: _primaryOf(context),
-                size: 38,
+              const SizedBox(height: 12),
+              Text(
+                'polls.load_failed'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: textPri,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'polls.empty'.tr(),
-              style: AppFonts.heading(
-                fontSize: 17,
-                fontWeight: FontWeight.w900,
-                color: _textPri,
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: primary,
+                  foregroundColor: onAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () => ref.invalidate(pollsProvider(tripId)),
+                icon: Icon(PhosphorIcons.arrowsClockwise()),
+                label: Text('general.retry'.tr()),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'polls.empty_sub'.tr(),
-              style: AppFonts.body(fontSize: 14, color: _textSec),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
+
+  Widget _empty(BuildContext context) {
+    final primary = _primaryOf(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
+    final fill = _fillOf(context);
+    final line = _lineOf(context);
+
+    return ListView(
+      children: [
+        const SizedBox(height: 130),
+        Center(
+          child: Column(
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: fill,
+                  border: Border.all(color: line, width: 1),
+                ),
+                child: Icon(
+                  PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
+                  color: primary,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'polls.empty'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: textPri,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'polls.empty_sub'.tr(),
+                style: AppFonts.body(fontSize: 13, color: textSec),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _list(BuildContext context, WidgetRef ref, List<Poll> polls) {
     return ListView.builder(
@@ -261,17 +351,22 @@ class TripPollsScreen extends ConsumerWidget {
 
   Widget _pollCard(BuildContext context, WidgetRef ref, Poll poll) {
     final total = poll.totalVotes;
+    final surface = _surfaceOf(context);
+    final line = _lineOf(context);
+    final fill = _fillOf(context);
+    final accentSoft = _accentSoftOf(context);
+    final textPri = _textPriOf(context);
+    final textSec = _textSecOf(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(20),
+        color: surface,
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isDarkMode
-              ? GenZTokens.inkDark.withValues(alpha: 0.15)
-              : GenZTokens.ink,
-          width: 2,
+          color: line,
+          width: 1,
         ),
       ),
       child: Column(
@@ -280,10 +375,9 @@ class TripPollsScreen extends ConsumerWidget {
           Text(
             poll.question,
             style: AppFonts.heading(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: _textPri,
-              letterSpacing: -0.3,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: textPri,
             ),
           ),
           const SizedBox(height: 14),
@@ -297,16 +391,21 @@ class TripPollsScreen extends ConsumerWidget {
                   children: [
                     // Progress fill
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween(begin: 0, end: pct),
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeOutCubic,
-                        builder: (context, v, _) => FractionallySizedBox(
-                          widthFactor: v.clamp(0.0, 1.0),
-                          child: Container(
-                            height: 46,
-                            color: _primaryOf(context).withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        height: 46,
+                        color: fill,
+                        alignment: Alignment.centerLeft,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: pct),
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, v, _) => FractionallySizedBox(
+                            widthFactor: v.clamp(0.0, 1.0),
+                            child: Container(
+                              height: 46,
+                              color: accentSoft,
+                            ),
                           ),
                         ),
                       ),
@@ -315,12 +414,10 @@ class TripPollsScreen extends ConsumerWidget {
                       height: 46,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isDarkMode
-                              ? GenZTokens.inkDark.withValues(alpha: 0.15)
-                              : GenZTokens.ink,
-                          width: 2,
+                          color: line,
+                          width: 1,
                         ),
                       ),
                       child: Row(
@@ -336,9 +433,9 @@ class TripPollsScreen extends ConsumerWidget {
                             child: Text(
                               o.text,
                               style: AppFonts.body(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: _textPri,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: textPri,
                               ),
                             ),
                           ),
@@ -346,9 +443,8 @@ class TripPollsScreen extends ConsumerWidget {
                             '${(pct * 100).round()}%',
                             style: AppFonts.heading(
                               fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                              // Accent chi hop lam nen; lam mau chu tren nen sang thi khong doc ra.
-                              color: _textPri,
+                              fontWeight: FontWeight.w700,
+                              color: textPri,
                             ),
                           ),
                         ],
@@ -362,7 +458,7 @@ class TripPollsScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             'polls.vote_count'.tr(namedArgs: {'n': '$total'}),
-            style: AppFonts.body(fontSize: 12, color: _textSec),
+            style: AppFonts.body(fontSize: 12, color: textSec),
           ),
         ],
       ),

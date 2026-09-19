@@ -227,7 +227,7 @@ class SquadXpSystemScreen extends ConsumerWidget {
                         Text(
                           '+${b.xp}',
                           style: AppFonts.mono(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: success,
                           ),

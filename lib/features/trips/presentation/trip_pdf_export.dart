@@ -414,7 +414,7 @@ class ExportPdfButton extends ConsumerWidget {
       label: Text(
         'trips.pdf_export'.tr(),
         style: AppFonts.heading(
-          fontSize: 14,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
           color: ink,
         ),

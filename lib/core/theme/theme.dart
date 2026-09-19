@@ -102,6 +102,8 @@ class TripMateTheme {
         brightness: brightness,
         primary: accent,
         onPrimary: onAccent,
+        primaryContainer: accentSoft,
+        onPrimaryContainer: isDark ? GenZTokens.onAccentSoftDark : GenZTokens.onAccentSoft,
         secondary: accentSoft,
         onSecondary: ink,
         tertiary: GenZTokens.chart3,

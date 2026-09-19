@@ -478,7 +478,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                       GenZTokens.radiusInput,
                                     ),
                                     border: Border.all(
-                                      color: _ink,
+                                      color: _line,
                                       width: GenZTokens.borderWidthThin,
                                     ),
                                   ),
@@ -511,7 +511,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppFonts.mono(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w700,
                                     color: _inkSoft,
                                   ),
@@ -537,14 +537,14 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Brand name — display đen đậm
+          // Brand name — title spec (22, w700, -0.2)
           Expanded(
             child: Text(
               'trip.mate',
               style: AppFonts.heading(
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -1.0,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
                 color: _ink,
               ),
             ),
@@ -554,7 +554,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           _buildSquadCluster(),
           const SizedBox(width: 12),
 
-          // Language toggle button — viên tròn brutalist
+          // Language toggle button — nen fill, vien 1px line, icon inkSoft
           GestureDetector(
             onTap: () {
               final newLocale = context.locale.languageCode == 'vi'
@@ -568,10 +568,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
               child: Center(
                 child: Text(
                   context.locale.languageCode.toUpperCase(),
-                  style: AppFonts.mono(
+                  style: AppFonts.heading(
                     fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: _ink,
+                    fontWeight: FontWeight.w600,
+                    color: _inkSoft,
                   ),
                 ),
               ),
@@ -579,7 +579,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ),
           const SizedBox(width: 8),
 
-          // Notification bell — badge số chưa đọc thật.
+          // Notification bell — badge so chua doc that.
           Consumer(
             builder: (context, ref, _) {
               final unread = ref.watch(unreadCountProvider);
@@ -592,13 +592,14 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 ),
                 child: _InkCircleButton(
                   isDarkMode: isDarkMode,
+                  color: _fill,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
                       Icon(
                         PhosphorIcons.bell(),
-                        size: 22,
-                        color: _ink,
+                        size: 20,
+                        color: _inkSoft,
                       ),
                       if (unread > 0)
                         Positioned(
@@ -625,7 +626,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               child: Text(
                                 unread > 9 ? '9+' : '$unread',
                                 style: AppFonts.mono(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                   color: _paper,
                                 ),
@@ -679,7 +680,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _fill,
-                      border: Border.all(color: _ink, width: 2),
+                      border: Border.all(color: _paper, width: 1.5),
                     ),
                     child: ClipOval(
                       child: shown[i].avatarUrl == null
@@ -717,7 +718,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _fill,
-                      border: Border.all(color: _ink, width: 2),
+                      border: Border.all(color: _paper, width: 1.5),
                     ),
                     child: Center(
                       child: Text(
@@ -811,11 +812,10 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      GenZTokens.paper.withValues(alpha: 0),
-                      GenZTokens.ink.withValues(alpha: 0.35),
-                      GenZTokens.ink.withValues(alpha: 0.85),
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.55),
                     ],
-                    stops: const [0.3, 0.6, 1.0],
+                    stops: const [0.6, 1.0],
                   ),
                 ),
               ),
@@ -866,9 +866,9 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppFonts.heading(
-                      fontSize: 30,
+                      fontSize: 28,
                       fontWeight: FontWeight.w800,
-                      color: GenZTokens.paper,
+                      color: Colors.white,
                       letterSpacing: -0.8,
                       height: 1.05,
                     ),
@@ -880,7 +880,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                         Icon(
                           PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                           size: 15,
-                          color: GenZTokens.paper,
+                          color: Colors.white,
                         ),
                         const SizedBox(width: 4),
                         Flexible(
@@ -891,7 +891,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                             style: AppFonts.body(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: GenZTokens.paper,
+                              color: Colors.white,
                             ),
                           ),
                         ),
@@ -907,44 +907,80 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     );
   }
 
-  // Tai chuyen that bai → noi ro va cho thu lai.
+  // Tai chuyen that bai → the nho gon (chieu cao khong qua 160, nen paper, vien line, icon danger).
   Widget _tripCoverError(BuildContext context, WidgetRef ref) {
-    return _tripCoverShell(
-      onTap: () => ref.invalidate(tripsProvider),
-      child: Container(
-        color: _danger,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              PhosphorIcons.cloudSlash(),
-              size: 36,
-              color: GenZTokens.paper,
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 160),
+      decoration: BoxDecoration(
+        color: _paper,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+      ),
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(GenZTokens.space3),
+            decoration: BoxDecoration(
+              color: _danger.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'trips.load_failed'.tr(),
+            child: Icon(
+              PhosphorIcons.warningCircle(),
+              size: 24,
+              color: _danger,
+            ),
+          ),
+          const SizedBox(width: GenZTokens.space4),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'trips.load_failed'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: _ink,
+                  ),
+                ),
+                const SizedBox(height: GenZTokens.space1),
+                Text(
+                  'common.tap_to_retry'.tr(),
+                  style: AppFonts.body(
+                    fontSize: 12,
+                    color: _inkSoft,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: GenZTokens.space3),
+          TextButton.icon(
+            onPressed: () => ref.invalidate(tripsProvider),
+            icon: Icon(
+              PhosphorIcons.arrowClockwise(),
+              size: 16,
+              color: _accent,
+            ),
+            label: Text(
+              'common.retry'.tr(),
               style: AppFonts.heading(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: GenZTokens.paper,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'common.tap_to_retry'.tr(),
-              style: AppFonts.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: GenZTokens.paper,
+                color: _accent,
               ),
             ),
-          ],
-        ),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -954,21 +990,21 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     return _tripCoverShell(
       onTap: () => CreateTripSheet.show(context, isDarkMode),
       child: Container(
-        color: Theme.of(context).primaryColor,
+        color: _accent,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(PhosphorIcons.ticket(), size: 36, color: GenZTokens.ink),
+            Icon(PhosphorIcons.ticket(), size: 36, color: _onAccent),
             const SizedBox(height: 8),
             Text(
               'dashboard.no_trips_title'.tr(),
               style: AppFonts.heading(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
-                color: GenZTokens.ink,
+                color: _onAccent,
                 letterSpacing: -0.5,
               ),
             ),
@@ -978,7 +1014,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
               style: AppFonts.body(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: GenZTokens.ink,
+                color: _onAccent,
               ),
             ),
             const SizedBox(height: 14),
@@ -1008,7 +1044,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             return StickerCard(
               color: _paper,
               headerText: 'dashboard.the_roast'.tr(),
-              headerColor: GenZTokens.orange,
+              headerColor: _accent,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1016,7 +1052,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     children: [
                       Icon(
                         PhosphorIcons.flame(PhosphorIconsStyle.fill),
-                        color: GenZTokens.red,
+                        color: _danger,
                         size: 22,
                       ),
                       const Spacer(),
@@ -1025,7 +1061,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                           text: 'dashboard.total_expense'.tr(
                             namedArgs: {'amount': _fmtMoney(sum.totalAmount)},
                           ),
-                          color: GenZTokens.pink,
+                          color: _accentSoft,
                         ),
                       ),
                     ],
@@ -1043,7 +1079,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                           GenZTokens.radiusInput,
                         ),
                         border: Border.all(
-                          color: _ink,
+                          color: _line,
                           width: GenZTokens.borderWidthThin,
                         ),
                       ),
@@ -1085,7 +1121,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                         style: AppFonts.mono(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: GenZTokens.green,
+                          color: _success,
                         ),
                       ),
                     ],
@@ -1094,7 +1130,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   SegmentedProgress(
                     total: sum.totalCount,
                     completed: sum.paidCount,
-                    fillColor: GenZTokens.green,
+                    fillColor: _success,
                   ),
                 ],
               ),
@@ -1182,9 +1218,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                                title: shown[i].title,
                                author: '- ${shown[i].authorName} -',
                                location: shown[i].location,
-                               fallbackColor: i.isEven
-                                   ? GenZTokens.orange
-                                   : GenZTokens.blue,
+                               fallbackColor: _fill,
                                // Polaroid nhỏ trong scrapbook.
                                imageUrl: optimizedMedia(
                                  shown[i].mediaUrl,
@@ -1218,7 +1252,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
        decoration: BoxDecoration(
          color: _paper,
          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-         border: Border.all(color: _ink.withValues(alpha: 0.25), width: 2),
+         border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
        ),
        child: Column(
          children: [
@@ -1310,14 +1344,14 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                Icon(
                  PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
                  size: 12,
-                 color: GenZTokens.red,
+                 color: _danger,
                ),
                const SizedBox(width: 2),
               Expanded(
                 child: Text(
                   location.toUpperCase(),
                   style: AppFonts.mono(
-                    fontSize: 11,
+                    fontSize: 12,
                     color: _inkSoft,
                     fontWeight: FontWeight.w700,
                   ),
@@ -1335,8 +1369,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
 
 // ─── HELPER WIDGETS ──────────────────────────────────────────────────────────
 
-/// Viên tròn brutalist thay cho glass circle: nền accent/paper, viền ink,
-/// hard shadow nhỏ.
+/// Nút tròn: nền fill, viền 1px line, không bóng đặc (spec mục 4).
 class _InkCircleButton extends StatelessWidget {
   final bool isDarkMode;
   final Widget child;
@@ -1350,18 +1383,15 @@ class _InkCircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
     return Container(
-      width: 42,
-      height: 42,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color ?? paper,
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
-        boxShadow: [
-          BoxShadow(color: ink, offset: const Offset(0, 3), blurRadius: 0),
-        ],
+        color: color ?? fill,
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Center(child: child),
     );

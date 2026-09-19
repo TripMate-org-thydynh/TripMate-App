@@ -37,11 +37,7 @@ class PaywallSheet extends ConsumerStatefulWidget {
   const PaywallSheet({super.key, this.quota, this.limit});
 
   /// Mở paywall. Trả `true` nếu người dùng bấm nâng cấp.
-  static Future<bool?> show(
-    BuildContext context, {
-    Quota? quota,
-    int? limit,
-  }) {
+  static Future<bool?> show(BuildContext context, {Quota? quota, int? limit}) {
     HapticFeedback.mediumImpact();
     return showModalBottomSheet<bool>(
       context: context,
@@ -85,8 +81,12 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     final n = '${widget.limit ?? ''}';
     return switch (widget.quota!) {
       Quota.activeTrips => 'paywall.headline_trips'.tr(namedArgs: {'n': n}),
-      Quota.membersPerTrip => 'paywall.headline_members'.tr(namedArgs: {'n': n}),
-      Quota.momentsPerTrip => 'paywall.headline_moments'.tr(namedArgs: {'n': n}),
+      Quota.membersPerTrip => 'paywall.headline_members'.tr(
+        namedArgs: {'n': n},
+      ),
+      Quota.momentsPerTrip => 'paywall.headline_moments'.tr(
+        namedArgs: {'n': n},
+      ),
       Quota.aiPerMonth => 'paywall.headline_ai'.tr(namedArgs: {'n': n}),
     };
   }
@@ -97,9 +97,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     // tuyệt đối không mở VietQR/Ví để tránh vi phạm chính sách dẫn đến bị gỡ app.
     if (kDistributionChannel == DistributionChannel.play) {
       final upgraded = await Navigator.of(context).push<bool>(
-        MaterialPageRoute(
-          builder: (_) => const SubscriptionCheckoutScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const SubscriptionCheckoutScreen()),
       );
       if (mounted && upgraded == true) {
         ref.invalidate(entitlementProvider);
@@ -180,9 +178,11 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
-    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final accent = theme.colorScheme.primary;
+    final onAccent = theme.colorScheme.onPrimary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
     final isPlayChannel = kDistributionChannel == DistributionChannel.play;
 
@@ -193,17 +193,9 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
         decoration: BoxDecoration(
           color: surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(color: line, width: GenZTokens.borderWidthThin),
-          boxShadow: isDark
-              ? const []
-              : [
-                  BoxShadow(
-                    color: GenZTokens.ink.withValues(alpha: 0.08),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+          boxShadow: GenZTokens.hardShadow(GenZTokens.ink, isDark),
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -234,10 +226,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
               const SizedBox(height: 6),
               Text(
                 'paywall.sub'.tr(),
-                style: AppFonts.body(
-                  fontSize: 13,
-                  color: inkSoft,
-                ),
+                style: AppFonts.body(fontSize: 13, color: inkSoft),
               ),
               const SizedBox(height: 14),
 
@@ -285,10 +274,15 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
               // chỉ hiện bảo đảm thanh toán của Google Play để không vi phạm chính sách nộp store.
               if (isPlayChannel)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: fill,
-                    borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
                     border: Border.all(
                       color: line,
                       width: GenZTokens.borderWidthThin,
@@ -324,7 +318,8 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                         accentSoft: accentSoft,
                         fill: fill,
                         line: line,
-                        onTap: () => setState(() => _gateway = _SelectedGateway.sepay),
+                        onTap: () =>
+                            setState(() => _gateway = _SelectedGateway.sepay),
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -339,7 +334,8 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                         accentSoft: accentSoft,
                         fill: fill,
                         line: line,
-                        onTap: () => setState(() => _gateway = _SelectedGateway.momo),
+                        onTap: () =>
+                            setState(() => _gateway = _SelectedGateway.momo),
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -354,7 +350,8 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                         accentSoft: accentSoft,
                         fill: fill,
                         line: line,
-                        onTap: () => setState(() => _gateway = _SelectedGateway.zalopay),
+                        onTap: () =>
+                            setState(() => _gateway = _SelectedGateway.zalopay),
                       ),
                     ),
                   ],
@@ -371,7 +368,9 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                     foregroundColor: onAccent,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
                     ),
                   ),
                   child: _loading
@@ -399,10 +398,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
                     'paywall.later'.tr(),
-                    style: AppFonts.body(
-                      fontSize: 13,
-                      color: inkSoft,
-                    ),
+                    style: AppFonts.body(fontSize: 13, color: inkSoft),
                   ),
                 ),
               ),
@@ -450,7 +446,9 @@ class _GatewayChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
           border: Border.all(
             color: selected ? accent : line,
-            width: selected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
+            width: selected
+                ? GenZTokens.borderWidth
+                : GenZTokens.borderWidthThin,
           ),
         ),
         child: Row(
@@ -529,10 +527,7 @@ class _PlanCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   perUnit,
-                  style: AppFonts.body(
-                    fontSize: 12,
-                    color: inkSoft,
-                  ),
+                  style: AppFonts.body(fontSize: 12, color: inkSoft),
                 ),
               ],
             ),

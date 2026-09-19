@@ -61,9 +61,10 @@ class _CreatorRevenueDashboardScreenState
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final cream = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: cream,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -71,8 +72,8 @@ class _CreatorRevenueDashboardScreenState
         title: Text(
           'creator.title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -82,16 +83,25 @@ class _CreatorRevenueDashboardScreenState
   }
 
   Widget _body(bool isDark) {
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+      return Center(
+        child: CircularProgressIndicator(strokeWidth: 2, color: accent),
+      );
     }
     if (_failed) return AppErrorState(isDark: isDark, onRetry: _fetch);
 
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final open = _data?['marketplaceOpen'] as bool? ?? false;
 
     return RefreshIndicator(
+      color: accent,
       onRefresh: _fetch,
       child: ListView(
         padding: const EdgeInsets.all(GenZTokens.space5),
@@ -100,28 +110,24 @@ class _CreatorRevenueDashboardScreenState
             Container(
               padding: const EdgeInsets.all(GenZTokens.space5),
               decoration: BoxDecoration(
-                color: GenZTokens.lilac,
+                color: accentSoft,
                 borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                 border: Border.all(
-                  color: ink,
-                  width: GenZTokens.borderWidth,
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
                 ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    PhosphorIcons.storefront(),
-                    size: 28,
-                    color: GenZTokens.ink,
-                  ),
+                  Icon(PhosphorIcons.storefront(), size: 28, color: accent),
                   const SizedBox(height: GenZTokens.space3),
                   Text(
                     'creator.not_open_title'.tr(),
                     style: AppFonts.heading(
                       fontSize: 17,
-                      fontWeight: FontWeight.w900,
-                      color: GenZTokens.ink,
+                      fontWeight: FontWeight.w600,
+                      color: ink,
                     ),
                   ),
                   const SizedBox(height: GenZTokens.space2),
@@ -130,7 +136,7 @@ class _CreatorRevenueDashboardScreenState
                     style: AppFonts.body(
                       fontSize: 13,
                       height: 1.45,
-                      color: GenZTokens.ink,
+                      color: inkSoft,
                     ),
                   ),
                 ],
@@ -142,7 +148,7 @@ class _CreatorRevenueDashboardScreenState
             'creator.my_store_title'.tr(),
             style: AppFonts.heading(
               fontSize: 15,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
               color: ink,
             ),
           ),
@@ -188,21 +194,22 @@ class _CreatorRevenueDashboardScreenState
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             value,
-            style: AppFonts.heading(
+            style: AppFonts.mono(
               fontSize: 22,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w700,
               color: ink,
             ),
           ),

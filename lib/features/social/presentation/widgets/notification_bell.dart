@@ -49,17 +49,19 @@ class NotificationBell extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                 constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                decoration: const BoxDecoration(
-                  color: GenZTokens.orange,
+                decoration: BoxDecoration(
+                  color: isDark ? GenZTokens.accentDark : GenZTokens.accent,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Text(
                     unread > 9 ? '9+' : '$unread',
                     style: AppFonts.heading(
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: GenZTokens.ink,
+                      color: isDark
+                          ? GenZTokens.onAccentDark
+                          : GenZTokens.onAccent,
                     ),
                   ),
                 ),

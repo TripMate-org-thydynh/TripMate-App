@@ -32,7 +32,7 @@ class DailyRecapWidget extends ConsumerWidget {
               'time': a.tripName,
               'chaosVibe': _activityVibe(a.type),
               'details': a.label,
-              'color': _colorFor(a.type, isDark),
+              'color': _colorFor(context, a.type, isDark),
             },
           )
           .toList(),
@@ -42,7 +42,7 @@ class DailyRecapWidget extends ConsumerWidget {
     return _buildBody(context, activities, isLoading, isDark);
   }
 
-  Color _colorFor(String type, bool isDark) {
+  Color _colorFor(BuildContext context, String type, bool isDark) {
     switch (type) {
       case 'EXPENSE_ADDED':
         return isDark ? GenZTokens.successDark : GenZTokens.success;
@@ -121,7 +121,7 @@ class DailyRecapWidget extends ConsumerWidget {
                   'dashboard.recap_title'.tr(),
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                    fontSize: 17,
                     letterSpacing: -0.5,
                     color: ink,
                   ),
@@ -306,7 +306,7 @@ class DailyRecapWidget extends ConsumerWidget {
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: AppFonts.mono(
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                     color: inkSoft,
                                   ),

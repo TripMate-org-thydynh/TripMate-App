@@ -26,7 +26,6 @@ import 'pages/social_links_manager_screen.dart';
 import '../gamification/pages/squad_leaderboard_screen.dart';
 import 'pages/sticker_inventory_screen.dart';
 import 'pages/xp_wallet_screen.dart';
-import 'pages/theme_marketplace_screen.dart';
 import 'pages/travel_atlas_screen.dart';
 import 'pages/backup_restore_screen.dart';
 import 'pages/tripmate_mcp_screen.dart';
@@ -890,33 +889,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                               ),
                             ),
                           ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 2.0, top: 12.0),
-                          child: Center(
-                            child: IconButton(
-                              tooltip: 'xp.theme_store'.tr(),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(
-                                minWidth: 34,
-                                minHeight: 34,
-                              ),
-                              icon: Icon(
-                                PhosphorIcons.palette(),
-                                color: textPrimaryColor,
-                                size: 22,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ThemeMarketplaceScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
                         Padding(
                           padding: const EdgeInsets.only(
                             right: 12.0,
@@ -2214,130 +2186,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   ),
                 ),
               ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Bảng màu: 4 accent miễn phí + 3 accent đổi bằng XP.
-            //
-            // Accent premium chưa mua thì KHÓA — bấm vào mở thẳng chợ thay vì
-            // đổi màu, để không ai dùng được thứ chưa trả XP.
-            Builder(
-              builder: (context) {
-                final ownedThemeIds = ref
-                    .watch(themeStoreProvider)
-                    .maybeWhen(
-                      data: (items) =>
-                          items.where((t) => t.owned).map((t) => t.id).toSet(),
-                      orElse: () => <String>{},
-                    );
-                bool unlocked(AppAccent a) =>
-                    !kPremiumAccents.contains(a) ||
-                    ownedThemeIds.contains(kAccentThemeId[a]);
-
-                return Row(
-                  children: AppAccent.values.map((accent) {
-                    final selected = accent == currentAccent;
-                    final isUnlocked = unlocked(accent);
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!isUnlocked) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ThemeMarketplaceScreen(isDarkMode: isDark),
-                              ),
-                            );
-                            return;
-                          }
-                          ref.read(accentProvider.notifier).setAccent(accent);
-                        },
-                        child: Column(
-                          children: [
-                            // Swatch cặp màu preset (accent trên, pair dưới),
-                            // viền ink + hard shadow khi được chọn
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              height: 44,
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: ink,
-                                  width: selected
-                                      ? GenZTokens.borderWidth
-                                      : 1.5,
-                                ),
-                                boxShadow: selected
-                                    ? [
-                                        BoxShadow(
-                                          color: ink,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Stack(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            color: accent.accent,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Container(color: accent.pair),
-                                        ),
-                                      ],
-                                    ),
-                                    if (selected)
-                                      Center(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(2),
-                                          decoration: BoxDecoration(
-                                            color: GenZTokens.paper,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: GenZTokens.ink,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: Icon(
-                                            PhosphorIcons.check(),
-                                            color: GenZTokens.ink,
-                                            size: 16,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              accent.label,
-                              style: AppFonts.body(
-                                fontSize: 12,
-                                fontWeight: selected
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                                color: selected
-                                    ? primaryColor
-                                    : textSecondaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
             ),
 
             const SizedBox(height: 16),

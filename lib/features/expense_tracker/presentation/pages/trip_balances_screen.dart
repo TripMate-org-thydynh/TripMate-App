@@ -32,9 +32,10 @@ class TripBalancesScreen extends ConsumerWidget {
 
   Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _primary => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
-  Color get _onAccent =>
-      isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color _primary(BuildContext context) =>
+      Theme.of(context).colorScheme.primary;
+  Color _onAccent(BuildContext context) =>
+      Theme.of(context).colorScheme.onPrimary;
   Color get _accentSoft =>
       isDarkMode ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
@@ -50,8 +51,8 @@ class TripBalancesScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: _bg,
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: _primary,
-        foregroundColor: _onAccent,
+        backgroundColor: _primary(context),
+        foregroundColor: _onAccent(context),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
         ),
@@ -65,7 +66,7 @@ class TripBalancesScreen extends ConsumerWidget {
           style: AppFonts.heading(
             fontWeight: FontWeight.w700,
             fontSize: 15,
-            color: _onAccent,
+            color: _onAccent(context),
           ),
         ),
       ),
@@ -110,7 +111,7 @@ class TripBalancesScreen extends ConsumerWidget {
           const OfflineBanner(),
           Expanded(
             child: RefreshIndicator(
-              color: _primary,
+              color: _primary(context),
               onRefresh: () async => ref.refresh(tripBalancesProvider(tripId)),
               child: async.when(
                 loading: () => _skeleton(),
@@ -171,8 +172,8 @@ class TripBalancesScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             FilledButton.icon(
               style: FilledButton.styleFrom(
-                backgroundColor: _primary,
-                foregroundColor: _onAccent,
+                backgroundColor: _primary(context),
+                foregroundColor: _onAccent(context),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 ),
@@ -181,7 +182,7 @@ class TripBalancesScreen extends ConsumerWidget {
               icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text(
                 'general.retry'.tr(),
-                style: TextStyle(color: _onAccent),
+                style: TextStyle(color: _onAccent(context)),
               ),
             ),
           ],
@@ -211,7 +212,7 @@ class TripBalancesScreen extends ConsumerWidget {
                   ),
                   child: Icon(
                     PhosphorIcons.scales(PhosphorIconsStyle.fill),
-                    color: _primary,
+                    color: _primary(context),
                     size: 38,
                   ),
                 ),
@@ -304,7 +305,7 @@ class TripBalancesScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Icon(PhosphorIcons.arrowRight(), size: 16, color: _primary),
+                    Icon(PhosphorIcons.arrowRight(), size: 16, color: _primary(context)),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
@@ -348,7 +349,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 color: _accentSoft,
                 borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 border: Border.all(
-                  color: _primary,
+                  color: _primary(context),
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
@@ -356,7 +357,7 @@ class TripBalancesScreen extends ConsumerWidget {
                 'expense.pay_now'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w700,
-                  color: _primary,
+                  color: _primary(context),
                   fontSize: 13,
                 ),
               ),

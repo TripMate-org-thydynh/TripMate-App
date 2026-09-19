@@ -127,11 +127,7 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
 
 // ── Accent provider ───────────────────────────────────────────────────────────
 class AccentNotifier extends StateNotifier<AppAccent> {
-  static const _accentKey = 'app_accent';
-
-  AccentNotifier() : super(AppAccent.mint) {
-    _load();
-  }
+  AccentNotifier() : super(AppAccent.mint);
 
   @override
   set state(AppAccent value) {
@@ -139,22 +135,10 @@ class AccentNotifier extends StateNotifier<AppAccent> {
     TripMateTheme.activeAccent = value;
   }
 
-  Future<void> _load() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final saved = prefs.getString(_accentKey);
-      if (saved != null) {
-        final match = AppAccent.values.where((a) => a.key == saved).firstOrNull;
-        if (match != null) state = match;
-      }
-    } catch (_) {}
-  }
-
-  Future<void> setAccent(AppAccent accent) async {
-    final prefs = await SharedPreferences.getInstance();
-    state = accent;
-    await prefs.setString(_accentKey, accent.key);
-  }
+  // Đổi accent đã bỏ: không đọc giá trị đã lưu. Khoá `app_accent` vẫn để
+  // nguyên trong SharedPreferences — xoá không cần thiết và không có lợi gì.
+  @Deprecated('Đã bỏ tính năng đổi accent — xem REFACTOR_UI_SPEC.md mục 2')
+  Future<void> setAccent(AppAccent accent) async {}
 }
 
 final accentProvider = StateNotifierProvider<AccentNotifier, AppAccent>((ref) {

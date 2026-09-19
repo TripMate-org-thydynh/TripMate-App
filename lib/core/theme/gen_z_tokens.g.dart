@@ -24,13 +24,16 @@ class DsTokens {
   static const Color fill = Color(0xFFF0EBE2);
   static const Color fillDark = Color(0xFF25292B);
 
-  // ── Màu nhấn (duy nhất) ──────────────────────────
+  // ── Màu nhấn: sáng đất nung, tối xanh mòng két ────
   static const Color accent = Color(0xFFB4543A);
-  static const Color accentDark = Color(0xFFD2775C);
+  static const Color accentDark = Color(0xFF5C9A90); // xanh mòng két (ảnh B), sáng hơn #4E8C82 để chữ trên paperDark đạt 4.5:1
   static const Color onAccent = Color(0xFFFFFFFF);
-  static const Color onAccentDark = Color(0xFF1C1A17);
+  static const Color onAccentDark = Color(0xFF0F1211);
   static const Color accentSoft = Color(0xFFF2E4DE);
-  static const Color accentSoftDark = Color(0xFF3A2A25);
+  static const Color accentSoftDark = Color(0xFF1E2B28);
+  // Chữ/icon trên nền accentSoft. Accent sáng chỉ đạt 3.96:1 trên accentSoft nên dùng bản đậm hơn.
+  static const Color onAccentSoft = Color(0xFF9C4632);
+  static const Color onAccentSoftDark = accentDark;
 
   // ── Màu ngữ nghĩa (trạng thái) ───────────────────
   static const Color success = Color(0xFF2F6D4F);
@@ -44,7 +47,7 @@ class DsTokens {
 
   // ── Màu dữ liệu (biểu đồ, phân loại) ──────────────
   static const Color chart1 = Color(0xFF4E7C6B);
-  static const Color chart2 = Color(0xFFB4543A);
+  static const Color chart2 = Color(0xFFA8613F);
   static const Color chart3 = Color(0xFF7A6E8F);
   static const Color chart4 = Color(0xFF9A6B12);
   static const Color chart5 = Color(0xFF3A6073);
@@ -135,69 +138,24 @@ class DsAccentPreset {
         onPrimaryDark = onPrimaryDark ?? onPrimary;
 }
 
-/// Map 7 preset accent — key khớp AppAccent.name.
+/// Bộ màu nhấn duy nhất. Tính năng đổi accent đã bỏ (REFACTOR_UI_SPEC.md mục 2).
+const DsAccentPreset _kAccent = DsAccentPreset(
+  primary: DsTokens.accent,
+  primaryDark: DsTokens.accentDark,
+  onPrimary: DsTokens.onAccent,
+  onPrimaryDark: DsTokens.onAccentDark,
+  pair: DsTokens.accent,
+  bg: DsTokens.cream,
+  soft: DsTokens.accentSoft,
+);
+
+/// Giữ đủ 7 key vì máy người dùng còn lưu tên preset cũ — mọi key trả cùng một bộ.
 const Map<String, DsAccentPreset> dsAccents = {
-  'mint': DsAccentPreset(
-    primary: Color(0xFFB4543A),
-    primaryDark: Color(0xFFD2775C),
-    onPrimary: Color(0xFFFFFFFF),
-    onPrimaryDark: Color(0xFF1C1A17),
-    pair: Color(0xFFB4543A),
-    bg: Color(0xFFF7F3EC),
-    soft: Color(0xFFF2E4DE),
-  ),
-  'sun': DsAccentPreset(
-    primary: Color(0xFF9A6B12),
-    primaryDark: Color(0xFFD8A94A),
-    onPrimary: Color(0xFFFFFFFF),
-    onPrimaryDark: Color(0xFF1C1A17),
-    pair: Color(0xFF9A6B12),
-    bg: Color(0xFFF7F3EC),
-    soft: Color(0xFFF5EEDD),
-  ),
-  'pastel': DsAccentPreset(
-    primary: Color(0xFF3A6073),
-    primaryDark: Color(0xFF84A9BC),
-    onPrimary: Color(0xFFFFFFFF),
-    onPrimaryDark: Color(0xFF1C1A17),
-    pair: Color(0xFF3A6073),
-    bg: Color(0xFFF7F3EC),
-    soft: Color(0xFFE6ECEF),
-  ),
-  'grape': DsAccentPreset(
-    primary: Color(0xFF6E4459),
-    primaryDark: Color(0xFFB08098),
-    onPrimary: Color(0xFFFFFFFF),
-    onPrimaryDark: Color(0xFF1C1A17),
-    pair: Color(0xFF6E4459),
-    bg: Color(0xFFF7F3EC),
-    soft: Color(0xFFEEE6EA),
-  ),
-  'neon': DsAccentPreset(
-    primary: Color(0xFF4E7C6B),
-    primaryDark: Color(0xFF84B7A3),
-    onPrimary: Color(0xFFFFFFFF),
-    onPrimaryDark: Color(0xFF1C1A17),
-    pair: Color(0xFF4E7C6B),
-    bg: Color(0xFFF7F3EC),
-    soft: Color(0xFFE9EFEA),
-  ),
-  'pine': DsAccentPreset(
-    primary: Color(0xFF2F5D4F),
-    primaryDark: Color(0xFF78A895),
-    onPrimary: Color(0xFFFFFFFF),
-    onPrimaryDark: Color(0xFF1C1A17),
-    pair: Color(0xFF2F5D4F),
-    bg: Color(0xFFF7F3EC),
-    soft: Color(0xFFE5ECE8),
-  ),
-  'cyber': DsAccentPreset(
-    primary: Color(0xFF414A57),
-    primaryDark: Color(0xFF93A1B0),
-    onPrimary: Color(0xFFFFFFFF),
-    onPrimaryDark: Color(0xFF1C1A17),
-    pair: Color(0xFF414A57),
-    bg: Color(0xFFF7F3EC),
-    soft: Color(0xFFE7E9EC),
-  ),
+  'mint': _kAccent,
+  'sun': _kAccent,
+  'pastel': _kAccent,
+  'grape': _kAccent,
+  'neon': _kAccent,
+  'pine': _kAccent,
+  'cyber': _kAccent,
 };

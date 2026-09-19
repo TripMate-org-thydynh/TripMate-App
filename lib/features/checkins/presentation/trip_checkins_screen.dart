@@ -127,9 +127,9 @@ class TripCheckinsScreen extends ConsumerWidget {
         ],
       ),
       body: checkinsAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator(
-            color: GenZTokens.accent,
+            color: Theme.of(context).colorScheme.primary,
             strokeWidth: 2,
           ),
         ),

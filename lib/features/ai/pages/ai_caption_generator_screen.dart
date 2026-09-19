@@ -106,8 +106,8 @@ class _AICaptionGeneratorScreenState
     // Theme Tokens
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
     final accentSoft =
         isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;

@@ -27,28 +27,38 @@ class BadgeDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark =
         isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
     final remaining = badge.target - badge.current;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(GenZTokens.space5),
+        padding: const EdgeInsets.all(GenZTokens.space4),
         children: [
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 32),
             decoration: BoxDecoration(
-              color: badge.unlocked ? GenZTokens.yellow : surface,
+              color: surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: ink, width: GenZTokens.borderWidth),
+              border: Border.all(
+                color: line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Column(
               children: [
@@ -57,20 +67,20 @@ class BadgeDetailScreen extends StatelessWidget {
                       ? PhosphorIcons.trophy(PhosphorIconsStyle.fill)
                       : PhosphorIcons.lockKey(),
                   size: 56,
-                  color: badge.unlocked ? GenZTokens.ink : inkSoft,
+                  color: badge.unlocked ? warning : inkSoft,
                 ),
                 const SizedBox(height: GenZTokens.space4),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: GenZTokens.space5,
+                    horizontal: GenZTokens.space4,
                   ),
                   child: Text(
                     badge.title,
                     textAlign: TextAlign.center,
                     style: AppFonts.heading(
                       fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: badge.unlocked ? GenZTokens.ink : ink,
+                      fontWeight: FontWeight.w700,
+                      color: ink,
                     ),
                   ),
                 ),
@@ -81,19 +91,22 @@ class BadgeDetailScreen extends StatelessWidget {
                       : 'profile.badge_locked'.tr(),
                   style: AppFonts.body(
                     fontSize: 13,
-                    color: badge.unlocked ? GenZTokens.ink : inkSoft,
+                    color: badge.unlocked ? success : inkSoft,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: GenZTokens.space5),
+          const SizedBox(height: GenZTokens.space4),
           Container(
-            padding: const EdgeInsets.all(GenZTokens.space5),
+            padding: const EdgeInsets.all(GenZTokens.space4),
             decoration: BoxDecoration(
               color: surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+              border: Border.all(
+                color: line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +115,7 @@ class BadgeDetailScreen extends StatelessWidget {
                   'profile.badge_condition'.tr(),
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: ink,
                   ),
                 ),
@@ -110,20 +123,20 @@ class BadgeDetailScreen extends StatelessWidget {
                 Text(
                   badge.desc,
                   style: AppFonts.body(
-                    fontSize: 14,
+                    fontSize: 15,
                     color: inkSoft,
                     height: 1.45,
                   ),
                 ),
-                const SizedBox(height: GenZTokens.space5),
+                const SizedBox(height: GenZTokens.space4),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   child: LinearProgressIndicator(
                     value: badge.percent / 100,
-                    minHeight: 10,
-                    backgroundColor: inkSoft.withValues(alpha: 0.2),
+                    minHeight: 8,
+                    backgroundColor: fill,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      badge.unlocked ? GenZTokens.success : GenZTokens.orange,
+                      badge.unlocked ? success : accent,
                     ),
                   ),
                 ),
@@ -134,8 +147,8 @@ class BadgeDetailScreen extends StatelessWidget {
                     Text(
                       '${badge.current} / ${badge.target}',
                       style: AppFonts.heading(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                         color: ink,
                       ),
                     ),

@@ -68,6 +68,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
       widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
   Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _accent => Theme.of(context).colorScheme.primary;
+  Color get _onAccent => Theme.of(context).colorScheme.onPrimary;
 
   void _showAddDialog() {
     final bodyCtrl = TextEditingController();
@@ -129,14 +131,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           initialDate: selectedDate,
                           firstDate: DateTime(2024),
                           lastDate: DateTime(2030),
-                          builder: (context, child) => Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: GenZTokens.accent,
-                              ),
-                            ),
-                            child: child!,
-                          ),
+                          builder: (context, child) => child!,
                         );
                         if (date != null) {
                           setModalState(() => selectedDate = date);
@@ -160,7 +155,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                               PhosphorIcons.calendarBlank(
                                 PhosphorIconsStyle.fill,
                               ),
-                              color: GenZTokens.accent,
+                              color: _accent,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
@@ -200,8 +195,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           borderRadius: BorderRadius.circular(
                             GenZTokens.radiusInput,
                           ),
-                          borderSide: const BorderSide(
-                            color: GenZTokens.accent,
+                          borderSide: BorderSide(
+                            color: _accent,
                             width: GenZTokens.borderWidthFocus,
                           ),
                         ),
@@ -235,8 +230,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           borderRadius: BorderRadius.circular(
                             GenZTokens.radiusInput,
                           ),
-                          borderSide: const BorderSide(
-                            color: GenZTokens.accent,
+                          borderSide: BorderSide(
+                            color: _accent,
                             width: GenZTokens.borderWidthFocus,
                           ),
                         ),
@@ -309,8 +304,8 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: GenZTokens.accent,
-                          foregroundColor: GenZTokens.onAccent,
+                          backgroundColor: _accent,
+                          foregroundColor: _onAccent,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
@@ -341,7 +336,7 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
                           style: AppFonts.heading(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
-                            color: GenZTokens.onAccent,
+                            color: _onAccent,
                           ),
                         ),
                       ),
@@ -387,22 +382,22 @@ class _TripJournalScreenState extends ConsumerState<TripJournalScreen> {
           HapticFeedback.selectionClick();
           _showAddDialog();
         },
-        backgroundColor: GenZTokens.accent,
-        foregroundColor: GenZTokens.onAccent,
+        backgroundColor: _accent,
+        foregroundColor: _onAccent,
         icon: Icon(PhosphorIcons.pencil()),
         label: Text(
           'journal.write_short'.tr(),
           style: AppFonts.heading(
             fontSize: 15,
             fontWeight: FontWeight.w800,
-            color: GenZTokens.onAccent,
+            color: _onAccent,
           ),
         ),
       ),
       body: entriesAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator(
-            color: GenZTokens.accent,
+            color: _accent,
             strokeWidth: 2,
           ),
         ),

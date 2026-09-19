@@ -77,8 +77,9 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
   void _startPolling() {
     _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) async {
       try {
-        final res =
-            await ApiService.get('/payment/order-status/${widget.orderCode}');
+        final res = await ApiService.get(
+          '/payment/order-status/${widget.orderCode}',
+        );
         if (res != null &&
             res is Map &&
             (res['isPaid'] == true || res['status'] == 'SUCCESS')) {
@@ -107,7 +108,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          tr('premium.vietqr_copied', namedArgs: {'label': label, 'value': text}),
+          tr(
+            'premium.vietqr_copied',
+            namedArgs: {'label': label, 'value': text},
+          ),
         ),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
@@ -136,8 +140,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final cardBg = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final accent = theme.colorScheme.primary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
     final success = isDark ? GenZTokens.successDark : GenZTokens.success;
     final info = isDark ? GenZTokens.infoDark : GenZTokens.info;
 
@@ -152,17 +158,11 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     return Container(
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
         border: Border.all(color: line, width: GenZTokens.borderWidthThin),
-        boxShadow: isDark
-            ? const []
-            : [
-                BoxShadow(
-                  color: GenZTokens.ink.withValues(alpha: 0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+        boxShadow: GenZTokens.hardShadow(GenZTokens.ink, isDark),
       ),
       padding: EdgeInsets.fromLTRB(
         20,
@@ -202,7 +202,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
               // Giao diện khi Webhook báo thanh toán thành công
               const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 32,
+                  horizontal: 20,
+                ),
                 decoration: BoxDecoration(
                   color: success.withValues(alpha: isDark ? 0.18 : 0.12),
                   borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
@@ -231,10 +234,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                     const SizedBox(height: 8),
                     Text(
                       tr('premium.vietqr_success_desc'),
-                      style: AppFonts.body(
-                        fontSize: 14,
-                        color: inkSoft,
-                      ),
+                      style: AppFonts.body(fontSize: 14, color: inkSoft),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -255,10 +255,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
               const SizedBox(height: 4),
               Text(
                 tr('premium.vietqr_sub'),
-                style: AppFonts.body(
-                  fontSize: 13,
-                  color: inkSoft,
-                ),
+                style: AppFonts.body(fontSize: 13, color: inkSoft),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -270,16 +267,11 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                    border: Border.all(color: line, width: GenZTokens.borderWidthThin),
-                    boxShadow: isDark
-                        ? const []
-                        : [
-                            BoxShadow(
-                              color: GenZTokens.ink.withValues(alpha: 0.06),
-                              blurRadius: 12,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                    border: Border.all(
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                    boxShadow: GenZTokens.hardShadow(GenZTokens.ink, isDark),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -313,10 +305,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                             const SizedBox(height: 8),
                             Text(
                               tr('premium.vietqr_error_image'),
-                              style: TextStyle(
-                                color: inkSoft,
-                                fontSize: 12,
-                              ),
+                              style: TextStyle(color: inkSoft, fontSize: 12),
                             ),
                           ],
                         ),
@@ -354,7 +343,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                       value: accountNumber,
                       ink: ink,
                       inkSoft: inkSoft,
-                      onCopy: () => _copy(accountNumber, tr('premium.vietqr_account_number')),
+                      onCopy: () => _copy(
+                        accountNumber,
+                        tr('premium.vietqr_account_number'),
+                      ),
                     ),
                     Divider(height: 16, color: line),
                     _buildDetailRow(
@@ -372,7 +364,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                       ink: accent,
                       inkSoft: inkSoft,
                       isBold: true,
-                      onCopy: () => _copy(widget.amount.toString(), tr('premium.vietqr_amount')),
+                      onCopy: () => _copy(
+                        widget.amount.toString(),
+                        tr('premium.vietqr_amount'),
+                      ),
                     ),
                     Divider(height: 16, color: line),
                     _buildDetailRow(
@@ -384,7 +379,8 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                       highlightBg: accentSoft,
                       isBold: true,
                       highlight: true,
-                      onCopy: () => _copy(content, tr('premium.vietqr_content')),
+                      onCopy: () =>
+                          _copy(content, tr('premium.vietqr_content')),
                     ),
                   ],
                 ),
@@ -393,7 +389,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
 
               // Thông báo thời gian thực: Webhook đang lắng nghe
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: info.withValues(alpha: isDark ? 0.15 : 0.08),
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
@@ -428,10 +427,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                           const SizedBox(height: 2),
                           Text(
                             tr('premium.vietqr_waiting_sub'),
-                            style: AppFonts.body(
-                              fontSize: 12,
-                              color: inkSoft,
-                            ),
+                            style: AppFonts.body(fontSize: 12, color: inkSoft),
                           ),
                         ],
                       ),
@@ -448,8 +444,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                     onPressed: () async {
                       final uri = Uri.tryParse(widget.payUrl!);
                       if (uri != null) {
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
                       }
                     },
                     icon: Icon(PhosphorIcons.arrowSquareOut(), size: 18),
@@ -484,13 +482,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: AppFonts.body(
-            fontSize: 13,
-            color: inkSoft,
-          ),
-        ),
+        Text(label, style: AppFonts.body(fontSize: 13, color: inkSoft)),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -520,11 +512,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                 borderRadius: BorderRadius.circular(6),
                 child: Padding(
                   padding: const EdgeInsets.all(4),
-                  child: Icon(
-                    PhosphorIcons.copy(),
-                    size: 16,
-                    color: inkSoft,
-                  ),
+                  child: Icon(PhosphorIcons.copy(), size: 16, color: inkSoft),
                 ),
               ),
             ],

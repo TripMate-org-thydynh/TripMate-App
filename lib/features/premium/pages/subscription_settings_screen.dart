@@ -98,8 +98,10 @@ class _SubscriptionSettingsScreenState
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final accent = Theme.of(context).colorScheme.primary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
     final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
     final price = (_sub?['price'] as num?)?.toInt() ?? 0;
     // `activeUntil`, không phải `nextBillingDate`: backend chưa từng trả về
@@ -120,10 +122,7 @@ class _SubscriptionSettingsScreenState
             decoration: BoxDecoration(
               color: accentSoft,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(
-                color: accent,
-                width: GenZTokens.borderWidth,
-              ),
+              border: Border.all(color: accent, width: GenZTokens.borderWidth),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +178,9 @@ class _SubscriptionSettingsScreenState
                     width: GenZTokens.borderWidthThin,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
                   ),
                 ),
                 child: Text(
@@ -201,7 +202,10 @@ class _SubscriptionSettingsScreenState
             decoration: BoxDecoration(
               color: surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+              border: Border.all(
+                color: line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,10 +256,7 @@ class _SubscriptionSettingsScreenState
         ),
         content: Text(
           'trial.cancel_body'.tr(),
-          style: AppFonts.body(
-            color: inkSoft,
-            fontSize: 13,
-          ),
+          style: AppFonts.body(color: inkSoft, fontSize: 13),
         ),
         actions: [
           TextButton(

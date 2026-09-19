@@ -64,7 +64,6 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
 
     // Generate falling color particle sparks
     _particles.clear();
-    final isDark = widget.isDarkMode;
     final sparkPalette = [
       GenZTokens.chart1,
       GenZTokens.chart2,
@@ -72,7 +71,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
       GenZTokens.chart4,
       GenZTokens.chart5,
       GenZTokens.chart6,
-      isDark ? GenZTokens.accentDark : GenZTokens.accent,
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent,
     ];
     for (int i = 0; i < 40; i++) {
       _particles.add(
@@ -145,7 +144,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: AppFonts.heading(
-                                fontSize: 26,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 color: textPrimary,
                                 letterSpacing: -0.5,
@@ -216,7 +215,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                   Text(
                                     'live.vibe_energy'.tr(),
                                     style: AppFonts.body(
-                                      fontSize: 11,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       color: textSecondary,
                                     ),
@@ -289,8 +288,8 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                   Text(
                     'live.updates'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                       color: textPrimary,
                     ),
                   ),
@@ -582,45 +581,4 @@ class EnergyCirclePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
-class MiniMapGridPainter extends CustomPainter {
-  final bool isDark;
-  final Color primaryColor;
-
-  MiniMapGridPainter({required this.isDark, required this.primaryColor});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final gridPaint = Paint()
-      ..color = ink.withValues(alpha: 0.02)
-      ..strokeWidth = 1.0;
-
-    for (double i = 0; i < size.width; i += 30) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), gridPaint);
-    }
-    for (double j = 0; j < size.height; j += 30) {
-      canvas.drawLine(Offset(0, j), Offset(size.width, j), gridPaint);
-    }
-
-    final roadPaint = Paint()
-      ..color = ink.withValues(alpha: isDark ? 0.05 : 0.04)
-      ..strokeWidth = 6.0
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final path = Path();
-    path.moveTo(0, 30);
-    path.quadraticBezierTo(100, 40, 160, 100);
-    path.quadraticBezierTo(200, 160, size.width, 140);
-
-    path.moveTo(80, 0);
-    path.lineTo(60, size.height);
-
-    canvas.drawPath(path, roadPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

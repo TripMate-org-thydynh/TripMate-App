@@ -192,7 +192,7 @@ class QuickActionsPanel extends StatelessWidget {
                       'dashboard.quick_actions'.tr(),
                       style: AppFonts.heading(
                         fontWeight: FontWeight.w700,
-                        fontSize: 18,
+                        fontSize: 17,
                         color: _textPri,
                       ),
                     ),
@@ -264,7 +264,7 @@ class QuickActionsPanel extends StatelessWidget {
                 'dashboard.quick_actions'.tr(),
                 style: AppFonts.heading(
                   fontWeight: FontWeight.w700,
-                  fontSize: 18,
+                  fontSize: 17,
                   letterSpacing: -0.5,
                   color: _textPri,
                 ),

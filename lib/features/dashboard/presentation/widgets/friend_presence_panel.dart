@@ -132,8 +132,6 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final isDark = widget.isDarkMode;
 
     return Column(
@@ -155,7 +153,7 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
                     fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                    fontSize: 17,
                     letterSpacing: -0.5,
                     color: _ink,
                   ),
@@ -163,13 +161,55 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
               ),
               const SizedBox(width: 8),
               if (!_isLoading)
-                PillTag(
-                  text: 'dashboard.active_count'.tr(
-                    namedArgs: {'count': '$_activeCount'},
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: GenZTokens.space3,
+                    vertical: 4,
                   ),
-                  color: isDark
-                      ? GenZTokens.successDark
-                      : GenZTokens.success,
+                  decoration: BoxDecoration(
+                    color: _activeCount == 0
+                        ? (isDark ? GenZTokens.fillDark : GenZTokens.fill)
+                        : (isDark ? GenZTokens.successDark : GenZTokens.success),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                    border: Border.all(
+                      color: _activeCount == 0
+                          ? (isDark ? GenZTokens.lineDark : GenZTokens.line)
+                          : Colors.transparent,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_activeCount > 0) ...[
+                        PulseDot(
+                          size: 7,
+                          color: isDark
+                              ? GenZTokens.onAccentDark
+                              : GenZTokens.onAccent,
+                        ),
+                        const SizedBox(width: GenZTokens.space1),
+                      ],
+                      Text(
+                        'dashboard.active_count'.tr(
+                          namedArgs: {'count': '$_activeCount'},
+                        ),
+                        style: AppFonts.body(
+                          fontSize: 12,
+                          fontWeight: _activeCount > 0
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: _activeCount == 0
+                              ? (isDark
+                                  ? GenZTokens.inkSoftDark
+                                  : GenZTokens.inkSoft)
+                              : (isDark
+                                  ? GenZTokens.onAccentDark
+                                  : GenZTokens.onAccent),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
             ],
           ),
@@ -185,7 +225,7 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        colorScheme.primary,
+                        _accent,
                       ),
                     ),
                   ),
@@ -224,44 +264,38 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                             Stack(
                               clipBehavior: Clip.none,
                               children: [
-                                Bobbing(
-                                  amplitude: 3,
-                                  phase: index * 0.9,
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 350),
-                                    padding: const EdgeInsets.all(3),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isActive
-                                          ? statusColor
-                                          : GenZTokens.paper.withValues(
-                                              alpha: 0,
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 350),
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isActive
+                                        ? statusColor
+                                        : Colors.transparent,
+                                    border: Border.all(
+                                      color: _line,
+                                      width: GenZTokens.borderWidthThin,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 24,
+                                    backgroundImage:
+                                        friend['avatarUrl'] != null
+                                        ? NetworkImage(
+                                            friend['avatarUrl'] as String,
+                                          )
+                                        : null,
+                                    backgroundColor: _fill,
+                                    child: friend['avatarUrl'] == null
+                                        ? Text(
+                                            friend['avatarChar'] as String,
+                                            style: AppFonts.heading(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              color: _ink,
                                             ),
-                                      border: Border.all(
-                                        color: _line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 24,
-                                      backgroundImage:
-                                          friend['avatarUrl'] != null
-                                          ? NetworkImage(
-                                              friend['avatarUrl'] as String,
-                                            )
-                                          : null,
-                                      backgroundColor: _fill,
-                                      child: friend['avatarUrl'] == null
-                                          ? Text(
-                                              friend['avatarChar'] as String,
-                                              style: AppFonts.heading(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700,
-                                                color: _ink,
-                                              ),
-                                            )
-                                          : null,
-                                    ),
+                                          )
+                                        : null,
                                   ),
                                 ),
                                 if (isActive)

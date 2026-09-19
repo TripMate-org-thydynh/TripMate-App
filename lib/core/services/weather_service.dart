@@ -133,55 +133,55 @@ class WeatherService {
       return _WmoMapping(
         'weather.clear'.tr(),
         PhosphorIcons.sun(),
-        GenZTokens.yellow,
+        GenZTokens.warning,
       );
     } else if ([1, 2, 3].contains(code)) {
       return _WmoMapping(
         'weather.cond_scattered_clouds'.tr(),
         PhosphorIcons.cloud(),
-        GenZTokens.lilac,
+        GenZTokens.inkSoft,
       );
     } else if ([45, 48].contains(code)) {
       return _WmoMapping(
         'weather.fog'.tr(),
         PhosphorIcons.cloudFog(),
-        GenZTokens.lilac,
+        GenZTokens.inkSoft,
       );
     } else if ([51, 53, 55].contains(code)) {
       return _WmoMapping(
         'weather.drizzle'.tr(),
         PhosphorIcons.drop(),
-        GenZTokens.blue,
+        GenZTokens.info,
       );
     } else if ([61, 63, 65].contains(code)) {
       return _WmoMapping(
         'weather.cond_rain'.tr(),
         PhosphorIcons.umbrella(),
-        GenZTokens.blue,
+        GenZTokens.info,
       );
     } else if ([71, 73, 75, 77, 85, 86].contains(code)) {
       return _WmoMapping(
         'weather.cond_snow'.tr(),
         PhosphorIcons.snowflake(),
-        GenZTokens.blue,
+        GenZTokens.info,
       );
     } else if ([80, 81, 82].contains(code)) {
       return _WmoMapping(
         'weather.cond_showers'.tr(),
         PhosphorIcons.cloudRain(),
-        GenZTokens.blue,
+        GenZTokens.info,
       );
     } else if ([95, 96, 99].contains(code)) {
       return _WmoMapping(
         'weather.thunderstorm'.tr(),
         PhosphorIcons.lightning(),
-        GenZTokens.red,
+        GenZTokens.danger,
       );
     }
     return _WmoMapping(
       'common.unknown'.tr(),
       PhosphorIcons.question(),
-      GenZTokens.lilac,
+      GenZTokens.inkSoft,
     );
   }
 }

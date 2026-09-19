@@ -58,8 +58,10 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final accent = theme.colorScheme.primary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
 
     // Dưới 24 giờ thì đổi sang đếm giờ: "còn 0 ngày" vừa vô nghĩa vừa làm
@@ -106,7 +108,9 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
           child: Row(
             children: [
               Icon(
-                urgent ? PhosphorIcons.hourglassLow() : PhosphorIcons.hourglassHigh(),
+                urgent
+                    ? PhosphorIcons.hourglassLow()
+                    : PhosphorIcons.hourglassHigh(),
                 size: 20,
                 color: iconColor,
               ),
@@ -134,19 +138,12 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
                           ).add_Hm().format(status.endsAt!.toLocal()),
                         },
                       ),
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        color: inkSoft,
-                      ),
+                      style: AppFonts.body(fontSize: 12, color: inkSoft),
                     ),
                   ],
                 ),
               ),
-              Icon(
-                PhosphorIcons.caretRight(),
-                size: 20,
-                color: inkSoft,
-              ),
+              Icon(PhosphorIcons.caretRight(), size: 20, color: inkSoft),
             ],
           ),
         ),

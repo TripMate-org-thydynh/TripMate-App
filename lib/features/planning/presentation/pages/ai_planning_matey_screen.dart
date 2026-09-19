@@ -155,8 +155,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
     final inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final cardColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final lineColor = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accentColor = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccentColor = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accentColor = Theme.of(context).colorScheme.primary;
+    final onAccentColor = Theme.of(context).colorScheme.onPrimary;
 
     showModalBottomSheet(
       context: context,
@@ -284,8 +284,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
     final accentSoft =
         isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
     final lineColor = isDark ? GenZTokens.lineDark : GenZTokens.line;

@@ -28,9 +28,9 @@ class TripMomentsFeedScreen extends ConsumerWidget {
   Color _surfaceOf(BuildContext context) =>
       _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
   Color _primaryOf(BuildContext context) =>
-      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+      Theme.of(context).colorScheme.primary;
   Color _onPrimaryOf(BuildContext context) =>
-      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+      Theme.of(context).colorScheme.onPrimary;
   Color _lineOf(BuildContext context) =>
       _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
   Color _fillOf(BuildContext context) =>

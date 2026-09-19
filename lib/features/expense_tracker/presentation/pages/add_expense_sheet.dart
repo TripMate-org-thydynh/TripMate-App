@@ -64,8 +64,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
   Color get _surface => _dark ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _fill => _dark ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => _dark ? GenZTokens.lineDark : GenZTokens.line;
-  Color get _primary => _dark ? GenZTokens.accentDark : GenZTokens.accent;
-  Color get _onAccent => _dark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _primary => Theme.of(context).colorScheme.primary;
+  Color get _onAccent => Theme.of(context).colorScheme.onPrimary;
   Color get _accentSoft =>
       _dark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color get _textPri => _dark ? GenZTokens.inkDark : GenZTokens.ink;

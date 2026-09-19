@@ -35,8 +35,7 @@ class MyTripsScreen extends ConsumerWidget {
       isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
-  Color get _accent =>
-      isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
   Color get _onAccent =>
       isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color get _accentSoft =>
@@ -77,7 +76,7 @@ class MyTripsScreen extends ConsumerWidget {
         title: Text(
           'trips.mine'.tr(),
           style: AppFonts.heading(
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: FontWeight.w700,
             color: _textPri,
             letterSpacing: -0.2,
@@ -95,7 +94,7 @@ class MyTripsScreen extends ConsumerWidget {
           loading: () => _buildSkeleton(),
           error: (e, _) => _buildError(context, ref, e),
           data: (trips) =>
-              trips.isEmpty ? _buildEmpty() : _buildData(context, ref, trips),
+              trips.isEmpty ? _buildEmpty(context) : _buildData(context, ref, trips),
         ),
       ),
     );
@@ -196,7 +195,7 @@ class MyTripsScreen extends ConsumerWidget {
   }
 
   // ── Empty ──────────────────────────────────────────────────────────────────
-  Widget _buildEmpty() {
+  Widget _buildEmpty(BuildContext context) {
     return ListView(
       children: [
         const SizedBox(height: 100),
@@ -224,7 +223,7 @@ class MyTripsScreen extends ConsumerWidget {
               Text(
                 'trips.empty'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 18,
+                  fontSize: 17,
                   fontWeight: FontWeight.w700,
                   color: _textPri,
                 ),
@@ -313,7 +312,7 @@ class MyTripsScreen extends ConsumerWidget {
             border: Border.all(
               color: selected ? _accent : _line,
               width: selected
-                  ? GenZTokens.borderWidth
+                  ? GenZTokens.borderWidthFocus
                   : GenZTokens.borderWidthThin,
             ),
           ),
@@ -418,7 +417,7 @@ class MyTripsScreen extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppFonts.heading(
-                          fontSize: 16,
+                          fontSize: 17,
                           fontWeight: FontWeight.w700,
                           color: _textPri,
                         ),

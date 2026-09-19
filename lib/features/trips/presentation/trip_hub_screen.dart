@@ -46,8 +46,7 @@ class TripHubScreen extends StatelessWidget {
   Color get _textPri => _ink;
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _accent =>
-      isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
   // Rút gọn tiền: 3.000.000 → "3tr", 500000 → "500k".
   String _fmtMoney(double v) {
@@ -99,7 +98,7 @@ class TripHubScreen extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppFonts.heading(
-                  fontSize: 18,
+                  fontSize: 22,
                   fontWeight: FontWeight.w700,
                   // Có ảnh bìa → nền tối, chữ phải trắng mới đọc được.
                   color: (trip.coverImage?.isNotEmpty ?? false)
@@ -144,8 +143,8 @@ class TripHubScreen extends StatelessWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              GenZTokens.paper.withValues(alpha: 0),
-                              GenZTokens.ink.withValues(alpha: 0.55),
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.55),
                             ],
                           ),
                         ),
@@ -202,7 +201,7 @@ class TripHubScreen extends StatelessWidget {
                               trip.destination!,
                               overflow: TextOverflow.ellipsis,
                               style: AppFonts.body(
-                                fontSize: 14,
+                                fontSize: 15,
                                 fontWeight: FontWeight.w700,
                                 color: _ink,
                               ),
@@ -512,7 +511,7 @@ class TripHubScreen extends StatelessWidget {
                       color: _accent,
                     )
                   : AppFonts.heading(
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: _textPri,
                     ),
@@ -577,7 +576,7 @@ class TripHubScreen extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: _textPri,
                   ),

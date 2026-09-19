@@ -28,7 +28,7 @@ class PickTripSheet extends ConsumerWidget {
     return showModalBottomSheet<Trip>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: GenZTokens.paper.withValues(alpha: 0),
+      backgroundColor: Colors.transparent,
       builder: (_) => PickTripSheet(isDarkMode: isDarkMode, title: title),
     );
   }
@@ -37,6 +37,7 @@ class PickTripSheet extends ConsumerWidget {
   Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _sub => isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,7 +49,9 @@ class PickTripSheet extends ConsumerWidget {
       ),
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
         border: Border(
           top: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
           left: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
@@ -78,7 +81,7 @@ class PickTripSheet extends ConsumerWidget {
               Text(
                 title ?? 'trips.pick_trip'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
                   color: _ink,
@@ -135,7 +138,7 @@ class PickTripSheet extends ConsumerWidget {
             ),
             child: Icon(
               PhosphorIcons.ticket(PhosphorIconsStyle.fill),
-              color: isDarkMode ? GenZTokens.accentDark : GenZTokens.accent,
+              color: _accent,
               size: 20,
             ),
           ),
@@ -181,7 +184,7 @@ class PickTripSheet extends ConsumerWidget {
             msg,
             textAlign: TextAlign.center,
             style: AppFonts.body(
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: FontWeight.w600,
               color: _sub,
             ),

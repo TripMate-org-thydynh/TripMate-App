@@ -27,7 +27,7 @@ class AppEmptyState extends StatelessWidget {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
 
     return Center(
       child: Padding(
@@ -92,8 +92,8 @@ class AppErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     return Center(
       child: Padding(

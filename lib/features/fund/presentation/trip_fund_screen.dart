@@ -42,9 +42,9 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
   Color _fill(BuildContext context) =>
       _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
   Color _primary(BuildContext context) =>
-      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+      Theme.of(context).colorScheme.primary;
   Color _onAccent(BuildContext context) =>
-      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+      Theme.of(context).colorScheme.onPrimary;
   Color _accentSoft(BuildContext context) =>
       _isDark(context) ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color _textPri(BuildContext context) =>
@@ -853,7 +853,7 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
   Color _border(BuildContext context) =>
       _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
   Color _onAccent(BuildContext context) =>
-      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+      Theme.of(context).colorScheme.onPrimary;
   Color _danger(BuildContext context) =>
       _isDark(context) ? GenZTokens.dangerDark : GenZTokens.danger;
   Color _textPri(BuildContext context) =>
@@ -1238,7 +1238,7 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
   Color _border(BuildContext context) =>
       _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
   Color _onAccent(BuildContext context) =>
-      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+      Theme.of(context).colorScheme.onPrimary;
   Color _danger(BuildContext context) =>
       _isDark(context) ? GenZTokens.dangerDark : GenZTokens.danger;
   Color _textPri(BuildContext context) =>

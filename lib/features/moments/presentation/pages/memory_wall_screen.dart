@@ -66,8 +66,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     return Scaffold(
       backgroundColor: bg,
@@ -637,9 +637,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                                                     .expectedTotalBytes!
                                           : null,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        isDark
-                                            ? GenZTokens.accentDark
-                                            : GenZTokens.accent,
+                                        Theme.of(context).colorScheme.primary,
                                       ),
                                     ),
                                   ),
@@ -776,8 +774,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
     final accentSoft = isDark
         ? GenZTokens.accentSoftDark
         : GenZTokens.accentSoft;

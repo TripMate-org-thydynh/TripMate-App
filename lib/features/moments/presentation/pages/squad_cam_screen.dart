@@ -495,11 +495,11 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                   child: LinearProgressIndicator(
                     value: _progress > 0 ? _progress : null,
                     minHeight: 6,
-                    backgroundColor: GenZTokens.onAccent.withValues(
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary.withValues(
                       alpha: 0.24,
                     ),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      GenZTokens.accent,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -514,12 +514,12 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                     size: 20,
                     color: _sending
                         ? GenZTokens.inkSoftDark
-                        : GenZTokens.onAccent,
+                        : Theme.of(context).colorScheme.onPrimary,
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: GenZTokens.accent,
-                    foregroundColor: GenZTokens.onAccent,
-                    disabledBackgroundColor: GenZTokens.onAccent.withValues(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    disabledBackgroundColor: Theme.of(context).colorScheme.onPrimary.withValues(
                       alpha: 0.24,
                     ),
                     disabledForegroundColor: GenZTokens.inkSoftDark,
@@ -538,7 +538,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                       fontWeight: FontWeight.w700,
                       color: _sending
                           ? GenZTokens.inkSoftDark
-                          : GenZTokens.onAccent,
+                          : Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ),

@@ -71,7 +71,7 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
 
         return Column(
           children: [
-            if (trips.length > 1) _tripSwitcher(isDark, trips, current),
+            if (trips.length > 1) _tripSwitcher(context, isDark, trips, current),
             Expanded(
               child: TripItineraryScreen(
                 // Key theo tripId để đổi chuyến là dựng lại nội dung.
@@ -87,12 +87,12 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
   }
 
   /// Thanh chọn chuyến khi user có nhiều hơn một chuyến.
-  Widget _tripSwitcher(bool isDark, List<Trip> trips, Trip current) {
+  Widget _tripSwitcher(BuildContext context, bool isDark, List<Trip> trips, Trip current) {
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
     final accentSoft =
         isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
 
@@ -157,8 +157,8 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     return Container(
       color: bg,

@@ -95,29 +95,34 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final tripsAsync = ref.watch(tripsProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'profile.export_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
       ),
       body: tripsAsync.when(
         loading: () =>
-            const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            Center(child: CircularProgressIndicator(color: accent, strokeWidth: 2)),
         error: (e, _) => AppErrorState(
           isDark: isDark,
           error: e,
@@ -126,15 +131,15 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
         data: (trips) {
           final profile = ref.watch(profileDataProvider);
           return ListView(
-            padding: const EdgeInsets.all(GenZTokens.space5),
+            padding: const EdgeInsets.all(GenZTokens.space4),
             children: [
               Container(
-                padding: const EdgeInsets.all(GenZTokens.space5),
+                padding: const EdgeInsets.all(GenZTokens.space4),
                 decoration: BoxDecoration(
                   color: surface,
                   borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                   border: Border.all(
-                    color: ink,
+                    color: line,
                     width: GenZTokens.borderWidthThin,
                   ),
                 ),
@@ -145,7 +150,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       'profile.export_contains'.tr(),
                       style: AppFonts.heading(
                         fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                         color: ink,
                       ),
                     ),
@@ -160,7 +165,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     Text(
                       'profile.export_note'.tr(),
                       style: AppFonts.body(
-                        fontSize: 12.5,
+                        fontSize: 12,
                         color: inkSoft,
                         height: 1.4,
                       ),
@@ -168,18 +173,18 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: GenZTokens.space5),
+              const SizedBox(height: GenZTokens.space4),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _busy ? null : _share,
                   icon: Icon(PhosphorIcons.shareNetwork(), size: 18),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: GenZTokens.yellow,
-                    foregroundColor: GenZTokens.ink,
+                    backgroundColor: accent,
+                    foregroundColor: onAccent,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 0,
-                    side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+                    side: BorderSide.none,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
                         GenZTokens.radiusButton,
@@ -189,9 +194,9 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                   label: Text(
                     'profile.export_share'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: GenZTokens.ink,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: onAccent,
                     ),
                   ),
                 ),
@@ -206,7 +211,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     foregroundColor: ink,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: BorderSide(
-                      color: ink,
+                      color: line,
                       width: GenZTokens.borderWidthThin,
                     ),
                     shape: RoundedRectangleBorder(
@@ -218,8 +223,8 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                   label: Text(
                     'profile.export_copy'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
                       color: ink,
                     ),
                   ),
@@ -238,7 +243,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
       children: [
         const Text('• '),
         Expanded(
-          child: Text(text, style: AppFonts.body(fontSize: 13.5, color: ink)),
+          child: Text(text, style: AppFonts.body(fontSize: 13, color: ink)),
         ),
       ],
     ),

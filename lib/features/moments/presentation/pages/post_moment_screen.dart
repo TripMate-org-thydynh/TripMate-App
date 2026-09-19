@@ -127,8 +127,8 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     return Scaffold(
       backgroundColor: bg,

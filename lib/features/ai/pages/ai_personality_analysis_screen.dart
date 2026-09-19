@@ -88,7 +88,7 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
                         itemCount: roasts.length,
                         separatorBuilder: (_, _) =>
                             const SizedBox(height: GenZTokens.space4),
-                        itemBuilder: (_, i) => _card(isDark, roasts[i]),
+                        itemBuilder: (ctx, i) => _card(ctx, isDark, roasts[i]),
                       ),
                     );
                   },
@@ -96,12 +96,12 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
     );
   }
 
-  Widget _card(bool isDark, SquadRoast r) {
+  Widget _card(BuildContext context, bool isDark, SquadRoast r) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
     final accentSoft =
         isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
 

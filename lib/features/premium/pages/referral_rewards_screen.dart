@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../../core/api_service.dart';
+import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 
-/// Man gioi thieu ban be.
+/// Màn giới thiệu bạn bè và phần thưởng.
 ///
-/// Truoc day ma gioi thieu in cung la 'MATEYCHILL' cho MOI tai khoan, va
-/// nut sao chep chi hien thong bao chu khong ghi gi vao clipboard.
+/// Trước đây mã giới thiệu in cứng là 'MATEYCHILL' cho MỌI tài khoản, và
+/// nút sao chép chỉ hiện thông báo chứ không ghi gì vào clipboard.
 class ReferralRewardsScreen extends ConsumerStatefulWidget {
   const ReferralRewardsScreen({super.key});
 
@@ -24,15 +24,9 @@ class ReferralRewardsScreen extends ConsumerStatefulWidget {
 
 class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
   /// Mã giới thiệu THẬT, do server sinh và giữ.
-  ///
-  /// Trước đây mã được suy ra bằng cách viết hoa username. Cách đó có ba lỗi:
-  /// mã đổi theo username nên ai đổi tên là mọi mã đã chia sẻ thành vô hiệu;
-  /// username lộ ra ngoài; và **server không hề biết mã đó tồn tại**, nên
-  /// người nhập vào chỉ nhận một thông báo thành công trống rỗng.
   String? _code;
 
-  /// Người mình đã mời được. Trước đây là danh sách rỗng cứng, và trước nữa là
-  /// hai cái tên bịa ("Hoàng Yến 🌸", "Phú Khang 🍕").
+  /// Người mình đã mời được.
   List<Map<String, dynamic>> _referrals = [];
 
   /// Mình đã nhập mã của ai chưa — dùng để ẩn ô nhập thay vì để người dùng gõ
@@ -63,7 +57,8 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
       _loading = false;
       if (mine is Map) {
         _code = mine['code'] as String?;
-        _referrals = (mine['invited'] as List?)
+        _referrals =
+            (mine['invited'] as List?)
                 ?.whereType<Map>()
                 .map((e) => e.cast<String, dynamic>())
                 .toList() ??
@@ -71,8 +66,7 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
       }
       if (status is Map) {
         _canSubmit = status['canSubmit'] as bool? ?? true;
-        _referredBy =
-            (status['referredBy'] as Map?)?['name'] as String?;
+        _referredBy = (status['referredBy'] as Map?)?['name'] as String?;
       }
     });
   }
@@ -85,7 +79,6 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
       _isSubmitting = true;
     });
 
-    // Call live NestJS referrals endpoint!
     final response = await ApiService.post('/premium/referrals', {
       'code': text,
     });
@@ -96,46 +89,43 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
 
     if (!mounted) return;
 
-    // ApiService đã unwrap envelope → thành công khi response khác null.
     if (response != null) {
       final String msg =
           (response is Map ? response['message'] : null) as String? ??
           'referral.code_valid'.tr();
       _codeController.clear();
-      // Tải lại: XP vừa đổi, và ô nhập phải biến mất vì mỗi người chỉ được
-      // giới thiệu một lần.
       unawaited(_load());
 
       final isDark = Theme.of(context).brightness == Brightness.dark;
       final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-      final accent = isDark ? GenZTokens.lilac : GenZTokens.purple;
+      final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+      final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
           ),
-          backgroundColor:
-              isDark ? GenZTokens.paperDark : GenZTokens.paper,
+          backgroundColor: isDark ? GenZTokens.paperDark : GenZTokens.paper,
           title: Text(
             'common.success'.tr(),
             style: AppFonts.heading(
-              fontWeight: FontWeight.bold,
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
               color: ink,
             ),
           ),
-          content: Text(
-            msg,
-            style: AppFonts.heading(fontSize: 13.5, color: ink),
-          ),
+          content: Text(msg, style: AppFonts.body(fontSize: 13, color: ink)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
                 'common.awesome'.tr(),
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
                   color: accent,
                 ),
               ),
@@ -144,10 +134,23 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
         ),
       );
     } else {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('premium.self_referral'.tr()),
+          content: Text(
+            'premium.self_referral'.tr(),
+            style: AppFonts.body(
+              fontSize: 13,
+              color: isDark ? GenZTokens.inkDark : GenZTokens.cream,
+            ),
+          ),
+          backgroundColor: isDark ? GenZTokens.paperDark : GenZTokens.ink,
           behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+            side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
+          ),
         ),
       );
     }
@@ -176,12 +179,16 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
 
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final backgroundColor =
-        isDark ? GenZTokens.creamDark : GenZTokens.cream;
-    final surfaceColor =
-        isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
-    final borderCol = ink.withValues(alpha: 0.15);
+    final backgroundColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -189,109 +196,129 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            PhosphorIcons.arrowLeft(),
-            color: ink,
-          ),
+          icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
           tooltip: 'common.close'.tr(),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'premium.refer_friends'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(GenZTokens.space5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Referral card using brand coloring gradient
+            // Referral card displaying code
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(GenZTokens.space5),
               decoration: BoxDecoration(
-                color: GenZTokens.yellow,
-                borderRadius: BorderRadius.circular(20),
+                color: accentSoft,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                 border: Border.all(
-                  color: ink,
-                  width: GenZTokens.borderWidth,
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: ink.withValues(alpha: 0.25),
-                    offset: const Offset(0, 4),
-                    blurRadius: 0,
-                  ),
-                ],
               ),
               child: Column(
                 children: [
                   Text(
                     'premium.your_code'.tr(),
                     style: AppFonts.heading(
-                      color: GenZTokens.ink,
-                      fontWeight: FontWeight.bold,
+                      color: inkSoft,
+                      fontWeight: FontWeight.w600,
                       fontSize: 12,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.0,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: GenZTokens.space3),
                   SelectableText(
                     _code ?? '…',
-                    style: AppFonts.heading(
-                      color: GenZTokens.ink,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
+                    style: AppFonts.mono(
+                      color: ink,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 2,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: GenZTokens.space3),
                   Text(
                     'referral.code_intro'.tr(),
                     textAlign: TextAlign.center,
-                    style: AppFonts.heading(
-                      color: GenZTokens.ink,
+                    style: AppFonts.body(
+                      color: inkSoft,
                       fontSize: 12,
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final code = _code;
-                      if (code == null) return;
-                      await Clipboard.setData(ClipboardData(text: code));
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'premium.code_copied'.tr(args: [_code ?? '']),
+                  const SizedBox(height: GenZTokens.space4),
+                  // Điểm nhấn chính duy nhất của màn
+                  SizedBox(
+                    height: 44,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final code = _code;
+                        if (code == null) return;
+                        await Clipboard.setData(ClipboardData(text: code));
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'premium.code_copied'.tr(args: [_code ?? '']),
+                              style: AppFonts.body(
+                                fontSize: 13,
+                                color: isDark
+                                    ? GenZTokens.inkDark
+                                    : GenZTokens.cream,
+                              ),
+                            ),
+                            backgroundColor: isDark
+                                ? GenZTokens.paperDark
+                                : GenZTokens.ink,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusInput,
+                              ),
+                              side: BorderSide(
+                                color: line,
+                                width: GenZTokens.borderWidthThin,
+                              ),
+                            ),
                           ),
-                          behavior: SnackBarBehavior.floating,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accent,
+                        foregroundColor: onAccent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusButton,
+                          ),
                         ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: surfaceColor,
-                      foregroundColor: ink,
-                      side: BorderSide(
-                        color: ink,
-                        width: GenZTokens.borderWidthThin,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'premium.copy_code'.tr(),
-                      style: AppFonts.heading(
-                        fontWeight: FontWeight.bold,
-                        color: ink,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(PhosphorIcons.copy(), size: 16, color: onAccent),
+                          const SizedBox(width: 8),
+                          Text(
+                            'premium.copy_code'.tr(),
+                            style: AppFonts.heading(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: onAccent,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -299,134 +326,144 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: GenZTokens.space5),
 
             // Đã nhập mã của ai rồi thì không hiện ô nhập nữa.
-            //
-            // Mỗi người chỉ được giới thiệu một lần trong đời, nên để ô nhập
-            // ở đó chỉ dẫn tới một lần gõ và một thông báo lỗi.
             if (!_canSubmit) ...[
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(GenZTokens.space4),
                 decoration: BoxDecoration(
-                  color: surfaceColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: borderCol),
+                  color: fill,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  border: Border.all(
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
-                      color: GenZTokens.success,
+                      color: success,
+                      size: 20,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: GenZTokens.space3),
                     Expanded(
                       child: Text(
                         'referral.already_referred'.tr(
                           namedArgs: {'name': _referredBy ?? ''},
                         ),
-                        style: AppFonts.heading(
-                          fontSize: 13,
-                          color: ink,
-                        ),
+                        style: AppFonts.body(fontSize: 13, color: ink),
                       ),
                     ),
                   ],
                 ),
               ),
             ] else ...[
-            // Submit friend's code block
-            Text(
-              'premium.enter_code'.tr(),
-              style: AppFonts.heading(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: ink,
+              // Submit friend's code block
+              Text(
+                'premium.enter_code'.tr(),
+                style: AppFonts.heading(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 17,
+                  color: ink,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              decoration: BoxDecoration(
-                color: surfaceColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: borderCol),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _codeController,
-                      style: AppFonts.heading(
-                        color: ink,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'referral.friend_code_hint'.tr(),
-                        hintStyle: AppFonts.heading(
-                          color: inkSoft,
-                          fontSize: 13,
+              const SizedBox(height: GenZTokens.space3),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: GenZTokens.space4,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: fill,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                  border: Border.all(
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _codeController,
+                        style: AppFonts.body(
+                          color: ink,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
                         ),
-                        border: InputBorder.none,
+                        decoration: InputDecoration(
+                          hintText: 'referral.friend_code_hint'.tr(),
+                          hintStyle: AppFonts.body(
+                            color: inkSoft,
+                            fontSize: 13,
+                          ),
+                          border: InputBorder.none,
+                        ),
                       ),
                     ),
-                  ),
-                  _isSubmitting
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: primaryColor,
-                          ),
-                        )
-                      : TextButton(
-                          onPressed: _submitReferralCode,
-                          child: Text(
-                            'premium.submit_code'.tr(),
-                            style: AppFonts.heading(
-                              color: primaryColor,
-                              fontWeight: FontWeight.bold,
+                    _isSubmitting
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: accent,
+                            ),
+                          )
+                        : TextButton(
+                            onPressed: _submitReferralCode,
+                            child: Text(
+                              'premium.submit_code'.tr(),
+                              style: AppFonts.heading(
+                                color: accent,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
-                        ),
-                ],
+                  ],
+                ),
               ),
-            ),
             ],
 
-            const SizedBox(height: 28),
+            const SizedBox(height: GenZTokens.space5),
 
             Text(
               'referral.list_title'.tr(
                 namedArgs: {'n': '${_referrals.length}'},
               ),
               style: AppFonts.heading(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                fontSize: 17,
                 color: ink,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: GenZTokens.space3),
 
             if (_loading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: GenZTokens.space5,
+                  ),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: accent,
+                  ),
                 ),
               )
             else if (_referrals.isEmpty)
-              // Chưa mời được ai thì để trống, không bịa 2 người như trước.
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  'premium.no_referrals'.tr(),
-                  textAlign: TextAlign.center,
-                  style: AppFonts.body(
-                    fontSize: 13,
-                    color: inkSoft,
+                padding: const EdgeInsets.symmetric(
+                  vertical: GenZTokens.space4,
+                ),
+                child: Center(
+                  child: Text(
+                    'premium.no_referrals'.tr(),
+                    textAlign: TextAlign.center,
+                    style: AppFonts.body(fontSize: 13, color: inkSoft),
                   ),
                 ),
               )
@@ -437,42 +474,46 @@ class _ReferralRewardsScreenState extends ConsumerState<ReferralRewardsScreen> {
                 itemCount: _referrals.length,
                 itemBuilder: (context, index) {
                   final ref = _referrals[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Card(
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: GenZTokens.space3),
+                    decoration: BoxDecoration(
                       color: surfaceColor,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: borderCol),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusCard,
                       ),
-                      child: ListTile(
-                        leading: Icon(
-                          PhosphorIcons.userPlus(),
-                          color: primaryColor,
+                      border: Border.all(
+                        color: line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: GenZTokens.space4,
+                        vertical: GenZTokens.space2,
+                      ),
+                      leading: Icon(
+                        PhosphorIcons.userPlus(),
+                        color: inkSoft,
+                        size: 20,
+                      ),
+                      title: Text(
+                        (ref['name'] as String?) ?? '—',
+                        style: AppFonts.heading(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: ink,
                         ),
-                        title: Text(
-                          (ref['name'] as String?) ?? '—',
-                          style: AppFonts.heading(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13.5,
-                            color: ink,
-                          ),
-                        ),
-                        subtitle: Text(
-                          _joinedLabel(ref['joinedAt'] as String?),
-                          style: AppFonts.heading(
-                            fontSize: 11.5,
-                            color: inkSoft,
-                          ),
-                        ),
-                        trailing: Text(
-                          '+${ref['xp'] ?? 0} XP',
-                          style: AppFonts.heading(
-                            fontWeight: FontWeight.bold,
-                            color: GenZTokens.success,
-                            fontSize: 13,
-                          ),
+                      ),
+                      subtitle: Text(
+                        _joinedLabel(ref['joinedAt'] as String?),
+                        style: AppFonts.body(fontSize: 12, color: inkSoft),
+                      ),
+                      trailing: Text(
+                        '+${ref['xp'] ?? 0} XP',
+                        style: AppFonts.mono(
+                          fontWeight: FontWeight.w700,
+                          color: success,
+                          fontSize: 13,
                         ),
                       ),
                     ),

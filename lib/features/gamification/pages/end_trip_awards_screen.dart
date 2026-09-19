@@ -27,10 +27,8 @@ class EndTripAwardsScreen extends ConsumerStatefulWidget {
 }
 
 class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _shimmerController;
+    with SingleTickerProviderStateMixin {
   late AnimationController _floatController;
-  late Animation<double> _shimmerAnim;
   late Animation<double> _floatAnim;
 
   /// Giải thưởng tính từ ĐÓNG GÓP THẬT của từng thành viên.
@@ -89,7 +87,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       PhosphorIcons.camera(PhosphorIconsStyle.fill),
       'games.award_photographer',
       'games.award_photographer_desc',
-      GenZTokens.lilac,
+      GenZTokens.chart3,
       photographer,
       photographer?.moments ?? 0,
     );
@@ -99,7 +97,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       PhosphorIcons.money(PhosphorIconsStyle.fill),
       'games.award_sponsor',
       'games.award_sponsor_desc',
-      GenZTokens.green,
+      GenZTokens.chart1,
       sponsor,
       sponsor?.expenses ?? 0,
     );
@@ -109,7 +107,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
       'games.award_planner',
       'games.award_planner_desc',
-      GenZTokens.yellow,
+      GenZTokens.chart4,
       planner,
       planner?.plans ?? 0,
     );
@@ -119,7 +117,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       PhosphorIcons.notepad(PhosphorIconsStyle.fill),
       'games.award_scribe',
       'games.award_scribe_desc',
-      GenZTokens.blue,
+      GenZTokens.chart5,
       scribe,
       scribe?.notes ?? 0,
     );
@@ -130,7 +128,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       PhosphorIcons.trophy(PhosphorIconsStyle.fill),
       'games.award_mvp',
       'games.award_mvp_desc',
-      GenZTokens.red,
+      GenZTokens.accent,
       mvp,
       mvp?.xp ?? 0,
     );
@@ -141,17 +139,10 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
   @override
   void initState() {
     super.initState();
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
     _floatController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-    _shimmerAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _shimmerController, curve: Curves.easeInOut),
-    );
     _floatAnim = Tween<double>(begin: -6.0, end: 6.0).animate(
       CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
     );
@@ -159,7 +150,6 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
 
   @override
   void dispose() {
-    _shimmerController.dispose();
     _floatController.dispose();
     super.dispose();
   }
@@ -201,7 +191,8 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final tripId = ref.watch(activeTripIdProvider);
     final rows = tripId == null
         ? const <LeaderboardRow>[]
@@ -216,7 +207,7 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       return Scaffold(
         backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
           elevation: 0,
           iconTheme: IconThemeData(
             color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
@@ -231,256 +222,202 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
       );
     }
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
-    // Nen the mo (trang alpha 0.7) tung lam noi dung the khong duoc ve ra
-    // tren may — dung mau surface dac cua design token.
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Scaffold(
       backgroundColor: bg,
-      body: Stack(
-        children: [
-          // Ambient background
-          Positioned(
-            top: -100,
-            left: -100,
-            child: Container(
-              width: 350,
-              height: 350,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.transparent,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 16,
+              ),
+              child: Row(
+                children: [
+                  _buildGlassButton(
+                    icon: PhosphorIcons.arrowLeft(),
+                    onTap: () => Navigator.pop(context),
+                    isDark: isDark,
+                  ),
+                  const Spacer(),
+                  _buildGlassButton(
+                    icon: isDark
+                        ? PhosphorIcons.sun()
+                        : PhosphorIcons.moon(),
+                    onTap: widget.onThemeToggle ?? () {},
+                    isDark: isDark,
+                  ),
+                ],
               ),
             ),
-          ),
-          Positioned(
-            bottom: 50,
-            right: -80,
-            child: Container(
-              width: 280,
-              height: 280,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.transparent,
-              ),
-            ),
-          ),
 
-          SafeArea(
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
-                  child: Row(
-                    children: [
-                      _buildGlassButton(
-                        icon: PhosphorIcons.arrowLeft(),
-                        onTap: () => Navigator.pop(context),
-                        isDark: isDark,
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8),
+
+                    // TRIP WRAPPED badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
                       ),
-                      const Spacer(),
-                      _buildGlassButton(
-                        icon: isDark
-                            ? PhosphorIcons.sun()
-                            : PhosphorIcons.moon(),
-                        onTap: widget.onThemeToggle ?? () {},
-                        isDark: isDark,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                        border: Border.all(
+                          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                          width: GenZTokens.borderWidthThin,
+                        ),
+                        color: isDark
+                            ? GenZTokens.accentSoftDark
+                            : GenZTokens.accentSoft,
                       ),
-                    ],
-                  ),
-                ),
+                      child: Text(
+                        'games.trip_wrapped'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
+                          color: isDark
+                              ? GenZTokens.accentDark
+                              : GenZTokens.accent,
+                        ),
+                      ),
+                    ),
 
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 8),
+                    const SizedBox(height: 16),
 
-                        // TRIP WRAPPED badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: GenZTokens.lilac.withValues(alpha: 0.5),
-                            ),
-                            color: GenZTokens.lilac
-                                .withValues(alpha: isDark ? 0.1 : 0.2),
-                          ),
-                          child: Text(
-                            'games.trip_wrapped'.tr(),
-                            style: AppFonts.heading(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 2,
-                              color: GenZTokens.lilac,
-                            ),
+                    // Trophy floating animation
+                    AnimatedBuilder(
+                      animation: _floatAnim,
+                      builder: (context, child) => Transform.translate(
+                        offset: Offset(0, _floatAnim.value),
+                        child: child,
+                      ),
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isDark ? GenZTokens.fillDark : GenZTokens.fill,
+                          border: Border.all(
+                            color: isDark
+                                ? GenZTokens.lineDark
+                                : GenZTokens.line,
+                            width: GenZTokens.borderWidthThin,
                           ),
                         ),
-
-                        const SizedBox(height: 16),
-
-                        // Trophy floating animation
-                        AnimatedBuilder(
-                          animation: _floatAnim,
-                          builder: (context, child) => Transform.translate(
-                            offset: Offset(0, _floatAnim.value),
-                            child: child,
+                        child: Center(
+                          child: Icon(
+                            PhosphorIcons.trophy(PhosphorIconsStyle.fill),
+                            color: isDark
+                                ? GenZTokens.accentDark
+                                : GenZTokens.accent,
+                            size: 40,
                           ),
-                          child: Container(
-                            width: 90,
-                            height: 90,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: GenZTokens.yellow,
-                              border: Border.all(
-                                color: isDark
-                                    ? GenZTokens.inkDark
-                                    : GenZTokens.ink,
-                                width: GenZTokens.borderWidthThin,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: GenZTokens.yellow
-                                      .withValues(alpha: 0.4),
-                                  blurRadius: 0,
-                                  spreadRadius: 5,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    Text(
+                      'games.awards_title'.tr(args: [_tripName]),
+                      style: AppFonts.heading(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: textPrimary,
+                        letterSpacing: -0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      'games.awards_sub'.plural(_tripDays),
+                      style: AppFonts.body(
+                        fontSize: 13,
+                        color: textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Award cards
+                    ...List.generate(awards.length, (index) {
+                      final award = awards[index];
+                      return _buildAwardCard(
+                        award: award,
+                        surface: surface,
+                        textPrimary: textPrimary,
+                        textSecondary: textSecondary,
+                        isDark: isDark,
+                      );
+                    }),
+
+                    const SizedBox(height: 24),
+
+                    // Share button (Single Accent Action of screen)
+                    Container(
+                      width: double.infinity,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                        color: isDark ? GenZTokens.accentDark : GenZTokens.accent,
+                      ),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                          onTap: () => _shareAwards(awards),
+                          child: Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  PhosphorIcons.shareNetwork(
+                                    PhosphorIconsStyle.bold,
+                                  ),
+                                  color: isDark
+                                      ? GenZTokens.onAccentDark
+                                      : GenZTokens.onAccent,
+                                  size: 20,
                                 ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Icon(
-                                PhosphorIcons.trophy(PhosphorIconsStyle.fill),
-                                color: GenZTokens.ink,
-                                size: 44,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        Text(
-                          // Ten chuyen THAT — truoc day moi chuyen deu hien
-                          // "The Phu Quoc Awards".
-                          'games.awards_title'.tr(args: [_tripName]),
-                          style: AppFonts.heading(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                            color: textPrimary,
-                            letterSpacing: -0.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        Text(
-                          // So ngay THAT cua chuyen, khong con in cung "7 days".
-                          'games.awards_sub'.plural(_tripDays),
-                          style: AppFonts.body(
-                            fontSize: 14,
-                            color: textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 28),
-
-                        // Award cards
-                        ...List.generate(awards.length, (index) {
-                          final award = awards[index];
-                          return _buildAwardCard(
-                            award: award,
-                            surface: surface,
-                            textPrimary: textPrimary,
-                            textSecondary: textSecondary,
-                            isDark: isDark,
-                          );
-                        }),
-
-                        const SizedBox(height: 24),
-
-                        // Share button
-                        AnimatedBuilder(
-                          animation: _shimmerAnim,
-                          builder: (context, child) => Container(
-                            width: double.infinity,
-                            height: 58,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: GenZTokens.yellow,
-                              border: Border.all(
-                                color: isDark
-                                    ? GenZTokens.inkDark
-                                    : GenZTokens.ink,
-                                width: GenZTokens.borderWidthThin,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (isDark
-                                          ? GenZTokens.inkDark
-                                          : GenZTokens.ink)
-                                      .withValues(alpha: 0.3),
-                                  blurRadius: 0,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(100),
-                                // Chia sẻ THẬT danh sách giải. Trước đây nút
-                                // này chỉ hiện "đang được hoàn thiện".
-                                onTap: () => _shareAwards(awards),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        PhosphorIcons.shareNetwork(
-                                          PhosphorIconsStyle.bold,
-                                        ),
-                                        color: GenZTokens.ink,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'games.share_damage'.tr(),
-                                        style: AppFonts.heading(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: GenZTokens.ink,
-                                        ),
-                                      ),
-                                    ],
+                                const SizedBox(width: 8),
+                                Text(
+                                  'games.share_damage'.tr(),
+                                  style: AppFonts.heading(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark
+                                        ? GenZTokens.onAccentDark
+                                        : GenZTokens.onAccent,
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ),
-
-                        const SizedBox(height: 32),
-                      ],
+                      ),
                     ),
-                  ),
+
+                    const SizedBox(height: 32),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -493,91 +430,88 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     required bool isDark,
   }) {
     final Color accentColor = award['color'] as Color;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: accentColor, width: 2),
+      child: Container(
+        padding: const EdgeInsets.all(GenZTokens.space4),
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: line,
+            width: GenZTokens.borderWidthThin,
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: accentColor.withValues(alpha: 0.15),
-                  border: Border.all(color: accentColor, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: accentColor.withValues(alpha: 0.2),
-                      blurRadius: 0,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Icon(
-                    award['icon'] as IconData,
-                    color: accentColor,
-                    size: 26,
-                  ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: accentColor.withValues(alpha: 0.12),
+                border: Border.all(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: accentColor.withValues(alpha: 0.15),
-                      ),
-                      child: Text(
-                        award['label'] as String,
-                        style: AppFonts.heading(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: accentColor,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
+              child: Center(
+                child: Icon(
+                  award['icon'] as IconData,
+                  color: accentColor,
+                  size: 24,
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      award['winner'] as String,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                      color: accentColor.withValues(alpha: 0.12),
+                    ),
+                    child: Text(
+                      award['label'] as String,
                       style: AppFonts.heading(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      award['desc'] as String,
-                      style: AppFonts.body(
                         fontSize: 12,
-                        color: textSecondary,
-                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w700,
+                        color: accentColor,
+                        letterSpacing: 0.5,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    award['winner'] as String,
+                    style: AppFonts.heading(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    award['desc'] as String,
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      color: textSecondary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -588,26 +522,27 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     required VoidCallback onTap,
     required bool isDark,
   }) {
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(50),
-        child: Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-            border: Border.all(
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-              width: GenZTokens.borderWidthThin,
-            ),
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: surface,
+          border: Border.all(
+            color: line,
+            width: GenZTokens.borderWidthThin,
           ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-          ),
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: ink,
         ),
       ),
     );

@@ -31,9 +31,9 @@ class TripWishlistScreen extends ConsumerWidget {
   Color _fillOf(BuildContext context) =>
       _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
   Color _accentOf(BuildContext context) =>
-      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+      Theme.of(context).colorScheme.primary;
   Color _onAccentOf(BuildContext context) =>
-      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+      Theme.of(context).colorScheme.onPrimary;
   Color _accentSoftOf(BuildContext context) =>
       _isDark(context) ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color _textPriOf(BuildContext context) =>

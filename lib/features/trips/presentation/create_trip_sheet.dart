@@ -21,7 +21,7 @@ class CreateTripSheet extends ConsumerStatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: GenZTokens.paper.withValues(alpha: 0),
+      backgroundColor: Colors.transparent,
       builder: (_) => Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -89,7 +89,8 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
   Color get _textPri => _ink;
   Color get _textSec => _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _accent => _dark ? GenZTokens.accentDark : GenZTokens.accent;
-  Color get _onAccent => _dark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _onAccent =>
+      _dark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color get _accentSoft =>
       _dark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color get _danger => _dark ? GenZTokens.dangerDark : GenZTokens.danger;
@@ -217,7 +218,9 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
     return Container(
       decoration: BoxDecoration(
         color: _surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
         border: Border(
           top: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
           left: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
@@ -401,7 +404,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                     border: Border.all(
                       color: sel ? _accent : _line,
                       width: sel
-                          ? GenZTokens.borderWidth
+                          ? GenZTokens.borderWidthFocus
                           : GenZTokens.borderWidthThin,
                     ),
                     image: DecorationImage(
@@ -421,7 +424,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          GenZTokens.paper.withValues(alpha: 0),
+                          Colors.transparent,
                           Colors.black.withValues(alpha: 0.55),
                         ],
                       ),
@@ -464,7 +467,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                   border: Border.all(
                     color: sel ? _accent : _line,
                     width: sel
-                        ? GenZTokens.borderWidth
+                        ? GenZTokens.borderWidthFocus
                         : GenZTokens.borderWidthThin,
                   ),
                 ),
@@ -501,7 +504,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
                   keyboardType: TextInputType.number,
                   // keyboardType chỉ gợi ý bàn phím — vẫn dán/gõ được chữ nếu không lọc.
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  style: AppFonts.body(color: _textPri, fontSize: 14),
+                  style: AppFonts.body(color: _textPri, fontSize: 15),
                   decoration: InputDecoration(
                     hintText: 'trips.budget_hint'.tr(),
                     hintStyle: AppFonts.body(color: _textSec),
@@ -545,7 +548,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
           child: TextField(
             controller: _desc,
             maxLines: 2,
-            style: AppFonts.body(color: _textPri, fontSize: 14),
+            style: AppFonts.body(color: _textPri, fontSize: 15),
             decoration: InputDecoration(
               hintText: 'trips.description_hint'.tr(),
               hintStyle: AppFonts.body(color: _textSec),
@@ -612,7 +615,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
             border: Border.all(
               color: sel ? _accent : _line,
               width: sel
-                  ? GenZTokens.borderWidth
+                  ? GenZTokens.borderWidthFocus
                   : GenZTokens.borderWidthThin,
             ),
           ),
@@ -662,7 +665,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         textCapitalization: caps
             ? TextCapitalization.characters
             : TextCapitalization.sentences,
-        style: AppFonts.body(color: _textPri, fontSize: 14),
+        style: AppFonts.body(color: _textPri, fontSize: 15),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: AppFonts.body(color: _textSec),

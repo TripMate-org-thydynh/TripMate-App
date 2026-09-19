@@ -26,7 +26,7 @@ class PillTag extends StatelessWidget {
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
     final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
 
     final bg = selected ? accentSoft : (color ?? fill);

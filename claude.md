@@ -21,20 +21,35 @@ Gen Z đòi hỏi một giao diện cực kỳ cá tính, sống động và mư
 2.  **Mọi màn hình khi được tạo mới hoặc chỉnh sửa PHẢI tích hợp đồng thời cả hai chế độ Sáng và Tối (Light & Dark Theme)** một cách trực quan, đẹp mắt và có độ tương phản cao.
 
 ### 🎨 Bộ màu sắc tiêu chuẩn (Design Tokens)
-| Thuộc tính màu sắc | Chế độ Sáng (Light Theme) | Chế độ Tối (Dark Theme) |
-| :--- | :--- | :--- |
-| **Primary (Chủ đạo)** | `Color(0xFFE0533C)` (Coral đỏ cam) | `Color(0xFF8B5CF6)` (Electric Purple tím) |
-| **Secondary (Phụ trợ)** | `Color(0xFFEBA83A)` (Warm Amber vàng ấm) | `Color(0xFF06B6D4)` (Bright Teal xanh ngọc) |
-| **Background (Nền)** | `Color(0xFFFCFAF6)` (Cream/Ivory ấm áp) | `Color(0xFF0B0F19)` (Obsidian đen sâu) |
-| **Surface (Bề mặt thẻ)** | `Colors.white` (Trắng tinh khiết) | `Color(0xFF1E293B)` (Dark Slate Blue xanh đen) |
-| **Text Primary (Chữ chính)** | `Color(0xFF1E2022)` (Charcoal than đậm) | `Color(0xFFF1F5F9)` (Ice White trắng đá) |
-| **Text Secondary (Chữ phụ)** | `Color(0xFF686D76)` (Warm Slate xám đá) | `Color(0xFF94A3B8)` (Cool Grey xám lạnh) |
 
-### ✍️ Nguyên tắc thiết kế Typography & Components:
-*   **Font chữ:** Bo tròn hiện đại (`GoogleFonts.outfit` hoặc `GoogleFonts.plusJakartaSans`).
-*   **Thẻ (Card):** Bo góc mạnh (`borderRadius: BorderRadius.circular(20)`), đổ bóng nhẹ bằng màu primary kết hợp độ mờ.
-*   **Tương tác:** Bo góc nút bấm lớn (`BorderRadius.circular(16)`), sử dụng cử chỉ vuốt chạm (swipe, tap), tích hợp haptic feedback nếu cần.
-*   **Chuyển động (Animations):** Sử dụng các widget có hoạt ảnh mặc định như `AnimatedContainer`, `AnimatedScale`, `AnimatedRotation` hoặc `AnimatedSwitcher` để tạo cảm giác giao diện "sống động".
+> **Cập nhật 2026-09-16 — bộ màu cũ (coral #E0533C / tím #8B5CF6, font Outfit, bo góc 20) ĐÃ BỊ THAY THẾ.**
+> Nguồn sự thật hiện tại: [`docs/design/REFACTOR_UI_SPEC.md`](file:///E:/TripMate/docs/design/REFACTOR_UI_SPEC.md).
+> Token thực thi ở `lib/core/theme/gen_z_tokens.g.dart`. **Không đưa bộ màu cũ trở lại.**
+
+| Thuộc tính | Sáng | Tối |
+| :--- | :--- | :--- |
+| **Nền (scaffold)** | `#F7F3EC` kem | `#141617` graphite |
+| **Bề mặt (thẻ, sheet)** | `#FFFFFF` | `#1D2022` |
+| **Chữ chính** | `#1C1A17` | `#ECE7DF` |
+| **Chữ phụ** | `#6B655C` | `#9A948B` |
+| **Đường kẻ / viền** | `#E3DDD2` | `#2E3235` |
+| **Nền chìm (input, chip)** | `#F0EBE2` | `#25292B` |
+| **Màu nhấn (duy nhất)** | `#B4543A` đất nung | `#5C9A90` xanh mòng két |
+| **Chữ trên màu nhấn** | `#FFFFFF` | `#0F1211` |
+
+Trạng thái: `success #2F6D4F / #6FAF8C` · `warning #9A6B12 / #D8A94A` · `danger #A33A2C / #E0705C` · `info #3A6073 / #84A9BC`.
+Phân loại/biểu đồ: `chart1…chart6` (xem spec). **Không dùng màu ngoài các token này.**
+
+### ✍️ Typography & Components (đã đổi)
+*   **Font:** `GoogleFonts.instrumentSans` cho tiêu đề và nội dung; `GoogleFonts.spaceMono` cho số tiền/ngày. Không dùng Baloo 2, Nunito, Outfit, Plus Jakarta.
+*   **Thang cỡ chữ:** display 28 · title 22 · section 17 · body 15 · label 13 · caption 12. **Không có chữ dưới 12.**
+*   **Viền:** 1px thường, 1.5px khi nhấn/chọn, 2px khi focus.
+*   **Bán kính:** thẻ 14 · nút và input 10 · pill 999.
+*   **Bóng:** bỏ bóng đặc brutalist. Chế độ sáng dùng bóng rất nhẹ (alpha 0.06, blur 12); chế độ tối **không bóng**, phân tách bằng viền.
+*   **Một điểm nhấn mỗi màn:** mỗi màn chỉ một vùng dùng màu nhấn cho hành động chính; các nút khác là nút viền hoặc nút chữ.
+*   **Chuyển động:** `Curves.easeOutCubic`, 150ms đổi trạng thái / 250ms chuyển màn. **Không hiệu ứng nảy, không animation lặp vô hạn để trang trí.**
+*   **Không có tính năng đổi màu accent** — chỉ một bộ màu duy nhất.
+*   **Icon:** `phosphor_flutter`. Không dùng `Icons.*` của Material, không emoji làm icon.
 
 ---
 

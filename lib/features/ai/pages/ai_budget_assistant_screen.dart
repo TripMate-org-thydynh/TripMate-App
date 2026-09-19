@@ -69,7 +69,7 @@ class _AiBudgetAssistantScreenState
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textMuted = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final accent = Theme.of(context).colorScheme.primary;
     final accentSoft =
         isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
     final success = isDark ? GenZTokens.successDark : GenZTokens.success;

@@ -78,7 +78,9 @@ class Entitlement {
 /// mức đều được kiểm lại ở đó, nên sửa được giá trị này trên máy cũng không mở
 /// khoá được gì.
 final entitlementProvider = FutureProvider<Entitlement>((ref) async {
-  final data = await ref.watch(apiClientProvider).getData('/premium/entitlement');
+  final data = await ref
+      .watch(apiClientProvider)
+      .getData('/premium/entitlement');
   if (data is! Map) return Entitlement.free;
   return Entitlement.fromJson(data.cast<String, dynamic>());
 });

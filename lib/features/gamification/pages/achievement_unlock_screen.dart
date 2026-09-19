@@ -69,10 +69,10 @@ class AchievementUnlockScreen extends ConsumerWidget {
                 child: ListView(
                   padding: const EdgeInsets.all(GenZTokens.space5),
                   children: [
-                    _summary(isDark, unlocked, badges.length),
+                    _summary(context, isDark, unlocked, badges.length),
                     const SizedBox(height: GenZTokens.space5),
                     for (final b in badges) ...[
-                      _card(isDark, b),
+                      _card(context, isDark, b),
                       const SizedBox(height: GenZTokens.space4),
                     ],
                   ],
@@ -83,7 +83,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
     );
   }
 
-  Widget _summary(bool isDark, int unlocked, int total) {
+  Widget _summary(BuildContext context, bool isDark, int unlocked, int total) {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
@@ -120,7 +120,7 @@ class AchievementUnlockScreen extends ConsumerWidget {
     );
   }
 
-  Widget _card(bool isDark, TripBadge b) {
+  Widget _card(BuildContext context, bool isDark, TripBadge b) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;

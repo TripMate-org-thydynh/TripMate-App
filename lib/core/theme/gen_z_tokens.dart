@@ -35,6 +35,8 @@ class GenZTokens {
   static const Color onAccentDark = DsTokens.onAccentDark;
   static const Color accentSoft = DsTokens.accentSoft;
   static const Color accentSoftDark = DsTokens.accentSoftDark;
+  static const Color onAccentSoft = DsTokens.onAccentSoft;
+  static const Color onAccentSoftDark = DsTokens.onAccentSoftDark;
 
   // ── Màu ngữ nghĩa ─────────────────────────────────────────────────────────
   static const Color success = DsTokens.success;

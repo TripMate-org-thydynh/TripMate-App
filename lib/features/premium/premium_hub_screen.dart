@@ -45,9 +45,11 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> {
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
-    final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -185,7 +187,9 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: cardBg,
-                                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                                  borderRadius: BorderRadius.circular(
+                                    GenZTokens.radiusPill,
+                                  ),
                                   border: Border.all(
                                     color: line,
                                     width: GenZTokens.borderWidthThin,
@@ -263,12 +267,16 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> {
                             height: 48,
                             decoration: BoxDecoration(
                               color: accent,
-                              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusButton,
+                              ),
                               boxShadow: isDark
                                   ? const []
                                   : [
                                       BoxShadow(
-                                        color: GenZTokens.ink.withValues(alpha: 0.08),
+                                        color: GenZTokens.ink.withValues(
+                                          alpha: 0.08,
+                                        ),
                                         blurRadius: 12,
                                         offset: const Offset(0, 2),
                                       ),
@@ -442,10 +450,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: iconBg,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: iconBg),
             child: Icon(icon, color: iconColor, size: 16),
           ),
           const SizedBox(width: 14),

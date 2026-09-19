@@ -32,7 +32,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
     ReservationType.other: PhosphorIconsFill.bookmarkSimple,
   };
 
-  Color _typeColor(ReservationType t) {
+  Color _typeColor(BuildContext context, ReservationType t) {
     switch (t) {
       case ReservationType.flight:
         return GenZTokens.chart4;
@@ -89,7 +89,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
             Text(
               'general.upcoming_tickets'.tr(),
               style: AppFonts.heading(
-                fontSize: 20,
+                fontSize: 17,
                 fontWeight: FontWeight.w700,
                 color: _ink,
                 letterSpacing: -0.5,
@@ -114,7 +114,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
 
   Widget _card(BuildContext context, Reservation r) {
     final icon = _icons[r.type] ?? PhosphorIconsFill.bookmarkSimple;
-    final color = _typeColor(r.type);
+    final color = _typeColor(context, r.type);
     return Container(
       width: 250,
       padding: const EdgeInsets.all(14),
@@ -159,7 +159,7 @@ class UpcomingReservationsWidget extends ConsumerWidget {
                   child: Text(
                     _countdown(r.startTime!.toLocal()),
                     style: AppFonts.mono(
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: color,
                     ),
