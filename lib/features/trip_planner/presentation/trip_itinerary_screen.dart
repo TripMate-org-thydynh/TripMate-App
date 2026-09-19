@@ -10,6 +10,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/itinerary_repository.dart';
 import 'day_route_map_screen.dart';
+import '../../trips/application/trips_providers.dart';
+import '../../itinerary_templates/presentation/publish_template_sheet.dart';
+import '../../itinerary_templates/presentation/template_explore_screen.dart';
 import '../domain/itinerary_item.dart';
 import '../../../core/widgets/offline_banner.dart';
 
@@ -351,6 +354,36 @@ class TripItineraryScreen extends ConsumerWidget {
             color: textPri,
           ),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'templates.browse'.tr(),
+            icon: Icon(PhosphorIcons.books(), color: textPri),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TemplateExploreScreen(isDarkMode: isDarkMode),
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'templates.publish_action'.tr(),
+            icon: Icon(PhosphorIcons.shareNetwork(), color: textPri),
+            onPressed: () => PublishTemplateSheet.show(
+              context,
+              tripId: tripId,
+              defaultTitle:
+                  ref
+                      .read(tripsProvider)
+                      .valueOrNull
+                      ?.where((t) => t.id == tripId)
+                      .firstOrNull
+                      ?.name ??
+                  '',
+              isDarkMode: isDarkMode,
+            ),
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
       body: Column(
         children: [
