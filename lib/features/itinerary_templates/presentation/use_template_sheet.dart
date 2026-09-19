@@ -16,6 +16,7 @@ import '../../trips/presentation/pick_trip_sheet.dart';
 import '../../trips/presentation/trip_hub_screen.dart';
 import '../data/itinerary_templates_repository.dart';
 import '../domain/itinerary_template.dart';
+import 'ai_customize_screen.dart';
 
 /// Nhân bản một lịch trình mẫu: tạo chuyến mới, hoặc chép vào chuyến đang có.
 ///
@@ -187,6 +188,25 @@ class _UseTemplateSheetState extends ConsumerState<UseTemplateSheet> {
                     namedArgs: {'n': '${t.dayCount}'},
                   ),
                   onTap: () => setState(() => _newTrip = true),
+                ),
+                const SizedBox(height: 10),
+                _option(
+                  selected: false,
+                  icon: PhosphorIcons.sparkle(),
+                  title: 'templates.ai_option'.tr(),
+                  subtitle: 'templates.ai_option_hint'.tr(),
+                  onTap: () {
+                    final nav = Navigator.of(context);
+                    nav.pop();
+                    nav.push(
+                      MaterialPageRoute(
+                        builder: (_) => AiCustomizeScreen(
+                          template: widget.template,
+                          isDarkMode: widget.isDarkMode,
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 10),
                 _option(

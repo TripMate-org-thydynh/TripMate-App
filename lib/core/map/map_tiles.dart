@@ -1,5 +1,7 @@
 import 'package:flutter_map/flutter_map.dart';
 
+import 'cached_tile_provider.dart';
+
 /// Nguồn tile bản đồ dùng chung cho mọi màn — một chỗ để đổi nhà cung cấp.
 ///
 /// Esri Canvas (xám nhạt / xám đậm): tông trung tính, hợp bộ màu kem–graphite,
@@ -8,6 +10,8 @@ import 'package:flutter_map/flutter_map.dart';
 /// Đã bỏ: `tile.openstreetmap.org` (bị chặn ở một số mạng, chính sách OSM cấm
 /// app dùng tải nặng) và CARTO `basemaps.cartocdn.com` (nay in watermark
 /// "API KEY REQUIRED" lên tile).
+final _provider = CachedTileProvider();
+
 List<TileLayer> mapTileLayers({required bool dark}) {
   final tone = dark ? 'Dark' : 'Light';
   const base = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas';
@@ -16,12 +20,16 @@ List<TileLayer> mapTileLayers({required bool dark}) {
       urlTemplate: '$base/World_${tone}_Gray_Base/MapServer/tile/{z}/{y}/{x}',
       userAgentPackageName: 'com.tripmate.app',
       maxNativeZoom: 16,
+      // Giữ tile trên máy để xem lại được khi mất sóng.
+      tileProvider: _provider,
     ),
     TileLayer(
       urlTemplate:
           '$base/World_${tone}_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
       userAgentPackageName: 'com.tripmate.app',
       maxNativeZoom: 16,
+      // Giữ tile trên máy để xem lại được khi mất sóng.
+      tileProvider: _provider,
     ),
   ];
 }

@@ -19,6 +19,10 @@ class ItineraryTemplate {
     required this.stopCount,
     required this.isPublic,
     required this.useCount,
+    this.tags = const [],
+    this.isFeatured = false,
+    this.ratingAvg = 0.0,
+    this.ratingCount = 0,
     this.items = const [],
   });
 
@@ -35,6 +39,10 @@ class ItineraryTemplate {
   final int stopCount;
   final bool isPublic;
   final int useCount;
+  final List<String> tags;
+  final bool isFeatured;
+  final double ratingAvg;
+  final int ratingCount;
 
   /// Chỉ có khi lấy chi tiết (`GET /itinerary-templates/:id`).
   final List<ItineraryItem> items;
@@ -64,6 +72,10 @@ class ItineraryTemplate {
       stopCount: (j['stopCount'] as num?)?.toInt() ?? 0,
       isPublic: j['isPublic'] as bool? ?? true,
       useCount: (j['useCount'] as num?)?.toInt() ?? 0,
+      tags: (j['tags'] as List?)?.map((e) => e.toString()).toList() ?? const [],
+      isFeatured: j['isFeatured'] as bool? ?? false,
+      ratingAvg: (j['ratingAvg'] as num?)?.toDouble() ?? 0.0,
+      ratingCount: (j['ratingCount'] as num?)?.toInt() ?? 0,
       items: (j['items'] as List? ?? const []).whereType<Map>().map((e) {
         final m = e.cast<String, dynamic>();
         // Decimal của Prisma có thể về dạng chuỗi.
@@ -77,4 +89,104 @@ class ItineraryTemplate {
       }).toList(),
     );
   }
+}
+
+/// Trạng thái của user hiện tại với mẫu (`GET /itinerary-templates/:id/me`).
+class TemplateMyState {
+  const TemplateMyState({
+    required this.used,
+    this.myStars,
+  });
+
+  final bool used;
+  final int? myStars;
+
+  factory TemplateMyState.fromJson(Map<String, dynamic> j) {
+    return TemplateMyState(
+      used: j['used'] as bool? ?? false,
+      myStars: (j['myStars'] as num?)?.toInt(),
+    );
+  }
+}
+
+/// Người nhận xét đánh giá mẫu.
+class TemplateRatingUser {
+  const TemplateRatingUser({
+    required this.id,
+    required this.name,
+    this.avatarUrl,
+  });
+
+  final String id;
+  final String name;
+  final String? avatarUrl;
+
+  factory TemplateRatingUser.fromJson(Map<String, dynamic> j) {
+    return TemplateRatingUser(
+      id: j['id'] as String? ?? '',
+      name: j['name'] as String? ?? '',
+      avatarUrl: j['avatarUrl'] as String?,
+    );
+  }
+}
+
+/// Một lượt nhận xét đánh giá (`GET /itinerary-templates/:id/ratings`).
+class TemplateRating {
+  const TemplateRating({
+    required this.stars,
+    this.comment,
+    this.updatedAt,
+    required this.user,
+  });
+
+  final int stars;
+  final String? comment;
+  final DateTime? updatedAt;
+  final TemplateRatingUser user;
+
+  factory TemplateRating.fromJson(Map<String, dynamic> j) {
+    return TemplateRating(
+      stars: (j['stars'] as num?)?.toInt() ?? 5,
+      comment: j['comment'] as String?,
+      updatedAt: j['updatedAt'] != null
+          ? DateTime.tryParse(j['updatedAt'].toString())
+          : null,
+      user: TemplateRatingUser.fromJson(
+        (j['user'] as Map?)?.cast<String, dynamic>() ?? const {},
+      ),
+    );
+  }
+}
+
+/// Bộ thẻ cố định cho lịch trình mẫu.
+class TemplateTags {
+  static const chill = 'CHILL';
+  static const adventure = 'ADVENTURE';
+  static const foodie = 'FOODIE';
+  static const party = 'PARTY';
+  static const culture = 'CULTURE';
+  static const nature = 'NATURE';
+  static const budgetLow = 'BUDGET_LOW';
+  static const budgetMid = 'BUDGET_MID';
+  static const budgetHigh = 'BUDGET_HIGH';
+
+  static const all = [
+    chill,
+    adventure,
+    foodie,
+    party,
+    culture,
+    nature,
+    budgetLow,
+    budgetMid,
+    budgetHigh,
+  ];
+
+  static const budget = [
+    budgetLow,
+    budgetMid,
+    budgetHigh,
+  ];
+
+  static bool isBudget(String tag) => budget.contains(tag);
 }

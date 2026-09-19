@@ -8,6 +8,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/itinerary_templates_repository.dart';
+import '../domain/itinerary_template.dart';
 
 /// Đăng lịch trình của chuyến hiện tại thành mẫu cho người khác nhân bản.
 class PublishTemplateSheet extends ConsumerStatefulWidget {
@@ -46,6 +47,7 @@ class PublishTemplateSheet extends ConsumerStatefulWidget {
 class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
   late final _title = TextEditingController(text: widget.defaultTitle);
   final _desc = TextEditingController();
+  final Set<String> _tags = {};
   bool _public = true;
   bool _notes = false;
   bool _busy = false;
@@ -65,6 +67,21 @@ class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
   Color get _ink => _dark ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _inkSoft => _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
+  void _toggleTag(String tag) {
+    setState(() {
+      if (_tags.contains(tag)) {
+        _tags.remove(tag);
+      } else {
+        if (TemplateTags.isBudget(tag)) {
+          _tags.removeWhere((t) => TemplateTags.isBudget(t));
+        }
+        if (_tags.length < 5) {
+          _tags.add(tag);
+        }
+      }
+    });
+  }
+
   Future<void> _submit() async {
     if (_title.text.trim().isEmpty) return;
     setState(() => _busy = true);
@@ -78,6 +95,7 @@ class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
             description: _desc.text,
             isPublic: _public,
             includeNotes: _notes,
+            tags: _tags.toList(),
           );
       HapticFeedback.mediumImpact();
       ref.invalidate(myTemplatesProvider);
@@ -190,6 +208,47 @@ class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
                   style: AppFonts.body(fontSize: 15, color: _ink),
                   decoration: _input('templates.field_description'.tr()),
                 ),
+                const SizedBox(height: 12),
+                Text(
+                  'templates.tags_label'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _ink,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final tag in TemplateTags.all)
+                      FilterChip(
+                        label: Text('templates.tag_$tag'.tr()),
+                        selected: _tags.contains(tag),
+                        showCheckmark: false,
+                        onSelected: (_) => _toggleTag(tag),
+                        labelStyle: AppFonts.body(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: _tags.contains(tag)
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : _inkSoft,
+                        ),
+                        selectedColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor: _fill,
+                        side: BorderSide(
+                          color: _tags.contains(tag)
+                              ? Theme.of(context).colorScheme.primary
+                              : _line,
+                        ),
+                        shape: const StadiumBorder(),
+                        materialTapTargetSize:
+                            MaterialTapTargetSize.shrinkWrap,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
                 _switch(
                   'templates.public_switch'.tr(),
                   'templates.public_switch_hint'.tr(),

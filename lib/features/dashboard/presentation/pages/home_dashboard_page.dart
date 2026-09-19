@@ -21,6 +21,7 @@ import '../widgets/weather_forecast_sheet.dart';
 import '../widgets/upcoming_reservations_widget.dart';
 import '../widgets/friend_presence_panel.dart';
 import '../widgets/daily_recap_widget.dart';
+import '../widgets/today_brief_card.dart';
 import '../widgets/quick_actions_panel.dart';
 import '../../../moments/presentation/pages/memory_wall_screen.dart';
 import '../../../trips/application/trips_providers.dart';
@@ -228,6 +229,28 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         // mình còn bao nhiêu ngày mà không cần đi tìm. Tự ẩn khi không có lần
         // dùng thử nào đang chạy.
         const SliverToBoxAdapter(child: TrialBanner()),
+
+        // ── BẢN TIN HÔM NAY ──
+        Consumer(
+          builder: (context, ref, _) {
+            final tripId = ref.watch(tripsProvider).maybeWhen(
+              data: (trips) => trips.isEmpty ? null : trips.first.id,
+              orElse: () => null,
+            );
+            if (tripId == null) {
+              return const SliverToBoxAdapter(child: SizedBox.shrink());
+            }
+            return SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TodayBriefCard(
+                  tripId: tripId,
+                  isDarkMode: isDarkMode,
+                ),
+              ),
+            );
+          },
+        ),
 
         // ── 3. QUICK ACTIONS 2×2 ──
         SliverToBoxAdapter(

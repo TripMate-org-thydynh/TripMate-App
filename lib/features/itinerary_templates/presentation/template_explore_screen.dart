@@ -27,6 +27,7 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
   final _search = TextEditingController();
   Timer? _debounce;
   String _query = '';
+  String? _selectedTag;
   String _sort = 'popular';
 
   @override
@@ -86,56 +87,72 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
 
   Widget _explore() {
     final async = ref.watch(
-      publicTemplatesProvider((query: _query, sort: _sort)),
+      publicTemplatesProvider((query: _query, tag: _selectedTag, sort: _sort)),
     );
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: TextField(
-            controller: _search,
-            style: AppFonts.body(fontSize: 15, color: _ink),
-            onChanged: (v) {
-              _debounce?.cancel();
-              _debounce = Timer(
-                const Duration(milliseconds: 350),
-                () => setState(() => _query = v),
-              );
-            },
-            decoration: InputDecoration(
-              hintText: 'templates.search_hint'.tr(),
-              hintStyle: AppFonts.body(fontSize: 15, color: _inkSoft),
-              prefixIcon: Icon(
-                PhosphorIcons.magnifyingGlass(),
-                color: _inkSoft,
-              ),
-              filled: true,
-              fillColor: _fill,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                borderSide: BorderSide(color: _line),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                borderSide: BorderSide(color: _line),
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(publicTemplatesProvider);
+        ref.invalidate(featuredTemplatesProvider);
+      },
+      child: ListView(
+        padding: const EdgeInsets.only(bottom: 32),
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: TextField(
+              controller: _search,
+              style: AppFonts.body(fontSize: 15, color: _ink),
+              onChanged: (v) {
+                _debounce?.cancel();
+                _debounce = Timer(
+                  const Duration(milliseconds: 350),
+                  () => setState(() => _query = v),
+                );
+              },
+              decoration: InputDecoration(
+                hintText: 'templates.search_hint'.tr(),
+                hintStyle: AppFonts.body(fontSize: 15, color: _inkSoft),
+                prefixIcon: Icon(
+                  PhosphorIcons.magnifyingGlass(),
+                  color: _inkSoft,
+                ),
+                filled: true,
+                fillColor: _fill,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                  borderSide: BorderSide(color: _line),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                  borderSide: BorderSide(color: _line),
+                ),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-          child: Row(
-            children: [
-              _sortChip('popular', 'templates.sort_popular'.tr()),
-              const SizedBox(width: 8),
-              _sortChip('new', 'templates.sort_new'.tr()),
-            ],
+          const SizedBox(height: 4),
+          _tagChips(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _sortChip('popular', 'templates.sort_popular'.tr()),
+                  const SizedBox(width: 8),
+                  _sortChip('new', 'templates.sort_new'.tr()),
+                  const SizedBox(width: 8),
+                  _sortChip('top', 'templates.sort_top'.tr()),
+                ],
+              ),
+            ),
           ),
-        ),
-        Expanded(
-          child: async.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+          _featuredSection(),
+          async.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.only(top: 48),
+              child: Center(child: CircularProgressIndicator()),
+            ),
             error: (e, _) => AppErrorState(
               isDark: _dark,
               error: e,
@@ -148,10 +165,138 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
                     title: 'templates.empty_title'.tr(),
                     body: 'templates.empty_body'.tr(),
                   )
-                : _grid(list),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < list.length; i++) ...[
+                          if (i > 0) const SizedBox(height: 14),
+                          TemplateCard(
+                            template: list[i],
+                            isDark: _dark,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => TemplateDetailScreen(
+                                  templateId: list[i].id,
+                                  isDarkMode: widget.isDarkMode,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+
+  Widget _featuredSection() {
+    if (_query.isNotEmpty || _selectedTag != null) {
+      return const SizedBox.shrink();
+    }
+    final async = ref.watch(featuredTemplatesProvider);
+    return async.maybeWhen(
+      data: (list) {
+        if (list.isEmpty) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Row(
+                children: [
+                  Icon(
+                    PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                    size: 16,
+                    color: _dark ? GenZTokens.warningDark : GenZTokens.warning,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'templates.featured'.tr(),
+                    style: AppFonts.heading(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: _ink,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 154,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: list.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
+                itemBuilder: (_, i) => _FeaturedCard(
+                  template: list[i],
+                  isDark: _dark,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TemplateDetailScreen(
+                        templateId: list[i].id,
+                        isDarkMode: widget.isDarkMode,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        );
+      },
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _tagChips() {
+    final accent = Theme.of(context).colorScheme.primary;
+    return SizedBox(
+      height: 36,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: TemplateTags.all.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (_, i) {
+          final tag = TemplateTags.all[i];
+          final selected = _selectedTag == tag;
+          return FilterChip(
+            label: Text('templates.tag_$tag'.tr()),
+            selected: selected,
+            showCheckmark: false,
+            onSelected: (_) {
+              setState(() {
+                if (_selectedTag == tag) {
+                  _selectedTag = null;
+                } else {
+                  _selectedTag = tag;
+                }
+              });
+            },
+            labelStyle: AppFonts.body(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: selected
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : _inkSoft,
+            ),
+            selectedColor: accent,
+            backgroundColor: _fill,
+            side: BorderSide(color: selected ? accent : _line),
+            shape: const StadiumBorder(),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          );
+        },
+      ),
     );
   }
 
@@ -171,7 +316,28 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
               title: 'templates.mine_empty_title'.tr(),
               body: 'templates.mine_empty_body'.tr(),
             )
-          : _grid(list, showVisibility: true),
+          : RefreshIndicator(
+              onRefresh: () async => ref.invalidate(myTemplatesProvider),
+              child: ListView.separated(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                itemCount: list.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 14),
+                itemBuilder: (_, i) => TemplateCard(
+                  template: list[i],
+                  isDark: _dark,
+                  showVisibility: true,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TemplateDetailScreen(
+                        templateId: list[i].id,
+                        isDarkMode: widget.isDarkMode,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
     );
   }
 
@@ -194,29 +360,126 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
       shape: const StadiumBorder(),
     );
   }
+}
 
-  Widget _grid(List<ItineraryTemplate> list, {bool showVisibility = false}) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(publicTemplatesProvider);
-        ref.invalidate(myTemplatesProvider);
-      },
-      child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        itemCount: list.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 14),
-        itemBuilder: (_, i) => TemplateCard(
-          template: list[i],
-          isDark: _dark,
-          showVisibility: showVisibility,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => TemplateDetailScreen(
-                templateId: list[i].id,
-                isDarkMode: widget.isDarkMode,
+/// Thẻ nhỏ hiển thị mẫu nổi bật ở hàng cuộn ngang.
+class _FeaturedCard extends StatelessWidget {
+  const _FeaturedCard({
+    required this.template,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  final ItineraryTemplate template;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
+    final t = template;
+    final cover = t.coverImage;
+
+    return Material(
+      color: surface,
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            border: Border.all(color: line),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 86,
+                width: double.infinity,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (cover != null && cover.startsWith('http'))
+                      CachedNetworkImage(
+                        imageUrl: cover,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, _, _) => ColoredBox(color: fill),
+                      )
+                    else if (cover != null && cover.startsWith('assets/'))
+                      Image.asset(cover, fit: BoxFit.cover)
+                    else
+                      ColoredBox(
+                        color: fill,
+                        child: Icon(
+                          PhosphorIcons.mapTrifold(),
+                          size: 28,
+                          color: inkSoft,
+                        ),
+                      ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.5, 1],
+                          colors: [surface.withValues(alpha: 0), surface],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 4, 10, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppFonts.heading(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: ink,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (t.ratingCount > 0)
+                      Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.star(PhosphorIconsStyle.fill),
+                            size: 12,
+                            color: warning,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            t.ratingAvg.toStringAsFixed(1),
+                            style: AppFonts.mono(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: ink,
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      Text(
+                        'templates.days'.tr(namedArgs: {'n': '${t.dayCount}'}),
+                        style: AppFonts.body(fontSize: 11, color: inkSoft),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -246,6 +509,7 @@ class TemplateCard extends StatelessWidget {
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
     final t = template;
     final cover = t.coverImage;
 
@@ -305,6 +569,43 @@ class TemplateCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (t.isFeatured)
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: surface.withValues(alpha: 0.92),
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusPill,
+                            ),
+                            border: Border.all(color: line),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                                size: 12,
+                                color: warning,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'templates.featured_badge'.tr(),
+                                style: AppFonts.body(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: ink,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     if (showVisibility)
                       Positioned(
                         top: 10,
@@ -358,6 +659,26 @@ class TemplateCard extends StatelessWidget {
                       spacing: 14,
                       runSpacing: 6,
                       children: [
+                        if (t.ratingCount > 0)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                PhosphorIcons.star(PhosphorIconsStyle.fill),
+                                size: 14,
+                                color: warning,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${t.ratingAvg.toStringAsFixed(1)} (${t.ratingCount})',
+                                style: AppFonts.mono(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: ink,
+                                ),
+                              ),
+                            ],
+                          ),
                         stat(
                           PhosphorIcons.calendarBlank(),
                           'templates.days'.tr(
@@ -379,6 +700,37 @@ class TemplateCard extends StatelessWidget {
                         stat(PhosphorIcons.user(), t.authorName),
                       ],
                     ),
+                    if (t.tags.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          for (final tag in t.tags.take(3))
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: fill,
+                                borderRadius: BorderRadius.circular(
+                                  GenZTokens.radiusPill,
+                                ),
+                                border: Border.all(color: line),
+                              ),
+                              child: Text(
+                                'templates.tag_$tag'.tr(),
+                                style: AppFonts.body(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: inkSoft,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

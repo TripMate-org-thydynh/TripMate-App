@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +15,8 @@ import '../../../core/theme/gen_z_tokens.dart';
 import '../data/itinerary_repository.dart';
 import '../domain/itinerary_item.dart';
 import '../../../core/map/map_tiles.dart';
+import '../../../core/map/cached_tile_provider.dart';
+import '../../../core/app_messenger.dart';
 
 /// Bản đồ lộ trình: mọi điểm dừng trong timeline, đánh số theo giờ, nối bằng
 /// đường theo đúng thứ tự đi.
@@ -102,6 +106,115 @@ class _DayRouteMapScreenState extends ConsumerState<DayRouteMapScreen> {
     );
   }
 
+  /// Tải trước bản đồ quanh MỌI điểm của chuyến để dùng khi mất sóng.
+  ///
+  /// Vùng = khung bao các điểm + lề ~2km. Vùng quá rộng thì hạ mức zoom tối đa
+  /// tới khi số tile nằm trong giới hạn [OfflineMapStore.maxPrefetchTiles].
+  Future<void> _downloadOffline() async {
+    final grouped = ref.read(tripItineraryProvider(widget.tripId)).valueOrNull;
+    final pts = [
+      for (final i in grouped?.values.expand((e) => e) ?? <ItineraryItem>[])
+        if (i.hasCoords) LatLng(i.latitude!, i.longitude!),
+    ];
+    if (pts.isEmpty) {
+      showGlobalSnack('itinerary.offline_no_points'.tr(), isError: true);
+      return;
+    }
+    final lats = pts.map((p) => p.latitude);
+    final lngs = pts.map((p) => p.longitude);
+    const pad = 0.02;
+    final bounds = LatLngBounds(
+      LatLng(lats.reduce(math.max) + pad, lngs.reduce(math.min) - pad),
+      LatLng(lats.reduce(math.min) - pad, lngs.reduce(math.max) + pad),
+    );
+    final layers = mapTileLayers(dark: _dark);
+    var maxZoom = 16;
+    var urls = OfflineMapStore.urlsFor(bounds, layers, maxZoom: maxZoom);
+    while (urls.length > OfflineMapStore.maxPrefetchTiles && maxZoom > 12) {
+      maxZoom--;
+      urls = OfflineMapStore.urlsFor(bounds, layers, maxZoom: maxZoom);
+    }
+    final mb = (urls.length * 15 / 1024).toStringAsFixed(1);
+    if (!mounted) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
+        title: Text(
+          'itinerary.offline_title'.tr(),
+          style: AppFonts.heading(fontSize: 17, color: _ink),
+        ),
+        content: Text(
+          'itinerary.offline_confirm'.tr(
+            namedArgs: {'n': '${urls.length}', 'mb': mb, 'z': '$maxZoom'},
+          ),
+          style: AppFonts.body(fontSize: 14, color: _inkSoft, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('general.cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('itinerary.offline_start'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    final progress = ValueNotifier<double>(0);
+    var cancelled = false;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
+        content: ValueListenableBuilder<double>(
+          valueListenable: progress,
+          builder: (_, v, _) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              LinearProgressIndicator(value: v),
+              const SizedBox(height: 12),
+              Text(
+                'itinerary.offline_progress'.tr(
+                  namedArgs: {'p': '${(v * 100).round()}'},
+                ),
+                style: AppFonts.body(fontSize: 14, color: _ink),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              cancelled = true;
+              Navigator.pop(ctx);
+            },
+            child: Text('general.cancel'.tr()),
+          ),
+        ],
+      ),
+    );
+    final failed = await OfflineMapStore.instance.prefetch(
+      urls,
+      onProgress: (d, t) => progress.value = d / t,
+      cancelled: () => cancelled,
+    );
+    if (!mounted) return;
+    if (!cancelled) Navigator.of(context, rootNavigator: true).pop();
+    progress.dispose();
+    if (cancelled) return;
+    showGlobalSnack(
+      failed == 0
+          ? 'itinerary.offline_done'.tr()
+          : 'itinerary.offline_partial'.tr(namedArgs: {'n': '$failed'}),
+      isError: failed > 0,
+    );
+  }
+
   Future<void> _openGoogleMaps(List<ItineraryItem> items) async {
     final messenger = ScaffoldMessenger.of(context);
     final stops = items
@@ -141,6 +254,13 @@ class _DayRouteMapScreenState extends ConsumerState<DayRouteMapScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
+        actions: [
+          IconButton(
+            tooltip: 'itinerary.offline_title'.tr(),
+            icon: Icon(PhosphorIcons.downloadSimple(), color: _ink),
+            onPressed: _downloadOffline,
+          ),
+        ],
         title: Text(
           'itinerary.route_map_title'.tr(),
           style: AppFonts.heading(
