@@ -12,6 +12,7 @@ import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../moments/application/moments_providers.dart';
 import '../../../moments/domain/moment.dart';
 import '../../../../core/services/nominatim_service.dart';
+import '../../../../core/map/map_tiles.dart';
 
 class PhotoMapScreen extends ConsumerStatefulWidget {
   final String tripId;
@@ -104,12 +105,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                 mapController: _mapController,
                 options: MapOptions(initialCenter: center, initialZoom: 14.0),
                 children: [
-                  TileLayer(
-                    urlTemplate: widget.isDarkMode
-                        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' // Sleek Dark Mode map tiles
-                        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.tripmate.app',
-                  ),
+                  ...mapTileLayers(dark: widget.isDarkMode),
                   MarkerLayer(
                     markers: displayMoments.map((m) {
                       final point = LatLng(m.latitude!, m.longitude!);

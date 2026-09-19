@@ -11,6 +11,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/api_service.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
+import '../../../../core/map/map_tiles.dart';
 
 /// Phân tích ảnh → check vị trí trên bản đồ.
 /// Gửi ảnh (base64) lên BE: EXIF GPS trước, không có thì Gemini vision đoán.
@@ -138,10 +139,8 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                     initialZoom: hasLoc ? 13 : 5,
                   ),
                   children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.tripmate.app',
+                    ...mapTileLayers(
+                      dark: Theme.of(context).brightness == Brightness.dark,
                     ),
                     if (hasLoc)
                       MarkerLayer(

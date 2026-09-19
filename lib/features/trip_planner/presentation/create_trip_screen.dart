@@ -142,10 +142,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
       builder: (context, child) {
-        return Theme(
-          data: Theme.of(context),
-          child: child!,
-        );
+        return Theme(data: Theme.of(context), child: child!);
       },
     );
     if (picked != null) {
@@ -353,7 +350,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 24,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -484,17 +484,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
         style: AppFonts.body(color: textPri, fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: AppFonts.body(
-            color: textSec,
-            fontSize: 14,
-          ),
-          prefixIcon: Icon(
-            icon,
-            color: textSec,
-            size: 20,
-          ),
+          hintStyle: AppFonts.body(color: textSec, fontSize: 14),
+          prefixIcon: Icon(icon, color: textSec, size: 20),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 14,
+          ),
         ),
       ),
     );
@@ -525,7 +521,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -601,9 +600,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(color: line, width: 1),
                                   ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                  ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         _startDate == null
@@ -642,9 +644,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(color: line, width: 1),
                                   ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                  ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         _endDate == null
@@ -725,7 +730,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                       children: [
                                         Positioned.fill(
                                           child: ExcludeSemantics(
-                                            child: cover['image']!.startsWith('assets/')
+                                            child:
+                                                cover['image']!.startsWith(
+                                                  'assets/',
+                                                )
                                                 ? Image.asset(
                                                     cover['image']!,
                                                     fit: BoxFit.cover,
@@ -733,8 +741,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                 : CachedNetworkImage(
                                                     imageUrl: cover['image']!,
                                                     fit: BoxFit.cover,
-                                                    placeholder: (context, url) =>
-                                                        Container(
+                                                    placeholder:
+                                                        (
+                                                          context,
+                                                          url,
+                                                        ) => Container(
                                                           color: fill,
                                                           child: const Center(
                                                             child: SizedBox(
@@ -742,15 +753,17 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                               height: 20,
                                                               child:
                                                                   CircularProgressIndicator(
-                                                                strokeWidth: 2,
-                                                              ),
+                                                                    strokeWidth:
+                                                                        2,
+                                                                  ),
                                                             ),
                                                           ),
                                                         ),
-                                                    errorWidget: (context, url, error) =>
-                                                        Container(
-                                                          color: fill,
-                                                        ),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Container(
+                                                              color: fill,
+                                                            ),
                                                   ),
                                           ),
                                         ),
@@ -779,7 +792,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                 shape: BoxShape.circle,
                                               ),
                                               child: Icon(
-                                                PhosphorIcons.check(PhosphorIconsStyle.bold),
+                                                PhosphorIcons.check(
+                                                  PhosphorIconsStyle.bold,
+                                                ),
                                                 color: onAccent,
                                                 size: 12,
                                               ),
@@ -847,7 +862,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                       children: _vibes.map((v) {
                         final sel = _vibe == v.$1;
                         return GestureDetector(
-                          onTap: () => setState(() => _vibe = sel ? null : v.$1),
+                          onTap: () =>
+                              setState(() => _vibe = sel ? null : v.$1),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 14,
@@ -874,7 +890,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                   v.$2.tr(),
                                   style: AppFonts.body(
                                     fontSize: 13,
-                                    fontWeight: sel ? FontWeight.w600 : FontWeight.w500,
+                                    fontWeight: sel
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
                                     color: sel ? accent : textPri,
                                   ),
                                 ),
@@ -948,10 +966,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     decoration: BoxDecoration(
                                       color: fill,
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: line,
-                                        width: 1,
-                                      ),
+                                      border: Border.all(color: line, width: 1),
                                     ),
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -977,7 +992,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     builder: (context, child) {
                                       final offset =
                                           math.sin(
-                                            _floatController1.value * math.pi * 2,
+                                            _floatController1.value *
+                                                math.pi *
+                                                2,
                                           ) *
                                           8;
                                       return Positioned(
@@ -994,11 +1011,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                             ),
                                           ),
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(22),
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
                                             child: Semantics(
-                                              label: 'trips.avatar_minh_nhat'.tr(),
+                                              label: 'trips.avatar_minh_nhat'
+                                                  .tr(),
                                               image: true,
-                                              child: 'assets/images/avatar_minh_nhat.webp'
+                                              child:
+                                                  'assets/images/avatar_minh_nhat.webp'
                                                       .startsWith('assets/')
                                                   ? Image.asset(
                                                       'assets/images/avatar_minh_nhat.webp',
@@ -1008,15 +1029,24 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                       imageUrl:
                                                           'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
                                                       fit: BoxFit.cover,
-                                                      placeholder: (context, url) =>
-                                                          ExcludeSemantics(
+                                                      placeholder:
+                                                          (
+                                                            context,
+                                                            url,
+                                                          ) => ExcludeSemantics(
                                                             child: Container(
                                                               color: fill,
                                                             ),
                                                           ),
                                                       errorWidget:
-                                                          (context, url, error) =>
-                                                              Icon(PhosphorIcons.user(), color: textSec),
+                                                          (
+                                                            context,
+                                                            url,
+                                                            error,
+                                                          ) => Icon(
+                                                            PhosphorIcons.user(),
+                                                            color: textSec,
+                                                          ),
                                                     ),
                                             ),
                                           ),
@@ -1031,7 +1061,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     builder: (context, child) {
                                       final offset =
                                           math.cos(
-                                            _floatController2.value * math.pi * 2,
+                                            _floatController2.value *
+                                                math.pi *
+                                                2,
                                           ) *
                                           10;
                                       return Positioned(
@@ -1048,11 +1080,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                             ),
                                           ),
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(25),
+                                            borderRadius: BorderRadius.circular(
+                                              25,
+                                            ),
                                             child: Semantics(
-                                              label: 'trips.avatar_thao_ly'.tr(),
+                                              label: 'trips.avatar_thao_ly'
+                                                  .tr(),
                                               image: true,
-                                              child: 'assets/images/avatar_thao_ly.webp'
+                                              child:
+                                                  'assets/images/avatar_thao_ly.webp'
                                                       .startsWith('assets/')
                                                   ? Image.asset(
                                                       'assets/images/avatar_thao_ly.webp',
@@ -1062,15 +1098,24 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                       imageUrl:
                                                           'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
                                                       fit: BoxFit.cover,
-                                                      placeholder: (context, url) =>
-                                                          ExcludeSemantics(
+                                                      placeholder:
+                                                          (
+                                                            context,
+                                                            url,
+                                                          ) => ExcludeSemantics(
                                                             child: Container(
                                                               color: fill,
                                                             ),
                                                           ),
                                                       errorWidget:
-                                                          (context, url, error) =>
-                                                              Icon(PhosphorIcons.user(), color: textSec),
+                                                          (
+                                                            context,
+                                                            url,
+                                                            error,
+                                                          ) => Icon(
+                                                            PhosphorIcons.user(),
+                                                            color: textSec,
+                                                          ),
                                                     ),
                                             ),
                                           ),
@@ -1085,7 +1130,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                     builder: (context, child) {
                                       final offset =
                                           math.sin(
-                                            _floatController3.value * math.pi * 2,
+                                            _floatController3.value *
+                                                math.pi *
+                                                2,
                                           ) *
                                           6;
                                       return Positioned(
@@ -1102,14 +1149,23 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                             ),
                                           ),
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(19),
+                                            borderRadius: BorderRadius.circular(
+                                              19,
+                                            ),
                                             child: Image.asset(
                                               'assets/images/avatar_user.webp',
                                               fit: BoxFit.cover,
-                                              semanticLabel: 'trips.avatar_user'.tr(),
+                                              semanticLabel: 'trips.avatar_user'
+                                                  .tr(),
                                               errorBuilder:
-                                                  (context, error, stackTrace) =>
-                                                      Icon(PhosphorIcons.user(), color: textSec),
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => Icon(
+                                                    PhosphorIcons.user(),
+                                                    color: textSec,
+                                                  ),
                                             ),
                                           ),
                                         ),
@@ -1182,9 +1238,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: widget.hideNavigationBar ? 32 : 100,
-                    ),
+                    SizedBox(height: widget.hideNavigationBar ? 32 : 100),
                   ],
                 ),
               ),
@@ -1205,12 +1259,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
     Color textSec,
   ) {
     return Container(
-      padding: const EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 12,
-        bottom: 12,
-      ),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 12, bottom: 12),
       decoration: BoxDecoration(
         color: bg,
         border: Border(bottom: BorderSide(color: line, width: 1)),
@@ -1224,10 +1273,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
             height: 36,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: line,
-                width: 1,
-              ),
+              border: Border.all(color: line, width: 1),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),
@@ -1235,8 +1281,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                 'assets/images/avatar_user.webp',
                 fit: BoxFit.cover,
                 semanticLabel: 'trips.avatar_user'.tr(),
-                errorBuilder: (context, error, stackTrace) =>
-                    Icon(PhosphorIcons.circleDashed(), size: 18, color: textSec),
+                errorBuilder: (context, error, stackTrace) => Icon(
+                  PhosphorIcons.circleDashed(),
+                  size: 18,
+                  color: textSec,
+                ),
               ),
             ),
           ),
@@ -1267,11 +1316,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               // Lối vào luồng tham gia chuyến bằng mã mời / link chia sẻ.
               IconButton(
                 tooltip: 'trips.join_by_code'.tr(),
-                icon: Icon(
-                  PhosphorIcons.ticket(),
-                  color: textPri,
-                  size: 20,
-                ),
+                icon: Icon(PhosphorIcons.ticket(), color: textPri, size: 20),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -1362,11 +1407,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
           color: isActive ? accentSoft : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          icon,
-          color: isActive ? accent : textSec,
-          size: 22,
-        ),
+        child: Icon(icon, color: isActive ? accent : textSec, size: 22),
       ),
     );
   }

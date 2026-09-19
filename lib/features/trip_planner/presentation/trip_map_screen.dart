@@ -15,6 +15,7 @@ import '../domain/itinerary_item.dart';
 import '../application/place_import_service.dart';
 import '../../moments/application/moments_providers.dart';
 import '../../moments/domain/moment.dart';
+import '../../../core/map/map_tiles.dart';
 
 final mapCategoryFilterProvider = StateProvider<String?>((ref) => null);
 
@@ -124,10 +125,7 @@ class TripMapScreen extends ConsumerWidget {
                   .toList();
 
           if (points.isEmpty && moments.isEmpty) {
-            return _msg(
-              context,
-              'itinerary.map_empty'.tr(),
-            );
+            return _msg(context, 'itinerary.map_empty'.tr());
           }
 
           final coords = [
@@ -155,12 +153,7 @@ class TripMapScreen extends ConsumerWidget {
                     initialZoom: _zoomFor(coords),
                   ),
                   children: [
-                    TileLayer(
-                      urlTemplate: isDark
-                          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                          : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.tripmate.app',
-                    ),
+                    ...mapTileLayers(dark: isDark),
                     // Đường lộ trình từng ngày (nối các điểm theo thứ tự).
                     PolylineLayer(
                       polylines: [
@@ -245,10 +238,11 @@ class TripMapScreen extends ConsumerWidget {
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: (isDark
-                                                ? GenZTokens.inkDark
-                                                : GenZTokens.ink)
-                                            .withValues(alpha: 0.15),
+                                        color:
+                                            (isDark
+                                                    ? GenZTokens.inkDark
+                                                    : GenZTokens.ink)
+                                                .withValues(alpha: 0.15),
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       ),
@@ -287,11 +281,31 @@ class TripMapScreen extends ConsumerWidget {
   ) {
     final categories = [
       (key: null, label: 'trips.filter_all'.tr(), icon: PhosphorIcons.mapPin()),
-      (key: 'FOOD', label: 'itinerary.cat_food_plain'.tr(), icon: PhosphorIcons.forkKnife()),
-      (key: 'ACTIVITIES', label: 'itinerary.map_fun'.tr(), icon: PhosphorIcons.ticket()),
-      (key: 'ACCOMMODATION', label: 'expense.cat_stay'.tr(), icon: PhosphorIcons.buildings()),
-      (key: 'COFFEE', label: 'itinerary.map_coffee'.tr(), icon: PhosphorIcons.coffee()),
-      (key: 'OTHER', label: 'expense.cat_other'.tr(), icon: PhosphorIcons.dotsThreeCircle()),
+      (
+        key: 'FOOD',
+        label: 'itinerary.cat_food_plain'.tr(),
+        icon: PhosphorIcons.forkKnife(),
+      ),
+      (
+        key: 'ACTIVITIES',
+        label: 'itinerary.map_fun'.tr(),
+        icon: PhosphorIcons.ticket(),
+      ),
+      (
+        key: 'ACCOMMODATION',
+        label: 'expense.cat_stay'.tr(),
+        icon: PhosphorIcons.buildings(),
+      ),
+      (
+        key: 'COFFEE',
+        label: 'itinerary.map_coffee'.tr(),
+        icon: PhosphorIcons.coffee(),
+      ),
+      (
+        key: 'OTHER',
+        label: 'expense.cat_other'.tr(),
+        icon: PhosphorIcons.dotsThreeCircle(),
+      ),
     ];
 
     final surface = _surfaceOf(context);
@@ -449,7 +463,9 @@ class TripMapScreen extends ConsumerWidget {
                       ),
                     ),
                     child: Text(
-                      'itinerary.day_time'.tr(namedArgs: {'n': '$day', 'time': it.startTime}),
+                      'itinerary.day_time'.tr(
+                        namedArgs: {'n': '$day', 'time': it.startTime},
+                      ),
                       style: AppFonts.mono(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -472,10 +488,7 @@ class TripMapScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   it.placeAddress!,
-                  style: AppFonts.body(
-                    fontSize: 13,
-                    color: textSec,
-                  ),
+                  style: AppFonts.body(fontSize: 13, color: textSec),
                 ),
               ],
               if (it.notes != null && it.notes!.isNotEmpty) ...[

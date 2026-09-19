@@ -315,11 +315,7 @@ class TripWishlistScreen extends ConsumerWidget {
         Center(
           child: Column(
             children: [
-              Icon(
-                PhosphorIcons.cloudSlash(),
-                color: danger,
-                size: 40,
-              ),
+              Icon(PhosphorIcons.cloudSlash(), color: danger, size: 40),
               const SizedBox(height: 12),
               Text(
                 'wishlist.load_failed'.tr(),
@@ -426,10 +422,7 @@ class TripWishlistScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(
-          color: line,
-          width: GenZTokens.borderWidthThin,
-        ),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Row(
         children: [
@@ -444,11 +437,7 @@ class TripWishlistScreen extends ConsumerWidget {
                 width: GenZTokens.borderWidthThin,
               ),
             ),
-            child: Icon(
-              PhosphorIcons.mapPin(),
-              color: textSec,
-              size: 20,
-            ),
+            child: Icon(PhosphorIcons.mapPin(), color: textSec, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -512,11 +501,7 @@ class TripWishlistScreen extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           IconButton(
-            icon: Icon(
-              PhosphorIcons.trash(),
-              size: 18,
-              color: textSec,
-            ),
+            icon: Icon(PhosphorIcons.trash(), size: 18, color: textSec),
             tooltip: 'general.delete'.tr(),
             onPressed: () => _deleteItem(context, ref, item),
             padding: EdgeInsets.zero,

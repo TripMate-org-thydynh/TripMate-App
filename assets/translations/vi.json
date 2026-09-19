@@ -949,7 +949,13 @@
     "map_moment_photo": "Ảnh khoảnh khắc của {author}",
     "delete_stop": "Xóa điểm dừng",
     "delete_stop_confirm": "Bạn có chắc muốn xóa điểm dừng này khỏi lịch trình không?",
-    "deleted_success": "Đã xóa điểm dừng khỏi lịch trình"
+    "deleted_success": "Đã xóa điểm dừng khỏi lịch trình",
+    "route_map_title": "Bản đồ lộ trình",
+    "route_all_days": "Tất cả",
+    "route_locating": "Đang tìm vị trí cho các điểm chưa có toạ độ…",
+    "route_missing": "{n} điểm chưa xác định được vị trí trên bản đồ",
+    "route_no_location": "chưa có vị trí",
+    "route_open_google": "Mở chỉ đường trên Google Maps"
   },
   "journal": {
     "body_hint": "Hôm nay bạn trải qua điều gì? Kể cho squad nghe...",

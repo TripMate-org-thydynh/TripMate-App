@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import '../../dashboard/data/home_feed_repository.dart';
@@ -7,10 +6,10 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/itinerary_repository.dart';
+import 'day_route_map_screen.dart';
 import '../domain/itinerary_item.dart';
 import '../../../core/widgets/offline_banner.dart';
 
@@ -93,7 +92,10 @@ class TripItineraryScreen extends ConsumerWidget {
                         style: AppFonts.body(fontSize: 15, color: textPri),
                         decoration: InputDecoration(
                           labelText: 'itinerary.day_label'.tr(),
-                          labelStyle: AppFonts.body(fontSize: 15, color: textSec),
+                          labelStyle: AppFonts.body(
+                            fontSize: 15,
+                            color: textSec,
+                          ),
                         ),
                       ),
                     ),
@@ -104,7 +106,10 @@ class TripItineraryScreen extends ConsumerWidget {
                         style: AppFonts.body(fontSize: 15, color: textPri),
                         decoration: InputDecoration(
                           labelText: 'itinerary.time_hint'.tr(),
-                          labelStyle: AppFonts.body(fontSize: 15, color: textSec),
+                          labelStyle: AppFonts.body(
+                            fontSize: 15,
+                            color: textSec,
+                          ),
                         ),
                       ),
                     ),
@@ -246,7 +251,9 @@ class TripItineraryScreen extends ConsumerWidget {
           ),
         ),
         content: Text(
-          'itinerary.delete_stop_confirm'.tr(namedArgs: {'name': item.placeName}),
+          'itinerary.delete_stop_confirm'.tr(
+            namedArgs: {'name': item.placeName},
+          ),
           style: AppFonts.body(fontSize: 15, color: textSec),
         ),
         actions: [
@@ -366,7 +373,9 @@ class TripItineraryScreen extends ConsumerWidget {
                       for (final day in days) ...[
                         _dayHeader(context, day, grouped[day]!),
                         const SizedBox(height: 12),
-                        ...grouped[day]!.map((it) => _itemCard(context, ref, it)),
+                        ...grouped[day]!.map(
+                          (it) => _itemCard(context, ref, it),
+                        ),
                         const SizedBox(height: 20),
                       ],
                     ],
@@ -380,11 +389,7 @@ class TripItineraryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _dayHeader(
-    BuildContext context,
-    int day,
-    List<ItineraryItem> items,
-  ) {
+  Widget _dayHeader(BuildContext context, int day, List<ItineraryItem> items) {
     final surface = _surfaceOf(context);
     final fill = _fillOf(context);
     final line = _lineOf(context);
@@ -398,10 +403,7 @@ class TripItineraryScreen extends ConsumerWidget {
           decoration: BoxDecoration(
             color: fill,
             borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-            border: Border.all(
-              color: line,
-              width: GenZTokens.borderWidthThin,
-            ),
+            border: Border.all(color: line, width: GenZTokens.borderWidthThin),
           ),
           child: Text(
             'common.day_n'.tr(namedArgs: {'n': '$day'}),
@@ -413,9 +415,19 @@ class TripItineraryScreen extends ConsumerWidget {
           ),
         ),
         const Spacer(),
-        // Mở lộ trình ngày này trên Google Maps (chuỗi điểm dừng theo thứ tự).
+        // Mở bản đồ lộ trình trong app: mọi điểm của ngày này, đánh số và nối
+        // đường theo giờ. Nút Google Maps nằm trong màn đó.
         GestureDetector(
-          onTap: () => _openDayInMaps(context, items),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DayRouteMapScreen(
+                tripId: tripId,
+                initialDay: day,
+                isDarkMode: isDarkMode,
+              ),
+            ),
+          ),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -451,102 +463,6 @@ class TripItineraryScreen extends ConsumerWidget {
     );
   }
 
-  /// Ghép các điểm dừng trong ngày thành 1 URL chỉ đường Google Maps.
-  /// Nếu tất cả điểm đều có toạ độ → tự tối ưu thứ tự (nearest-neighbor).
-  Future<void> _openDayInMaps(
-    BuildContext context,
-    List<ItineraryItem> items,
-  ) async {
-    final messenger = ScaffoldMessenger.of(context);
-
-    // Tối ưu thứ tự khi mọi điểm đều có toạ độ và đủ để đáng tối ưu.
-    var ordered = items;
-    var optimized = false;
-    if (items.length >= 3 && items.every((i) => i.hasCoords)) {
-      ordered = _nearestNeighborOrder(items);
-      optimized = true;
-    }
-
-    final stops = ordered
-        .map(
-          (it) => it.hasCoords
-              ? '${it.latitude},${it.longitude}'
-              : (it.placeAddress?.trim().isNotEmpty ?? false)
-              ? it.placeAddress!.trim()
-              : it.placeName.trim(),
-        )
-        .where((s) => s.isNotEmpty)
-        .toList();
-    if (stops.length < 2) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text('itinerary.need_two_stops'.tr()),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
-    HapticFeedback.lightImpact();
-    final path = stops.map(Uri.encodeComponent).join('/');
-    final uri = Uri.parse('https://www.google.com/maps/dir/$path');
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text('itinerary.maps_failed'.tr()),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    } else if (optimized) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text('itinerary.optimized'.tr()),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-
-  /// Sắp lại thứ tự điểm dừng bằng nearest-neighbor, giữ điểm đầu làm khởi hành.
-  List<ItineraryItem> _nearestNeighborOrder(List<ItineraryItem> items) {
-    final remaining = [...items];
-    final route = <ItineraryItem>[remaining.removeAt(0)];
-    while (remaining.isNotEmpty) {
-      final last = route.last;
-      var bestIdx = 0;
-      var bestDist = double.infinity;
-      for (var i = 0; i < remaining.length; i++) {
-        final d = _haversine(
-          last.latitude!,
-          last.longitude!,
-          remaining[i].latitude!,
-          remaining[i].longitude!,
-        );
-        if (d < bestDist) {
-          bestDist = d;
-          bestIdx = i;
-        }
-      }
-      route.add(remaining.removeAt(bestIdx));
-    }
-    return route;
-  }
-
-  /// Khoảng cách great-circle (km) — đủ chính xác để so sánh thứ tự.
-  double _haversine(double lat1, double lon1, double lat2, double lon2) {
-    const r = 6371.0;
-    double toRad(double d) => d * (math.pi / 180.0);
-    final dLat = toRad(lat2 - lat1);
-    final dLon = toRad(lon2 - lon1);
-    final a =
-        math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(toRad(lat1)) *
-            math.cos(toRad(lat2)) *
-            math.sin(dLon / 2) *
-            math.sin(dLon / 2);
-    return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-  }
-
   Widget _itemCard(BuildContext context, WidgetRef ref, ItineraryItem it) {
     final surface = _surfaceOf(context);
     final line = _lineOf(context);
@@ -559,10 +475,7 @@ class TripItineraryScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(
-          color: line,
-          width: GenZTokens.borderWidthThin,
-        ),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,11 +493,7 @@ class TripItineraryScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(width: 14),
-          Container(
-            width: 1.5,
-            height: 40,
-            color: line,
-          ),
+          Container(width: 1.5, height: 40, color: line),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -592,11 +501,7 @@ class TripItineraryScreen extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      _categoryIcon(it.category),
-                      size: 16,
-                      color: textSec,
-                    ),
+                    Icon(_categoryIcon(it.category), size: 16, color: textSec),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -691,11 +596,7 @@ class TripItineraryScreen extends ConsumerWidget {
         Center(
           child: Column(
             children: [
-              Icon(
-                PhosphorIcons.cloudSlash(),
-                color: danger,
-                size: 40,
-              ),
+              Icon(PhosphorIcons.cloudSlash(), color: danger, size: 40),
               const SizedBox(height: 12),
               Text(
                 'itinerary.load_failed'.tr(),

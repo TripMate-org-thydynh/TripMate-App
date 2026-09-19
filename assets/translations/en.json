@@ -949,7 +949,13 @@
     "map_moment_photo": "Moment photo of {author}",
     "delete_stop": "Delete stop",
     "delete_stop_confirm": "Are you sure you want to delete this stop from your itinerary?",
-    "deleted_success": "Stop deleted from itinerary"
+    "deleted_success": "Stop deleted from itinerary",
+    "route_map_title": "Route map",
+    "route_all_days": "All",
+    "route_locating": "Locating stops without coordinates…",
+    "route_missing": "{n} stops could not be placed on the map",
+    "route_no_location": "no location",
+    "route_open_google": "Open directions in Google Maps"
   },
   "journal": {
     "body_hint": "What happened today? Tell the squad...",

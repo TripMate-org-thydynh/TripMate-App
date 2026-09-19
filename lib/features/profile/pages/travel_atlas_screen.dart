@@ -10,6 +10,7 @@ import '../../../core/theme/gen_z_tokens.dart';
 import '../data/bucket_list_repository.dart';
 import '../data/travel_atlas_repository.dart';
 import '../domain/travel_stats.dart';
+import '../../../core/map/map_tiles.dart';
 
 class TravelAtlasScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -32,8 +33,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
   Color get _fill => _isDark ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => _isDark ? GenZTokens.lineDark : GenZTokens.line;
   Color get _accent => _isDark ? GenZTokens.accentDark : GenZTokens.accent;
-  Color get _onAccent => _isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
-  Color get _accentSoft => _isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+  Color get _onAccent =>
+      _isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _accentSoft =>
+      _isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color get _textSec => _isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _warning => _isDark ? GenZTokens.warningDark : GenZTokens.warning;
   Color get _danger => _isDark ? GenZTokens.dangerDark : GenZTokens.danger;
@@ -70,15 +73,18 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
           style: AppFonts.body(fontSize: 15, color: _ink),
           decoration: InputDecoration(
             hintText: 'profile.atlas_bucket_hint'.tr(),
-            hintStyle: AppFonts.body(
-              fontSize: 13,
-              color: _textSec,
-            ),
+            hintStyle: AppFonts.body(fontSize: 13, color: _textSec),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+              borderSide: BorderSide(
+                color: _line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: _accent, width: GenZTokens.borderWidthFocus),
+              borderSide: BorderSide(
+                color: _accent,
+                width: GenZTokens.borderWidthFocus,
+              ),
             ),
           ),
         ),
@@ -87,10 +93,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             onPressed: () => Navigator.pop(dctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: AppFonts.body(
-                fontSize: 13,
-                color: _textSec,
-              ),
+              style: AppFonts.body(fontSize: 13, color: _textSec),
             ),
           ),
           FilledButton(
@@ -134,16 +137,15 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             onPressed: () => Navigator.pop(dctx, false),
             child: Text(
               'general.cancel'.tr(),
-              style: AppFonts.body(
-                fontSize: 13,
-                color: _textSec,
-              ),
+              style: AppFonts.body(fontSize: 13, color: _textSec),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: _danger,
-              foregroundColor: _isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent,
+              foregroundColor: _isDark
+                  ? GenZTokens.onAccentDark
+                  : GenZTokens.onAccent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
               ),
@@ -248,12 +250,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             initialZoom: 4.0,
           ),
           children: [
-            TileLayer(
-              urlTemplate: _isDark
-                  ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                  : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.tripmate.app',
-            ),
+            ...mapTileLayers(dark: _isDark),
             MarkerLayer(
               markers: markers.map((place) {
                 return Marker(
@@ -266,7 +263,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                       decoration: BoxDecoration(
                         color: place.isCheckIn ? _accent : _surface,
                         shape: BoxShape.circle,
-                        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+                        border: Border.all(
+                          color: _line,
+                          width: GenZTokens.borderWidthThin,
+                        ),
                       ),
                       child: Center(
                         child: Icon(
@@ -289,7 +289,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
           left: GenZTokens.space4,
           right: GenZTokens.space4,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: GenZTokens.space4, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: GenZTokens.space4,
+              vertical: 12,
+            ),
             decoration: BoxDecoration(
               color: _surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
@@ -300,7 +303,11 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             ),
             child: Row(
               children: [
-                Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), color: _warning, size: 22),
+                Icon(
+                  PhosphorIcons.star(PhosphorIconsStyle.fill),
+                  color: _warning,
+                  size: 22,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -339,7 +346,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
             decoration: BoxDecoration(
               color: _surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+              border: Border.all(
+                color: _line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Row(
               children: [
@@ -349,7 +359,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                   decoration: BoxDecoration(
                     color: _fill,
                     shape: BoxShape.circle,
-                    border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+                    border: Border.all(
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                   child: Icon(
                     PhosphorIcons.fire(PhosphorIconsStyle.fill),
@@ -386,10 +399,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                       const SizedBox(height: 2),
                       Text(
                         'atlas.keep_going'.tr(),
-                        style: AppFonts.body(
-                          fontSize: 12,
-                          color: _textSec,
-                        ),
+                        style: AppFonts.body(fontSize: 12, color: _textSec),
                       ),
                     ],
                   ),
@@ -408,7 +418,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                   decoration: BoxDecoration(
                     color: _surface,
                     borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                    border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+                    border: Border.all(
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                   child: Column(
                     children: [
@@ -423,10 +436,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                       const SizedBox(height: 2),
                       Text(
                         'atlas.trips'.tr(),
-                        style: AppFonts.body(
-                          fontSize: 12,
-                          color: _textSec,
-                        ),
+                        style: AppFonts.body(fontSize: 12, color: _textSec),
                       ),
                     ],
                   ),
@@ -439,7 +449,10 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                   decoration: BoxDecoration(
                     color: _surface,
                     borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                    border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+                    border: Border.all(
+                      color: _line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                   child: Column(
                     children: [
@@ -454,10 +467,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
                       const SizedBox(height: 2),
                       Text(
                         'profile.atlas_places'.tr(),
-                        style: AppFonts.body(
-                          fontSize: 12,
-                          color: _textSec,
-                        ),
+                        style: AppFonts.body(fontSize: 12, color: _textSec),
                       ),
                     ],
                   ),
@@ -506,10 +516,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
               child: Text(
                 'atlas.badges_empty'.tr(),
                 textAlign: TextAlign.center,
-                style: AppFonts.body(
-                  fontSize: 13,
-                  color: _textSec,
-                ),
+                style: AppFonts.body(fontSize: 13, color: _textSec),
               ),
             )
           else
@@ -590,10 +597,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
     final async = ref.watch(bucketListProvider);
     return async.when(
       loading: () => Center(
-        child: CircularProgressIndicator(
-          color: _accent,
-          strokeWidth: 2,
-        ),
+        child: CircularProgressIndicator(color: _accent, strokeWidth: 2),
       ),
       error: (e, _) => _bucketError(),
       data: (items) {
@@ -696,10 +700,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
       Text(
         'atlas.bucket_empty_sub'.tr(),
         textAlign: TextAlign.center,
-        style: AppFonts.body(
-          fontSize: 13,
-          color: _textSec,
-        ),
+        style: AppFonts.body(fontSize: 13, color: _textSec),
       ),
     ],
   );
@@ -710,11 +711,7 @@ class _TravelAtlasScreenState extends ConsumerState<TravelAtlasScreen>
       Center(
         child: Column(
           children: [
-            Icon(
-              PhosphorIcons.cloudSlash(),
-              color: _danger,
-              size: 40,
-            ),
+            Icon(PhosphorIcons.cloudSlash(), color: _danger, size: 40),
             const SizedBox(height: 12),
             Text(
               'atlas.bucket_failed'.tr(),
