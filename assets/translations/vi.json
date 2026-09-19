@@ -955,7 +955,17 @@
     "route_locating": "Đang tìm vị trí cho các điểm chưa có toạ độ…",
     "route_missing": "{n} điểm chưa xác định được vị trí trên bản đồ",
     "route_no_location": "chưa có vị trí",
-    "route_open_google": "Mở chỉ đường trên Google Maps"
+    "route_open_google": "Mở chỉ đường trên Google Maps",
+    "rain_chance": "mưa {p}%",
+    "rain_alert": "Điểm ngoài trời, khả năng mưa {p}% lúc này — mang áo mưa hoặc cân nhắc đổi giờ",
+    "ride_title": "Gọi xe tới đây",
+    "ride_grab_hint": "Mở Grab với điểm đến điền sẵn",
+    "ride_be_hint": "Mở Be — dán địa chỉ đã chép",
+    "ride_copy": "Chỉ chép địa chỉ",
+    "ride_copy_hint": "Dán vào app gọi xe bất kỳ",
+    "ride_copy_done": "Đã chép địa chỉ",
+    "ride_copied": "Đã chép địa chỉ — dán vào ô điểm đến nếu app chưa điền sẵn",
+    "ride_failed": "Không mở được app gọi xe. Địa chỉ đã được chép."
   },
   "journal": {
     "body_hint": "Hôm nay bạn trải qua điều gì? Kể cho squad nghe...",

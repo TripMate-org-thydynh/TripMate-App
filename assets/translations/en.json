@@ -955,7 +955,17 @@
     "route_locating": "Locating stops without coordinates…",
     "route_missing": "{n} stops could not be placed on the map",
     "route_no_location": "no location",
-    "route_open_google": "Open directions in Google Maps"
+    "route_open_google": "Open directions in Google Maps",
+    "rain_chance": "{p}% rain",
+    "rain_alert": "Outdoor stop, {p}% chance of rain at this time — pack a raincoat or reschedule",
+    "ride_title": "Get a ride here",
+    "ride_grab_hint": "Open Grab with the destination filled in",
+    "ride_be_hint": "Open Be — paste the copied address",
+    "ride_copy": "Just copy the address",
+    "ride_copy_hint": "Paste into any ride app",
+    "ride_copy_done": "Address copied",
+    "ride_copied": "Address copied — paste it as the destination if the app didn't fill it",
+    "ride_failed": "Couldn't open the ride app. The address is copied."
   },
   "journal": {
     "body_hint": "What happened today? Tell the squad...",

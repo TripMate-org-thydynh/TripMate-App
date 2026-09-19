@@ -127,3 +127,72 @@ final tripItineraryProvider =
       }
       return grouped;
     });
+
+/// Thời tiết một ngày của chuyến (BE `GET /trips/:id/itinerary/weather`).
+class DayWeather {
+  const DayWeather({
+    required this.day,
+    required this.date,
+    required this.available,
+    this.weatherCode,
+    this.tempMin,
+    this.tempMax,
+    this.rainProbability,
+  });
+
+  final int day;
+  final DateTime date;
+
+  /// false: ngày ngoài 16 ngày dự báo, hoặc chuyến chưa có toạ độ.
+  final bool available;
+  final int? weatherCode;
+  final double? tempMin;
+  final double? tempMax;
+  final int? rainProbability;
+
+  factory DayWeather.fromJson(Map<String, dynamic> j) => DayWeather(
+    day: (j['day'] as num).toInt(),
+    date: DateTime.parse(j['date'] as String),
+    available: j['available'] as bool? ?? false,
+    weatherCode: (j['weatherCode'] as num?)?.toInt(),
+    tempMin: (j['tempMin'] as num?)?.toDouble(),
+    tempMax: (j['tempMax'] as num?)?.toDouble(),
+    rainProbability: (j['rainProbability'] as num?)?.toInt(),
+  );
+}
+
+/// Dự báo từng ngày + cảnh báo mưa cho điểm ngoài trời, khoá theo itemId.
+class ItineraryWeather {
+  const ItineraryWeather({required this.days, required this.rainAlerts});
+  final Map<int, DayWeather> days;
+
+  /// itemId → xác suất mưa (%) trong khung giờ ở điểm đó.
+  final Map<String, int> rainAlerts;
+
+  static const empty = ItineraryWeather(days: {}, rainAlerts: {});
+}
+
+final itineraryWeatherProvider = FutureProvider.autoDispose
+    .family<ItineraryWeather, String>((ref, tripId) async {
+      // Thời tiết là phần phụ: lỗi mạng/API thì màn lịch trình vẫn hiện bình thường.
+      try {
+        final data = await ref
+            .watch(apiClientProvider)
+            .getData('/trips/$tripId/itinerary/weather');
+        if (data is! Map) return ItineraryWeather.empty;
+        final days = <int, DayWeather>{
+          for (final d in (data['days'] as List? ?? const []).whereType<Map>())
+            (d['day'] as num).toInt(): DayWeather.fromJson(
+              d.cast<String, dynamic>(),
+            ),
+        };
+        final alerts = <String, int>{
+          for (final a
+              in (data['alerts'] as List? ?? const []).whereType<Map>())
+            a['itemId'] as String: (a['rainProbability'] as num).toInt(),
+        };
+        return ItineraryWeather(days: days, rainAlerts: alerts);
+      } catch (_) {
+        return ItineraryWeather.empty;
+      }
+    });

@@ -128,7 +128,17 @@ class WeatherService {
     }
   }
 
-  _WmoMapping _mapWmoCode(int code) {
+  /// Mô tả + icon + màu cho một mã thời tiết WMO — dùng chung ngoài service.
+  static ({String description, IconData icon, Color color}) describe(
+    int code,
+  ) {
+    final m = _mapWmoCodeStatic(code);
+    return (description: m.desc, icon: m.icon, color: m.color);
+  }
+
+  _WmoMapping _mapWmoCode(int code) => _mapWmoCodeStatic(code);
+
+  static _WmoMapping _mapWmoCodeStatic(int code) {
     if (code == 0) {
       return _WmoMapping(
         'weather.clear'.tr(),

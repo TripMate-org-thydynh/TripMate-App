@@ -10,6 +10,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/itinerary_repository.dart';
 import 'day_route_map_screen.dart';
+import 'ride_hail_sheet.dart';
+import '../../../core/services/weather_service.dart';
 import '../../trips/application/trips_providers.dart';
 import '../../itinerary_templates/presentation/publish_template_sheet.dart';
 import '../../itinerary_templates/presentation/template_explore_screen.dart';
@@ -399,15 +401,25 @@ class TripItineraryScreen extends ConsumerWidget {
                 data: (grouped) {
                   if (grouped.isEmpty) return _empty(context);
                   final days = grouped.keys.toList()..sort();
+                  final weather =
+                      ref.watch(itineraryWeatherProvider(tripId)).valueOrNull ??
+                      ItineraryWeather.empty;
                   return ListView(
                     // Chừa chỗ cho FAB "Thêm điểm" (BUG-006).
                     padding: const EdgeInsets.all(16).copyWith(bottom: 96),
                     children: [
                       for (final day in days) ...[
                         _dayHeader(context, day, grouped[day]!),
+                        if (weather.days[day] case final w? when w.available)
+                          _dayWeather(context, w),
                         const SizedBox(height: 12),
                         ...grouped[day]!.map(
-                          (it) => _itemCard(context, ref, it),
+                          (it) => _itemCard(
+                            context,
+                            ref,
+                            it,
+                            rain: weather.rainAlerts[it.id],
+                          ),
                         ),
                         const SizedBox(height: 20),
                       ],
@@ -496,7 +508,41 @@ class TripItineraryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _itemCard(BuildContext context, WidgetRef ref, ItineraryItem it) {
+  /// Dự báo của ngày, ngay dưới tiêu đề ngày.
+  Widget _dayWeather(BuildContext context, DayWeather w) {
+    final textSec = _textSecOf(context);
+    final textPri = _textPriOf(context);
+    final m = WeatherService.describe(w.weatherCode ?? -1);
+    final rain = w.rainProbability ?? 0;
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, left: 4),
+      child: Row(
+        children: [
+          Icon(m.icon, size: 18, color: textPri),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              [
+                m.description,
+                if (w.tempMin != null && w.tempMax != null)
+                  '${w.tempMin!.round()}–${w.tempMax!.round()}°C',
+                if (rain > 0)
+                  'itinerary.rain_chance'.tr(namedArgs: {'p': '$rain'}),
+              ].join(' · '),
+              style: AppFonts.body(fontSize: 13, color: textSec),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _itemCard(
+    BuildContext context,
+    WidgetRef ref,
+    ItineraryItem it, {
+    int? rain,
+  }) {
     final surface = _surfaceOf(context);
     final line = _lineOf(context);
     final textPri = _textPriOf(context);
@@ -547,6 +593,18 @@ class TripItineraryScreen extends ConsumerWidget {
                       ),
                     ),
                     IconButton(
+                      icon: Icon(PhosphorIcons.car(), size: 18, color: textSec),
+                      tooltip: 'itinerary.ride_title'.tr(),
+                      onPressed: () => RideHailSheet.show(
+                        context,
+                        it,
+                        isDark: _isDark(context),
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(width: 14),
+                    IconButton(
                       icon: Icon(
                         PhosphorIcons.trash(),
                         size: 18,
@@ -576,6 +634,43 @@ class TripItineraryScreen extends ConsumerWidget {
                     style: AppFonts.body(fontSize: 12, color: textSec),
                   ),
                 ),
+                // Điểm ngoài trời vào giờ dễ mưa (BE tính theo dự báo từng giờ).
+                if (rain != null)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _warningOf(context).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          PhosphorIcons.cloudRain(),
+                          size: 15,
+                          color: _warningOf(context),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'itinerary.rain_alert'.tr(
+                              namedArgs: {'p': '$rain'},
+                            ),
+                            style: AppFonts.body(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: textPri,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -583,6 +678,9 @@ class TripItineraryScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Color _warningOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.warningDark : GenZTokens.warning;
 
   PhosphorIconData _categoryIcon(String? cat) {
     switch (cat?.toUpperCase()) {

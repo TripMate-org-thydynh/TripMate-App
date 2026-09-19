@@ -85,7 +85,9 @@ class PlaceImportService {
   static String? _nameFrom(String url) {
     final m = _namePattern.firstMatch(url);
     if (m == null) return null;
-    final decoded = Uri.decodeComponent(m.group(1)!).replaceAll('+', ' ').trim();
+    final decoded = Uri.decodeComponent(
+      m.group(1)!,
+    ).replaceAll('+', ' ').trim();
     return decoded.isEmpty ? null : decoded;
   }
 

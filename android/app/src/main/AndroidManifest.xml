@@ -103,6 +103,13 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Gọi xe từ điểm dừng lịch trình: Grab (deep link) + Be (mở app). -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="grab"/>
+        </intent>
+        <package android:name="com.grabtaxi.passenger"/>
+        <package android:name="xyz.be.customer"/>
         <!-- url_launcher: cho phép canLaunchUrl thấy app thanh toán + trình duyệt -->
         <intent>
             <action android:name="android.intent.action.VIEW"/>
