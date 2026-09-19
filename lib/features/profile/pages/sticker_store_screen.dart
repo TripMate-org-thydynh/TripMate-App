@@ -152,7 +152,10 @@ class _StickerStoreScreenState extends ConsumerState<StickerStoreScreen> {
       ),
       child: Row(
         children: [
-          Text(item.emoji ?? '❔', style: const TextStyle(fontSize: 34)),
+          if (item.emoji != null && item.emoji!.isNotEmpty)
+            Text(item.emoji!, style: const TextStyle(fontSize: 34))
+          else
+            Icon(PhosphorIcons.sticker(), size: 34, color: inkSoft),
           const SizedBox(width: GenZTokens.space4),
           Expanded(
             child: Column(

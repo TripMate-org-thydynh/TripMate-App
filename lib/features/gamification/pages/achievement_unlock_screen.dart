@@ -12,7 +12,7 @@ import '../../profile/data/badges_repository.dart';
 ///
 /// Trước đây màn này là một màn hình ăn mừng in cứng: "Level 4 Reached",
 /// "RARITY: MYTHIC", "1,200 / 2,000 to Lvl 5" — không đọc dữ liệu nào và có
-/// nút chỉ hiện "Tính năng đang được hoàn thiện 🚧". Nay lấy danh hiệu thật từ
+/// nút chỉ hiện "Tính năng đang được hoàn thiện". Nay lấy danh hiệu thật từ
 /// `/users/me/badges`, tiến độ đếm từ số chuyến, khoản chi đã trả và check-in.
 class AchievementUnlockScreen extends ConsumerWidget {
   const AchievementUnlockScreen({super.key});

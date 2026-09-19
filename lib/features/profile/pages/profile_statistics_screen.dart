@@ -11,7 +11,7 @@ import '../data/profile_provider.dart';
 /// Thống kê hồ sơ — **số liệu thật** từ `GET /users/me/stats`.
 ///
 /// Trước đây toàn bộ màn này là số bịa viết cứng: "12 chuyến đi", "4,200 km",
-/// "1,250 XP", "98% 🛡️" — không đọc dữ liệu nào (BUG-015). Đáng chú ý là chính
+/// "1,250 XP", "98%" — không đọc dữ liệu nào (BUG-015). Đáng chú ý là chính
 /// con số 4.200km ấy đã bị backend cố ý từ chối bịa (`users.service.ts` ghi rõ
 /// *"thay vì số giả 4200km"*), nhưng nó vẫn sống ở tầng UI.
 class ProfileStatisticsScreen extends ConsumerWidget {

@@ -16,7 +16,7 @@ import '../data/games_repository.dart';
 ///
 /// Trước đây màn này liệt kê 4 thử thách in cứng ("Order mystery food — Voted
 /// by Minh Nhật"...) và mọi nút Join đều chỉ hiện "Tính năng đang được hoàn
-/// thiện 🚧". Nay bốc thử thách THẬT từ `/games/:tripId/dare/random` — BE điền
+/// thiện". Nay bốc thử thách THẬT từ `/games/:tripId/dare/random` — BE điền
 /// sẵn tên thành viên có thật trong chuyến — và bấm "Xong" sẽ ghi một ván chơi,
 /// cộng XP vào bảng xếp hạng squad.
 class ChaosChallengesScreen extends ConsumerStatefulWidget {

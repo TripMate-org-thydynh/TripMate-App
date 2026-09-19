@@ -150,25 +150,95 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
     if (data is! Map) return;
     final msg = ChatMessage.fromJson(data.cast<String, dynamic>());
     if (_messages.any((m) => m.id == msg.id)) return;
-    setState(() => _messages.add(msg));
-    _scrollToEnd();
+    // Tin của chính mình về lại → thay bản "đang gửi" tại chỗ, không thêm dòng.
+    final i = msg.clientId == null
+        ? -1
+        : _messages.indexWhere((m) => m.clientId == msg.clientId);
+    setState(() {
+      if (i >= 0) {
+        _messages[i] = msg;
+      } else {
+        _messages.add(msg);
+      }
+    });
+    if (i < 0) _scrollToEnd();
   }
 
-  void _send() {
-    final text = _input.text.trim();
+  /// Đánh dấu tin đang gửi là lỗi nếu quá lâu chưa có xác nhận từ server.
+  void _watchPending(String clientId) {
+    Future.delayed(const Duration(seconds: 12), () {
+      if (_disposed || !mounted) return;
+      final i = _messages.indexWhere(
+        (m) => m.clientId == clientId && m.pending,
+      );
+      if (i >= 0) {
+        setState(
+          () => _messages[i] = _messages[i].copyWith(
+            pending: false,
+            failed: true,
+          ),
+        );
+      }
+    });
+  }
+
+  void _replaceLocal(String clientId, ChatMessage Function(ChatMessage) f) {
+    final i = _messages.indexWhere((x) => x.clientId == clientId);
+    if (i >= 0) setState(() => _messages[i] = f(_messages[i]));
+  }
+
+  /// Gửi tin: hiện NGAY trên màn (mờ, "đang gửi"), rồi thay bằng bản thật khi
+  /// server xác nhận.
+  ///
+  /// Trước đây tin chỉ hiện sau khi server lưu xong và phát lại — database ở
+  /// xa nên mỗi lần gửi người dùng phải chờ 2–3 giây mới thấy tin của mình.
+  void _send([String? retryText, String? retryClientId]) {
+    final text = (retryText ?? _input.text).trim();
     if (text.isEmpty) return;
     HapticFeedback.lightImpact();
+    final clientId =
+        retryClientId ?? 'c${DateTime.now().microsecondsSinceEpoch}';
+    final local = ChatMessage(
+      id: clientId,
+      content: text,
+      type: 'TEXT',
+      senderId: _myId ?? '',
+      senderName: '',
+      createdAt: DateTime.now(),
+      clientId: clientId,
+      pending: true,
+    );
+    setState(() {
+      final i = _messages.indexWhere((m) => m.clientId == clientId);
+      if (i >= 0) {
+        _messages[i] = local;
+      } else {
+        _messages.add(local);
+      }
+    });
+    _scrollToEnd();
+    if (retryText == null) _input.clear();
+
     if (_socket?.connected ?? false) {
-      _socket!.send(widget.tripId, text);
-    } else {
-      // Fallback REST nếu socket chưa kết nối
-      ref.read(chatRepositoryProvider).send(widget.tripId, text).then((m) {
-        if (_disposed || !mounted) return;
-        setState(() => _messages.add(m));
-        _scrollToEnd();
-      });
+      _socket!.send(widget.tripId, text, clientId: clientId);
+      _watchPending(clientId);
+      return;
     }
-    _input.clear();
+    // Socket chưa kết nối → gửi qua REST.
+    ref
+        .read(chatRepositoryProvider)
+        .send(widget.tripId, text)
+        .then((m) {
+          if (_disposed || !mounted) return;
+          _replaceLocal(clientId, (_) => m);
+        })
+        .catchError((Object _) {
+          if (_disposed || !mounted) return;
+          _replaceLocal(
+            clientId,
+            (x) => x.copyWith(pending: false, failed: true),
+          );
+        });
   }
 
   /// Mở bảng chọn sticker — chỉ hiện sticker THẬT SỰ đã sở hữu.
@@ -251,10 +321,12 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                       _sendSticker(stickers[i].id);
                     },
                     child: Center(
-                      child: Text(
-                        stickers[i].emoji ?? '❔',
-                        style: const TextStyle(fontSize: 36),
-                      ),
+                      child: stickers[i].emoji != null
+                          ? Text(
+                              stickers[i].emoji!,
+                              style: const TextStyle(fontSize: 36),
+                            )
+                          : Icon(PhosphorIcons.sticker(), size: 32),
                     ),
                   ),
                 );
@@ -460,37 +532,70 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 ),
               ),
             ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.72,
-            ),
-            decoration: BoxDecoration(
-              color: isMe ? primary : surface,
-              borderRadius: BorderRadius.circular(14).copyWith(
-                bottomRight: isMe ? const Radius.circular(4) : null,
-                bottomLeft: isMe ? null : const Radius.circular(4),
+          Opacity(
+            opacity: m.pending ? 0.6 : 1,
+            child: Container(
+              margin: EdgeInsets.only(bottom: m.failed ? 2 : 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.72,
               ),
-              border: isMe ? null : Border.all(color: line, width: 1),
-            ),
-            // Tin nhắn sticker: `content` là MÃ sticker (stk-fire), không phải
-            // chữ để đọc. Đổi sang emoji cỡ lớn, nếu không người nhận sẽ thấy
-            // đúng chuỗi "stk-fire".
-            child: m.type == 'STICKER'
-                ? Text(
-                    _stickerEmoji(m.content) ?? '❔',
-                    style: const TextStyle(fontSize: 44),
-                  )
-                : Text(
-                    m.content ?? '',
-                    style: AppFonts.body(
-                      fontSize: 15,
-                      color: isMe ? onAccent : textPri,
-                      height: 1.3,
+              decoration: BoxDecoration(
+                color: isMe ? primary : surface,
+                borderRadius: BorderRadius.circular(14).copyWith(
+                  bottomRight: isMe ? const Radius.circular(4) : null,
+                  bottomLeft: isMe ? null : const Radius.circular(4),
+                ),
+                border: isMe ? null : Border.all(color: line, width: 1),
+              ),
+              // Tin nhắn sticker: `content` là MÃ sticker (stk-fire), không phải
+              // chữ để đọc. Đổi sang emoji cỡ lớn, nếu không người nhận sẽ thấy
+              // đúng chuỗi "stk-fire".
+              child: m.type == 'STICKER'
+                  ? _stickerEmoji(m.content) != null
+                        ? Text(
+                            _stickerEmoji(m.content)!,
+                            style: const TextStyle(fontSize: 44),
+                          )
+                        : Icon(
+                            PhosphorIcons.sticker(),
+                            size: 40,
+                            color: isMe ? onAccent : textSec,
+                          )
+                  : Text(
+                      m.content ?? '',
+                      style: AppFonts.body(
+                        fontSize: 15,
+                        color: isMe ? onAccent : textPri,
+                        height: 1.3,
+                      ),
                     ),
-                  ),
+            ),
           ),
+          if (m.failed)
+            GestureDetector(
+              onTap: () => _send(m.content, m.clientId),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10, right: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      PhosphorIcons.warningCircle(),
+                      size: 14,
+                      color: _isDark(context)
+                          ? GenZTokens.dangerDark
+                          : GenZTokens.danger,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'chat.send_failed_retry'.tr(),
+                      style: AppFonts.body(fontSize: 12, color: textSec),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

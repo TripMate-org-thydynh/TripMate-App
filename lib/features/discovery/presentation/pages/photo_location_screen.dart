@@ -18,7 +18,10 @@ import '../../../../core/map/map_tiles.dart';
 /// Hiển thị kết quả trên OpenStreetMap (flutter_map, free).
 class PhotoLocationScreen extends StatefulWidget {
   final bool isDarkMode;
-  const PhotoLocationScreen({super.key, this.isDarkMode = false});
+
+  /// Chuyến đang mở (nếu có) — điểm đến của chuyến là gợi ý cho AI.
+  final String? tripId;
+  const PhotoLocationScreen({super.key, this.isDarkMode = false, this.tripId});
 
   @override
   State<PhotoLocationScreen> createState() => _PhotoLocationScreenState();
@@ -49,13 +52,24 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
 
   Future<void> _pick(ImageSource source) async {
     try {
-      final file = await _picker.pickImage(
+      // KHÔNG đặt maxWidth/imageQuality: image_picker nén lại ảnh và XOÁ EXIF,
+      // mất luôn GPS — bước chính xác nhất. Chỉ nén khi ảnh quá lớn cho API.
+      var file = await _picker.pickImage(
         source: source,
-        maxWidth: 1600,
-        imageQuality: 88,
+        requestFullMetadata: true,
       );
       if (file == null) return;
-      final bytes = await file.readAsBytes();
+      var bytes = await file.readAsBytes();
+      if (bytes.lengthInBytes > 10 * 1024 * 1024) {
+        final small = await _picker.pickImage(
+          source: source,
+          maxWidth: 2048,
+          imageQuality: 90,
+        );
+        if (small == null) return;
+        file = small;
+        bytes = await small.readAsBytes();
+      }
       setState(() {
         _preview = bytes;
         _loading = true;
@@ -72,6 +86,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
       final res = await ApiService.post('/ai/photo-location', {
         'imageBase64': base64Encode(bytes),
         'mimeType': mime,
+        'tripId': ?widget.tripId,
       });
 
       if (!mounted) return;
@@ -233,6 +248,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                       Expanded(child: _resultBody()),
                     ],
                   ),
+                  _details(),
                   const SizedBox(height: GenZTokens.space3),
                 ] else
                   Padding(
@@ -317,7 +333,11 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
             ),
           ),
           child: Text(
-            isExif ? 'photo.src_gps'.tr() : 'photo.src_ai'.tr(),
+            isExif
+                ? 'photo.src_gps'.tr()
+                : r['coordSource'] == 'ai_estimate'
+                ? 'photo.src_ai_estimate'.tr()
+                : 'photo.src_ai'.tr(),
             style: AppFonts.mono(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -326,6 +346,122 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Các phương án khác + manh mối AI đọc được trong ảnh.
+  Widget _details() {
+    final r = _result;
+    if (r == null || r['source'] == 'exif') return const SizedBox.shrink();
+    final cands = (r['candidates'] as List? ?? const [])
+        .whereType<Map>()
+        .map((e) => e.cast<String, dynamic>())
+        .toList();
+    final clues = (r['clues'] as List? ?? const []).map((e) => '$e').toList();
+    if (cands.length < 2 && clues.isEmpty) return const SizedBox.shrink();
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 220),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: GenZTokens.space3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (cands.length > 1) ...[
+              Text(
+                'photo.candidates'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: _ink,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final c in cands)
+                    ChoiceChip(
+                      label: Text(
+                        '${c['placeName']} · ${((c['confidence'] as num? ?? 0) * 100).round()}%',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      selected: c['placeName'] == r['placeName'],
+                      showCheckmark: false,
+                      labelStyle: AppFonts.body(
+                        fontSize: 12,
+                        color: c['placeName'] == r['placeName']
+                            ? _onAccent
+                            : _ink,
+                      ),
+                      selectedColor: _accent,
+                      backgroundColor: _fill,
+                      side: BorderSide(color: _line),
+                      onSelected: (_) {
+                        setState(() {
+                          _result = {
+                            ...r,
+                            'placeName': c['placeName'],
+                            'latitude': c['latitude'],
+                            'longitude': c['longitude'],
+                            'confidence': c['confidence'],
+                            'precision': c['precision'],
+                            'coordSource': c['coordSource'],
+                          };
+                        });
+                        _map.move(
+                          LatLng(
+                            (c['latitude'] as num).toDouble(),
+                            (c['longitude'] as num).toDouble(),
+                          ),
+                          c['precision'] == 'exact' ? 15 : 11,
+                        );
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: GenZTokens.space3),
+            ],
+            if (clues.isNotEmpty) ...[
+              Text(
+                'photo.clues'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: _ink,
+                ),
+              ),
+              const SizedBox(height: 4),
+              for (final c in clues)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 3),
+                        child: Icon(
+                          PhosphorIcons.magnifyingGlass(),
+                          size: 12,
+                          color: _sub,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          c,
+                          style: AppFonts.body(fontSize: 12, color: _sub),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 

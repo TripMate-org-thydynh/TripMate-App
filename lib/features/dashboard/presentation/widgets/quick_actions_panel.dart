@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
@@ -311,11 +312,14 @@ class QuickActionsPanel extends StatelessWidget {
           padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio: 1.25,
+            mainAxisExtent: max(
+              136.0,
+              MediaQuery.textScalerOf(context).scale(52) + 84,
+            ),
           ),
           itemCount: _primaryActions.length,
           itemBuilder: (context, index) {

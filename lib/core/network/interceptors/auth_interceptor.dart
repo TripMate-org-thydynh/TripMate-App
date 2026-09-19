@@ -28,10 +28,7 @@ class AuthInterceptor extends Interceptor {
       // Token hết hạn/không hợp lệ — báo người dùng rồi logout (router đưa về /auth).
       final wasAuthed = _ref.read(authProvider).isAuthenticated;
       if (wasAuthed) {
-        showGlobalSnack(
-          'errors.session_expired_long'.tr(),
-          isError: true,
-        );
+        showGlobalSnack('errors.session_expired_long'.tr(), isError: true);
       }
       _ref.read(authProvider.notifier).logout();
     }

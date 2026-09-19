@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,11 +107,14 @@ class StickerInventoryScreen extends ConsumerWidget {
                     96,
                   ),
                   gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                      SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: GenZTokens.space3,
                     mainAxisSpacing: GenZTokens.space3,
-                    childAspectRatio: 0.85,
+                    mainAxisExtent: max(
+                      116.0,
+                      MediaQuery.textScalerOf(context).scale(34) + 82,
+                    ),
                   ),
                   itemCount: items.length,
                   itemBuilder: (_, i) => _tile(isDark, items[i]),
@@ -136,7 +140,10 @@ class StickerInventoryScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(item.emoji ?? '❔', style: const TextStyle(fontSize: 36)),
+          if (item.emoji != null && item.emoji!.isNotEmpty)
+            Text(item.emoji!, style: const TextStyle(fontSize: 36))
+          else
+            Icon(PhosphorIcons.sticker(), size: 36, color: inkSoft),
           const SizedBox(height: 6),
           Text(
             item.label,

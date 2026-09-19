@@ -15,7 +15,7 @@ import '../../../trips/application/trips_providers.dart';
 ///
 /// Trước đây hàm lưu chỉ là `Future.delayed(1s)` kèm chú thích "Simulate NestJS
 /// POST request", rồi hiện dấu tick và đóng — người dùng thấy "Successfully
-/// added to Itinerary! 🎉" nhưng không có gì được ghi. Nay gọi
+/// added to Itinerary!" nhưng không có gì được ghi. Nay gọi
 /// `POST /trips/:id/itinerary` thật và báo lỗi nếu hỏng.
 class AddToItinerarySheet extends ConsumerStatefulWidget {
   final String placeName;

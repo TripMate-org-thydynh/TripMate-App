@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Chỉ khai báo quyền app THỰC SỰ dùng. Khai thừa sẽ lệch với bảng
          Data Safety trên Google Play và làm người dùng ngại cài. -->
+    <!-- Đọc GPS trong EXIF ảnh người dùng chọn (Đoán địa điểm từ ảnh). Không có
+         quyền này Android che toạ độ trong ảnh. -->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- CAMERA: Squad Cam (khung ngắm trực tiếp, chụp ảnh và quay clip ngắn),
          image_picker (chụp ảnh vị trí, quét vé). -->

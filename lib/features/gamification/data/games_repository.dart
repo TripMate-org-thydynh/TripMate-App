@@ -308,7 +308,7 @@ class SquadDare {
   final String dareText;
   final int xpReward;
 
-  /// Nhãn độ căng do BE trả ("Nhẹ 😌" / "Vừa 😄" / "Căng 🔥" / "Cực căng 💥").
+  /// Nhãn độ căng do BE trả ("Nhẹ" / "Vừa" / "Căng" / "Cực căng").
   final String chaosLabel;
 
   const SquadDare({
@@ -317,7 +317,7 @@ class SquadDare {
     required this.chaosLabel,
   });
 
-  /// 1..4 để tô màu và đếm 🔥. XP là thang liên tục nên suy ra từ đó, khỏi phụ
+  /// 1..4 để tô màu và đếm mức độ. XP là thang liên tục nên suy ra từ đó, khỏi phụ
   /// thuộc chuỗi tiếng Việt vốn có thể đổi.
   int get chaosLevel {
     if (xpReward >= 250) return 4;

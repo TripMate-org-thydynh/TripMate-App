@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,11 +74,14 @@ class BadgeCollectionScreen extends ConsumerWidget {
                 onRefresh: () async => ref.invalidate(badgesProvider),
                 child: GridView.builder(
                   padding: const EdgeInsets.all(GenZTokens.space4),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: GenZTokens.space3,
                     mainAxisSpacing: GenZTokens.space3,
-                    childAspectRatio: 0.92,
+                    mainAxisExtent: max(
+                      148.0,
+                      MediaQuery.textScalerOf(context).scale(48) + 98,
+                    ),
                   ),
                   itemCount: badges.length,
                   itemBuilder: (context, i) =>

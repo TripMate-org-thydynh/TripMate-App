@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../core/widgets/trip_cover_image.dart';
@@ -272,14 +273,20 @@ class TripHubScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 1.5,
-                    children: [
+                  Builder(
+                    builder: (context) {
+                      final textScaler = MediaQuery.textScalerOf(context);
+                      final tileExtent = max(136.0, textScaler.scale(50) + 86);
+                      return GridView(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          mainAxisExtent: tileExtent,
+                        ),
+                        children: [
                       _tile(
                         context,
                         PhosphorIcons.scales(PhosphorIconsStyle.fill),
@@ -460,6 +467,8 @@ class TripHubScreen extends StatelessWidget {
                         null,
                       ),
                     ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 24),
                   Center(
@@ -542,7 +551,6 @@ class TripHubScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             padding: const EdgeInsets.all(9),
@@ -557,29 +565,23 @@ class TripHubScreen extends StatelessWidget {
               size: 20,
             ),
           ),
-          Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppFonts.heading(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: _textPri,
-                  ),
-                ),
-                Text(
-                  sub,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppFonts.body(fontSize: 12, color: _textSec),
-                ),
-              ],
+          const Spacer(),
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppFonts.heading(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: _textPri,
             ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            sub,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppFonts.body(fontSize: 12, color: _textSec),
           ),
         ],
       ),

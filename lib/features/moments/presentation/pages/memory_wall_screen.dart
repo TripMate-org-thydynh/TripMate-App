@@ -180,7 +180,7 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                               const SizedBox(width: 12),
                               // Tên chuyến THẬT đang mở.
                               //
-                              // Trước đây in cứng "Hà Giang Loop 🏍️" và
+                              // Trước đây in cứng "Hà Giang Loop" và
                               // "Oct 14, 2023 • Squad Album" nên ai mở Memory
                               // Wall cũng thấy album của một chuyến không có.
                               Expanded(
@@ -893,14 +893,20 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 2.0,
-                  children: [
+                Builder(
+                  builder: (context) {
+                    final textScaler = MediaQuery.textScalerOf(context);
+                    final tileExtent = max(78.0, textScaler.scale(36) + 42);
+                    return GridView(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        mainAxisExtent: tileExtent,
+                      ),
+                      children: [
                     _buildFeatureTile(
                       context,
                       icon: PhosphorIcons.sparkle(),
@@ -956,6 +962,8 @@ class _MemoryWallScreenState extends ConsumerState<MemoryWallScreen> {
                       onTap: () => _pinWidget(context),
                     ),
                   ],
+                    );
+                  },
                 ),
               ],
             ),

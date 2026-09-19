@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -114,46 +115,55 @@ class GamificationScreen extends StatelessWidget {
             ),
             const SizedBox(height: GenZTokens.space3),
 
-            GridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 2,
-              crossAxisSpacing: GenZTokens.space3,
-              mainAxisSpacing: GenZTokens.space3,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _buildGameCard(
-                  context,
-                  'games.who_pays_title'.tr(),
-                  'gamification.chaotic_wheel'.tr(),
-                  PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
-                  const WhoPaysWheelScreen(),
-                  isDark,
-                ),
-                _buildGameCard(
-                  context,
-                  'games.dare_title'.tr(),
-                  'gamification.random_challenge'.tr(),
-                  PhosphorIcons.lightning(PhosphorIconsStyle.fill),
-                  const RandomDareGeneratorScreen(),
-                  isDark,
-                ),
-                _buildGameCard(
-                  context,
-                  'games.trip_bingo_title'.tr(),
-                  'gamification.bingo_board'.tr(),
-                  PhosphorIcons.gridFour(PhosphorIconsStyle.fill),
-                  const TripBingoScreen(),
-                  isDark,
-                ),
-                _buildGameCard(
-                  context,
-                  'games.chaos_title'.tr(),
-                  'gamification.crazy_challenges'.tr(),
-                  PhosphorIcons.fire(PhosphorIconsStyle.fill),
-                  const ChaosChallengesScreen(),
-                  isDark,
-                ),
-              ],
+            Builder(
+              builder: (context) {
+                final textScaler = MediaQuery.textScalerOf(context);
+                final tileExtent = max(152.0, textScaler.scale(50) + 102);
+                return GridView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: GenZTokens.space3,
+                    mainAxisSpacing: GenZTokens.space3,
+                    mainAxisExtent: tileExtent,
+                  ),
+                  children: [
+                    _buildGameCard(
+                      context,
+                      'games.who_pays_title'.tr(),
+                      'gamification.chaotic_wheel'.tr(),
+                      PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
+                      const WhoPaysWheelScreen(),
+                      isDark,
+                    ),
+                    _buildGameCard(
+                      context,
+                      'games.dare_title'.tr(),
+                      'gamification.random_challenge'.tr(),
+                      PhosphorIcons.lightning(PhosphorIconsStyle.fill),
+                      const RandomDareGeneratorScreen(),
+                      isDark,
+                    ),
+                    _buildGameCard(
+                      context,
+                      'games.trip_bingo_title'.tr(),
+                      'gamification.bingo_board'.tr(),
+                      PhosphorIcons.gridFour(PhosphorIconsStyle.fill),
+                      const TripBingoScreen(),
+                      isDark,
+                    ),
+                    _buildGameCard(
+                      context,
+                      'games.chaos_title'.tr(),
+                      'gamification.crazy_challenges'.tr(),
+                      PhosphorIcons.fire(PhosphorIconsStyle.fill),
+                      const ChaosChallengesScreen(),
+                      isDark,
+                    ),
+                  ],
+                );
+              },
             ),
 
             const SizedBox(height: GenZTokens.space5),
@@ -263,7 +273,6 @@ class GamificationScreen extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
               padding: const EdgeInsets.all(GenZTokens.space2),
@@ -281,6 +290,7 @@ class GamificationScreen extends StatelessWidget {
                 size: 24,
               ),
             ),
+            const Spacer(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

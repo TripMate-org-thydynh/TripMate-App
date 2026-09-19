@@ -11,6 +11,16 @@ class ChatMessage {
   final String? senderAvatar;
   final DateTime createdAt;
 
+  /// Mã do máy gửi tự sinh, server trả lại nguyên — để thay bản "đang gửi"
+  /// bằng bản thật khi tin về qua socket.
+  final String? clientId;
+
+  /// Tin của mình vừa bấm gửi, chưa được server xác nhận.
+  final bool pending;
+
+  /// Gửi không thành (mất kết nối, lỗi server) — cho bấm gửi lại.
+  final bool failed;
+
   const ChatMessage({
     required this.id,
     this.content,
@@ -20,7 +30,24 @@ class ChatMessage {
     required this.senderName,
     this.senderAvatar,
     required this.createdAt,
+    this.clientId,
+    this.pending = false,
+    this.failed = false,
   });
+
+  ChatMessage copyWith({bool? pending, bool? failed}) => ChatMessage(
+    id: id,
+    content: content,
+    mediaUrl: mediaUrl,
+    type: type,
+    senderId: senderId,
+    senderName: senderName,
+    senderAvatar: senderAvatar,
+    createdAt: createdAt,
+    clientId: clientId,
+    pending: pending ?? this.pending,
+    failed: failed ?? this.failed,
+  );
 
   factory ChatMessage.fromJson(Map<String, dynamic> j) {
     final sender = j['sender'];
@@ -38,6 +65,7 @@ class ChatMessage {
       senderAvatar: sender is Map ? sender['avatarUrl'] as String? : null,
       createdAt:
           DateTime.tryParse(j['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      clientId: j['clientId'] as String?,
     );
   }
 }

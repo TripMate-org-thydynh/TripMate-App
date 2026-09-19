@@ -25,13 +25,39 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
   late AnimationController _spinController;
   late Animation<double> _spinAnimation;
 
+  List<Map<String, String>> _allMembers = [];
   List<Map<String, String>> _currentParticipants = [];
+  bool _hasInitialized = false;
+  bool _hasPromptedPicker = false;
   int _winnerIndex = -1;
   bool _isSpinning = false;
   double _startRotation = 0.0;
   double _endRotation = 0.0;
   double _lastTickRotation = 0.0;
   double _pointerAngle = 0.0;
+
+  void _openParticipantPicker() {
+    if (_isSpinning) return;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return _ParticipantPickerSheet(
+          allMembers: _allMembers,
+          initiallySelected: _currentParticipants,
+          isDark: isDark,
+          onConfirmed: (newSelected) {
+            setState(() {
+              _currentParticipants = newSelected;
+              _winnerIndex = -1;
+            });
+          },
+        );
+      },
+    );
+  }
 
   void _triggerPointerBounce() {
     setState(() {
@@ -248,10 +274,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
   @override
   Widget build(BuildContext context) {
     final tripsAsync = ref.watch(tripsProvider);
-    // Chỉ quay trên thành viên THẬT của chuyến. Trước đây khi chưa có chuyến,
-    // bánh xe rơi về 4 người bịa (Minh Nhật / Thảo Ly / Nam Trung / Duy Khang)
-    // — quay ra một người không tồn tại thì trò chơi vô nghĩa.
-    _currentParticipants = tripsAsync.maybeWhen(
+    _allMembers = tripsAsync.maybeWhen(
       data: (trips) {
         if (trips.isEmpty || trips.first.members.isEmpty) return const [];
         return trips.first.members
@@ -261,6 +284,27 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
       orElse: () => const [],
     );
 
+    if (!_hasInitialized && _allMembers.isNotEmpty) {
+      _hasInitialized = true;
+      if (_allMembers.length <= 10) {
+        _currentParticipants = List.from(_allMembers);
+      } else {
+        _currentParticipants = _allMembers.take(10).toList();
+        if (!_hasPromptedPicker) {
+          _hasPromptedPicker = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _allMembers.length > 10) {
+              _openParticipantPicker();
+            }
+          });
+        }
+      }
+    } else if (_allMembers.length <= 10 &&
+        _allMembers.isNotEmpty &&
+        _currentParticipants.length != _allMembers.length) {
+      _currentParticipants = List.from(_allMembers);
+    }
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -268,7 +312,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     // vì một bánh xe rỗng hoặc (trước đây) bánh xe toàn người bịa.
     // Quay với 1 người là vô nghĩa (và bánh xe 1 múi hiển thị chữ lộn ngược),
     // nên yêu cầu tối thiểu 2 thành viên.
-    if (_currentParticipants.length < 2) {
+    if (_allMembers.length < 2) {
       final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
       return Scaffold(
         backgroundColor: bgColor,
@@ -358,7 +402,41 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                   tr('games.chaos_mode_sub'),
                   style: AppFonts.body(fontSize: 13, color: textSecondary),
                 ),
-                const SizedBox(height: 48),
+                if (_allMembers.length > 10) ...[
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: _isSpinning ? null : _openParticipantPicker,
+                    icon: Icon(
+                      PhosphorIcons.usersThree(),
+                      size: 18,
+                      color: accent,
+                    ),
+                    label: Text(
+                      tr(
+                        'games.select_participants_btn',
+                        namedArgs: {'count': '${_currentParticipants.length}'},
+                      ),
+                      style: AppFonts.heading(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: accent,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: surfaceColor,
+                      side: BorderSide(color: accent, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(GenZTokens.radiusButton),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 36),
 
                 // Spinning Wheel Widget Stack
                 SizedBox(
@@ -509,7 +587,9 @@ class ChaosWheelPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final double radius = size.width / 2;
     final center = Offset(radius, radius);
-    final sectorAngle = (2 * pi) / participants.length;
+    final count = participants.length;
+    if (count < 2) return;
+    final sectorAngle = (2 * pi) / count;
 
     final colors = const [
       GenZTokens.chart1,
@@ -520,7 +600,9 @@ class ChaosWheelPainter extends CustomPainter {
       GenZTokens.chart6,
     ];
 
-    for (int i = 0; i < participants.length; i++) {
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+
+    for (int i = 0; i < count; i++) {
       final paint = Paint()
         ..color = colors[i % colors.length]
         ..style = PaintingStyle.fill;
@@ -534,7 +616,7 @@ class ChaosWheelPainter extends CustomPainter {
       );
 
       final borderPaint = Paint()
-        ..color = isDark ? GenZTokens.lineDark : GenZTokens.line
+        ..color = line
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5;
 
@@ -546,16 +628,27 @@ class ChaosWheelPainter extends CustomPainter {
         borderPaint,
       );
 
-      final tp = TextPainter(textDirection: TextDirection.ltr);
-      tp.text = TextSpan(
-        text: participants[i]['name']!,
-        style: AppFonts.heading(
-          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-          fontWeight: FontWeight.w700,
-          fontSize: 13,
+      final tp = TextPainter(
+        text: TextSpan(
+          text: participants[i]['name'] ?? '',
+          style: AppFonts.heading(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 12,
+            shadows: const [
+              Shadow(
+                color: Color(0x66000000),
+                offset: Offset(0, 1),
+                blurRadius: 2,
+              ),
+            ],
+          ),
         ),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+        ellipsis: '…',
       );
-      tp.layout();
+      tp.layout(maxWidth: radius * 0.52);
 
       final angle = i * sectorAngle + (sectorAngle / 2);
       canvas.save();
@@ -570,7 +663,8 @@ class ChaosWheelPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant ChaosWheelPainter oldDelegate) =>
+      oldDelegate.participants != participants || oldDelegate.isDark != isDark;
 }
 
 class FlashingPill extends StatefulWidget {
@@ -740,6 +834,394 @@ class _FloatingBubbleState extends State<FloatingBubble>
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ParticipantPickerSheet extends StatefulWidget {
+  final List<Map<String, String>> allMembers;
+  final List<Map<String, String>> initiallySelected;
+  final bool isDark;
+  final ValueChanged<List<Map<String, String>>> onConfirmed;
+
+  const _ParticipantPickerSheet({
+    required this.allMembers,
+    required this.initiallySelected,
+    required this.isDark,
+    required this.onConfirmed,
+  });
+
+  @override
+  State<_ParticipantPickerSheet> createState() =>
+      _ParticipantPickerSheetState();
+}
+
+class _ParticipantPickerSheetState extends State<_ParticipantPickerSheet> {
+  late List<Map<String, String>> _selected;
+  late TextEditingController _searchController;
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = List.from(widget.initiallySelected);
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = widget.isDark;
+    final bg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+
+    final filtered = widget.allMembers.where((m) {
+      if (_query.trim().isEmpty) return true;
+      final name = (m['name'] ?? '').toLowerCase();
+      return name.contains(_query.trim().toLowerCase());
+    }).toList();
+
+    final isValidCount = _selected.length >= 2 && _selected.length <= 10;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              // Drag Handle
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: line,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tr('games.select_participants_title'),
+                            style: AppFonts.heading(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: ink,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            tr('games.select_participants_subtitle'),
+                            style: AppFonts.body(
+                              fontSize: 12,
+                              color: inkSoft,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isValidCount
+                            ? accent.withValues(alpha: 0.12)
+                            : GenZTokens.warning.withValues(alpha: 0.12),
+                        borderRadius:
+                            BorderRadius.circular(GenZTokens.radiusPill),
+                        border: Border.all(
+                          color: isValidCount
+                              ? accent
+                              : (isDark
+                                  ? GenZTokens.warningDark
+                                  : GenZTokens.warning),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        '${_selected.length}/10',
+                        style: AppFonts.mono(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isValidCount
+                              ? accent
+                              : (isDark
+                                  ? GenZTokens.warningDark
+                                  : GenZTokens.warning),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              // Search Input Field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (val) => setState(() => _query = val),
+                  style: AppFonts.body(fontSize: 14, color: ink),
+                  decoration: InputDecoration(
+                    hintText: tr('games.search_member'),
+                    hintStyle: AppFonts.body(fontSize: 14, color: inkSoft),
+                    prefixIcon: Icon(
+                      PhosphorIcons.magnifyingGlass(),
+                      color: inkSoft,
+                      size: 18,
+                    ),
+                    suffixIcon: _query.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(
+                              PhosphorIcons.xCircle(PhosphorIconsStyle.fill),
+                              color: inkSoft,
+                              size: 18,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _query = '');
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: fill,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(GenZTokens.radiusButton),
+                      borderSide: BorderSide(
+                        color: line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(GenZTokens.radiusButton),
+                      borderSide: BorderSide(
+                        color: accent,
+                        width: GenZTokens.borderWidthFocus,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Member List
+              Flexible(
+                child: filtered.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 36),
+                        child: Center(
+                          child: Text(
+                            tr('common.empty'),
+                            style: AppFonts.body(fontSize: 14, color: inkSoft),
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 6,
+                        ),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, _) => Divider(
+                          color: line,
+                          height: 1,
+                          thickness: 0.5,
+                        ),
+                        itemBuilder: (context, i) {
+                          final member = filtered[i];
+                          final isChecked = _selected.any(
+                            (s) => s['name'] == member['name'],
+                          );
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (isChecked) {
+                                  _selected.removeWhere(
+                                    (s) => s['name'] == member['name'],
+                                  );
+                                } else {
+                                  if (_selected.length >= 10) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          tr('games.max_participants_warning'),
+                                        ),
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  _selected.add(member);
+                                }
+                              });
+                            },
+                            borderRadius:
+                                BorderRadius.circular(GenZTokens.radiusButton),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 4,
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor:
+                                        accent.withValues(alpha: 0.12),
+                                    backgroundImage: (member['avatar'] != null &&
+                                            member['avatar']!.isNotEmpty)
+                                        ? NetworkImage(member['avatar']!)
+                                        : null,
+                                    child: (member['avatar'] == null ||
+                                            member['avatar']!.isEmpty)
+                                        ? Text(
+                                            (member['name']?.isNotEmpty ?? false)
+                                                ? member['name']![0].toUpperCase()
+                                                : '?',
+                                            style: AppFonts.heading(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                              color: accent,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      member['name'] ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppFonts.body(
+                                        fontSize: 15,
+                                        fontWeight: isChecked
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: ink,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    isChecked
+                                        ? PhosphorIcons.checkSquare(
+                                            PhosphorIconsStyle.fill,
+                                          )
+                                        : PhosphorIcons.square(),
+                                    color: isChecked ? accent : inkSoft,
+                                    size: 24,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              // Warning if < 2 selected
+              if (_selected.length < 2)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    tr('games.min_participants_warning'),
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 8),
+              // Confirm button
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: ElevatedButton(
+                  onPressed: isValidCount
+                      ? () {
+                          widget.onConfirmed(_selected);
+                          Navigator.pop(context);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accent,
+                    foregroundColor: onAccent,
+                    disabledBackgroundColor:
+                        isDark ? GenZTokens.fillDark : GenZTokens.fill,
+                    disabledForegroundColor:
+                        isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(GenZTokens.radiusButton),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    tr(
+                      'games.confirm_selection',
+                      namedArgs: {'count': '${_selected.length}'},
+                    ),
+                    style: AppFonts.heading(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: isValidCount
+                          ? onAccent
+                          : (isDark
+                              ? GenZTokens.inkSoftDark
+                              : GenZTokens.inkSoft),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
