@@ -98,6 +98,14 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
         final lat = (res['latitude'] as num).toDouble();
         final lng = (res['longitude'] as num).toDouble();
         _map.move(LatLng(lat, lng), 13);
+      } else if (res is Map &&
+          (res['candidates'] as List? ?? const []).isNotEmpty) {
+        // Không chốt được toạ độ nhưng có phương án + manh mối → vẫn hiện.
+        setState(() {
+          _result = res.cast<String, dynamic>();
+          _loading = false;
+          _error = null;
+        });
       } else {
         setState(() {
           _loading = false;
@@ -248,6 +256,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                       Expanded(child: _resultBody()),
                     ],
                   ),
+                  _note(),
                   _details(),
                   const SizedBox(height: GenZTokens.space3),
                 ] else
@@ -337,6 +346,8 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                 ? 'photo.src_gps'.tr()
                 : r['coordSource'] == 'ai_estimate'
                 ? 'photo.src_ai_estimate'.tr()
+                : r['coordSource'] == 'none'
+                ? 'photo.src_ai_no_coord'.tr()
                 : 'photo.src_ai'.tr(),
             style: AppFonts.mono(
               fontSize: 12,
@@ -346,6 +357,16 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Lời nhắn của server khi chỉ đoán được tên, chưa có toạ độ.
+  Widget _note() {
+    final msg = _result?['message'];
+    if (msg is! String || msg.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: GenZTokens.space2),
+      child: Text(msg, style: AppFonts.body(fontSize: 12, color: _sub)),
     );
   }
 
@@ -400,6 +421,20 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                       backgroundColor: _fill,
                       side: BorderSide(color: _line),
                       onSelected: (_) {
+                        // Phương án chưa tra được toạ độ: chỉ hiện tên, không
+                        // di chuyển bản đồ (không có chỗ nào để ghim).
+                        if (c['latitude'] == null) {
+                          setState(() {
+                            _result = {
+                              ...r,
+                              'placeName': c['placeName'],
+                              'confidence': c['confidence'],
+                              'precision': c['precision'],
+                              'coordSource': 'none',
+                            };
+                          });
+                          return;
+                        }
                         setState(() {
                           _result = {
                             ...r,

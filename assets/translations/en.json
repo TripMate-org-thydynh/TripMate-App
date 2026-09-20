@@ -1189,7 +1189,8 @@
     "where_title": "Where was this taken?",
     "candidates": "Could be",
     "clues": "Clues the AI spotted",
-    "src_ai_estimate": "AI guess · approximate location"
+    "src_ai_estimate": "AI guess · approximate location",
+    "src_ai_no_coord": "AI guess · no coordinates"
   },
   "polls": {
     "create": "Create a poll",

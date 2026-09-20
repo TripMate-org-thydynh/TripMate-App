@@ -1189,7 +1189,8 @@
     "where_title": "Ảnh này ở đâu?",
     "candidates": "Có thể là",
     "clues": "Manh mối AI thấy trong ảnh",
-    "src_ai_estimate": "AI đoán · vị trí ước lượng"
+    "src_ai_estimate": "AI đoán · vị trí ước lượng",
+    "src_ai_no_coord": "AI đoán · chưa có toạ độ"
   },
   "polls": {
     "create": "Tạo bình chọn",
