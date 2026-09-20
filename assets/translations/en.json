@@ -807,7 +807,8 @@
     "theme_light": "Light Theme",
     "trending_places": "Trending Places",
     "upcoming_tickets": "Upcoming tickets",
-    "welcome": "Welcome to TripMate!"
+    "welcome": "Welcome to TripMate!",
+    "save": "Save"
   },
   "hub": {
     "balances": "Balances & settlement",
@@ -1190,7 +1191,13 @@
     "candidates": "Could be",
     "clues": "Clues the AI spotted",
     "src_ai_estimate": "AI guess · approximate location",
-    "src_ai_no_coord": "AI guess · no coordinates"
+    "src_ai_no_coord": "AI guess · no coordinates",
+    "pin_hint": "Tap the map to pin exactly where you took the photo.",
+    "pinned": "Your pinned spot",
+    "pin_save": "Save",
+    "pin_pick_trip": "Save into which trip?",
+    "pin_save_title": "Add to itinerary",
+    "pin_saved": "Added the stop to \"{trip}\""
   },
   "polls": {
     "create": "Create a poll",

@@ -807,7 +807,8 @@
     "theme_light": "Giao diện Sáng",
     "trending_places": "Điểm đến nổi bật",
     "upcoming_tickets": "Vé sắp tới",
-    "welcome": "Chào mừng đến với TripMate!"
+    "welcome": "Chào mừng đến với TripMate!",
+    "save": "Lưu"
   },
   "hub": {
     "balances": "Số dư & quyết toán",
@@ -1190,7 +1191,13 @@
     "candidates": "Có thể là",
     "clues": "Manh mối AI thấy trong ảnh",
     "src_ai_estimate": "AI đoán · vị trí ước lượng",
-    "src_ai_no_coord": "AI đoán · chưa có toạ độ"
+    "src_ai_no_coord": "AI đoán · chưa có toạ độ",
+    "pin_hint": "Chạm lên bản đồ để tự ghim đúng chỗ bạn đã chụp.",
+    "pinned": "Vị trí bạn ghim",
+    "pin_save": "Lưu",
+    "pin_pick_trip": "Lưu vào chuyến nào?",
+    "pin_save_title": "Thêm vào lịch trình",
+    "pin_saved": "Đã thêm điểm vào \"{trip}\""
   },
   "polls": {
     "create": "Tạo bình chọn",

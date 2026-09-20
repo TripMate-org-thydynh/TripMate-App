@@ -56,20 +56,46 @@ class OfflineMapStore {
   Future<File> _file(String url) async =>
       File('${(await _root()).path}/${_key(url)}.tile');
 
+  /// Đúng là ảnh JPEG/PNG/WebP chứ không phải trang lỗi hay file ghi dở.
+  ///
+  /// Không kiểm thì một lần mạng chập (server trả HTML lỗi kèm mã 200, hoặc
+  /// ghi file đứt giữa chừng) sẽ đóng băng ô bản đồ đó mãi mãi: lần sau đọc
+  /// cache ra vẫn là rác, giải mã hỏng, ô hiện xám.
+  static bool _looksLikeImage(Uint8List b) {
+    if (b.length < 12) return false;
+    final jpeg = b[0] == 0xFF && b[1] == 0xD8;
+    final png = b[0] == 0x89 && b[1] == 0x50 && b[2] == 0x4E && b[3] == 0x47;
+    final webp = b[0] == 0x52 && b[1] == 0x49 && b[8] == 0x57 && b[9] == 0x45;
+    return jpeg || png || webp;
+  }
+
   /// Lấy tile: có trên máy thì dùng ngay, không thì tải và giữ lại.
   Future<Uint8List> load(String url) async {
     final f = await _file(url);
-    if (f.existsSync()) return f.readAsBytes();
+    if (f.existsSync()) {
+      final cached = await f.readAsBytes();
+      if (_looksLikeImage(cached)) return cached;
+      // Cache hỏng → bỏ đi, tải lại.
+      await f.delete().catchError((_) => f);
+    }
     final res = await _dio.get<List<int>>(url);
     final bytes = Uint8List.fromList(res.data ?? const []);
-    if (bytes.isNotEmpty) {
-      // Ghi không chặn hiển thị; lỗi ghi (đầy bộ nhớ) chỉ làm mất cache.
-      f.writeAsBytes(bytes, flush: false).catchError((_) => f);
+    if (_looksLikeImage(bytes)) {
+      // Ghi tạm rồi đổi tên: không để lại file ghi dở khi app bị tắt giữa chừng.
+      final tmp = File('${f.path}.part');
+      tmp
+          .writeAsBytes(bytes, flush: true)
+          .then((x) => x.rename(f.path))
+          .catchError((_) => f);
     }
     return bytes;
   }
 
-  Future<bool> has(String url) async => (await _file(url)).existsSync();
+  Future<bool> has(String url) async {
+    final f = await _file(url);
+    if (!f.existsSync()) return false;
+    return _looksLikeImage(await f.readAsBytes());
+  }
 
   /// Dung lượng đang dùng (byte).
   Future<int> sizeBytes() async {

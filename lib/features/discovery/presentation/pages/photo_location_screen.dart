@@ -9,6 +9,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/app_messenger.dart';
+import '../../../../core/network/api_exception.dart';
+import '../../../trip_planner/data/itinerary_repository.dart';
+import '../../../trips/presentation/pick_trip_sheet.dart';
 import '../../../../core/api_service.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../../core/map/map_tiles.dart';
@@ -16,7 +21,7 @@ import '../../../../core/map/map_tiles.dart';
 /// Phân tích ảnh → check vị trí trên bản đồ.
 /// Gửi ảnh (base64) lên BE: EXIF GPS trước, không có thì Gemini vision đoán.
 /// Hiển thị kết quả trên OpenStreetMap (flutter_map, free).
-class PhotoLocationScreen extends StatefulWidget {
+class PhotoLocationScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
 
   /// Chuyến đang mở (nếu có) — điểm đến của chuyến là gợi ý cho AI.
@@ -24,15 +29,20 @@ class PhotoLocationScreen extends StatefulWidget {
   const PhotoLocationScreen({super.key, this.isDarkMode = false, this.tripId});
 
   @override
-  State<PhotoLocationScreen> createState() => _PhotoLocationScreenState();
+  ConsumerState<PhotoLocationScreen> createState() =>
+      _PhotoLocationScreenState();
 }
 
-class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
+class _PhotoLocationScreenState extends ConsumerState<PhotoLocationScreen> {
   final _picker = ImagePicker();
   final _map = MapController();
 
   bool _loading = false;
   String? _error;
+
+  /// Vị trí người dùng tự ghim trên bản đồ — luôn thắng phỏng đoán của AI.
+  LatLng? _pinned;
+  bool _saving = false;
   Uint8List? _preview;
   Map<String, dynamic>?
   _result; // {source, latitude, longitude, placeName, ...}
@@ -53,14 +63,15 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
   Future<void> _pick(ImageSource source) async {
     try {
       // KHÔNG đặt maxWidth/imageQuality: image_picker nén lại ảnh và XOÁ EXIF,
-      // mất luôn GPS — bước chính xác nhất. Chỉ nén khi ảnh quá lớn cho API.
+      // mất luôn GPS — bước xác định vị trí chính xác nhất. Chỉ nén khi ảnh
+      // vượt giới hạn 16MB của API (hiếm), lúc đó đành chịu mất GPS.
       var file = await _picker.pickImage(
         source: source,
         requestFullMetadata: true,
       );
       if (file == null) return;
       var bytes = await file.readAsBytes();
-      if (bytes.lengthInBytes > 10 * 1024 * 1024) {
+      if (bytes.lengthInBytes > 16 * 1024 * 1024) {
         final small = await _picker.pickImage(
           source: source,
           maxWidth: 2048,
@@ -160,11 +171,29 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                   options: MapOptions(
                     initialCenter: center,
                     initialZoom: hasLoc ? 13 : 5,
+                    // Chạm bản đồ để tự ghim đúng chỗ khi AI đoán sai hoặc
+                    // không ra toạ độ — người chụp mới là người biết.
+                    onTap: (_, p) => setState(() => _pinned = p),
                   ),
                   children: [
                     ...mapTileLayers(
                       dark: Theme.of(context).brightness == Brightness.dark,
                     ),
+                    if (_pinned != null)
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: _pinned!,
+                            width: 44,
+                            height: 44,
+                            child: Icon(
+                              PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
+                              color: _accent,
+                              size: 40,
+                            ),
+                          ),
+                        ],
+                      ),
                     if (hasLoc)
                       MarkerLayer(
                         markers: [
@@ -256,6 +285,7 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
                       Expanded(child: _resultBody()),
                     ],
                   ),
+                  _pinPanel(),
                   _note(),
                   _details(),
                   const SizedBox(height: GenZTokens.space3),
@@ -358,6 +388,179 @@ class _PhotoLocationScreenState extends State<PhotoLocationScreen> {
         ),
       ],
     );
+  }
+
+  /// Khối vị trí tự ghim: toạ độ + nút lưu vào lịch trình một chuyến.
+  Widget _pinPanel() {
+    final p = _pinned;
+    if (p == null) {
+      if (_result == null && _error == null) return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.only(top: GenZTokens.space2),
+        child: Text(
+          'photo.pin_hint'.tr(),
+          style: AppFonts.body(fontSize: 12, color: _sub),
+        ),
+      );
+    }
+    return Container(
+      margin: const EdgeInsets.only(top: GenZTokens.space3),
+      padding: const EdgeInsets.all(GenZTokens.space3),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
+            size: 18,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'photo.pinned'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: _ink,
+                  ),
+                ),
+                Text(
+                  '${p.latitude.toStringAsFixed(5)}, ${p.longitude.toStringAsFixed(5)}',
+                  style: AppFonts.mono(fontSize: 12, color: _sub),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => setState(() => _pinned = null),
+            child: Text('general.cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: _saving ? null : _savePinned,
+            child: _saving
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text('photo.pin_save'.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Lưu vị trí đã ghim thành một điểm dừng trong lịch trình chuyến người dùng chọn.
+  Future<void> _savePinned() async {
+    final p = _pinned;
+    if (p == null) return;
+    final trip = await PickTripSheet.show(
+      context,
+      widget.isDarkMode,
+      title: 'photo.pin_pick_trip'.tr(),
+    );
+    if (trip == null || !mounted) return;
+
+    final nameCtrl = TextEditingController(
+      text: _result?['placeName']?.toString() ?? '',
+    );
+    final dayCtrl = TextEditingController(text: '1');
+    final timeCtrl = TextEditingController(text: '09:00');
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
+        title: Text(
+          'photo.pin_save_title'.tr(),
+          style: AppFonts.heading(fontSize: 17, color: _ink),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              autofocus: true,
+              style: AppFonts.body(fontSize: 15, color: _ink),
+              decoration: InputDecoration(
+                labelText: 'itinerary.place_name'.tr(),
+                labelStyle: AppFonts.body(fontSize: 13, color: _sub),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: dayCtrl,
+                    keyboardType: TextInputType.number,
+                    style: AppFonts.body(fontSize: 15, color: _ink),
+                    decoration: InputDecoration(
+                      labelText: 'itinerary.day_label'.tr(),
+                      labelStyle: AppFonts.body(fontSize: 13, color: _sub),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: timeCtrl,
+                    style: AppFonts.body(fontSize: 15, color: _ink),
+                    decoration: InputDecoration(
+                      labelText: 'itinerary.time_hint'.tr(),
+                      labelStyle: AppFonts.body(fontSize: 13, color: _sub),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('general.cancel'.tr()),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('general.save'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(itineraryRepositoryProvider)
+          .create(
+            trip.id,
+            day: int.tryParse(dayCtrl.text.trim()) ?? 1,
+            startTime: timeCtrl.text.trim().isEmpty
+                ? '09:00'
+                : timeCtrl.text.trim(),
+            placeName: nameCtrl.text.trim().isEmpty
+                ? 'photo.pinned'.tr()
+                : nameCtrl.text.trim(),
+            latitude: p.latitude,
+            longitude: p.longitude,
+          );
+      ref.invalidate(tripItineraryProvider(trip.id));
+      showGlobalSnack('photo.pin_saved'.tr(namedArgs: {'trip': trip.name}));
+      if (mounted) setState(() => _pinned = null);
+    } catch (e) {
+      showGlobalSnack(
+        e is ApiException ? e.message : 'errors.unknown_error'.tr(),
+        isError: true,
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   /// Lời nhắn của server khi chỉ đoán được tên, chưa có toạ độ.
