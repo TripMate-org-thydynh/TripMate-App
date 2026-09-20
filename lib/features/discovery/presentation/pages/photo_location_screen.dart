@@ -285,7 +285,6 @@ class _PhotoLocationScreenState extends ConsumerState<PhotoLocationScreen> {
                       Expanded(child: _resultBody()),
                     ],
                   ),
-                  _pinPanel(),
                   _note(),
                   _details(),
                   const SizedBox(height: GenZTokens.space3),
@@ -297,6 +296,7 @@ class _PhotoLocationScreenState extends ConsumerState<PhotoLocationScreen> {
                       style: AppFonts.body(color: _sub, fontSize: 13),
                     ),
                   ),
+                _pinPanel(),
                 Row(
                   children: [
                     Expanded(
