@@ -580,7 +580,12 @@
     "transactions_to_do": "Transactions to perform ({count})",
     "victims_list": "LIST OF VICTIMS (DEBT SPLIT)",
     "who_pays_wheel": "Who Pays Wheel",
-    "your_share": "Your share:"
+    "your_share": "Your share:",
+    "who_joined": "Who shares this?",
+    "select_all": "Select all",
+    "clear_all": "Clear all",
+    "split_whole_group": "Split evenly across the whole group",
+    "split_subset": "Split only among the {n} selected"
   },
   "fund": {
     "amount": "Amount",

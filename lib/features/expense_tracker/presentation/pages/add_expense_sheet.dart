@@ -12,7 +12,8 @@ import '../../application/expenses_providers.dart';
 import '../../data/expenses_repository.dart';
 import 'ai_receipt_scanner_screen.dart';
 
-/// Sheet thêm khoản chi — chia đều (EQUAL) cho cả nhóm. Wired BE thật.
+/// Sheet thêm khoản chi — chia đều, mặc định cả nhóm nhưng cho chọn
+/// riêng ai tham gia (cáp treo, vé vào cổng... đâu phải ai cũng đi).
 class AddExpenseSheet extends ConsumerStatefulWidget {
   final String tripId;
   final bool isDarkMode;
@@ -49,6 +50,9 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
   final _desc = TextEditingController();
   String _category = 'FOOD';
   bool _busy = false;
+
+  /// Ai cùng chịu khoản này. `null` = chưa đụng tới → chia cả nhóm.
+  Set<String>? _participants;
 
   static const _categories = {
     'FOOD': 'expense.cat_food',
@@ -99,6 +103,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
             description: _desc.text.trim().isEmpty ? null : _desc.text.trim(),
             splitType: 'EQUAL',
             paidById: paidById,
+            participantIds: _participants?.toList(),
           );
       // Làm mới số dư + danh sách chi.
       ref.invalidate(tripBalancesProvider(widget.tripId));
@@ -122,6 +127,113 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
       _snack(e.message, error: true);
       setState(() => _busy = false);
     }
+  }
+
+  /// Chọn ai cùng chia. Lấy danh sách người từ bảng số dư (đã có sẵn,
+  /// khỏi gọi thêm API). Mặc định chọn hết = giữ nguyên hành vi cũ.
+  Widget _participantPicker() {
+    final async = ref.watch(tripBalancesProvider(widget.tripId));
+    final people = async.valueOrNull?.balances ?? const [];
+    if (people.length < 2) return const SizedBox.shrink();
+
+    final chosen = _participants ?? people.map((p) => p.user.id).toSet();
+    final all = chosen.length == people.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'expense.who_joined'.tr(),
+                style: AppFonts.body(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: _textSec,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () => setState(
+                () => _participants = all
+                    ? <String>{}
+                    : people.map((p) => p.user.id).toSet(),
+              ),
+              child: Text(
+                (all ? 'expense.clear_all' : 'expense.select_all').tr(),
+                style: AppFonts.body(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: _primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          all
+              ? 'expense.split_whole_group'.tr()
+              : 'expense.split_subset'.tr(
+                  namedArgs: {'n': '${chosen.length}'},
+                ),
+          style: AppFonts.body(fontSize: 12, color: _textSec),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: people.map((p) {
+            final sel = chosen.contains(p.user.id);
+            return GestureDetector(
+              onTap: () => setState(() {
+                final next = {...chosen};
+                sel ? next.remove(p.user.id) : next.add(p.user.id);
+                _participants = next;
+              }),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: sel ? _accentSoft : _fill,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                  border: Border.all(
+                    color: sel ? _primary : _line,
+                    width: sel
+                        ? GenZTokens.borderWidth
+                        : GenZTokens.borderWidthThin,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      sel
+                          ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                          : PhosphorIcons.circle(),
+                      size: 15,
+                      color: sel ? _primary : _textSec,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      p.user.name,
+                      style: AppFonts.body(
+                        fontSize: 13,
+                        fontWeight: sel ? FontWeight.w700 : FontWeight.w500,
+                        color: sel ? _primary : _textSec,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
   }
 
   void _snack(String msg, {bool error = false}) {
@@ -350,6 +462,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                   );
                 }).toList(),
               ),
+              const SizedBox(height: 16),
+              _participantPicker(),
               const SizedBox(height: 24),
 
               SizedBox(

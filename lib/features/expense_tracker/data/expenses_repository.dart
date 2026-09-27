@@ -76,6 +76,7 @@ class ExpensesRepository {
     required String splitType,
     String? paidById,
     List<Map<String, dynamic>>? splits,
+    List<String>? participantIds,
   }) async {
     final data = await _client.postData(_base(tripId), {
       'amount': amount,
@@ -84,6 +85,7 @@ class ExpensesRepository {
       'splitType': splitType,
       'paidById': paidById,
       'splits': splits,
+      'participantIds': ?participantIds,
     });
     return Expense.fromJson((data as Map).cast<String, dynamic>());
   }

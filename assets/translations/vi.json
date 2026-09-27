@@ -580,7 +580,12 @@
     "transactions_to_do": "Các giao dịch cần thực hiện ({count})",
     "victims_list": "DANH SÁCH NẠN NHÂN (CHIA NỢ)",
     "who_pays_wheel": "Vòng Quay Chọn Người Trả",
-    "your_share": "Tổng phần của bạn:"
+    "your_share": "Tổng phần của bạn:",
+    "who_joined": "Ai cùng chia?",
+    "select_all": "Chọn hết",
+    "clear_all": "Bỏ hết",
+    "split_whole_group": "Chia đều cho cả nhóm",
+    "split_subset": "Chỉ chia cho {n} người đã chọn"
   },
   "fund": {
     "amount": "Số tiền",
