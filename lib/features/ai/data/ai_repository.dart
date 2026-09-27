@@ -195,6 +195,46 @@ class MateyChatService {
     return _planText(res) ?? _textOf(res) ?? prompt;
   }
 
+  /// Hỏi Matey và nhận câu trả lời **chảy từng mẩu chữ**.
+  ///
+  /// Trả về luồng các mẩu chữ nối tiếp nhau. Màn chat ghép dần vào bong bóng
+  /// nên chữ hiện ngay thay vì đợi trọn câu trả lời — trước đây đường JSON
+  /// mất 8 giây mới thấy gì.
+  ///
+  /// [history] là vài lượt gần nhất, để câu hỏi nối tiếp kiểu "chỗ đó vé bao
+  /// nhiêu?" hiểu được.
+  Stream<String> askStream({
+    required String prompt,
+    String? tripId,
+    List<({String role, String content})> history = const [],
+  }) async* {
+    final stream = _client.postSse('/ai/chat/stream', {
+      'type': 'ITINERARY_PLAN',
+      'prompt': prompt,
+      'tripId': ?tripId,
+      if (history.isNotEmpty)
+        'history': history
+            .map((t) => {'role': t.role, 'content': t.content})
+            .toList(),
+    });
+    await for (final (event, data) in stream) {
+      switch (event) {
+        case 'chunk':
+          final t = data['text'];
+          if (t is String && t.isNotEmpty) yield t;
+        case 'error':
+          // Lỗi tới giữa luồng nên không còn mã HTTP để bắt — dựng lại thành
+          // ngoại lệ quen thuộc để màn chat xử lý như mọi lỗi khác.
+          throw ApiException(
+            '${data['message'] ?? 'errors.unknown_error'}',
+            statusCode: data['status'] is int ? data['status'] as int : 500,
+          );
+        case 'done':
+          return;
+      }
+    }
+  }
+
   /// Câu trả lời dạng lịch trình (`{days: [{day, title, activities: [...]}]}`)
   /// → văn bản đọc được trong bong bóng chat.
   ///

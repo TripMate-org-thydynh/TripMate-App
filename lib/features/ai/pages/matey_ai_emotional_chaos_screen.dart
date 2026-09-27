@@ -71,22 +71,60 @@ class _MateyAiEmotionalChaosScreenState
     });
     _scrollToBottom();
 
+    // Vài lượt gần nhất để câu hỏi nối tiếp ("chỗ đó vé bao nhiêu?") hiểu được.
+    final history = _messages
+        .where((m) => m['type'] == 'user' || m['type'] == 'ai')
+        .map(
+          (m) => (
+            role: m['type'] == 'user' ? 'user' : 'assistant',
+            content: '${m['text'] ?? ''}',
+          ),
+        )
+        .toList();
+    // Bỏ chính câu vừa gửi ra khỏi lịch sử — nó là câu hỏi, không phải ngữ cảnh.
+    if (history.isNotEmpty) history.removeLast();
+
     try {
       final tripId = ref.read(activeTripIdProvider);
-      final reply = await ref
-          .read(mateyChatProvider)
-          .ask(prompt: text, tripId: tripId);
-      if (!mounted) return;
+      // Bong bóng rỗng để chữ chảy dần vào, thay cho vòng xoay chờ tới cuối.
+      late final int slot;
       setState(() {
         _messages.add({
           'type': 'ai',
-          'text': reply,
+          'text': '',
           'time': 'ai.just_now'.tr(),
           'likes': 0,
         });
+        slot = _messages.length - 1;
         _isThinking = false;
       });
+
+      final buf = StringBuffer();
+      await for (final piece in ref
+          .read(mateyChatProvider)
+          .askStream(
+            prompt: text,
+            tripId: tripId,
+            history: history.length > 6
+                ? history.sublist(history.length - 6)
+                : history,
+          )) {
+        if (!mounted) return;
+        buf.write(piece);
+        setState(() => _messages[slot]['text'] = buf.toString());
+        _scrollToBottom();
+      }
+      if (!mounted) return;
+      // Luồng kết thúc mà không có chữ nào: bỏ bong bóng rỗng đi.
+      if (buf.isEmpty) setState(() => _messages.removeAt(slot));
     } catch (e) {
+      // Bong bóng đang chảy dở mà lỗi: gỡ đi để không để lại mẩu câu cụt.
+      if (mounted &&
+          _messages.isNotEmpty &&
+          _messages.last['type'] == 'ai' &&
+          '${_messages.last['text'] ?? ''}'.isEmpty) {
+        setState(() => _messages.removeLast());
+      }
       if (!mounted) return;
       setState(() => _isThinking = false);
       if (await PaywallSheet.maybeShow(context, e)) return;
