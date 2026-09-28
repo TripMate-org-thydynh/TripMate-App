@@ -194,6 +194,15 @@ class ApiClient {
   }
 }
 
+/// Duong dan nao thuc su goi Gemini.
+///
+/// Khong chi `/ai/`: co endpoint goi AI nhung nam duoi feature khac, vi du
+/// `/itinerary-templates/<id>/customize`. Bo sot mot duong nhu vay thi no roi
+/// ve timeout chung 15s, trong khi Gemini tra ve sau ~18s — nguoi dung luon
+/// thay bao loi cho mot tinh nang that ra chay dung.
+bool _isAiRoute(String path) =>
+    path.startsWith('/ai/') || path.endsWith('/customize');
+
 // Global Providers
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
@@ -214,7 +223,7 @@ final dioProvider = Provider<Dio>((ref) {
         // Goi AI di qua Gemini nen thuong 15-40s. Voi timeout chung 15s thi
         // moi lan nho AI viet caption deu bi huy giua chung ma nguoi dung
         // khong hieu vi sao.
-        if (options.path.startsWith('/ai/')) {
+        if (_isAiRoute(options.path)) {
           options.receiveTimeout = const Duration(seconds: 60);
         }
         return handler.next(options);

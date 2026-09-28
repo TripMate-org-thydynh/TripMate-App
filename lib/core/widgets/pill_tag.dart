@@ -11,6 +11,10 @@ class PillTag extends StatelessWidget {
   final VoidCallback? onTap;
   final bool selected;
 
+  /// Màu chữ/icon ép buộc. Dùng khi `color` là nền trong suốt (tint) mà
+  /// estimateBrightness không đoán đúng, ví dụ nền = màu trạng thái alpha thấp.
+  final Color? foreground;
+
   const PillTag({
     super.key,
     required this.text,
@@ -18,6 +22,7 @@ class PillTag extends StatelessWidget {
     this.icon,
     this.onTap,
     this.selected = false,
+    this.foreground,
   });
 
   @override
@@ -30,7 +35,22 @@ class PillTag extends StatelessWidget {
     final accentSoft = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
 
     final bg = selected ? accentSoft : (color ?? fill);
-    final textIconColor = selected ? accent : inkSoft;
+    // Nền đổi theo `color` người gọi truyền vào thì chữ phải đổi theo.
+    // `inkSoft` chỉ hợp với nền mờ mặc định; đặt nó lên nền đậm sẽ cho
+    // chữ nhạt trên nền đậm, gần như không đọc được.
+    final Color textIconColor;
+    if (foreground != null) {
+      textIconColor = foreground!;
+    } else if (selected) {
+      textIconColor = accent;
+    } else if (color == null) {
+      textIconColor = inkSoft;
+    } else {
+      textIconColor = ThemeData.estimateBrightnessForColor(color!) ==
+              Brightness.dark
+          ? Colors.white
+          : GenZTokens.ink;
+    }
     final borderColor = selected ? Colors.transparent : line;
 
     final pill = Container(
