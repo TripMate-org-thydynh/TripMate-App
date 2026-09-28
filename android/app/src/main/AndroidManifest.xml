@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- VIBRATE: HapticFeedback ở các thao tác chính. -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Android 13+ phải xin quyền này thì thông báo đẩy (bản tin sáng) mới hiện. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Máy không có camera vẫn cài được; Squad Cam sẽ báo lỗi rõ ràng. -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
