@@ -606,7 +606,10 @@
     "col_to": "Người nhận",
     "total_spent": "Tổng chi",
     "generated_at": "Xuất ngày {date}",
-    "section_expenses": "Các khoản chi"
+    "section_expenses": "Các khoản chi",
+    "split_everyone": "Cả nhóm ({n})",
+    "split_except": "{n} người, trừ {names}",
+    "per_head": "{amount}/người"
   },
   "fund": {
     "amount": "Số tiền",

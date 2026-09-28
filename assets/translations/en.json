@@ -606,7 +606,10 @@
     "col_to": "To",
     "total_spent": "Total spent",
     "generated_at": "Exported on {date}",
-    "section_expenses": "Expenses"
+    "section_expenses": "Expenses",
+    "split_everyone": "Everyone ({n})",
+    "split_except": "{n} people, except {names}",
+    "per_head": "{amount} each"
   },
   "fund": {
     "amount": "Amount",
