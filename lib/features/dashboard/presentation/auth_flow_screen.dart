@@ -41,6 +41,10 @@ class AuthFlowScreen extends ConsumerStatefulWidget {
   ConsumerState<AuthFlowScreen> createState() => _AuthFlowScreenState();
 }
 
+/// Đăng nhập bằng SMS OTP. Tắt cho tới khi backend có tài khoản Twilio —
+/// bật lại bằng `--dart-define=PHONE_LOGIN=true`.
+const bool _phoneLoginEnabled = bool.fromEnvironment('PHONE_LOGIN');
+
 class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
   int _currentStep =
       0; // 0: Vibe Onboarding, 1: Auth/Forgot, 2: Verification, 3: Profile, 4: Success
@@ -55,7 +59,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
 
   final List<String> _selectedVibes = [];
   bool _isForgotPasswordMode = false;
-  bool _isEmailInput = false;
+  bool _isEmailInput = !_phoneLoginEnabled;
   bool _isSubmitting = false;
 
   // serverClientId KHÔNG được hỗ trợ trên Web (client ID lấy từ meta tag
@@ -127,6 +131,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
   }
 
   void _onEmailInputChanged() {
+    if (!_phoneLoginEnabled) return;
     final text = _emailController.text.trim();
     if (text.isEmpty) return;
     final isEmail = text.contains('@') || RegExp(r'[a-zA-Z]').hasMatch(text);
@@ -860,22 +865,25 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _isEmailInput = !_isEmailInput;
-                  _emailController.clear();
-                });
-              },
-              child: Text(
-                _isEmailInput ? 'auth.use_phone'.tr() : 'auth.use_email'.tr(),
-                style: AppFonts.heading(
-                  color: accent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+            if (_phoneLoginEnabled)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _isEmailInput = !_isEmailInput;
+                    _emailController.clear();
+                  });
+                },
+                child: Text(
+                  _isEmailInput ? 'auth.use_phone'.tr() : 'auth.use_email'.tr(),
+                  style: AppFonts.heading(
+                    color: accent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-            ),
+              )
+            else
+              const SizedBox.shrink(),
             TextButton(
               onPressed: () {
                 setState(() {
