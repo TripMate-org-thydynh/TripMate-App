@@ -25,7 +25,15 @@ class TripPdfExporter {
     required List<Reservation> reservations,
     required BuildContext context,
   }) async {
-    final pdf = pw.Document();
+    // Phông mặc định của gói `pdf` (Helvetica) không có dấu tiếng Việt: tên
+    // chuyến, địa điểm ra ô vuông. Be Vietnam Pro tải qua PdfGoogleFonts và
+    // được cache sau lần đầu; gán ở theme của Document để mọi trang dùng chung.
+    final pdf = pw.Document(
+      theme: pw.ThemeData.withFont(
+        base: await PdfGoogleFonts.beVietnamProRegular(),
+        bold: await PdfGoogleFonts.beVietnamProBold(),
+      ),
+    );
 
     // Cover page
     pdf.addPage(

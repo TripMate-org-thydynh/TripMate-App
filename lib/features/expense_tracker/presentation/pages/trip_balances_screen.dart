@@ -11,6 +11,7 @@ import '../../../../core/theme/gen_z_tokens.dart';
 
 import '../../../../core/services/payment_launcher.dart';
 import '../../../social/presentation/pages/trip_polls_screen.dart';
+import '../../application/expense_export.dart';
 import '../../application/expenses_providers.dart';
 import '../../domain/expense.dart';
 import 'add_expense_sheet.dart';
@@ -32,8 +33,7 @@ class TripBalancesScreen extends ConsumerWidget {
 
   Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color _primary(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
+  Color _primary(BuildContext context) => Theme.of(context).colorScheme.primary;
   Color _onAccent(BuildContext context) =>
       Theme.of(context).colorScheme.onPrimary;
   Color get _accentSoft =>
@@ -89,6 +89,14 @@ class TripBalancesScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            tooltip: 'expense.export'.tr(),
+            icon: Icon(PhosphorIcons.export(), color: _textPri),
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              _showExportSheet(context, ref);
+            },
+          ),
+          IconButton(
             // Icon phieu bau chu khong phai bieu do: nut nay mo man Binh chon
             // nhom, icon bieu do lam nguoi dung tuong la thong ke chi tieu.
             tooltip: 'polls.title'.tr(),
@@ -123,6 +131,152 @@ class TripBalancesScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Sheet chọn định dạng xuất: CSV cho bảng tính, PDF để gửi nhóm chat.
+  void _showExportSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: _surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
+      ),
+      builder: (sheetCtx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'expense.export_title'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: _textPri,
+                ),
+              ),
+              const SizedBox(height: 14),
+              _exportOption(
+                context,
+                icon: PhosphorIcons.fileCsv(),
+                title: 'expense.export_csv'.tr(),
+                subtitle: 'expense.export_csv_sub'.tr(),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  _runExport(context, ref, ExpenseExportFormat.csv);
+                },
+              ),
+              const SizedBox(height: 10),
+              _exportOption(
+                context,
+                icon: PhosphorIcons.filePdf(),
+                title: 'expense.export_pdf'.tr(),
+                subtitle: 'expense.export_pdf_sub'.tr(),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  _runExport(context, ref, ExpenseExportFormat.pdf);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _exportOption(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: _fill,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                ),
+                child: Icon(icon, color: _textPri, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppFonts.heading(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: _textPri,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: AppFonts.body(fontSize: 13, color: _textSec),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(PhosphorIcons.caretRight(), color: _textSec, size: 18),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _runExport(
+    BuildContext context,
+    WidgetRef ref,
+    ExpenseExportFormat format,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final locale = context.locale.languageCode;
+    try {
+      final expenses = await ref.read(tripExpensesProvider(tripId).future);
+      final balances = await ref.read(tripBalancesProvider(tripId).future);
+      if (expenses.isEmpty) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('expense.export_empty'.tr())),
+        );
+        return;
+      }
+      await exportAndShareExpenses(
+        format: format,
+        tripName: tripName,
+        expenses: expenses,
+        balances: balances,
+        locale: locale,
+      );
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'expense.export_failed'.tr(namedArgs: {'error': friendlyError(e)}),
+          ),
+        ),
+      );
+    }
   }
 
   Widget _skeleton() => ListView(
@@ -305,7 +459,11 @@ class TripBalancesScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Icon(PhosphorIcons.arrowRight(), size: 16, color: _primary(context)),
+                    Icon(
+                      PhosphorIcons.arrowRight(),
+                      size: 16,
+                      color: _primary(context),
+                    ),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
