@@ -77,8 +77,9 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
   void _startPolling() {
     _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) async {
       try {
-        final res =
-            await ApiService.get('/payment/order-status/${widget.orderCode}');
+        final res = await ApiService.get(
+          '/payment/order-status/${widget.orderCode}',
+        );
         if (res != null &&
             res is Map &&
             (res['isPaid'] == true || res['status'] == 'SUCCESS')) {
@@ -107,7 +108,10 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          tr('premium.vietqr_copied', namedArgs: {'label': label, 'value': text}),
+          tr(
+            'premium.vietqr_copied',
+            namedArgs: {'label': label, 'value': text},
+          ),
         ),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
@@ -129,11 +133,19 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final cardBg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final cardBg = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = theme.colorScheme.primary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final info = isDark ? GenZTokens.infoDark : GenZTokens.info;
 
     final bankCode = widget.bankInfo?['bankCode']?.toString() ?? 'MBBank';
     final accountNumber =
@@ -146,8 +158,11 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     return Container(
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(GenZTokens.ink, isDark),
       ),
       padding: EdgeInsets.fromLTRB(
         20,
@@ -169,8 +184,8 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                   width: 44,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: ink.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
+                    color: line,
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   ),
                 ),
                 IconButton(
@@ -187,25 +202,31 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
               // Giao diện khi Webhook báo thanh toán thành công
               const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 32,
+                  horizontal: 20,
+                ),
                 decoration: BoxDecoration(
-                  color: GenZTokens.green.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: GenZTokens.green, width: 2),
+                  color: success.withValues(alpha: isDark ? 0.18 : 0.12),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  border: Border.all(
+                    color: success,
+                    width: GenZTokens.borderWidth,
+                  ),
                 ),
                 child: Column(
                   children: [
                     Icon(
                       PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
-                      color: GenZTokens.green,
-                      size: 72,
+                      color: success,
+                      size: 64,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       tr('premium.vietqr_success_title'),
                       style: AppFonts.heading(
                         fontSize: 22,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                         color: ink,
                       ),
                       textAlign: TextAlign.center,
@@ -213,10 +234,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                     const SizedBox(height: 8),
                     Text(
                       tr('premium.vietqr_success_desc'),
-                      style: AppFonts.body(
-                        fontSize: 14,
-                        color: inkSoft,
-                      ),
+                      style: AppFonts.body(fontSize: 14, color: inkSoft),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -228,8 +246,8 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
               Text(
                 tr('premium.vietqr_title'),
                 style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
                   color: ink,
                 ),
                 textAlign: TextAlign.center,
@@ -237,10 +255,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
               const SizedBox(height: 4),
               Text(
                 tr('premium.vietqr_sub'),
-                style: AppFonts.body(
-                  fontSize: 13,
-                  color: inkSoft,
-                ),
+                style: AppFonts.body(fontSize: 13, color: inkSoft),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -251,12 +266,15 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: ink, width: GenZTokens.borderWidth),
-                    boxShadow: GenZTokens.hardShadow(ink),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                    border: Border.all(
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                    boxShadow: GenZTokens.hardShadow(GenZTokens.ink, isDark),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                     child: Image.network(
                       widget.qrUrl,
                       width: 220,
@@ -275,15 +293,20 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                       errorBuilder: (context, error, stackTrace) => Container(
                         width: 220,
                         height: 220,
-                        color: Colors.grey.shade100,
+                        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(PhosphorIcons.qrCode(),
-                                size: 64, color: Colors.grey),
+                            Icon(
+                              PhosphorIcons.qrCode(),
+                              size: 64,
+                              color: inkSoft,
+                            ),
                             const SizedBox(height: 8),
-                            Text(tr('premium.vietqr_error_image'),
-                                style: const TextStyle(color: Colors.grey)),
+                            Text(
+                              tr('premium.vietqr_error_image'),
+                              style: TextStyle(color: inkSoft, fontSize: 12),
+                            ),
                           ],
                         ),
                       ),
@@ -298,9 +321,11 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: cardBg,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                   border: Border.all(
-                      color: ink, width: GenZTokens.borderWidthThin),
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -309,40 +334,53 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                       label: tr('premium.vietqr_bank'),
                       value: bankCode,
                       ink: ink,
+                      inkSoft: inkSoft,
                     ),
-                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
+                    Divider(height: 16, color: line),
                     _buildDetailRow(
                       context,
                       label: tr('premium.vietqr_account_number'),
                       value: accountNumber,
                       ink: ink,
-                      onCopy: () => _copy(accountNumber, tr('premium.vietqr_account_number')),
+                      inkSoft: inkSoft,
+                      onCopy: () => _copy(
+                        accountNumber,
+                        tr('premium.vietqr_account_number'),
+                      ),
                     ),
-                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
+                    Divider(height: 16, color: line),
                     _buildDetailRow(
                       context,
                       label: tr('premium.vietqr_account_name'),
                       value: accountName,
                       ink: ink,
+                      inkSoft: inkSoft,
                     ),
-                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
+                    Divider(height: 16, color: line),
                     _buildDetailRow(
                       context,
                       label: tr('premium.vietqr_amount'),
                       value: _formatCurrency(widget.amount),
-                      ink: GenZTokens.purple,
+                      ink: accent,
+                      inkSoft: inkSoft,
                       isBold: true,
-                      onCopy: () => _copy(widget.amount.toString(), tr('premium.vietqr_amount')),
+                      onCopy: () => _copy(
+                        widget.amount.toString(),
+                        tr('premium.vietqr_amount'),
+                      ),
                     ),
-                    Divider(height: 16, color: ink.withValues(alpha: 0.15)),
+                    Divider(height: 16, color: line),
                     _buildDetailRow(
                       context,
                       label: tr('premium.vietqr_content'),
                       value: content,
-                      ink: GenZTokens.purple,
+                      ink: accent,
+                      inkSoft: inkSoft,
+                      highlightBg: accentSoft,
                       isBold: true,
                       highlight: true,
-                      onCopy: () => _copy(content, tr('premium.vietqr_content')),
+                      onCopy: () =>
+                          _copy(content, tr('premium.vietqr_content')),
                     ),
                   ],
                 ),
@@ -351,24 +389,26 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
 
               // Thông báo thời gian thực: Webhook đang lắng nghe
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
-                  color: GenZTokens.purple.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(14),
+                  color: info.withValues(alpha: isDark ? 0.15 : 0.08),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                   border: Border.all(
-                    color: GenZTokens.purple.withValues(alpha: 0.25),
-                    width: 1.5,
+                    color: info.withValues(alpha: 0.3),
+                    width: GenZTokens.borderWidthThin,
                   ),
                 ),
                 child: Row(
                   children: [
-                    const SizedBox(
+                    SizedBox(
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.2,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(GenZTokens.purple),
+                        valueColor: AlwaysStoppedAnimation<Color>(info),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -378,19 +418,16 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                         children: [
                           Text(
                             tr('premium.vietqr_waiting'),
-                            style: AppFonts.body(
+                            style: AppFonts.heading(
                               fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: GenZTokens.purple,
+                              fontWeight: FontWeight.w600,
+                              color: info,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             tr('premium.vietqr_waiting_sub'),
-                            style: AppFonts.body(
-                              fontSize: 11,
-                              color: inkSoft,
-                            ),
+                            style: AppFonts.body(fontSize: 12, color: inkSoft),
                           ),
                         ],
                       ),
@@ -407,14 +444,16 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                     onPressed: () async {
                       final uri = Uri.tryParse(widget.payUrl!);
                       if (uri != null) {
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
                       }
                     },
                     icon: Icon(PhosphorIcons.arrowSquareOut(), size: 18),
                     label: Text(tr('premium.vietqr_open_gateway')),
                     style: TextButton.styleFrom(
-                      foregroundColor: GenZTokens.purple,
+                      foregroundColor: accent,
                       textStyle: AppFonts.body(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -434,6 +473,8 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     required String label,
     required String value,
     required Color ink,
+    required Color inkSoft,
+    Color? highlightBg,
     bool isBold = false,
     bool highlight = false,
     VoidCallback? onCopy,
@@ -441,13 +482,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: AppFonts.body(
-            fontSize: 13,
-            color: ink.withValues(alpha: 0.7),
-          ),
-        ),
+        Text(label, style: AppFonts.body(fontSize: 13, color: inkSoft)),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -455,17 +490,17 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
               padding: highlight
                   ? const EdgeInsets.symmetric(horizontal: 8, vertical: 2)
                   : EdgeInsets.zero,
-              decoration: highlight
+              decoration: highlight && highlightBg != null
                   ? BoxDecoration(
-                      color: GenZTokens.purple.withValues(alpha: 0.12),
+                      color: highlightBg,
                       borderRadius: BorderRadius.circular(6),
                     )
                   : null,
               child: Text(
                 value,
                 style: AppFonts.body(
-                  fontSize: 14,
-                  fontWeight: isBold ? FontWeight.w800 : FontWeight.w600,
+                  fontSize: 13,
+                  fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
                   color: ink,
                 ),
               ),
@@ -477,11 +512,7 @@ class _VietQrPaymentSheetState extends ConsumerState<VietQrPaymentSheet> {
                 borderRadius: BorderRadius.circular(6),
                 child: Padding(
                   padding: const EdgeInsets.all(4),
-                  child: Icon(
-                    PhosphorIcons.copy(),
-                    size: 16,
-                    color: ink.withValues(alpha: 0.8),
-                  ),
+                  child: Icon(PhosphorIcons.copy(), size: 16, color: inkSoft),
                 ),
               ),
             ],

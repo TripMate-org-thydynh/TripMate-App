@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../theme/gen_z_tokens.dart';
 
-/// Hiệu ứng xuất hiện "pop": scale 0.94→1 + fade + trượt lên nhẹ, có delay theo
-/// [index] để tạo hiệu ứng so le (staggered) khi một danh sách card cùng load.
-/// Chạy một lần, không loop — giữ nhịp sinh động mà không gây rối.
+/// Hiệu ứng xuất hiện: fade + trượt lên nhẹ (Curves.easeOutCubic, không nảy),
+/// có delay theo [index] để tạo nhịp so le (staggered) khi một danh sách card cùng load.
+/// Tuân thủ spec mục 7: không bounce, chuyển động mượt mà.
 class PopIn extends StatefulWidget {
   final Widget child;
   final int index;
@@ -13,8 +14,8 @@ class PopIn extends StatefulWidget {
     super.key,
     required this.child,
     this.index = 0,
-    this.duration = const Duration(milliseconds: 360),
-    this.stagger = const Duration(milliseconds: 70),
+    this.duration = const Duration(milliseconds: GenZTokens.durationBase),
+    this.stagger = const Duration(milliseconds: 50),
   });
 
   @override
@@ -28,7 +29,7 @@ class _PopInState extends State<PopIn> with SingleTickerProviderStateMixin {
   );
   late final Animation<double> _curve = CurvedAnimation(
     parent: _c,
-    curve: Curves.easeOutBack,
+    curve: Curves.easeOutCubic,
   );
 
   @override
@@ -54,8 +55,8 @@ class _PopInState extends State<PopIn> with SingleTickerProviderStateMixin {
         return Opacity(
           opacity: t.clamp(0.0, 1.0),
           child: Transform.translate(
-            offset: Offset(0, (1 - t) * 16),
-            child: Transform.scale(scale: 0.94 + 0.06 * t, child: child),
+            offset: Offset(0, (1 - t) * 12),
+            child: child,
           ),
         );
       },

@@ -15,11 +15,14 @@ import '../data/ai_repository.dart';
 /// Fushimi Inari" 14:00) — trộn Đà Lạt với Kyoto, không liên quan chuyến nào.
 /// Nay gọi `/ai/trips/:id/timeline` để AI đề xuất theo chuyến thật.
 class AiRecommendationTimelineScreen extends ConsumerWidget {
-  const AiRecommendationTimelineScreen({super.key});
+  final bool? isDarkMode;
+
+  const AiRecommendationTimelineScreen({super.key, this.isDarkMode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final tripId = ref.watch(activeTripIdProvider);
@@ -27,14 +30,15 @@ class AiRecommendationTimelineScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'ai.timeline_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -94,14 +98,15 @@ class AiRecommendationTimelineScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
-        boxShadow: GenZTokens.hardShadow(ink),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,19 +114,19 @@ class AiRecommendationTimelineScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: GenZTokens.yellow,
+              color: fill,
               borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
               border: Border.all(
-                color: GenZTokens.ink,
+                color: line,
                 width: GenZTokens.borderWidthThin,
               ),
             ),
             child: Text(
               a.time,
-              style: AppFonts.heading(
+              style: AppFonts.mono(
                 fontSize: 12,
-                fontWeight: FontWeight.w900,
-                color: GenZTokens.ink,
+                fontWeight: FontWeight.w600,
+                color: ink,
               ),
             ),
           ),
@@ -134,7 +139,7 @@ class AiRecommendationTimelineScreen extends ConsumerWidget {
                   a.location,
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: ink,
                   ),
                 ),
@@ -143,7 +148,7 @@ class AiRecommendationTimelineScreen extends ConsumerWidget {
                   Text(
                     a.reason,
                     style: AppFonts.body(
-                      fontSize: 12.5,
+                      fontSize: 13,
                       color: inkSoft,
                       height: 1.4,
                     ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/gen_z_tokens.dart';
 
-/// Chấm trạng thái "online" pulse liên tục nhẹ: vòng ngoài lan toả + mờ dần.
-/// Dùng cho friend presence, live status. Loop nhẹ, không gây rối.
+/// Chấm trạng thái trực tiếp (online, live status).
+/// Vòng lan toả mờ dần nhẹ nhàng, màu mặc định là semantic success.
 class PulseDot extends StatefulWidget {
   final Color color;
   final double size;
@@ -10,7 +10,7 @@ class PulseDot extends StatefulWidget {
 
   const PulseDot({
     super.key,
-    this.color = GenZTokens.green,
+    this.color = GenZTokens.success,
     this.size = 10,
     this.bordered = true,
   });
@@ -35,7 +35,8 @@ class _PulseDotState extends State<PulseDot>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final ringColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+
     return SizedBox(
       width: widget.size * 2.4,
       height: widget.size * 2.4,
@@ -47,14 +48,14 @@ class _PulseDotState extends State<PulseDot>
             return Stack(
               alignment: Alignment.center,
               children: [
-                // Vòng lan toả
+                // Vòng lan toả mờ
                 Opacity(
-                  opacity: (1 - t) * 0.5,
+                  opacity: (1 - t) * 0.45,
                   child: Container(
-                    width: widget.size * (1 + t * 1.4),
-                    height: widget.size * (1 + t * 1.4),
+                    width: widget.size * (1 + t * 1.3),
+                    height: widget.size * (1 + t * 1.3),
                     decoration: BoxDecoration(
-                      color: widget.color.withValues(alpha: 0.5),
+                      color: widget.color.withValues(alpha: 0.4),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -70,7 +71,10 @@ class _PulseDotState extends State<PulseDot>
               color: widget.color,
               shape: BoxShape.circle,
               border: widget.bordered
-                  ? Border.all(color: ink, width: 1.5)
+                  ? Border.all(
+                      color: ringColor,
+                      width: 1.5,
+                    )
                   : null,
             ),
           ),

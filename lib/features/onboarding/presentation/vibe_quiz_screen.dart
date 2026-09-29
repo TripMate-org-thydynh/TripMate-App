@@ -26,18 +26,12 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
   int _step = 0;
   final Map<int, int> _answers = {};
 
-  // Mỗi bước một khối màu accent khác nhau (Design DNA: solid color blocks).
-  static const List<Color> _stepColors = [
-    GenZTokens.yellow,
-    GenZTokens.green,
-    GenZTokens.lilac,
-    GenZTokens.orange,
-    GenZTokens.pink,
-  ];
-
   List<_Question> get _questions => [
     _Question('onboarding.q_trip'.tr(), [
-      _Choice('onboarding.a_chill'.tr(), PhosphorIcons.leaf(PhosphorIconsStyle.fill)),
+      _Choice(
+        'onboarding.a_chill'.tr(),
+        PhosphorIcons.leaf(PhosphorIconsStyle.fill),
+      ),
       _Choice(
         'onboarding.a_chaos'.tr(),
         PhosphorIcons.flame(PhosphorIconsStyle.fill),
@@ -121,17 +115,27 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Khối màu full-bleed đổi theo bước; chữ và viền LUÔN là ink tối
-    // để giữ tương phản AA trên mọi accent sáng (kể cả dark mode).
-    final isDark = widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
-    final blockColor = _stepColors[_step % _stepColors.length];
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final paper = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
     final q = _questions[_step];
 
     return Scaffold(
-      backgroundColor: blockColor,
+      backgroundColor: bg,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+          padding: const EdgeInsets.fromLTRB(
+            GenZTokens.space5,
+            GenZTokens.space4,
+            GenZTokens.space5,
+            GenZTokens.space6,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -142,7 +146,7 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                     child: SegmentedProgress(
                       total: _questions.length,
                       completed: _step + 1,
-                      fillColor: GenZTokens.ink,
+                      fillColor: accent,
                     ),
                   ),
                   const SizedBox(width: GenZTokens.space4),
@@ -152,15 +156,15 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                       'common.skip_caps'.tr(),
                       style: AppFonts.mono(
                         fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: GenZTokens.ink,
+                        fontWeight: FontWeight.w600,
+                        color: inkSoft,
                         decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 36),
 
               PillTag(
                 text: 'onboarding.question_n'.tr(
@@ -169,31 +173,53 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                     'total': '${_questions.length}',
                   },
                 ),
-                color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                color: fill,
               ),
               const SizedBox(height: GenZTokens.space3),
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: GenZTokens.durationBase),
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeOutCubic,
                 child: Text(
                   q.text,
                   key: ValueKey(_step),
                   style: AppFonts.heading(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w800,
-                    color: GenZTokens.ink,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: ink,
                     letterSpacing: -0.5,
-                    height: 1.05,
+                    height: 1.15,
                   ),
                 ),
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: 32),
 
               Expanded(
                 child: Column(
                   children: [
-                    Expanded(child: _choiceCard(q.choices[0], 0, isDark)),
+                    Expanded(
+                      child: _choiceCard(
+                        choice: q.choices[0],
+                        idx: 0,
+                        paper: paper,
+                        line: line,
+                        fill: fill,
+                        ink: ink,
+                        inkSoft: inkSoft,
+                      ),
+                    ),
                     const SizedBox(height: GenZTokens.space4),
-                    Expanded(child: _choiceCard(q.choices[1], 1, isDark)),
+                    Expanded(
+                      child: _choiceCard(
+                        choice: q.choices[1],
+                        idx: 1,
+                        paper: paper,
+                        line: line,
+                        fill: fill,
+                        ink: ink,
+                        inkSoft: inkSoft,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -204,47 +230,51 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
     );
   }
 
-  Widget _choiceCard(_Choice choice, int idx, bool isDark) {
+  Widget _choiceCard({
+    required _Choice choice,
+    required int idx,
+    required Color paper,
+    required Color line,
+    required Color fill,
+    required Color ink,
+    required Color inkSoft,
+  }) {
     return GestureDetector(
       onTap: () => _pick(idx),
-      child: HardShadowBox(
-        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-        radius: GenZTokens.radiusCard,
-        borderColor: GenZTokens.ink,
-        shadowColor: GenZTokens.ink,
-        padding: const EdgeInsets.all(22),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: paper,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+        ),
         child: Row(
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
-                color: _stepColors[(_step + idx + 1) % _stepColors.length],
+                color: fill,
                 borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 border: Border.all(
-                  color: GenZTokens.ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
-              child: Icon(choice.icon, color: GenZTokens.ink, size: 28),
+              child: Icon(choice.icon, color: ink, size: 26),
             ),
-            const SizedBox(width: 18),
+            const SizedBox(width: 16),
             Expanded(
               child: Text(
                 choice.label,
                 style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-                  letterSpacing: -0.3,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: ink,
                 ),
               ),
             ),
-            Icon(
-              PhosphorIcons.arrowRight(),
-              size: 20,
-              color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-            ),
+            Icon(PhosphorIcons.arrowRight(), size: 20, color: inkSoft),
           ],
         ),
       ),

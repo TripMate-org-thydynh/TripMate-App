@@ -142,8 +142,8 @@ class PlayBillingService {
 
     start();
 
-    final product = _products[productId] ??
-        (await loadProducts({productId}))[productId];
+    final product =
+        _products[productId] ?? (await loadProducts({productId}))[productId];
     if (product == null) {
       return const PlayPurchaseResult(
         PlayPurchaseOutcome.failed,
@@ -165,17 +165,21 @@ class PlayBillingService {
       if (!ok) {
         // `false` nghĩa là không mở được luồng mua — chưa có biên lai nào sinh
         // ra, nên phải tự đóng completer, không thì màn hình quay mãi.
-        _finish(const PlayPurchaseResult(
-          PlayPurchaseOutcome.failed,
-          message: 'premium.play_launch_failed',
-        ));
+        _finish(
+          const PlayPurchaseResult(
+            PlayPurchaseOutcome.failed,
+            message: 'premium.play_launch_failed',
+          ),
+        );
       }
     } catch (e) {
       debugPrint('PlayBilling: khong mo duoc luong mua: $e');
-      _finish(const PlayPurchaseResult(
-        PlayPurchaseOutcome.failed,
-        message: 'premium.play_launch_failed',
-      ));
+      _finish(
+        const PlayPurchaseResult(
+          PlayPurchaseOutcome.failed,
+          message: 'premium.play_launch_failed',
+        ),
+      );
     }
 
     return completer.future;
@@ -212,10 +216,12 @@ class PlayBillingService {
         case PurchaseStatus.error:
           debugPrint('PlayBilling: Google bao loi: ${p.error?.message}');
           await _complete(p);
-          _finish(const PlayPurchaseResult(
-            PlayPurchaseOutcome.failed,
-            message: 'premium.play_failed',
-          ));
+          _finish(
+            const PlayPurchaseResult(
+              PlayPurchaseOutcome.failed,
+              message: 'premium.play_failed',
+            ),
+          );
           break;
 
         case PurchaseStatus.purchased:
@@ -229,10 +235,12 @@ class PlayBillingService {
   Future<void> _verifyThenComplete(PurchaseDetails p) async {
     final token = p.verificationData.serverVerificationData;
     if (token.isEmpty) {
-      _finish(const PlayPurchaseResult(
-        PlayPurchaseOutcome.failed,
-        message: 'premium.play_failed',
-      ));
+      _finish(
+        const PlayPurchaseResult(
+          PlayPurchaseOutcome.failed,
+          message: 'premium.play_failed',
+        ),
+      );
       return;
     }
 
@@ -263,10 +271,12 @@ class PlayBillingService {
     // Chưa xác thực được thì **giữ nguyên biên lai**: Google sẽ phát lại ở lần
     // mở app sau và `restore()` nhặt được.
     if (_matchesPending(p)) {
-      _finish(const PlayPurchaseResult(
-        PlayPurchaseOutcome.pendingVerification,
-        message: 'premium.play_pending_verification',
-      ));
+      _finish(
+        const PlayPurchaseResult(
+          PlayPurchaseOutcome.pendingVerification,
+          message: 'premium.play_pending_verification',
+        ),
+      );
     }
   }
 

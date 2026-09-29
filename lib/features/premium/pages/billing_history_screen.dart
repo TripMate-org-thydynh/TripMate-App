@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../../core/api_service.dart';
 import '../../../core/format/money.dart';
+import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 
 class BillingHistoryScreen extends StatefulWidget {
@@ -36,28 +36,32 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
     final response = await ApiService.get('/premium/billing-history');
     if (response != null && response['history'] != null) {
       final List<dynamic> list = response['history'] as List<dynamic>;
-      setState(() {
-        _invoices = list
-            .map(
-              (item) => {
-                'id': item['id'] ?? 'GD-${item.hashCode.abs()}',
-                'date': item['date'] ?? 'premium.recent'.tr(),
-                'title': item['description'] ?? 'premium.upgrade_tx'.tr(),
-                'amount': formatMoney(
-                  (item['amount'] as int?) ?? 0,
-                  locale: context.locale.languageCode,
-                ),
-                'method': item['method'] ?? 'premium.saved_source'.tr(),
-                'status': item['status'] ?? 'common.success_plain'.tr(),
-              },
-            )
-            .toList();
-      });
+      if (mounted) {
+        setState(() {
+          _invoices = list
+              .map(
+                (item) => {
+                  'id': item['id'] ?? 'GD-${item.hashCode.abs()}',
+                  'date': item['date'] ?? 'premium.recent'.tr(),
+                  'title': item['description'] ?? 'premium.upgrade_tx'.tr(),
+                  'amount': formatMoney(
+                    (item['amount'] as int?) ?? 0,
+                    locale: context.locale.languageCode,
+                  ),
+                  'method': item['method'] ?? 'premium.saved_source'.tr(),
+                  'status': item['status'] ?? 'common.success_plain'.tr(),
+                },
+              )
+              .toList();
+        });
+      }
     }
 
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -67,11 +71,10 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
 
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final backgroundColor =
-        isDark ? GenZTokens.creamDark : GenZTokens.cream;
-    final surfaceColor =
-        isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final accentColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
+    final backgroundColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -79,57 +82,42 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            PhosphorIcons.arrowLeft(),
-            color: ink,
-          ),
+          icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'premium.billing_history'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              PhosphorIcons.arrowsClockwise(),
-              color: ink,
-            ),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: ink),
             onPressed: _fetchBillingHistory,
           ),
         ],
       ),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: accentColor,
-              ),
+              child: CircularProgressIndicator(strokeWidth: 2, color: accent),
             )
           : _invoices.isEmpty
           // Chưa mua gì thì nói thẳng, thay vì hiện hoá đơn bịa như trước.
           ? Center(
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: const EdgeInsets.all(GenZTokens.space6),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      PhosphorIcons.receipt(),
-                      size: 40,
-                      color: inkSoft,
-                    ),
-                    const SizedBox(height: 12),
+                    Icon(PhosphorIcons.receipt(), size: 40, color: inkSoft),
+                    const SizedBox(height: GenZTokens.space3),
                     Text(
                       'premium.no_invoices'.tr(),
                       textAlign: TextAlign.center,
-                      style: AppFonts.body(
-                        fontSize: 14,
-                        color: inkSoft,
-                      ),
+                      style: AppFonts.body(fontSize: 13, color: inkSoft),
                     ),
                   ],
                 ),
@@ -137,23 +125,24 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
             )
           : ListView.builder(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(GenZTokens.space5),
               itemCount: _invoices.length,
               itemBuilder: (context, index) {
                 final inv = _invoices[index];
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 14),
+                  margin: const EdgeInsets.only(bottom: GenZTokens.space3),
                   decoration: BoxDecoration(
                     color: surfaceColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                     border: Border.all(
-                      color: ink.withValues(alpha: 0.15),
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
                     ),
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
+                      horizontal: GenZTokens.space4,
+                      vertical: GenZTokens.space2,
                     ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,8 +151,8 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                           child: Text(
                             inv['title'] as String,
                             style: AppFonts.heading(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
                               color: ink,
                             ),
                             maxLines: 1,
@@ -172,10 +161,10 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                         ),
                         Text(
                           inv['amount'] as String,
-                          style: AppFonts.heading(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: accentColor,
+                          style: AppFonts.mono(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: ink,
                           ),
                         ),
                       ],
@@ -191,27 +180,21 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                               'date': '${inv['date']}',
                             },
                           ),
-                          style: AppFonts.heading(
-                            fontSize: 11.5,
-                            color: inkSoft,
-                          ),
+                          style: AppFonts.body(fontSize: 12, color: inkSoft),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'premium.paid_with'.tr(
                             namedArgs: {'method': '${inv['method']}'},
                           ),
-                          style: AppFonts.heading(
-                            fontSize: 11.5,
-                            color: inkSoft,
-                          ),
+                          style: AppFonts.body(fontSize: 12, color: inkSoft),
                         ),
                       ],
                     ),
                     trailing: IconButton(
                       icon: Icon(
                         PhosphorIcons.downloadSimple(),
-                        color: accentColor,
+                        color: inkSoft,
                       ),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -220,8 +203,26 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                               'premium.downloading_invoice'.tr(
                                 namedArgs: {'id': '${inv['id']}'},
                               ),
+                              style: AppFonts.body(
+                                fontSize: 13,
+                                color: isDark
+                                    ? GenZTokens.inkDark
+                                    : GenZTokens.cream,
+                              ),
                             ),
+                            backgroundColor: isDark
+                                ? GenZTokens.paperDark
+                                : GenZTokens.ink,
                             behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusInput,
+                              ),
+                              side: BorderSide(
+                                color: line,
+                                width: GenZTokens.borderWidthThin,
+                              ),
+                            ),
                           ),
                         );
                       },

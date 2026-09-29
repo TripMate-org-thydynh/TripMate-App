@@ -26,14 +26,24 @@ class TripDocumentsScreen extends ConsumerStatefulWidget {
 }
 
 class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
+  bool _isDark(BuildContext context) =>
+      widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
   Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _ink =>
-      widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _textSec =>
-      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _card =>
-      widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+      _isDark(context) ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _cardOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
+  Color _lineOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
+  Color _fillOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
+  Color _primaryOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.accentDark : GenZTokens.accent;
+  Color _onAccentOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color _inkOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _textSecOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
   IconData _mimeIcon(TripDocument doc) {
     if (doc.isImage) return PhosphorIcons.image(PhosphorIconsStyle.fill);
@@ -44,155 +54,151 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
     return PhosphorIcons.file(PhosphorIconsStyle.fill);
   }
 
-  Color _mimeColor(TripDocument doc) {
-    if (doc.isImage) return GenZTokens.blue;
-    if (doc.isPdf) return GenZTokens.danger;
-    if (doc.mimeType.contains('word')) return GenZTokens.blue;
-    return GenZTokens.purple;
+  Color _mimeColor(TripDocument doc, bool isDark) {
+    if (doc.isImage) return isDark ? GenZTokens.infoDark : GenZTokens.info;
+    if (doc.isPdf) return isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+    if (doc.mimeType.contains('word')) {
+      return isDark ? GenZTokens.infoDark : GenZTokens.info;
+    }
+    return GenZTokens.chart3;
   }
 
   void _showAddDialog() {
     final nameCtrl = TextEditingController();
     final urlCtrl = TextEditingController();
+    final cardBg = _cardOf(context);
+    final line = _lineOf(context);
+    final primary = _primaryOf(context);
+    final onAccent = _onAccentOf(context);
+    final textPri = _inkOf(context);
+    final textSec = _textSecOf(context);
+    final fill = _fillOf(context);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: cardBg,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: line, width: 1),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+      ),
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-        child: Container(
-          decoration: BoxDecoration(
-            color: _bgOf(context),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-            border: Border.all(color: _ink.withValues(alpha: 0.12)),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: _textSec.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(99),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          top: 24,
+          left: 24,
+          right: 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: textSec.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'documents.add'.tr(),
+              style: AppFonts.heading(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: textPri,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'docs.paste_url_hint'.tr(),
+              style: AppFonts.body(fontSize: 13, color: textSec),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: nameCtrl,
+              style: AppFonts.body(fontSize: 15, color: textPri),
+              decoration: InputDecoration(
+                hintText: 'documents.name_hint'.tr(),
+                hintStyle: AppFonts.body(fontSize: 13, color: textSec),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: line, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: primary, width: 1.5),
+                ),
+                filled: true,
+                fillColor: fill,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: urlCtrl,
+              style: AppFonts.body(fontSize: 15, color: textPri),
+              decoration: InputDecoration(
+                hintText: 'documents.url_hint'.tr(),
+                hintStyle: AppFonts.body(fontSize: 13, color: textSec),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: line, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: primary, width: 1.5),
+                ),
+                filled: true,
+                fillColor: fill,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  foregroundColor: onAccent,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () async {
+                  final name = nameCtrl.text.trim();
+                  final url = urlCtrl.text.trim();
+                  if (name.isEmpty || url.isEmpty) return;
+                  Navigator.pop(ctx);
+                  // Infer mimeType from URL extension
+                  String mimeType = 'application/octet-stream';
+                  if (url.contains('.pdf')) {
+                    mimeType = 'application/pdf';
+                  } else if (url.contains('.jpg') || url.contains('.jpeg')) {
+                    mimeType = 'image/jpeg';
+                  } else if (url.contains('.png')) {
+                    mimeType = 'image/png';
+                  } else if (url.contains('.webp')) {
+                    mimeType = 'image/webp';
+                  }
+                  await ref
+                      .read(documentsProvider(widget.tripId).notifier)
+                      .add(name: name, url: url, mimeType: mimeType);
+                },
+                child: Text(
+                  'documents.save'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: onAccent,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                'documents.add'.tr(),
-                style: AppFonts.heading(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: _ink,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'docs.paste_url_hint'.tr(),
-                style: AppFonts.body(fontSize: 13, color: _textSec),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: nameCtrl,
-                style: AppFonts.body(fontSize: 14, color: _ink),
-                decoration: InputDecoration(
-                  hintText: 'documents.name_hint'.tr(),
-                  hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: widget.isDarkMode
-                          ? GenZTokens.purple
-                          : GenZTokens.orange,
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: _card,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: urlCtrl,
-                style: AppFonts.body(fontSize: 14, color: _ink),
-                decoration: InputDecoration(
-                  hintText: 'documents.url_hint'.tr(),
-                  hintStyle: AppFonts.body(fontSize: 14, color: _textSec),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: widget.isDarkMode
-                          ? GenZTokens.purple
-                          : GenZTokens.orange,
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: _card,
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.isDarkMode
-                        ? GenZTokens.purple
-                        : GenZTokens.orange,
-                    foregroundColor: GenZTokens.ink,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      side: const BorderSide(
-                        color: GenZTokens.ink,
-                        width: 2,
-                      ),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: () async {
-                    final name = nameCtrl.text.trim();
-                    final url = urlCtrl.text.trim();
-                    if (name.isEmpty || url.isEmpty) return;
-                    Navigator.pop(ctx);
-                    // Infer mimeType from URL extension
-                    String mimeType = 'application/octet-stream';
-                    if (url.contains('.pdf')) {
-                      mimeType = 'application/pdf';
-                    } else if (url.contains('.jpg') || url.contains('.jpeg')) {
-                      mimeType = 'image/jpeg';
-                    } else if (url.contains('.png')) {
-                      mimeType = 'image/png';
-                    } else if (url.contains('.webp')) {
-                      mimeType = 'image/webp';
-                    }
-                    await ref
-                        .read(documentsProvider(widget.tripId).notifier)
-                        .add(name: name, url: url, mimeType: mimeType);
-                  },
-                  child: Text(
-                    'documents.save'.tr(),
-                    style: AppFonts.heading(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: GenZTokens.ink,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -201,24 +207,33 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
   @override
   Widget build(BuildContext context) {
     final docsAsync = ref.watch(documentsProvider(widget.tripId));
+    final dark = _isDark(context);
+    final textPri = _inkOf(context);
+    final textSec = _textSecOf(context);
+    final primary = _primaryOf(context);
+    final onAccent = _onAccentOf(context);
+    final line = _lineOf(context);
+    final cardBg = _cardOf(context);
+    final danger = dark ? GenZTokens.dangerDark : GenZTokens.danger;
+    final info = dark ? GenZTokens.infoDark : GenZTokens.info;
 
     return Scaffold(
       backgroundColor: _bgOf(context),
       appBar: AppBar(
         backgroundColor: _bgOf(context),
-        iconTheme: IconThemeData(color: _ink),
+        iconTheme: IconThemeData(color: textPri),
         elevation: 0,
         title: Text(
           'documents.title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            color: _ink,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: textPri,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(PhosphorIcons.arrowsClockwise(), color: _ink),
+            icon: Icon(PhosphorIcons.arrowsClockwise(), color: textPri),
             onPressed: () =>
                 ref.read(documentsProvider(widget.tripId).notifier).refresh(),
           ),
@@ -229,32 +244,28 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
           HapticFeedback.selectionClick();
           _showAddDialog();
         },
-        backgroundColor:
-            widget.isDarkMode ? GenZTokens.purple : GenZTokens.orange,
-        foregroundColor: GenZTokens.ink,
-        icon: Icon(PhosphorIcons.uploadSimple()),
+        backgroundColor: primary,
+        foregroundColor: onAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        icon: Icon(PhosphorIcons.uploadSimple(), color: onAccent),
         label: Text(
           'documents.add'.tr(),
           style: AppFonts.heading(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: GenZTokens.ink,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: onAccent,
           ),
         ),
       ),
       body: docsAsync.when(
-        loading: () => Center(
-          child: CircularProgressIndicator(
-            color: widget.isDarkMode ? GenZTokens.purple : GenZTokens.orange,
-          ),
-        ),
+        loading: () => Center(child: CircularProgressIndicator(color: primary)),
         error: (e, _) => Center(
           child: Text(
             'documents.load_error'.tr(),
             style: AppFonts.heading(
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: _ink,
+              color: textPri,
             ),
           ),
         ),
@@ -267,21 +278,21 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                   Icon(
                     PhosphorIcons.folders(PhosphorIconsStyle.fill),
                     size: 72,
-                    color: _textSec.withValues(alpha: 0.4),
+                    color: textSec.withValues(alpha: 0.4),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'docs.empty'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: _textSec,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: textSec,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'docs.empty_sub'.tr(),
-                    style: AppFonts.body(fontSize: 14, color: _textSec),
+                    style: AppFonts.body(fontSize: 13, color: textSec),
                   ),
                 ],
               ),
@@ -293,22 +304,13 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
             itemCount: docs.length,
             itemBuilder: (context, i) {
               final doc = docs[i];
+              final mimeColor = _mimeColor(doc, dark);
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
-                  color: _card,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: _ink.withValues(alpha: 0.12),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _ink.withValues(alpha: 0.06),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: line, width: 1),
                 ),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(
@@ -316,32 +318,29 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                     vertical: 8,
                   ),
                   leading: Container(
-                    width: 48,
-                    height: 48,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: _mimeColor(doc).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
+                      color: mimeColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: _mimeColor(doc).withValues(alpha: 0.3),
+                        color: mimeColor.withValues(alpha: 0.25),
+                        width: 1,
                       ),
                     ),
-                    child: Icon(
-                      _mimeIcon(doc),
-                      color: _mimeColor(doc),
-                      size: 24,
-                    ),
+                    child: Icon(_mimeIcon(doc), color: mimeColor, size: 22),
                   ),
                   title: Text(
                     doc.name,
                     style: AppFonts.heading(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: _ink,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: textPri,
                     ),
                   ),
                   subtitle: Text(
                     '${doc.uploaderName}${doc.sizeLabel.isNotEmpty ? ' · ${doc.sizeLabel}' : ''}',
-                    style: AppFonts.body(fontSize: 12, color: _textSec),
+                    style: AppFonts.body(fontSize: 12, color: textSec),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -349,7 +348,7 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                       IconButton(
                         icon: Icon(
                           PhosphorIcons.arrowSquareOut(),
-                          color: GenZTokens.blue,
+                          color: info,
                           size: 20,
                         ),
                         onPressed: () async {
@@ -365,20 +364,24 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                       IconButton(
                         icon: Icon(
                           PhosphorIcons.trash(),
-                          color: GenZTokens.danger,
+                          color: danger,
                           size: 20,
                         ),
                         onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              backgroundColor: _bgOf(context),
+                              backgroundColor: cardBg,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(color: line, width: 1),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                               title: Text(
                                 'documents.delete_confirm'.tr(),
                                 style: AppFonts.heading(
-                                  fontSize: 16,
+                                  fontSize: 17,
                                   fontWeight: FontWeight.w700,
-                                  color: _ink,
+                                  color: textPri,
                                 ),
                               ),
                               actions: [
@@ -387,10 +390,8 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                                   child: Text(
                                     'general.cancel'.tr(),
                                     style: AppFonts.body(
-                                      fontSize: 14,
-                                      color: widget.isDarkMode
-                                          ? GenZTokens.purple
-                                          : GenZTokens.orange,
+                                      fontSize: 13,
+                                      color: textSec,
                                     ),
                                   ),
                                 ),
@@ -399,8 +400,8 @@ class _TripDocumentsScreenState extends ConsumerState<TripDocumentsScreen> {
                                   child: Text(
                                     'general.delete'.tr(),
                                     style: AppFonts.body(
-                                      fontSize: 14,
-                                      color: GenZTokens.danger,
+                                      fontSize: 13,
+                                      color: danger,
                                     ),
                                   ),
                                 ),

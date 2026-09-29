@@ -52,7 +52,16 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
     final left = status.remaining;
     if (left == Duration.zero) return const SizedBox.shrink();
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
+    final accent = theme.colorScheme.primary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
 
     // Dưới 24 giờ thì đổi sang đếm giờ: "còn 0 ngày" vừa vô nghĩa vừa làm
@@ -65,6 +74,13 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
 
     // Sắp hết thì đổi màu, nhưng không dùng màu báo lỗi: đây không phải sự cố.
     final urgent = left.inHours < 24;
+    final bannerBg = urgent
+        ? warning.withValues(alpha: isDark ? 0.18 : 0.12)
+        : accentSoft;
+    final borderColor = urgent
+        ? warning.withValues(alpha: isDark ? 0.4 : 0.3)
+        : line;
+    final iconColor = urgent ? warning : accent;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -82,19 +98,21 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
         child: Container(
           padding: const EdgeInsets.all(GenZTokens.space4),
           decoration: BoxDecoration(
-            color: urgent ? GenZTokens.yellow : GenZTokens.lilac,
+            color: bannerBg,
             borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
             border: Border.all(
-              color: GenZTokens.ink,
-              width: GenZTokens.borderWidth,
+              color: borderColor,
+              width: GenZTokens.borderWidthThin,
             ),
           ),
           child: Row(
             children: [
               Icon(
-                urgent ? PhosphorIcons.hourglassLow() : PhosphorIcons.hourglassHigh(),
+                urgent
+                    ? PhosphorIcons.hourglassLow()
+                    : PhosphorIcons.hourglassHigh(),
                 size: 20,
-                color: GenZTokens.ink,
+                color: iconColor,
               ),
               const SizedBox(width: GenZTokens.space3),
               Expanded(
@@ -104,9 +122,9 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
                     Text(
                       label,
                       style: AppFonts.heading(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: GenZTokens.ink,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: ink,
                       ),
                     ),
                     // Ngày giờ kết thúc cụ thể, theo giờ máy người dùng. Nói
@@ -120,19 +138,12 @@ class _TrialBannerState extends ConsumerState<TrialBanner> {
                           ).add_Hm().format(status.endsAt!.toLocal()),
                         },
                       ),
-                      style: AppFonts.body(
-                        fontSize: 12,
-                        color: GenZTokens.ink,
-                      ),
+                      style: AppFonts.body(fontSize: 12, color: inkSoft),
                     ),
                   ],
                 ),
               ),
-              Icon(
-                PhosphorIcons.caretRight(),
-                size: 20,
-                color: GenZTokens.ink.withValues(alpha: isDark ? 0.8 : 0.6),
-              ),
+              Icon(PhosphorIcons.caretRight(), size: 20, color: inkSoft),
             ],
           ),
         ),

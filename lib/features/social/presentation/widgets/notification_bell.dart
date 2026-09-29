@@ -17,10 +17,10 @@ class NotificationBell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final unread = ref.watch(unreadCountProvider);
-    final iconColor =
-        color ?? (isDark ? GenZTokens.inkDark : GenZTokens.ink);
+    final iconColor = color ?? (isDark ? GenZTokens.inkDark : GenZTokens.ink);
 
     return Semantics(
       button: true,
@@ -49,17 +49,19 @@ class NotificationBell extends ConsumerWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                 constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                decoration: const BoxDecoration(
-                  color: GenZTokens.orange,
+                decoration: BoxDecoration(
+                  color: isDark ? GenZTokens.accentDark : GenZTokens.accent,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Text(
                     unread > 9 ? '9+' : '$unread',
                     style: AppFonts.heading(
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: GenZTokens.ink,
+                      color: isDark
+                          ? GenZTokens.onAccentDark
+                          : GenZTokens.onAccent,
                     ),
                   ),
                 ),

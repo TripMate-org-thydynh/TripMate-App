@@ -43,7 +43,6 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   ];
 
   late AnimationController _pulseController;
-  late AnimationController _glowController;
 
   final List<Map<String, dynamic>> _allParams = [
     {
@@ -94,10 +93,6 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _glowController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
   }
 
   /// Gọi AI lên lịch trình theo các tiêu chí đang chọn.
@@ -151,7 +146,6 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   @override
   void dispose() {
     _pulseController.dispose();
-    _glowController.dispose();
     super.dispose();
   }
 
@@ -160,6 +154,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
     final isDark = widget.isDarkMode;
     final inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final cardColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final lineColor = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accentColor = Theme.of(context).colorScheme.primary;
+    final onAccentColor = Theme.of(context).colorScheme.onPrimary;
 
     showModalBottomSheet(
       context: context,
@@ -170,12 +167,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
         child: Container(
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(GenZTokens.radiusCard),
+            ),
             border: Border.all(
-              color: isDark
-                  ? GenZTokens.inkDark.withValues(alpha: 0.12)
-                  : GenZTokens.ink.withValues(alpha: 0.12),
-              width: 1.5,
+              color: lineColor,
+              width: GenZTokens.borderWidthThin,
             ),
           ),
           padding: const EdgeInsets.all(24),
@@ -186,8 +183,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
               Text(
                 'ai.custom_vibe_title'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
                   color: inkColor,
                 ),
               ),
@@ -195,21 +192,32 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
               TextField(
                 controller: textCtrl,
                 autofocus: true,
-                style: AppFonts.body(fontSize: 14, color: inkColor),
+                style: AppFonts.body(fontSize: 15, color: inkColor),
                 decoration: InputDecoration(
                   hintText: 'ai.custom_vibe_hint'.tr(),
                   hintStyle: AppFonts.body(
-                    fontSize: 14,
+                    fontSize: 15,
                     color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                    borderSide: BorderSide(
+                      color: lineColor,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                    borderSide: BorderSide(
+                      color: lineColor,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                     borderSide: BorderSide(
-                      color: isDark ? GenZTokens.purple : GenZTokens.orange,
-                      width: 2,
+                      color: accentColor,
+                      width: GenZTokens.borderWidth,
                     ),
                   ),
                 ),
@@ -233,13 +241,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isDark ? GenZTokens.purple : GenZTokens.orange,
-                    foregroundColor: GenZTokens.ink,
+                    backgroundColor: accentColor,
+                    foregroundColor: onAccentColor,
+                    elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: GenZTokens.ink, width: 1.5),
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                     ),
                   ),
                   onPressed: () {
@@ -259,9 +266,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                   child: Text(
                     'ai.custom_vibe_add'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: GenZTokens.ink,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: onAccentColor,
                     ),
                   ),
                 ),
@@ -277,12 +284,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
 
-    final primaryColor = isDark
-        ? GenZTokens.purple
-        : GenZTokens.orange;
-    final secondaryColor = isDark
-        ? GenZTokens.green
-        : GenZTokens.success;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final lineColor = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fillColor = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
@@ -292,30 +299,11 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
       backgroundColor: bgColor,
       body: Stack(
         children: [
-          // Background glow orbs
-          Positioned(
-            top: -80,
-            right: -60,
-            child: AnimatedBuilder(
-              animation: _pulseController,
-              builder: (_, child) => Container(
-                width: 260,
-                height: 260,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: primaryColor.withValues(
-                    alpha: 0.07 + 0.04 * _pulseController.value,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
           SafeArea(
             child: Column(
               children: [
                 // CUSTOM GLASS APP BAR
-                _buildAppBar(isDark, primaryColor, textPrimary, textMuted),
+                _buildAppBar(cardBg, lineColor, textPrimary),
                 const SizedBox(height: 8),
 
                 // MAIN SCROLL BODY
@@ -323,7 +311,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -336,18 +324,18 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                 : 'ai.plan_done'.tr(),
                             style: AppFonts.heading(
                               fontSize: 28,
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight.w700,
                               color: textPrimary,
-                              letterSpacing: -1,
+                              letterSpacing: -0.2,
                             ),
                           ),
                           const SizedBox(height: 16),
 
                           // TRIP INFO CARD: Đà Lạt Chill
                           _buildTripInfoCard(
-                            isDark,
-                            primaryColor,
-                            secondaryColor,
+                            accent,
+                            lineColor,
+                            fillColor,
                             cardBg,
                             textPrimary,
                             textMuted,
@@ -361,8 +349,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                               Text(
                                 'ai.plan_params'.tr(),
                                 style: AppFonts.heading(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
                                   color: textPrimary,
                                 ),
                               ),
@@ -370,10 +358,10 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                 onTap: _showAddCustomVibeDialog,
                                 child: Text(
                                   'ai.plan_edit_params'.tr(),
-                                  style: AppFonts.heading(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: primaryColor,
+                                  style: AppFonts.body(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: textMuted,
                                   ),
                                 ),
                               ),
@@ -381,8 +369,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                           ),
                           const SizedBox(height: 12),
                           Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
+                            spacing: 8,
+                            runSpacing: 8,
                             children: _allParams.map((param) {
                               final paramName = param['name'] as String;
                               final isSelected = _selectedParams.contains(
@@ -413,34 +401,24 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                         });
                                       },
                                 child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
+                                  duration: const Duration(
+                                    milliseconds: GenZTokens.durationFast,
+                                  ),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 14,
                                     vertical: 8,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? primaryColor.withValues(alpha: 0.12)
-                                        : cardBg,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? primaryColor
-                                          : (isDark
-                                                ? GenZTokens.inkDark.withValues(alpha: 0.15)
-                                                : GenZTokens.ink.withValues(alpha: 0.15)),
-                                      width: isSelected ? 1.5 : 1.0,
+                                    color: isSelected ? accentSoft : cardBg,
+                                    borderRadius: BorderRadius.circular(
+                                      GenZTokens.radiusPill,
                                     ),
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: primaryColor.withValues(
-                                                alpha: 0.2,
-                                              ),
-                                              blurRadius: 0,
-                                            ),
-                                          ]
-                                        : null,
+                                    border: Border.all(
+                                      color: isSelected ? accent : lineColor,
+                                      width: isSelected
+                                          ? GenZTokens.borderWidth
+                                          : GenZTokens.borderWidthThin,
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -448,19 +426,15 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                       Icon(
                                         icon,
                                         size: 14,
-                                        color: isSelected
-                                            ? primaryColor
-                                            : textMuted,
+                                        color: isSelected ? accent : textMuted,
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
                                         label,
                                         style: AppFonts.heading(
                                           fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: isSelected
-                                              ? primaryColor
-                                              : textMuted,
+                                          fontWeight: FontWeight.w600,
+                                          color: isSelected ? accent : textMuted,
                                         ),
                                       ),
                                     ],
@@ -469,7 +443,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                               );
                             }).toList(),
                           ),
-                          const SizedBox(height: 28),
+                          const SizedBox(height: 24),
 
                           // DRAFTING SECTION
                           Row(
@@ -477,8 +451,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                               Text(
                                 'ai.plan_section'.tr(),
                                 style: AppFonts.heading(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w800,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
                                   color: textPrimary,
                                 ),
                               ),
@@ -491,33 +465,23 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                                     height: 8,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: primaryColor.withValues(
+                                      color: accent.withValues(
                                         alpha:
                                             0.5 + 0.5 * _pulseController.value,
                                       ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: primaryColor.withValues(
-                                            alpha: 0.4 * _pulseController.value,
-                                          ),
-                                          blurRadius: 0,
-                                          spreadRadius: 2,
-                                        ),
-                                      ],
                                     ),
                                   ),
                                 ),
                             ],
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 12),
 
                           // ITINERARY ITEMS
                           ..._suggestions.asMap().entries.map((entry) {
                             return _buildTimelineItem(
                               entry.value,
-                              isDark,
-                              primaryColor,
-                              secondaryColor,
+                              lineColor,
+                              fillColor,
                               cardBg,
                               textPrimary,
                               textMuted,
@@ -528,22 +492,22 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                           if (_suggestions.isEmpty && !_isGenerating)
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.all(18),
+                              padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 color: cardBg,
-                                borderRadius: BorderRadius.circular(22),
+                                borderRadius: BorderRadius.circular(
+                                  GenZTokens.radiusCard,
+                                ),
                                 border: Border.all(
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.08)
-                                      : Colors.black,
-                                  width: 2,
+                                  color: lineColor,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Text(
                                 'ai.plan_hint'.tr(),
                                 textAlign: TextAlign.center,
                                 style: AppFonts.body(
-                                  fontSize: 13.5,
+                                  fontSize: 13,
                                   color: textMuted,
                                   height: 1.45,
                                 ),
@@ -553,8 +517,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                           // Third item placeholder (still loading)
                           if (_isGenerating)
                             _buildLoadingPlaceholder(
-                              isDark,
-                              primaryColor,
+                              lineColor,
+                              fillColor,
                               cardBg,
                             ),
 
@@ -573,7 +537,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
             bottom: 0,
             left: 0,
             right: 0,
-            child: _buildFloatingAction(isDark, primaryColor, secondaryColor),
+            child: _buildFloatingAction(
+              accent,
+              onAccent,
+              lineColor,
+              cardBg,
+            ),
           ),
         ],
       ),
@@ -581,23 +550,19 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   }
 
   Widget _buildAppBar(
-    bool isDark,
-    Color primaryColor,
+    Color cardBg,
+    Color lineColor,
     Color textPrimary,
-    Color textMuted,
   ) {
     return ClipRect(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isDark
-              ? GenZTokens.paperDark.withValues(alpha: 0.85)
-              : GenZTokens.paper.withValues(alpha: 0.9),
+          color: cardBg.withValues(alpha: 0.9),
           border: Border(
             bottom: BorderSide(
-              color: isDark
-                  ? GenZTokens.inkDark.withValues(alpha: 0.12)
-                  : GenZTokens.ink.withValues(alpha: 0.08),
+              color: lineColor,
+              width: GenZTokens.borderWidthThin,
             ),
           ),
         ),
@@ -616,13 +581,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
               'trip.mate',
               style: AppFonts.heading(
                 fontSize: 22,
-                fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
-                color: primaryColor,
-                letterSpacing: -1.2,
+                fontWeight: FontWeight.w700,
+                color: textPrimary,
+                letterSpacing: -0.2,
               ),
             ),
-            Icon(PhosphorIcons.bell(), color: primaryColor, size: 24),
+            Icon(PhosphorIcons.bell(), color: textPrimary, size: 24),
           ],
         ),
       ),
@@ -630,31 +594,22 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   }
 
   Widget _buildTripInfoCard(
-    bool isDark,
-    Color primaryColor,
-    Color secondaryColor,
+    Color accent,
+    Color lineColor,
+    Color fillColor,
     Color cardBg,
     Color textPrimary,
     Color textMuted,
   ) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: isDark
-              ? GenZTokens.inkDark.withValues(alpha: 0.12)
-              : GenZTokens.ink,
-          width: 2,
+          color: lineColor,
+          width: GenZTokens.borderWidthThin,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: primaryColor.withValues(alpha: 0.1),
-            blurRadius: 0,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -669,9 +624,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                 'ai.plan_no_trip'.tr(),
             style: AppFonts.heading(
               fontSize: 22,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w700,
               color: textPrimary,
-              letterSpacing: -0.5,
+              letterSpacing: -0.2,
             ),
           ),
           const SizedBox(height: 10),
@@ -701,7 +656,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
             'ai.param_deep_chill'.tr(),
             'ai.param_high_energy'.tr(),
             _selectedParams.contains('High Energy') ? 0.75 : 0.25,
-            primaryColor,
+            accent,
+            fillColor,
             textMuted,
           ),
           const SizedBox(height: 8),
@@ -709,11 +665,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
             'ai.param_nature_focus'.tr(),
             'ai.param_city_exploration'.tr(),
             _selectedParams.contains('City Exploration') ? 0.75 : 0.25,
-            secondaryColor,
+            GenZTokens.chart1,
+            fillColor,
             textMuted,
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 4),
         ],
       ),
     );
@@ -723,7 +680,8 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
     String left,
     String right,
     double value,
-    Color color,
+    Color activeColor,
+    Color trackColor,
     Color textMuted,
   ) {
     return Row(
@@ -737,7 +695,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
               Container(
                 height: 4,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
+                  color: trackColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -746,7 +704,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                 child: Container(
                   height: 4,
                   decoration: BoxDecoration(
-                    color: color,
+                    color: activeColor,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -762,29 +720,23 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
 
   Widget _buildTimelineItem(
     Map<String, dynamic> item,
-    bool isDark,
-    Color primaryColor,
-    Color secondaryColor,
+    Color lineColor,
+    Color fillColor,
     Color cardBg,
     Color textPrimary,
     Color textMuted,
     int index,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(18),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: isDark
-              ? GenZTokens.inkDark.withValues(alpha: 0.12)
-              : GenZTokens.ink,
-          width: 2,
+          color: lineColor,
+          width: GenZTokens.borderWidthThin,
         ),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 0),
-        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -794,32 +746,36 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
             children: [
               Icon(
                 PhosphorIcons.dotsSixVertical(),
-                color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+                color: textMuted,
                 size: 20,
               ),
               const SizedBox(height: 4),
               // Time bubble
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
+                  horizontal: 8,
+                  vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: secondaryColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  color: fillColor,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: lineColor,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
                 child: Text(
                   item['time'] as String,
                   style: TextStyle(
-                    color: secondaryColor,
-                    fontWeight: FontWeight.bold,
+                    color: textPrimary,
+                    fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
 
           Expanded(
             child: Column(
@@ -829,7 +785,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                   item['location'] as String,
                   style: AppFonts.heading(
                     fontSize: 17,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: textPrimary,
                   ),
                 ),
@@ -842,11 +798,9 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    // Flexible + ellipsis: tieu de ngay do AI dat la ca mot cau
-                    // dai, chip cu tran ngang 84px ra khoi man.
                     Flexible(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -854,10 +808,12 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? GenZTokens.inkDark.withValues(alpha: 0.08)
-                              : GenZTokens.ink.withValues(alpha: 0.05),
+                          color: fillColor,
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: lineColor,
+                            width: GenZTokens.borderWidthThin,
+                          ),
                         ),
                         child: Text(
                           item['dayTitle'] as String,
@@ -865,7 +821,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             color: textMuted,
                           ),
                         ),
@@ -882,40 +838,31 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   }
 
   Widget _buildLoadingPlaceholder(
-    bool isDark,
-    Color primaryColor,
+    Color lineColor,
+    Color fillColor,
     Color cardBg,
   ) {
     return AnimatedBuilder(
       animation: _pulseController,
       builder: (_, child) => Container(
-        margin: const EdgeInsets.only(bottom: 14),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: primaryColor.withValues(
-              alpha: 0.2 + 0.2 * _pulseController.value,
-            ),
+            color: lineColor,
+            width: GenZTokens.borderWidthThin,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: primaryColor.withValues(
-                alpha: 0.08 * _pulseController.value,
-              ),
-              blurRadius: 0,
-            ),
-          ],
         ),
         child: Row(
           children: [
             Icon(
               PhosphorIcons.dotsSixVertical(),
-              color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+              color: fillColor,
               size: 20,
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -923,9 +870,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                   width: 120,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? GenZTokens.inkDark.withValues(alpha: 0.12)
-                        : GenZTokens.ink.withValues(alpha: 0.12),
+                    color: fillColor,
                     borderRadius: BorderRadius.circular(7),
                   ),
                 ),
@@ -934,9 +879,7 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
                   width: 200,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? GenZTokens.inkDark.withValues(alpha: 0.06)
-                        : GenZTokens.ink.withValues(alpha: 0.06),
+                    color: fillColor.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
@@ -949,69 +892,55 @@ class _AIPlanningMateyScreenState extends ConsumerState<AIPlanningMateyScreen>
   }
 
   Widget _buildFloatingAction(
-    bool isDark,
-    Color primaryColor,
-    Color secondaryColor,
+    Color accent,
+    Color onAccent,
+    Color lineColor,
+    Color cardBg,
   ) {
     return ClipRect(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 36),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         decoration: BoxDecoration(
-          color: isDark
-              ? GenZTokens.paperDark.withValues(alpha: 0.85)
-              : GenZTokens.paper.withValues(alpha: 0.9),
+          color: cardBg.withValues(alpha: 0.95),
           border: Border(
             top: BorderSide(
-              color: isDark
-                  ? GenZTokens.inkDark.withValues(alpha: 0.12)
-                  : GenZTokens.ink.withValues(alpha: 0.08),
+              color: lineColor,
+              width: GenZTokens.borderWidthThin,
             ),
           ),
         ),
         child: GestureDetector(
           onTap: _isGenerating ? null : _generate,
-          child: AnimatedBuilder(
-            animation: _pulseController,
-            builder: (_, child) => Container(
-              height: 56,
-              decoration: BoxDecoration(
-                color: primaryColor,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: primaryColor.withValues(
-                      alpha: 0.3 + 0.1 * _pulseController.value,
-                    ),
-                    blurRadius: 0,
-                    offset: const Offset(0, 4),
+          child: Container(
+            height: 48,
+            decoration: BoxDecoration(
+              color: accent,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  _isGenerating
+                      ? PhosphorIcons.circleNotch()
+                      : PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+                  color: onAccent,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _isGenerating
+                      ? 'ai.plan_working'.tr()
+                      : _suggestions.isEmpty
+                      ? 'ai.plan_cta'.tr()
+                      : 'ai.plan_cta_again'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: onAccent,
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    _isGenerating
-                        ? PhosphorIcons.circleNotch()
-                        : PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                    color: GenZTokens.ink,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    _isGenerating
-                        ? 'ai.plan_working'.tr()
-                        : _suggestions.isEmpty
-                        ? 'ai.plan_cta'.tr()
-                        : 'ai.plan_cta_again'.tr(),
-                    style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: GenZTokens.ink,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

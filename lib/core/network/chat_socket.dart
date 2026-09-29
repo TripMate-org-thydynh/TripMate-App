@@ -67,8 +67,10 @@ class ChatSocket {
     _socket?.emit('leave', {'tripId': tripId});
   }
 
-  void send(String tripId, String content) =>
-      _socket?.emit('message', {'tripId': tripId, 'content': content});
+  void send(String tripId, String content, {String? clientId}) => _socket?.emit(
+    'message',
+    {'tripId': tripId, 'content': content, 'clientId': ?clientId},
+  );
 
   void setTyping(String tripId, bool isTyping) =>
       _socket?.emit('typing', {'tripId': tripId, 'isTyping': isTyping});

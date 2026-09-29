@@ -14,7 +14,7 @@ class CountUpText extends StatefulWidget {
     this.value, {
     super.key,
     this.style,
-    this.duration = const Duration(milliseconds: 900),
+    this.duration = const Duration(milliseconds: 700),
     this.format,
     this.prefix = '',
     this.suffix = '',
@@ -66,11 +66,13 @@ class _CountUpTextState extends State<CountUpText>
   @override
   Widget build(BuildContext context) {
     final curve = CurvedAnimation(parent: _c, curve: Curves.easeOutCubic);
+    final defaultStyle = Theme.of(context).textTheme.titleMedium;
+
     return AnimatedBuilder(
       animation: curve,
       builder: (context, _) {
         final current = widget.value * curve.value;
-        return Text(_fmt(current), style: widget.style);
+        return Text(_fmt(current), style: widget.style ?? defaultStyle);
       },
     );
   }

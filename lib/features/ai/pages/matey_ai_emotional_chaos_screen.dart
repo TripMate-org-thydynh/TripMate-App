@@ -12,7 +12,14 @@ import '../../premium/presentation/paywall_sheet.dart';
 import '../data/ai_repository.dart';
 
 class MateyAiEmotionalChaosScreen extends ConsumerStatefulWidget {
-  const MateyAiEmotionalChaosScreen({super.key});
+  final bool? isDarkMode;
+  final VoidCallback? onThemeToggle;
+
+  const MateyAiEmotionalChaosScreen({
+    super.key,
+    this.isDarkMode,
+    this.onThemeToggle,
+  });
 
   @override
   ConsumerState<MateyAiEmotionalChaosScreen> createState() =>
@@ -21,13 +28,13 @@ class MateyAiEmotionalChaosScreen extends ConsumerStatefulWidget {
 
 class _MateyAiEmotionalChaosScreenState
     extends ConsumerState<MateyAiEmotionalChaosScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _orbFloatController;
+    with SingleTickerProviderStateMixin {
   late final AnimationController _typingController;
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
+  bool get _isDarkMode =>
+      widget.isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
 
   final List<Map<String, dynamic>> _messages = [];
 
@@ -36,11 +43,6 @@ class _MateyAiEmotionalChaosScreenState
   @override
   void initState() {
     super.initState();
-    _orbFloatController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat(reverse: true);
-
     _typingController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -49,7 +51,6 @@ class _MateyAiEmotionalChaosScreenState
 
   @override
   void dispose() {
-    _orbFloatController.dispose();
     _typingController.dispose();
     _textController.dispose();
     _scrollController.dispose();
@@ -70,22 +71,60 @@ class _MateyAiEmotionalChaosScreenState
     });
     _scrollToBottom();
 
+    // Vài lượt gần nhất để câu hỏi nối tiếp ("chỗ đó vé bao nhiêu?") hiểu được.
+    final history = _messages
+        .where((m) => m['type'] == 'user' || m['type'] == 'ai')
+        .map(
+          (m) => (
+            role: m['type'] == 'user' ? 'user' : 'assistant',
+            content: '${m['text'] ?? ''}',
+          ),
+        )
+        .toList();
+    // Bỏ chính câu vừa gửi ra khỏi lịch sử — nó là câu hỏi, không phải ngữ cảnh.
+    if (history.isNotEmpty) history.removeLast();
+
     try {
       final tripId = ref.read(activeTripIdProvider);
-      final reply = await ref
-          .read(mateyChatProvider)
-          .ask(prompt: text, tripId: tripId);
-      if (!mounted) return;
+      // Bong bóng rỗng để chữ chảy dần vào, thay cho vòng xoay chờ tới cuối.
+      late final int slot;
       setState(() {
         _messages.add({
           'type': 'ai',
-          'text': reply,
+          'text': '',
           'time': 'ai.just_now'.tr(),
           'likes': 0,
         });
+        slot = _messages.length - 1;
         _isThinking = false;
       });
+
+      final buf = StringBuffer();
+      await for (final piece in ref
+          .read(mateyChatProvider)
+          .askStream(
+            prompt: text,
+            tripId: tripId,
+            history: history.length > 6
+                ? history.sublist(history.length - 6)
+                : history,
+          )) {
+        if (!mounted) return;
+        buf.write(piece);
+        setState(() => _messages[slot]['text'] = buf.toString());
+        _scrollToBottom();
+      }
+      if (!mounted) return;
+      // Luồng kết thúc mà không có chữ nào: bỏ bong bóng rỗng đi.
+      if (buf.isEmpty) setState(() => _messages.removeAt(slot));
     } catch (e) {
+      // Bong bóng đang chảy dở mà lỗi: gỡ đi để không để lại mẩu câu cụt.
+      if (mounted &&
+          _messages.isNotEmpty &&
+          _messages.last['type'] == 'ai' &&
+          '${_messages.last['text'] ?? ''}'.isEmpty) {
+        setState(() => _messages.removeLast());
+      }
       if (!mounted) return;
       setState(() => _isThinking = false);
       if (await PaywallSheet.maybeShow(context, e)) return;
@@ -114,12 +153,15 @@ class _MateyAiEmotionalChaosScreenState
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = Theme.of(context).colorScheme.primary;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
 
     showModalBottomSheet(
       context: context,
       backgroundColor: surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
         return Consumer(
@@ -138,8 +180,8 @@ class _MateyAiEmotionalChaosScreenState
                         Text(
                           'ai.suggested_prompts_title'.tr(),
                           style: AppFonts.heading(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
                             color: ink,
                           ),
                         ),
@@ -162,7 +204,10 @@ class _MateyAiEmotionalChaosScreenState
                           padding: const EdgeInsets.all(16),
                           child: Text(
                             'errors.load_failed'.tr(),
-                            style: AppFonts.body(color: GenZTokens.danger),
+                            style: AppFonts.body(
+                              fontSize: 13,
+                              color: danger,
+                            ),
                           ),
                         ),
                       ),
@@ -173,7 +218,10 @@ class _MateyAiEmotionalChaosScreenState
                               padding: const EdgeInsets.all(16),
                               child: Text(
                                 'ai.prompts_empty'.tr(),
-                                style: AppFonts.body(color: inkSoft),
+                                style: AppFonts.body(
+                                  fontSize: 13,
+                                  color: inkSoft,
+                                ),
                               ),
                             ),
                           );
@@ -182,7 +230,8 @@ class _MateyAiEmotionalChaosScreenState
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: prompts.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 8),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 8),
                           itemBuilder: (_, index) {
                             final p = prompts[index];
                             return ListTile(
@@ -191,23 +240,23 @@ class _MateyAiEmotionalChaosScreenState
                                 vertical: 4,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                  color: ink.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(
+                                  GenZTokens.radiusButton,
                                 ),
+                                side: BorderSide(color: line),
                               ),
                               leading: Icon(
                                 PhosphorIcons.lightbulb(
                                   PhosphorIconsStyle.fill,
                                 ),
-                                color: GenZTokens.yellow,
+                                color: accent,
                                 size: 20,
                               ),
                               title: Text(
                                 p.title,
                                 style: AppFonts.heading(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
                                   color: ink,
                                 ),
                               ),
@@ -216,7 +265,7 @@ class _MateyAiEmotionalChaosScreenState
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppFonts.body(
-                                  fontSize: 12,
+                                  fontSize: 13,
                                   color: inkSoft,
                                 ),
                               ),
@@ -242,15 +291,16 @@ class _MateyAiEmotionalChaosScreenState
   @override
   Widget build(BuildContext context) {
     final isDark = _isDarkMode;
-    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
-    const secondaryColor = GenZTokens.green;
+    final accent = Theme.of(context).colorScheme.primary;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     final backgroundColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-
-    final glassBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final glassBorder = textPrimary;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -259,33 +309,34 @@ class _MateyAiEmotionalChaosScreenState
           SafeArea(
             child: Column(
               children: [
-                _buildHeader(primaryColor, glassBg, glassBorder, textPrimary),
+                _buildHeader(surface, line, textPrimary, isDark),
 
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: GenZTokens.space4,
+                    ),
                     child: Column(
                       children: [
                         _buildOrbHero(
-                          primaryColor,
-                          secondaryColor,
-                          glassBg,
-                          glassBorder,
-                          textSecondary,
+                          accent,
+                          accentSoft,
+                          textPrimary,
+                          line,
                         ),
 
                         const SizedBox(height: 16),
 
                         if (_messages.isEmpty)
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            padding: const EdgeInsets.symmetric(vertical: 24),
                             child: Text(
                               'ai.matey_intro'.tr(),
                               textAlign: TextAlign.center,
                               style: AppFonts.body(
-                                fontSize: 14,
+                                fontSize: 15,
                                 color: textSecondary,
                                 height: 1.5,
                               ),
@@ -302,13 +353,19 @@ class _MateyAiEmotionalChaosScreenState
                               case 'ai':
                                 return _buildAiBubble(
                                   msg,
-                                  glassBg,
-                                  glassBorder,
+                                  surface,
+                                  line,
                                   textPrimary,
                                   textSecondary,
                                 );
                               case 'user':
-                                return _buildUserBubble(msg, primaryColor);
+                                return _buildUserBubble(
+                                  msg,
+                                  accentSoft,
+                                  line,
+                                  textPrimary,
+                                  textSecondary,
+                                );
                               default:
                                 return const SizedBox.shrink();
                             }
@@ -316,11 +373,7 @@ class _MateyAiEmotionalChaosScreenState
                         ),
 
                         if (_isThinking)
-                          _buildTypingIndicator(
-                            glassBg,
-                            glassBorder,
-                            primaryColor,
-                          ),
+                          _buildTypingIndicator(surface, line, accent),
 
                         const SizedBox(height: 120),
                       ],
@@ -336,10 +389,13 @@ class _MateyAiEmotionalChaosScreenState
             left: 20,
             right: 20,
             child: _buildMessageInput(
-              glassBg,
-              glassBorder,
-              primaryColor,
+              surface,
+              line,
+              accent,
+              onAccent,
               textPrimary,
+              textSecondary,
+              isDark,
             ),
           ),
         ],
@@ -348,17 +404,17 @@ class _MateyAiEmotionalChaosScreenState
   }
 
   Widget _buildHeader(
-    Color primaryColor,
-    Color glassBg,
-    Color glassBorder,
+    Color surface,
+    Color line,
     Color textPrimary,
+    bool isDark,
   ) {
     return Container(
-      height: 64,
+      height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: glassBg.withValues(alpha: 0.1),
-        border: Border(bottom: BorderSide(color: glassBorder)),
+        color: surface,
+        border: Border(bottom: BorderSide(color: line)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -375,53 +431,58 @@ class _MateyAiEmotionalChaosScreenState
           Text(
             'trip.mate',
             style: AppFonts.heading(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
               color: textPrimary,
-              letterSpacing: -1.5,
+              letterSpacing: -0.5,
             ),
           ),
+          if (widget.onThemeToggle != null)
+            IconButton(
+              icon: Icon(
+                isDark
+                    ? PhosphorIcons.sun(PhosphorIconsStyle.bold)
+                    : PhosphorIcons.moon(PhosphorIconsStyle.bold),
+                color: textPrimary.withValues(alpha: 0.6),
+                size: 20,
+              ),
+              onPressed: widget.onThemeToggle,
+              tooltip: isDark
+                  ? 'theme.switch_light'.tr()
+                  : 'theme.switch_dark'.tr(),
+            )
+          else
+            const SizedBox(width: 48),
         ],
       ),
     );
   }
 
   Widget _buildOrbHero(
-    Color primaryColor,
-    Color secondaryColor,
-    Color glassBg,
-    Color glassBorder,
-    Color textSecondary,
+    Color accent,
+    Color accentSoft,
+    Color textPrimary,
+    Color line,
   ) {
     return Column(
       children: [
-        const SizedBox(height: 24),
-        AnimatedBuilder(
-          animation: _orbFloatController,
-          builder: (context, child) {
-            final dy = _orbFloatController.value * -12.0;
-            return Transform.translate(offset: Offset(0, dy), child: child);
-          },
-          child: Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: primaryColor,
-              border: Border.all(
-                color: _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
-                width: GenZTokens.borderWidth,
-              ),
-              boxShadow: GenZTokens.hardShadow(
-                _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
-              ),
+        const SizedBox(height: 20),
+        Container(
+          width: 88,
+          height: 88,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: accentSoft,
+            border: Border.all(
+              color: line,
+              width: GenZTokens.borderWidthThin,
             ),
-            child: Center(
-              child: Icon(
-                PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
-                size: 48,
-                color: GenZTokens.paper,
-              ),
+          ),
+          child: Center(
+            child: Icon(
+              PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+              size: 44,
+              color: accent,
             ),
           ),
         ),
@@ -429,22 +490,22 @@ class _MateyAiEmotionalChaosScreenState
         Text(
           'ai.matey_greeting'.tr(),
           style: AppFonts.heading(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
             letterSpacing: -0.5,
-            height: 1.05,
+            height: 1.15,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
       ],
     );
   }
 
   Widget _buildAiBubble(
     Map<String, dynamic> msg,
-    Color glassBg,
-    Color glassBorder,
+    Color surface,
+    Color line,
     Color textPrimary,
     Color textSecondary,
   ) {
@@ -459,39 +520,37 @@ class _MateyAiEmotionalChaosScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(GenZTokens.space4),
               decoration: BoxDecoration(
-                color: surfaceColorBorderGuard(),
+                color: surface,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
+                  topLeft: Radius.circular(GenZTokens.radiusCard),
+                  topRight: Radius.circular(GenZTokens.radiusCard),
+                  bottomRight: Radius.circular(GenZTokens.radiusCard),
                   bottomLeft: Radius.circular(4),
                 ),
                 border: Border.all(
-                  color: glassBorder,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
                 ),
-                boxShadow: GenZTokens.hardShadow(glassBorder),
               ),
               child: Text(
                 msg['text'],
                 style: AppFonts.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
                   height: 1.5,
                   color: textPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Padding(
               padding: const EdgeInsets.only(left: 4),
               child: Text(
-                (msg['time'] as String).toUpperCase(),
-                style: AppFonts.mono(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                msg['time'] as String,
+                style: AppFonts.body(
+                  fontSize: 12,
                   color: textSecondary,
                 ),
               ),
@@ -502,7 +561,13 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  Widget _buildUserBubble(Map<String, dynamic> msg, Color primaryColor) {
+  Widget _buildUserBubble(
+    Map<String, dynamic> msg,
+    Color accentSoft,
+    Color line,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
@@ -514,42 +579,36 @@ class _MateyAiEmotionalChaosScreenState
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(GenZTokens.space4),
               decoration: BoxDecoration(
-                color: GenZTokens.yellow,
+                color: accentSoft,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
+                  topLeft: Radius.circular(GenZTokens.radiusCard),
+                  topRight: Radius.circular(GenZTokens.radiusCard),
+                  bottomLeft: Radius.circular(GenZTokens.radiusCard),
                   bottomRight: Radius.circular(4),
                 ),
                 border: Border.all(
-                  color: _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
-                ),
-                boxShadow: GenZTokens.hardShadow(
-                  _isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
                 ),
               ),
               child: Text(
                 msg['text'],
                 style: AppFonts.body(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
                   height: 1.4,
-                  color: GenZTokens.ink,
+                  color: textPrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
-              (msg['time'] as String).toUpperCase(),
-              style: AppFonts.mono(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: _isDarkMode
-                    ? GenZTokens.inkSoftDark
-                    : GenZTokens.inkSoft,
+              msg['time'] as String,
+              style: AppFonts.body(
+                fontSize: 12,
+                color: textSecondary,
               ),
             ),
           ],
@@ -559,9 +618,9 @@ class _MateyAiEmotionalChaosScreenState
   }
 
   Widget _buildTypingIndicator(
-    Color glassBg,
-    Color glassBorder,
-    Color primaryColor,
+    Color surface,
+    Color line,
+    Color accent,
   ) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -569,10 +628,10 @@ class _MateyAiEmotionalChaosScreenState
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: surfaceColorBorderGuard(),
-          borderRadius: BorderRadius.circular(20),
+          color: surface,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: glassBorder,
+            color: line,
             width: GenZTokens.borderWidthThin,
           ),
         ),
@@ -595,7 +654,7 @@ class _MateyAiEmotionalChaosScreenState
                   height: 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: primaryColor.withValues(alpha: wave.clamp(0.2, 1.0)),
+                    color: accent.withValues(alpha: wave.clamp(0.2, 1.0)),
                   ),
                 );
               },
@@ -607,26 +666,29 @@ class _MateyAiEmotionalChaosScreenState
   }
 
   Widget _buildMessageInput(
-    Color glassBg,
-    Color glassBorder,
-    Color primaryColor,
+    Color surface,
+    Color line,
+    Color accent,
+    Color onAccent,
     Color textPrimary,
+    Color textSecondary,
+    bool isDark,
   ) {
     return Container(
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: glassBg,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: glassBorder, width: GenZTokens.borderWidth),
-        boxShadow: GenZTokens.hardShadow(glassBorder),
+        color: surface,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(textPrimary, isDark),
       ),
       child: Row(
         children: [
           IconButton(
             icon: Icon(
               PhosphorIcons.lightbulb(PhosphorIconsStyle.bold),
-              color: textPrimary,
+              color: textSecondary,
             ),
             onPressed: () => _showPromptPicker(context),
             tooltip: 'ai.suggested_prompts_title'.tr(),
@@ -635,15 +697,15 @@ class _MateyAiEmotionalChaosScreenState
             child: TextField(
               controller: _textController,
               style: AppFonts.body(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: textPrimary,
               ),
               decoration: InputDecoration(
                 hintText: 'ai.matey_hint'.tr(),
                 hintStyle: AppFonts.body(
-                  fontWeight: FontWeight.w600,
-                  color: textPrimary.withValues(alpha: 0.4),
+                  fontSize: 15,
+                  color: textSecondary.withValues(alpha: 0.6),
                 ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 8),
@@ -656,17 +718,13 @@ class _MateyAiEmotionalChaosScreenState
             height: 42,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: GenZTokens.yellow,
-              border: Border.all(
-                color: GenZTokens.ink,
-                width: GenZTokens.borderWidthThin,
-              ),
+              color: accent,
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: Icon(
                 PhosphorIcons.paperPlaneRight(PhosphorIconsStyle.fill),
-                color: GenZTokens.ink,
+                color: onAccent,
                 size: 18,
               ),
               onPressed: _sendMessage,
@@ -676,9 +734,5 @@ class _MateyAiEmotionalChaosScreenState
         ],
       ),
     );
-  }
-
-  Color surfaceColorBorderGuard() {
-    return _isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   }
 }

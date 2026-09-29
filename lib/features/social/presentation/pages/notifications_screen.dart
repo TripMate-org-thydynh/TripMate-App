@@ -17,22 +17,19 @@ class NotificationsScreen extends ConsumerWidget {
   final bool isDarkMode;
   const NotificationsScreen({super.key, this.isDarkMode = false});
 
-  Color _bgOf(BuildContext context) =>
-      Theme.of(context).scaffoldBackgroundColor;
-  Color get _surface =>
-      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-
-  /// Accent lay tu theme dang chon.
-  ///
-  /// Truoc day viet cung `Color(0xFFF5822B)` — accent cua rieng preset *grape*,
-  /// nen doi theme khong an o man nay.
-  Color _primaryOf(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
-  Color get _ink =>
-      isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _textPri => _ink;
-  Color get _textSec =>
-      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color _bgOf(BuildContext context, bool isDark) =>
+      isDark ? GenZTokens.creamDark : GenZTokens.cream;
+  Color _surfaceOf(bool isDark) =>
+      isDark ? GenZTokens.paperDark : GenZTokens.paper;
+  Color _primaryOf(bool isDark) =>
+      isDark ? GenZTokens.accentDark : GenZTokens.accent;
+  Color _onAccentOf(bool isDark) =>
+      isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color _inkOf(bool isDark) => isDark ? GenZTokens.inkDark : GenZTokens.ink;
+  Color _inkSoftOf(bool isDark) =>
+      isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color _lineOf(bool isDark) => isDark ? GenZTokens.lineDark : GenZTokens.line;
+  Color _fillOf(bool isDark) => isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
   IconData _iconFor(String type) {
     switch (type) {
@@ -54,25 +51,31 @@ class NotificationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark =
+        isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final async = ref.watch(notificationsProvider);
+    final textPri = _inkOf(isDark);
+    final textSec = _inkSoftOf(isDark);
+
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: _bgOf(context, isDark),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bgOf(context, isDark),
         elevation: 0,
         title: Text(
           'notifications.title'.tr(),
           style: AppFonts.heading(
             fontSize: 18,
             fontWeight: FontWeight.w900,
-            color: _textPri,
+            color: textPri,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(PhosphorIcons.slidersHorizontal(), color: _textPri),
+            icon: Icon(PhosphorIcons.slidersHorizontal(), color: textPri),
             tooltip: 'notifications.settings_title'.tr(),
-            onPressed: () => _showNotificationSettingsModal(context, ref),
+            onPressed: () =>
+                _showNotificationSettingsModal(context, ref, isDark),
           ),
           TextButton(
             onPressed: () async {
@@ -83,7 +86,7 @@ class NotificationsScreen extends ConsumerWidget {
             child: Text(
               'general.mark_all_read'.tr(),
               style: AppFonts.body(
-                color: _primaryOf(context),
+                color: _primaryOf(isDark),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -91,24 +94,34 @@ class NotificationsScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        color: _primaryOf(context),
+        color: _primaryOf(isDark),
         onRefresh: () async => ref.invalidate(notificationsProvider),
         child: async.when(
-          loading: () => _skeleton(),
-          error: (e, _) => _error(context, ref, e),
+          loading: () => _skeleton(isDark),
+          error: (e, _) => _error(context, ref, e, isDark),
           data: (list) => list.isEmpty
-              ? _empty()
+              ? _empty(isDark, textPri, textSec)
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: list.length,
-                  itemBuilder: (context, i) => _tile(context, ref, list[i]),
+                  itemBuilder: (context, i) =>
+                      _tile(context, ref, list[i], isDark),
                 ),
         ),
       ),
     );
   }
 
-  Widget _tile(BuildContext context, WidgetRef ref, AppNotification n) {
+  Widget _tile(
+    BuildContext context,
+    WidgetRef ref,
+    AppNotification n,
+    bool isDark,
+  ) {
+    final textPri = _inkOf(isDark);
+    final textSec = _inkSoftOf(isDark);
+    final unreadBg = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+
     return GestureDetector(
       onTap: () {
         if (!n.isRead) {
@@ -120,12 +133,12 @@ class NotificationsScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: n.isRead ? _surface : GenZTokens.yellow,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _ink, width: 2),
-          boxShadow: n.isRead
-              ? null
-              : [BoxShadow(color: _ink, offset: const Offset(0, 3))],
+          color: n.isRead ? _surfaceOf(isDark) : unreadBg,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: n.isRead ? _lineOf(isDark) : _primaryOf(isDark),
+            width: n.isRead ? 1.0 : 1.5,
+          ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,13 +147,12 @@ class NotificationsScreen extends ConsumerWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: _primaryOf(context),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _ink, width: 2),
+                color: _primaryOf(isDark),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 _iconFor(n.type),
-                color: GenZTokens.ink,
+                color: _onAccentOf(isDark),
                 size: 20,
               ),
             ),
@@ -154,7 +166,7 @@ class NotificationsScreen extends ConsumerWidget {
                     style: AppFonts.heading(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: n.isRead ? _textPri : GenZTokens.ink,
+                      color: textPri,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -163,7 +175,7 @@ class NotificationsScreen extends ConsumerWidget {
                     style: AppFonts.body(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: n.isRead ? _textSec : GenZTokens.inkSoft,
+                      color: textSec,
                       height: 1.3,
                     ),
                   ),
@@ -176,12 +188,8 @@ class NotificationsScreen extends ConsumerWidget {
                 height: 10,
                 margin: const EdgeInsets.only(top: 4, left: 6),
                 decoration: BoxDecoration(
-                  color: GenZTokens.danger,
+                  color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: _ink,
-                    width: 1.5,
-                  ),
                 ),
               ),
           ],
@@ -190,7 +198,7 @@ class NotificationsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _skeleton() => ListView(
+  Widget _skeleton(bool isDark) => ListView(
     padding: const EdgeInsets.all(16),
     children: List.generate(
       6,
@@ -198,67 +206,72 @@ class NotificationsScreen extends ConsumerWidget {
         height: 72,
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-          color: _surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _ink, width: 2),
+          color: _surfaceOf(isDark),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _lineOf(isDark), width: 1),
         ),
       ),
     ),
   );
 
-  Widget _error(BuildContext context, WidgetRef ref, Object e) => ListView(
-    children: [
-      const SizedBox(height: 120),
-      Center(
-        child: Column(
-          children: [
-            Icon(
-              PhosphorIcons.cloudSlash(),
-              color: GenZTokens.danger,
-              size: 40,
+  Widget _error(BuildContext context, WidgetRef ref, Object e, bool isDark) =>
+      ListView(
+        children: [
+          const SizedBox(height: 120),
+          Center(
+            child: Column(
+              children: [
+                Icon(
+                  PhosphorIcons.cloudSlash(),
+                  color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
+                  size: 40,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'notifications.load_failed'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: _inkOf(isDark),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _primaryOf(isDark),
+                    foregroundColor: _onAccentOf(isDark),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () => ref.invalidate(notificationsProvider),
+                  icon: Icon(PhosphorIcons.arrowsClockwise()),
+                  label: Text('general.retry'.tr()),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              'notifications.load_failed'.tr(),
-              style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
-                color: _textPri,
-              ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: _primaryOf(context),
-              ),
-              onPressed: () => ref.invalidate(notificationsProvider),
-              icon: Icon(PhosphorIcons.arrowsClockwise()),
-              label: Text('general.retry'.tr()),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
+          ),
+        ],
+      );
 
-  Widget _empty() => ListView(
+  Widget _empty(bool isDark, Color textPri, Color textSec) => ListView(
     children: [
       const SizedBox(height: 130),
       Center(
         child: Column(
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: GenZTokens.lilac,
-                border: Border.all(color: _ink, width: 2.5),
-                boxShadow: [BoxShadow(color: _ink, offset: const Offset(0, 4))],
+                color: _fillOf(isDark),
+                border: Border.all(color: _lineOf(isDark), width: 1),
               ),
               child: Icon(
                 PhosphorIcons.bellSlash(PhosphorIconsStyle.fill),
-                color: GenZTokens.ink,
-                size: 38,
+                color: _primaryOf(isDark),
+                size: 32,
               ),
             ),
             const SizedBox(height: 16),
@@ -266,14 +279,14 @@ class NotificationsScreen extends ConsumerWidget {
               'notifications.empty'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
-                fontWeight: FontWeight.w900,
-                color: _textPri,
+                fontWeight: FontWeight.w700,
+                color: textPri,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'notifications.empty_sub'.tr(),
-              style: AppFonts.body(fontSize: 14, color: _textSec),
+              style: AppFonts.body(fontSize: 13, color: textSec),
             ),
           ],
         ),
@@ -281,17 +294,21 @@ class NotificationsScreen extends ConsumerWidget {
     ],
   );
 
-  void _showNotificationSettingsModal(BuildContext context, WidgetRef ref) {
-    final borderCol = isDarkMode ? GenZTokens.inkDark.withValues(alpha: 0.15) : GenZTokens.ink;
-    final cardBgCol = isDarkMode
-        ? GenZTokens.paperDark
-        : GenZTokens.paper;
+  void _showNotificationSettingsModal(
+    BuildContext context,
+    WidgetRef ref,
+    bool isDark,
+  ) {
+    final borderCol = _lineOf(isDark);
+    final cardBgCol = _surfaceOf(isDark);
+    final textPri = _inkOf(isDark);
+    final textSec = _inkSoftOf(isDark);
 
     showModalBottomSheet(
       context: context,
       backgroundColor: cardBgCol,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
       ),
       builder: (_) => Consumer(
         builder: (context, ref, _) {
@@ -313,12 +330,12 @@ class NotificationsScreen extends ConsumerWidget {
                         'system_phases.notif_settings_title'.tr(),
                         style: AppFonts.heading(
                           fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                          color: _textPri,
+                          fontWeight: FontWeight.w700,
+                          color: textPri,
                         ),
                       ),
                       IconButton(
-                        icon: Icon(PhosphorIcons.x(), color: _textPri),
+                        icon: Icon(PhosphorIcons.x(), color: textPri),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -326,7 +343,7 @@ class NotificationsScreen extends ConsumerWidget {
                   const SizedBox(height: 6),
                   Text(
                     'system_phases.notif_settings_desc'.tr(),
-                    style: AppFonts.body(fontSize: 13, color: _textSec),
+                    style: AppFonts.body(fontSize: 13, color: textSec),
                   ),
                   const SizedBox(height: 20),
 
@@ -343,6 +360,7 @@ class NotificationsScreen extends ConsumerWidget {
                           val;
                     },
                     borderCol: borderCol,
+                    isDark: isDark,
                   ),
                   const SizedBox(height: 12),
 
@@ -358,6 +376,7 @@ class NotificationsScreen extends ConsumerWidget {
                       debugPrint('SMS notification simulation set to: $val');
                     },
                     borderCol: borderCol,
+                    isDark: isDark,
                   ),
                   const SizedBox(height: 12),
 
@@ -375,6 +394,7 @@ class NotificationsScreen extends ConsumerWidget {
                       debugPrint('Email notification simulation set to: $val');
                     },
                     borderCol: borderCol,
+                    isDark: isDark,
                   ),
                 ],
               ),
@@ -391,12 +411,13 @@ class NotificationsScreen extends ConsumerWidget {
     required bool value,
     required ValueChanged<bool> onChanged,
     required Color borderCol,
+    required bool isDark,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: _surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderCol, width: 2),
+        color: _surfaceOf(isDark),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: borderCol, width: 1),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -407,18 +428,18 @@ class NotificationsScreen extends ConsumerWidget {
               title,
               style: AppFonts.heading(
                 fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: _textPri,
+                fontWeight: FontWeight.w700,
+                color: _inkOf(isDark),
               ),
             ),
           ),
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: GenZTokens.yellow,
-            activeTrackColor: _primaryOf(context).withValues(alpha: 0.3),
-            inactiveThumbColor: _textSec,
-            inactiveTrackColor: Colors.transparent,
+            activeThumbColor: _onAccentOf(isDark),
+            activeTrackColor: _primaryOf(isDark),
+            inactiveThumbColor: _inkSoftOf(isDark),
+            inactiveTrackColor: _fillOf(isDark),
           ),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -104,6 +105,62 @@ class ApiClient {
   Future<dynamic> getData(String path, {Map<String, dynamic>? query}) =>
       _send(() => dio.get(path, queryParameters: query), 'GET', path);
 
+  /// Mở một luồng SSE và trả về từng sự kiện `(event, data)`.
+  ///
+  /// Dùng cho câu trả lời chảy từng mẩu chữ: người dùng thấy chữ hiện dần
+  /// thay vì nhìn vòng xoay tới lúc câu trả lời xong hẳn.
+  ///
+  /// Không dùng `_send` vì thân phản hồi ở đây là luồng byte chưa kết thúc,
+  /// không phải một gói JSON đọc một lần là xong.
+  Stream<(String, Map<String, dynamic>)> postSse(
+    String path,
+    Map<String, dynamic> body,
+  ) async* {
+    late final Response<ResponseBody> res;
+    try {
+      res = await dio.post<ResponseBody>(
+        path,
+        data: body,
+        options: Options(
+          responseType: ResponseType.stream,
+          headers: {'Accept': 'text/event-stream'},
+          // Câu trả lời dài có thể im lặng vài giây giữa các mẩu.
+          receiveTimeout: const Duration(seconds: 120),
+        ),
+      );
+    } on DioException catch (e) {
+      _log(e, 'POST(SSE)', path);
+      throw ApiException.fromDio(e);
+    }
+
+    // SSE ngăn cách các sự kiện bằng dòng trống; một mẩu byte có thể cắt
+    // ngang giữa dòng nên phải gom lại rồi mới tách.
+    var buffer = '';
+    String? event;
+    await for (final chunk in res.data!.stream) {
+      buffer += utf8.decode(chunk, allowMalformed: true);
+      while (true) {
+        final nl = buffer.indexOf('\n');
+        if (nl < 0) break;
+        final line = buffer.substring(0, nl).trimRight();
+        buffer = buffer.substring(nl + 1);
+        if (line.startsWith('event: ')) {
+          event = line.substring(7);
+        } else if (line.startsWith('data: ')) {
+          final raw = line.substring(6);
+          try {
+            final parsed = jsonDecode(raw);
+            if (parsed is Map<String, dynamic>) {
+              yield (event ?? 'message', parsed);
+            }
+          } catch (_) {
+            // Dòng rác giữa chừng: bỏ qua, đừng làm đứt cả luồng.
+          }
+        }
+      }
+    }
+  }
+
   Future<dynamic> postData(String path, [Map<String, dynamic>? body]) =>
       _send(() => dio.post(path, data: body), 'POST', path);
 
@@ -137,6 +194,15 @@ class ApiClient {
   }
 }
 
+/// Duong dan nao thuc su goi Gemini.
+///
+/// Khong chi `/ai/`: co endpoint goi AI nhung nam duoi feature khac, vi du
+/// `/itinerary-templates/<id>/customize`. Bo sot mot duong nhu vay thi no roi
+/// ve timeout chung 15s, trong khi Gemini tra ve sau ~18s — nguoi dung luon
+/// thay bao loi cho mot tinh nang that ra chay dung.
+bool _isAiRoute(String path) =>
+    path.startsWith('/ai/') || path.endsWith('/customize');
+
 // Global Providers
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
@@ -157,7 +223,7 @@ final dioProvider = Provider<Dio>((ref) {
         // Goi AI di qua Gemini nen thuong 15-40s. Voi timeout chung 15s thi
         // moi lan nho AI viet caption deu bi huy giua chung ma nguoi dung
         // khong hieu vi sao.
-        if (options.path.startsWith('/ai/')) {
+        if (_isAiRoute(options.path)) {
           options.receiveTimeout = const Duration(seconds: 60);
         }
         return handler.next(options);

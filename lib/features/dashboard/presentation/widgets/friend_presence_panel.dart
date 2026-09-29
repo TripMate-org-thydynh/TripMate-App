@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/api_service.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
 import '../../../social/presentation/pages/trip_chat_live_screen.dart';
+import '../../../invites/presentation/trip_invites_screen.dart';
 
 class FriendPresencePanel extends StatefulWidget {
   final bool isDarkMode;
@@ -107,16 +108,22 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
     return 'plane';
   }
 
+  Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _accent =>
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+
   Color _statusColor(String status, bool isDark) {
     switch (status) {
       case 'ONLINE':
-        return GenZTokens.green;
+        return isDark ? GenZTokens.successDark : GenZTokens.success;
       case 'IN_TRIP':
-        return GenZTokens.purple;
+        return isDark ? GenZTokens.accentDark : GenZTokens.accent;
       case 'IDLE':
-        return GenZTokens.yellow;
+        return isDark ? GenZTokens.warningDark : GenZTokens.warning;
       default:
-        return GenZTokens.inkSoft;
+        return isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     }
   }
 
@@ -124,11 +131,124 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
       .where((m) => m['status'] == 'ONLINE' || m['status'] == 'IN_TRIP')
       .length;
 
+  /// Chưa ai online (hoặc chưa có chuyến): hàng avatar giữ chỗ + lời rủ mời bạn,
+  /// thay vì để trống một khoảng không.
+  Widget _buildEmpty(BuildContext context, bool isDark) {
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final tripId = _tripId;
+
+    Widget ghost(int i) => Transform.translate(
+      offset: Offset(-12.0 * i, 0),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _fill,
+          border: Border.all(color: surface, width: 2),
+        ),
+        child: Icon(
+          PhosphorIcons.user(),
+          size: 20,
+          color: inkSoft.withValues(alpha: 0.6 - i * 0.12),
+        ),
+      ),
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 44.0 + 32 * 3,
+                height: 44,
+                child: Stack(
+                  children: [
+                    for (int i = 3; i >= 0; i--)
+                      Positioned(left: 44.0 * i, child: ghost(i)),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              if (tripId != null)
+                PressableCard(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TripInvitesScreen(
+                        tripId: tripId,
+                        tripName: _tripName,
+                        isDarkMode: isDark,
+                      ),
+                    ),
+                  ),
+                  color: _accent,
+                  borderColor: _accent,
+                  shadowColor: _ink,
+                  borderWidth: GenZTokens.borderWidthThin,
+                  radius: GenZTokens.radiusPill,
+                  depth: 1,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        PhosphorIcons.userPlus(),
+                        size: 16,
+                        color: isDark
+                            ? GenZTokens.onAccentDark
+                            : GenZTokens.onAccent,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'dashboard.squad_invite'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? GenZTokens.onAccentDark
+                              : GenZTokens.onAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: GenZTokens.space3),
+          Text(
+            'dashboard.squad_empty_title'.tr(),
+            style: AppFonts.heading(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: _ink,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'dashboard.squad_empty_body'.tr(),
+            style: AppFonts.body(fontSize: 13, color: inkSoft, height: 1.35),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,82 +268,122 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 17,
                     letterSpacing: -0.5,
-                    color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                    color: _ink,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               if (!_isLoading)
-                PillTag(
-                  text: 'dashboard.active_count'.tr(
-                    namedArgs: {'count': '$_activeCount'},
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: GenZTokens.space3,
+                    vertical: 4,
                   ),
-                  color: GenZTokens.green,
+                  decoration: BoxDecoration(
+                    color: _activeCount == 0
+                        ? (isDark ? GenZTokens.fillDark : GenZTokens.fill)
+                        : (isDark
+                              ? GenZTokens.successDark
+                              : GenZTokens.success),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                    border: Border.all(
+                      color: _activeCount == 0
+                          ? (isDark ? GenZTokens.lineDark : GenZTokens.line)
+                          : Colors.transparent,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_activeCount > 0) ...[
+                        PulseDot(
+                          size: 7,
+                          color: isDark
+                              ? GenZTokens.onAccentDark
+                              : GenZTokens.onAccent,
+                        ),
+                        const SizedBox(width: GenZTokens.space1),
+                      ],
+                      Text(
+                        'dashboard.active_count'.tr(
+                          namedArgs: {'count': '$_activeCount'},
+                        ),
+                        style: AppFonts.body(
+                          fontSize: 12,
+                          fontWeight: _activeCount > 0
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: _activeCount == 0
+                              ? (isDark
+                                    ? GenZTokens.inkSoftDark
+                                    : GenZTokens.inkSoft)
+                              : (isDark
+                                    ? GenZTokens.onAccentDark
+                                    : GenZTokens.onAccent),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
             ],
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 90,
-          child: _isLoading
-              ? Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        colorScheme.primary,
+        if (!_isLoading && _members.isEmpty)
+          _buildEmpty(context, isDark)
+        else
+          SizedBox(
+            height: 90,
+            child: _isLoading
+                ? Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(_accent),
                       ),
                     ),
-                  ),
-                )
-              : ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: _members.length,
-                  itemBuilder: (context, index) {
-                    final friend = _members[index];
-                    final status = friend['status'] as String? ?? 'OFFLINE';
-                    final isActive =
-                        status == 'ONLINE' ||
-                        status == 'IN_TRIP' ||
-                        status == 'IDLE';
-                    final statusColor = _statusColor(status, isDark);
+                  )
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: _members.length,
+                    itemBuilder: (context, index) {
+                      final friend = _members[index];
+                      final status = friend['status'] as String? ?? 'OFFLINE';
+                      final isActive =
+                          status == 'ONLINE' ||
+                          status == 'IN_TRIP' ||
+                          status == 'IDLE';
+                      final statusColor = _statusColor(status, isDark);
 
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 18),
-                      child: GestureDetector(
-                        // Mở chat THẬT của chuyến. Trước đây chỗ này mở
-                        // `SquadChatScreen` — một màn demo với tin nhắn và người
-                        // gửi bịa, không nối với chat_repository nào.
-                        onTap: () {
-                          final tripId = _tripId;
-                          if (tripId == null) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TripChatLiveScreen(
-                                tripId: tripId,
-                                isDarkMode: widget.isDarkMode,
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 18),
+                        child: GestureDetector(
+                          onTap: () {
+                            final tripId = _tripId;
+                            if (tripId == null) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TripChatLiveScreen(
+                                  tripId: tripId,
+                                  isDarkMode: widget.isDarkMode,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                // Avatar nảy nhẹ liên tục, so le theo index
-                                Bobbing(
-                                  amplitude: 3,
-                                  phase: index * 0.9,
-                                  child: AnimatedContainer(
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  AnimatedContainer(
                                     duration: const Duration(milliseconds: 350),
                                     padding: const EdgeInsets.all(3),
                                     decoration: BoxDecoration(
@@ -232,9 +392,7 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                                           ? statusColor
                                           : Colors.transparent,
                                       border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.inkDark
-                                            : GenZTokens.ink,
+                                        color: _line,
                                         width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
@@ -246,71 +404,66 @@ class _FriendPresencePanelState extends State<FriendPresencePanel> {
                                               friend['avatarUrl'] as String,
                                             )
                                           : null,
-                                      backgroundColor: GenZTokens.lilac,
+                                      backgroundColor: _fill,
                                       child: friend['avatarUrl'] == null
                                           ? Text(
                                               friend['avatarChar'] as String,
                                               style: AppFonts.heading(
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w800,
-                                                color: GenZTokens.ink,
+                                                fontWeight: FontWeight.w700,
+                                                color: _ink,
                                               ),
                                             )
                                           : null,
                                     ),
                                   ),
-                                ),
-                                // Chấm online pulse cho thành viên đang hoạt động
-                                if (isActive)
-                                  Positioned(
-                                    top: -2,
-                                    left: -2,
-                                    child: PulseDot(
-                                      color: statusColor,
-                                      size: 9,
-                                    ),
-                                  ),
-                                // Vibe icon badge
-                                Positioned(
-                                  right: 0,
-                                  bottom: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: GenZTokens.yellow,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: GenZTokens.ink,
-                                        width: 1.5,
+                                  if (isActive)
+                                    Positioned(
+                                      top: -2,
+                                      left: -2,
+                                      child: PulseDot(
+                                        color: statusColor,
+                                        size: 9,
                                       ),
                                     ),
-                                    child: Icon(
-                                      _vibeIcon(friend['vibe'] as String),
-                                      size: 10,
-                                      color: GenZTokens.ink,
+                                  Positioned(
+                                    right: 0,
+                                    bottom: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: _fill,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: _line,
+                                          width: GenZTokens.borderWidthThin,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        _vibeIcon(friend['vibe'] as String),
+                                        size: 10,
+                                        color: _accent,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              friend['name'] as String,
-                              style: AppFonts.heading(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: isDark
-                                    ? GenZTokens.inkDark
-                                    : GenZTokens.ink,
+                                ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 6),
+                              Text(
+                                friend['name'] as String,
+                                style: AppFonts.heading(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: _ink,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-        ),
+                      );
+                    },
+                  ),
+          ),
       ],
     );
   }

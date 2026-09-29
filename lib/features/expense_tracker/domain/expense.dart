@@ -14,6 +14,20 @@ class ExpenseUser {
   );
 }
 
+/// Phần một người phải gánh trong một khoản chi.
+class ExpenseShare {
+  final ExpenseUser user;
+  final double shareAmount;
+  const ExpenseShare({required this.user, required this.shareAmount});
+
+  factory ExpenseShare.fromJson(Map<String, dynamic> j) => ExpenseShare(
+    user: ExpenseUser.fromJson(
+      (j['user'] as Map? ?? {}).cast<String, dynamic>(),
+    ),
+    shareAmount: _num(j['shareAmount']),
+  );
+}
+
 class Expense {
   final String id;
   final double amount;
@@ -24,6 +38,9 @@ class Expense {
   final ExpenseUser? paidBy;
   final DateTime createdAt;
 
+  /// Ai gánh bao nhiêu — BE trả sẵn trong `splits`, dùng khi xuất bảng.
+  final List<ExpenseShare> splits;
+
   const Expense({
     required this.id,
     required this.amount,
@@ -33,11 +50,16 @@ class Expense {
     this.receiptUrl,
     this.paidBy,
     required this.createdAt,
+    this.splits = const [],
   });
 
   factory Expense.fromJson(Map<String, dynamic> j) {
     final paid = j['paidBy'];
     return Expense(
+      splits: (j['splits'] as List? ?? [])
+          .whereType<Map>()
+          .map((e) => ExpenseShare.fromJson(e.cast<String, dynamic>()))
+          .toList(),
       id: j['id'] as String,
       amount: _num(j['amount']),
       category: j['category'] as String? ?? 'OTHER',

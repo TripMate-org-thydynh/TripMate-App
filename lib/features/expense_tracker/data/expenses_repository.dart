@@ -76,6 +76,7 @@ class ExpensesRepository {
     required String splitType,
     String? paidById,
     List<Map<String, dynamic>>? splits,
+    List<String>? participantIds,
   }) async {
     final data = await _client.postData(_base(tripId), {
       'amount': amount,
@@ -84,6 +85,7 @@ class ExpensesRepository {
       'splitType': splitType,
       'paidById': paidById,
       'splits': splits,
+      'participantIds': ?participantIds,
     });
     return Expense.fromJson((data as Map).cast<String, dynamic>());
   }
@@ -94,6 +96,21 @@ class ExpensesRepository {
 
   Future<void> deleteExpense(String tripId, String expenseId) {
     return _client.deleteData('${_base(tripId)}/$expenseId');
+  }
+
+  /// AI tách khoản chi từ mô tả bằng lời. Không lưu gì: trả về
+  /// `{status: needs_input, questions}` hoặc `{status: draft, expenses, total}`.
+  /// Server không nhớ hội thoại nên mỗi lượt gửi lại cả đoạn văn lẫn câu trả lời.
+  Future<Map<String, dynamic>> aiParse(
+    String tripId,
+    String text,
+    List<Map<String, String>> answers,
+  ) async {
+    final data = await _client.postData('${_base(tripId)}/ai-parse', {
+      'text': text,
+      'answers': answers,
+    });
+    return (data as Map).cast<String, dynamic>();
   }
 
   Future<Map<String, dynamic>> scanReceipt(

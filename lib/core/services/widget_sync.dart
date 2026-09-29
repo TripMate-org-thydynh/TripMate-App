@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -162,7 +161,7 @@ class WidgetSync {
         iOSName: iOSWidgetName,
       );
     } catch (e) {
-      debugPrint('widget.clear_failed'.tr(namedArgs: {'err': '$e'}));
+      debugPrint('Widget clear failed: $e');
     }
   }
 }

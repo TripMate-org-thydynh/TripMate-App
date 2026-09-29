@@ -3,8 +3,8 @@ import 'app_fonts.dart';
 import 'gen_z_tokens.dart';
 import 'theme_provider.dart';
 
-/// Theme Gen Z Neo-Brutalist: khối màu đặc, viền ink dày, hard shadow,
-/// heading Space Grotesk 800, số liệu Space Mono.
+/// Theme TripMate mới (A×B: sáng kem, tối graphite).
+/// Nguồn sự thật duy nhất: REFACTOR_UI_SPEC.md.
 class TripMateTheme {
   // ── Active theme states ─────────────────────────────────────────────────────
   static AppAccent _activeAccent = AppAccent.mint;
@@ -15,20 +15,20 @@ class TripMateTheme {
   // ── Dynamic getters driven by current accent ────────────────────────────────
   static Color get lightPrimary => _activeAccent.accent;
   static Color get lightSecondary => _activeAccent.pair;
-  static Color get lightTertiary => GenZTokens.lilac;
-  static Color get lightBackground => _activeAccent.lightBackground;
+  static Color get lightTertiary => GenZTokens.chart3;
+  static Color get lightBackground => GenZTokens.cream;
   static Color get lightSurface => GenZTokens.paper;
   static Color get lightTextPrimary => GenZTokens.ink;
   static Color get lightTextSecondary => GenZTokens.inkSoft;
 
-  static Color get darkPrimary => _activeAccent.accent;
+  static Color get darkPrimary => _activeAccent.darkAccent;
   static Color get darkSecondary => _activeAccent.pair;
-  static Color get darkTertiary => GenZTokens.lilac;
+  static Color get darkTertiary => GenZTokens.chart3;
   static Color get darkBackground => GenZTokens.creamDark;
   static Color get darkSurface => GenZTokens.paperDark;
-  static Color get darkSurfaceLow => const Color(0xFF15120D);
-  static Color get darkSurfaceHigh => const Color(0xFF2E2820);
-  static Color get darkSurfaceHighest => const Color(0xFF383126);
+  static Color get darkSurfaceLow => const Color(0xFF141617);
+  static Color get darkSurfaceHigh => const Color(0xFF25292B);
+  static Color get darkSurfaceHighest => const Color(0xFF2E3235);
   static Color get darkTextPrimary => GenZTokens.inkDark;
   static Color get darkTextSecondary => GenZTokens.inkSoftDark;
 
@@ -49,8 +49,10 @@ class TripMateTheme {
       accent: accent.accent,
       onAccent: accent.onAccent,
       accentSoft: accent.lightSoft,
-      background: accent.lightBackground,
+      background: GenZTokens.cream,
       surface: GenZTokens.paper,
+      line: GenZTokens.line,
+      fill: GenZTokens.fill,
       ink: GenZTokens.ink,
       inkSoft: GenZTokens.inkSoft,
     );
@@ -62,11 +64,13 @@ class TripMateTheme {
 
     return _build(
       brightness: Brightness.dark,
-      accent: accent.accent,
-      onAccent: accent.onAccent,
-      accentSoft: accent.lightSoft,
+      accent: accent.darkAccent,
+      onAccent: accent.darkOnAccent,
+      accentSoft: GenZTokens.accentSoftDark,
       background: GenZTokens.creamDark,
       surface: GenZTokens.paperDark,
+      line: GenZTokens.lineDark,
+      fill: GenZTokens.fillDark,
       ink: GenZTokens.inkDark,
       inkSoft: GenZTokens.inkSoftDark,
     );
@@ -80,9 +84,14 @@ class TripMateTheme {
     required Color accentSoft,
     required Color background,
     required Color surface,
+    required Color line,
+    required Color fill,
     required Color ink,
     required Color inkSoft,
   }) {
+    final isDark = brightness == Brightness.dark;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
@@ -93,16 +102,18 @@ class TripMateTheme {
         brightness: brightness,
         primary: accent,
         onPrimary: onAccent,
+        primaryContainer: accentSoft,
+        onPrimaryContainer: isDark ? GenZTokens.onAccentSoftDark : GenZTokens.onAccentSoft,
         secondary: accentSoft,
-        onSecondary: onAccent,
-        tertiary: GenZTokens.lilac,
+        onSecondary: ink,
+        tertiary: GenZTokens.chart3,
         onTertiary: onAccent,
-        error: GenZTokens.red,
-        onError: GenZTokens.paper,
+        error: danger,
+        onError: onAccent,
         surface: surface,
         onSurface: ink,
         onSurfaceVariant: inkSoft,
-        outline: ink,
+        outline: line,
       ),
       textTheme: _buildTextTheme(ink, inkSoft),
       appBarTheme: AppBarTheme(
@@ -110,12 +121,12 @@ class TripMateTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        iconTheme: IconThemeData(color: ink, size: 26),
+        iconTheme: IconThemeData(color: ink, size: 24),
         titleTextStyle: AppFonts.heading(
           color: ink,
           fontSize: 22,
-          fontWeight: FontWeight.w800,
-          letterSpacing: -0.5,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.2,
         ),
       ),
       cardTheme: CardThemeData(
@@ -127,7 +138,7 @@ class TripMateTheme {
           borderRadius: const BorderRadius.all(
             Radius.circular(GenZTokens.radiusCard),
           ),
-          side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+          side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -135,10 +146,9 @@ class TripMateTheme {
           backgroundColor: WidgetStatePropertyAll(accent),
           foregroundColor: WidgetStatePropertyAll(onAccent),
           elevation: const WidgetStatePropertyAll(0),
+          minimumSize: const WidgetStatePropertyAll(Size.fromHeight(48)),
           padding: const WidgetStatePropertyAll(GenZTokens.buttonPadding),
-          side: WidgetStatePropertyAll(
-            BorderSide(color: ink, width: GenZTokens.borderWidth),
-          ),
+          side: const WidgetStatePropertyAll(BorderSide.none),
           shape: const WidgetStatePropertyAll(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -147,14 +157,15 @@ class TripMateTheme {
             ),
           ),
           textStyle: WidgetStatePropertyAll(
-            AppFonts.heading(fontSize: 16, fontWeight: FontWeight.w700),
+            AppFonts.heading(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: ink,
-          side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+          minimumSize: const Size.fromHeight(48),
+          side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
           padding: GenZTokens.buttonPadding,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
@@ -163,7 +174,7 @@ class TripMateTheme {
           ),
           textStyle: AppFonts.heading(
             fontSize: 16,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -172,23 +183,23 @@ class TripMateTheme {
           foregroundColor: ink,
           textStyle: AppFonts.heading(
             fontSize: 15,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surface,
+        fillColor: fill,
         contentPadding: GenZTokens.inputPadding,
-        labelStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w600),
-        hintStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w600),
+        labelStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w500),
+        hintStyle: AppFonts.body(color: inkSoft, fontWeight: FontWeight.w400),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-          borderSide: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+          borderSide: BorderSide(color: line, width: GenZTokens.borderWidthThin),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-          borderSide: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+          borderSide: BorderSide(color: line, width: GenZTokens.borderWidthThin),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
@@ -199,34 +210,34 @@ class TripMateTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-          borderSide: const BorderSide(
-            color: GenZTokens.red,
+          borderSide: BorderSide(
+            color: danger,
             width: GenZTokens.borderWidthThin,
           ),
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: accentSoft,
-        side: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+        backgroundColor: fill,
+        side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
         shape: const StadiumBorder(),
-        labelStyle: AppFonts.mono(
-          color: ink,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
+        labelStyle: AppFonts.body(
+          color: inkSoft,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
         ),
       ),
-      dividerTheme: DividerThemeData(color: ink, thickness: 2, space: 0),
+      dividerTheme: DividerThemeData(color: line, thickness: 1, space: 0),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: background,
-        selectedItemColor: ink,
+        backgroundColor: surface,
+        selectedItemColor: accent,
         unselectedItemColor: inkSoft,
         selectedLabelStyle: AppFonts.heading(
           fontSize: 12,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
         ),
         unselectedLabelStyle: AppFonts.body(
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
         showSelectedLabels: true,
         showUnselectedLabels: true,
@@ -237,11 +248,11 @@ class TripMateTheme {
         backgroundColor: surface,
         contentTextStyle: AppFonts.body(
           color: ink,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-          side: BorderSide(color: ink, width: GenZTokens.borderWidthThin),
+          side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
         ),
         behavior: SnackBarBehavior.floating,
       ),
@@ -249,62 +260,88 @@ class TripMateTheme {
         backgroundColor: surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+          side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
         ),
       ),
     );
   }
 
-  // ── Text theme: Baloo 2 display + Nunito body + Space Mono số liệu ────
+  // ── Text theme: Instrument Sans display/body + Space Mono số liệu ──────
   static TextTheme _buildTextTheme(Color primary, Color secondary) {
     return AppFonts.bodyTextTheme().copyWith(
       displayLarge: AppFonts.heading(
-        fontSize: 34,
-        fontWeight: FontWeight.w800,
+        fontSize: 28,
+        height: 34 / 28,
+        fontWeight: FontWeight.w700,
         color: primary,
-        letterSpacing: -0.5,
-        height: 1.05,
+        letterSpacing: -0.2,
       ),
       displayMedium: AppFonts.heading(
-        fontSize: 26,
-        fontWeight: FontWeight.w800,
+        fontSize: 28,
+        height: 34 / 28,
+        fontWeight: FontWeight.w700,
         color: primary,
-        letterSpacing: -0.5,
-        height: 1.05,
+        letterSpacing: -0.2,
+      ),
+      displaySmall: AppFonts.heading(
+        fontSize: 22,
+        height: 28 / 22,
+        fontWeight: FontWeight.w700,
+        color: primary,
+        letterSpacing: -0.2,
       ),
       titleLarge: AppFonts.heading(
         fontSize: 22,
-        fontWeight: FontWeight.w800,
+        height: 28 / 22,
+        fontWeight: FontWeight.w700,
         color: primary,
-        letterSpacing: -0.5,
+        letterSpacing: -0.2,
       ),
       titleMedium: AppFonts.heading(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
+        fontSize: 17,
+        height: 24 / 17,
+        fontWeight: FontWeight.w600,
         color: primary,
       ),
       titleSmall: AppFonts.heading(
-        fontSize: 15,
-        fontWeight: FontWeight.w700,
+        fontSize: 17,
+        height: 24 / 17,
+        fontWeight: FontWeight.w600,
         color: primary,
       ),
       bodyLarge: AppFonts.body(
-        fontSize: 16,
+        fontSize: 15,
+        height: 22 / 15,
         fontWeight: FontWeight.w500,
         color: primary,
       ),
       bodyMedium: AppFonts.body(
         fontSize: 15,
-        fontWeight: FontWeight.w500,
+        height: 22 / 15,
+        fontWeight: FontWeight.w400,
+        color: secondary,
+      ),
+      bodySmall: AppFonts.body(
+        fontSize: 13,
+        height: 18 / 13,
+        fontWeight: FontWeight.w400,
         color: secondary,
       ),
       labelLarge: AppFonts.heading(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
+        fontSize: 13,
+        height: 18 / 13,
+        fontWeight: FontWeight.w600,
         color: primary,
+      ),
+      labelMedium: AppFonts.body(
+        fontSize: 12,
+        height: 16 / 12,
+        fontWeight: FontWeight.w500,
+        color: secondary,
       ),
       labelSmall: AppFonts.mono(
         fontSize: 12,
+        height: 16 / 12,
         fontWeight: FontWeight.w700,
         color: secondary,
       ),
@@ -313,7 +350,7 @@ class TripMateTheme {
 
   /// Style mono cho số tiền / ngày / giờ ("$1,140", "9:41").
   static TextStyle mono({
-    double fontSize = 16,
+    double fontSize = 15,
     FontWeight fontWeight = FontWeight.w700,
     Color? color,
   }) => AppFonts.mono(fontSize: fontSize, fontWeight: fontWeight, color: color);

@@ -21,6 +21,7 @@ class DailyRecapWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final async = ref.watch(squadActivitiesProvider);
     final activities = async.maybeWhen(
       data: (items) => items
@@ -31,29 +32,28 @@ class DailyRecapWidget extends ConsumerWidget {
               'time': a.tripName,
               'chaosVibe': _activityVibe(a.type),
               'details': a.label,
-              'color': _colorFor(a.type),
+              'color': _colorFor(context, a.type, isDark),
             },
           )
           .toList(),
       orElse: () => const <Map<String, dynamic>>[],
     );
     final isLoading = async.isLoading;
-    return _buildBody(context, activities, isLoading);
+    return _buildBody(context, activities, isLoading, isDark);
   }
 
-  /// Màu viền theo loại hoạt động — giữ bảng màu brutalist của app.
-  Color _colorFor(String type) {
+  Color _colorFor(BuildContext context, String type, bool isDark) {
     switch (type) {
       case 'EXPENSE_ADDED':
-        return GenZTokens.green;
+        return isDark ? GenZTokens.successDark : GenZTokens.success;
       case 'MOMENT_SHARED':
-        return GenZTokens.purple;
+        return GenZTokens.chart5;
       case 'ITINERARY_ADDED':
-        return GenZTokens.blue;
+        return isDark ? GenZTokens.infoDark : GenZTokens.info;
       case 'POLL_CREATED':
-        return GenZTokens.magenta;
+        return GenZTokens.chart2;
       default:
-        return GenZTokens.orange;
+        return isDark ? GenZTokens.accentDark : GenZTokens.accent;
     }
   }
 
@@ -99,10 +99,14 @@ class DailyRecapWidget extends ConsumerWidget {
     BuildContext context,
     List<Map<String, dynamic>> activities,
     bool isLoading,
+    bool isDark,
   ) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,10 +120,10 @@ class DailyRecapWidget extends ConsumerWidget {
                 child: Text(
                   'dashboard.recap_title'.tr(),
                   style: AppFonts.heading(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 17,
                     letterSpacing: -0.5,
-                    color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                    color: ink,
                   ),
                 ),
               ),
@@ -163,15 +167,15 @@ class DailyRecapWidget extends ConsumerWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: GenZTokens.yellow,
-                    borderRadius: BorderRadius.circular(12),
+                    color: fill,
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
                     border: Border.all(
-                      color: ink,
+                      color: line,
                       width: GenZTokens.borderWidthThin,
                     ),
-                    boxShadow: [
-                      BoxShadow(color: ink, offset: const Offset(1, 2)),
-                    ],
+                    boxShadow: GenZTokens.hardShadow(ink, isDark),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -179,15 +183,15 @@ class DailyRecapWidget extends ConsumerWidget {
                       Icon(
                         PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
                         size: 14,
-                        color: GenZTokens.ink,
+                        color: accent,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'dashboard.wrapped_reel'.tr(),
                         style: AppFonts.body(
                           fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: GenZTokens.ink,
+                          fontWeight: FontWeight.w600,
+                          color: ink,
                         ),
                       ),
                     ],
@@ -208,7 +212,7 @@ class DailyRecapWidget extends ConsumerWidget {
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        theme.colorScheme.primary,
+                        accent,
                       ),
                     ),
                   ),
@@ -219,21 +223,19 @@ class DailyRecapWidget extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                    color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                    color: surface,
                     border: Border.all(
-                      color: ink,
+                      color: line,
                       width: GenZTokens.borderWidthThin,
                     ),
-                    boxShadow: [
-                      BoxShadow(color: ink, offset: const Offset(0, 3)),
-                    ],
+                    boxShadow: GenZTokens.hardShadow(ink, isDark),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         PhosphorIcons.clockCounterClockwise(),
                         size: 38,
-                        color: GenZTokens.orange,
+                        color: accent,
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -244,7 +246,7 @@ class DailyRecapWidget extends ConsumerWidget {
                             Text(
                               'dashboard.recap_empty_title'.tr(),
                               style: AppFonts.heading(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w700,
                                 fontSize: 14,
                                 color: ink,
                               ),
@@ -252,11 +254,9 @@ class DailyRecapWidget extends ConsumerWidget {
                             const SizedBox(height: 4),
                             Text(
                               'dashboard.recap_empty_sub'.tr(),
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              style: AppFonts.body(
                                 fontSize: 12,
-                                color: isDark
-                                    ? GenZTokens.inkSoftDark
-                                    : GenZTokens.inkSoft,
+                                color: inkSoft,
                               ),
                             ),
                           ],
@@ -281,14 +281,12 @@ class DailyRecapWidget extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(
                           GenZTokens.radiusCard,
                         ),
-                        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                        color: surface,
                         border: Border.all(
-                          color: ink,
+                          color: line,
                           width: GenZTokens.borderWidthThin,
                         ),
-                        boxShadow: [
-                          BoxShadow(color: ink, offset: const Offset(0, 3)),
-                        ],
+                        boxShadow: GenZTokens.hardShadow(ink, isDark),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,11 +306,9 @@ class DailyRecapWidget extends ConsumerWidget {
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: AppFonts.mono(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    color: isDark
-                                        ? GenZTokens.inkSoftDark
-                                        : GenZTokens.inkSoft,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: inkSoft,
                                   ),
                                 ),
                               ),
@@ -322,7 +318,7 @@ class DailyRecapWidget extends ConsumerWidget {
                           Text(
                             item['chaosVibe'] as String,
                             style: AppFonts.heading(
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w700,
                               fontSize: 13,
                               color: ink,
                             ),
@@ -333,8 +329,9 @@ class DailyRecapWidget extends ConsumerWidget {
                               item['details'] as String,
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              style: AppFonts.body(
                                 fontSize: 12,
+                                color: inkSoft,
                               ),
                             ),
                           ),

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import '../theme/gen_z_tokens.dart';
-import 'hard_shadow_box.dart';
 
-/// Card sticker: viền ink + hard shadow, xuất hiện với pop-scale 0.96→1 + fade.
-/// Có thể chọn được (tick tròn góc phải bật scale khi [selected]).
+/// Thẻ phẳng viền 1px: nền paper, viền line, bán kính 14, không bóng.
+/// Khi [selected]: viền accent 1.5px. Bỏ pop-scale mạnh, chuyển sang fade nhẹ.
 class StickerCard extends StatefulWidget {
   final Widget child;
   final Color? color;
@@ -36,22 +35,30 @@ class StickerCard extends StatefulWidget {
 
 class _StickerCardState extends State<StickerCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _pop = AnimationController(
+  late final AnimationController _fade = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 220),
+    duration: const Duration(milliseconds: GenZTokens.durationFast),
   )..forward();
 
   @override
   void dispose() {
-    _pop.dispose();
+    _fade.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
+
+    final borderColor = widget.selected ? accent : line;
+    final borderWidth = widget.selected
+        ? GenZTokens.borderWidth
+        : GenZTokens.borderWidthThin;
 
     Widget body = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -64,19 +71,19 @@ class _StickerCardState extends State<StickerCard>
               vertical: GenZTokens.space2,
             ),
             decoration: BoxDecoration(
-              color: widget.headerColor ?? accent,
+              color: widget.headerColor ?? fill,
               borderRadius: BorderRadius.vertical(
-                top: Radius.circular(widget.radius - GenZTokens.borderWidth),
+                top: Radius.circular(widget.radius - borderWidth),
               ),
               border: Border(
                 bottom: BorderSide(
-                  color: ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
             ),
             child: Text(
-              widget.headerText!.toUpperCase(),
+              widget.headerText!,
               style: TripMateMono.style(context),
             ),
           ),
@@ -84,13 +91,14 @@ class _StickerCardState extends State<StickerCard>
       ],
     );
 
-    Widget card = HardShadowBox(
-      color: widget.color,
-      radius: widget.radius,
+    Widget card = DecoratedBox(
+      decoration: BoxDecoration(
+        color: widget.color ?? surface,
+        borderRadius: BorderRadius.circular(widget.radius),
+        border: Border.all(color: borderColor, width: borderWidth),
+      ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          widget.radius - GenZTokens.borderWidth,
-        ),
+        borderRadius: BorderRadius.circular(widget.radius - borderWidth),
         child: body,
       ),
     );
@@ -101,24 +109,28 @@ class _StickerCardState extends State<StickerCard>
         children: [
           card,
           Positioned(
-            top: -8,
-            right: -8,
+            top: -6,
+            right: -6,
             child: AnimatedScale(
               scale: widget.selected ? 1 : 0,
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOutBack,
+              duration: const Duration(milliseconds: GenZTokens.durationFast),
+              curve: Curves.easeOutCubic,
               child: Container(
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
                   color: accent,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: ink,
-                    width: GenZTokens.borderWidthThin,
+                    color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                    width: 1.5,
                   ),
                 ),
-                child: Icon(PhosphorIcons.check(PhosphorIconsStyle.bold), size: 16, color: GenZTokens.ink),
+                child: Icon(
+                  PhosphorIcons.check(PhosphorIconsStyle.bold),
+                  size: 14,
+                  color: onAccent,
+                ),
               ),
             ),
           ),
@@ -130,27 +142,19 @@ class _StickerCardState extends State<StickerCard>
       card = GestureDetector(onTap: widget.onTap, child: card);
     }
 
-    return FadeTransition(
-      opacity: _pop,
-      child: ScaleTransition(
-        scale: Tween(
-          begin: 0.96,
-          end: 1.0,
-        ).animate(CurvedAnimation(parent: _pop, curve: Curves.easeOutBack)),
-        child: card,
-      ),
-    );
+    return FadeTransition(opacity: _fade, child: card);
   }
 }
 
 /// Style mono nhỏ dùng cho header card / tag.
 class TripMateMono {
   static TextStyle style(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppFonts.mono(
       fontSize: 12,
       fontWeight: FontWeight.w700,
-      letterSpacing: 1.0,
-      color: GenZTokens.ink,
+      letterSpacing: 0.5,
+      color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
     );
   }
 }

@@ -21,19 +21,22 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'profile.trip_history_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -42,7 +45,7 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
           .watch(tripsProvider)
           .when(
             loading: () =>
-                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                Center(child: CircularProgressIndicator(color: accent, strokeWidth: 2)),
             error: (e, _) => AppErrorState(
               isDark: isDark,
               error: e,
@@ -66,12 +69,13 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
                 );
               }
               return RefreshIndicator(
+                color: accent,
                 onRefresh: () => ref.read(tripsProvider.notifier).refresh(),
                 child: ListView.separated(
-                  padding: const EdgeInsets.all(GenZTokens.space5),
+                  padding: const EdgeInsets.all(GenZTokens.space4),
                   itemCount: past.length,
                   separatorBuilder: (_, _) =>
-                      const SizedBox(height: GenZTokens.space4),
+                      const SizedBox(height: GenZTokens.space3),
                   itemBuilder: (_, i) => _card(context, isDark, past[i]),
                 ),
               );
@@ -84,6 +88,7 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final fmt = DateFormat.yMMMd(context.locale.toLanguageTag());
     final names = t.members.map((m) => m.name).where((n) => n.isNotEmpty);
 
@@ -92,15 +97,14 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 110,
-            width: double.infinity,
-            child: TripCoverImage(source: t.coverImage),
+          TripCoverImage(
+            source: t.coverImage,
+            aspectRatio: 16 / 9,
           ),
           Padding(
             padding: const EdgeInsets.all(GenZTokens.space4),
@@ -112,15 +116,15 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                     color: ink,
                   ),
                 ),
                 const SizedBox(height: GenZTokens.space2),
                 Text(
                   '${fmt.format(t.startDate)} – ${fmt.format(t.endDate)}',
-                  style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+                  style: AppFonts.body(fontSize: 12, color: inkSoft),
                 ),
                 if (names.isNotEmpty) ...[
                   const SizedBox(height: 4),
@@ -128,7 +132,7 @@ class SharedTripsHistoryScreen extends ConsumerWidget {
                     names.join(', '),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+                    style: AppFonts.body(fontSize: 12, color: inkSoft),
                   ),
                 ],
               ],

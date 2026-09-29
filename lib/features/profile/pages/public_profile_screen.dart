@@ -21,14 +21,18 @@ class PublicProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
           onPressed: () => Navigator.pop(context),
@@ -36,36 +40,36 @@ class PublicProfileScreen extends StatelessWidget {
         title: Text(
           'profile.public_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: ink,
           ),
         ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(GenZTokens.space4),
         child: Column(
           children: [
             // Center Profile info
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: ink, width: 2.5),
+                border: Border.all(color: line, width: GenZTokens.borderWidth),
               ),
               child: CircleAvatar(
                 radius: 54,
-                backgroundColor: GenZTokens.yellow,
+                backgroundColor: fill,
                 backgroundImage:
                     avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: GenZTokens.space4),
             Text(
               userName,
               style: AppFonts.heading(
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
                 color: ink,
               ),
             ),
@@ -77,10 +81,10 @@ class PublicProfileScreen extends StatelessWidget {
                 fontSize: 13,
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: GenZTokens.space5),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: GenZTokens.space4),
               child: Text(
                 'profile.public_no_stats'.tr(),
                 textAlign: TextAlign.center,

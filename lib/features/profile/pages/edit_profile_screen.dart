@@ -55,12 +55,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _saveProfileData() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (_nameController.text.trim().isEmpty ||
         _usernameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('profile.name_required'.tr()),
-          backgroundColor: GenZTokens.warning,
+          backgroundColor: isDark ? GenZTokens.warningDark : GenZTokens.warning,
         ),
       );
       return;
@@ -88,7 +89,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('profile.updated'.tr()),
-            backgroundColor: GenZTokens.success,
+            backgroundColor: isDark ? GenZTokens.successDark : GenZTokens.success,
           ),
         );
         Navigator.pop(
@@ -99,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('profile.update_failed'.tr()),
-            backgroundColor: GenZTokens.danger,
+            backgroundColor: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
           ),
         );
       }
@@ -118,15 +119,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
           onPressed: () => Navigator.pop(context),
@@ -134,19 +141,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title: Text(
           'profile.edit_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: ink,
           ),
         ),
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: GenZTokens.orange),
+          ? Center(
+              child: CircularProgressIndicator(
+                color: accent,
+                strokeWidth: 2,
+              ),
             )
           : SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(GenZTokens.space4),
               child: Column(
                 children: [
                   // Avatar picker preview
@@ -156,11 +166,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: ink, width: 2.5),
+                            border: Border.all(
+                              color: line,
+                              width: GenZTokens.borderWidth,
+                            ),
                           ),
                           child: CircleAvatar(
                             radius: 54,
-                            backgroundColor: GenZTokens.yellow,
+                            backgroundColor: fill,
                             backgroundImage: _avatarUrl.isEmpty
                                 ? null
                                 : NetworkImage(_avatarUrl),
@@ -190,16 +203,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: GenZTokens.yellow,
+                                color: surface,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: GenZTokens.ink,
-                                  width: 2,
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Icon(
                                 PhosphorIcons.arrowsClockwise(),
-                                color: GenZTokens.ink,
+                                color: ink,
                                 size: 18,
                               ),
                             ),
@@ -209,88 +222,94 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: GenZTokens.space5),
 
                   // Profile info inputs
                   Card(
                     elevation: 0,
                     color: surface,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: ink, width: 2.5),
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                      side: BorderSide(
+                        color: line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(GenZTokens.space4),
                       child: Column(
                         children: [
                           TextField(
                             controller: _nameController,
-                            style: AppFonts.body(color: ink),
+                            style: AppFonts.body(fontSize: 15, color: ink),
                             decoration: InputDecoration(
                               labelText: 'profile.full_name'.tr(),
-                              labelStyle: AppFonts.body(color: inkSoft),
+                              labelStyle: AppFonts.body(fontSize: 13, color: inkSoft),
                               prefixIcon: Icon(
                                 PhosphorIcons.user(),
                                 color: inkSoft,
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: inkSoft.withValues(alpha: 0.3),
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
-                              focusedBorder: const UnderlineInputBorder(
+                              focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: GenZTokens.orange,
-                                  width: 2,
+                                  color: accent,
+                                  width: GenZTokens.borderWidthFocus,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: GenZTokens.space4),
                           TextField(
                             controller: _usernameController,
-                            style: AppFonts.body(color: ink),
+                            style: AppFonts.body(fontSize: 15, color: ink),
                             decoration: InputDecoration(
                               labelText: 'profile.username'.tr(),
-                              labelStyle: AppFonts.body(color: inkSoft),
+                              labelStyle: AppFonts.body(fontSize: 13, color: inkSoft),
                               prefixIcon: Icon(
                                 PhosphorIcons.at(),
                                 color: inkSoft,
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: inkSoft.withValues(alpha: 0.3),
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
-                              focusedBorder: const UnderlineInputBorder(
+                              focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: GenZTokens.orange,
-                                  width: 2,
+                                  color: accent,
+                                  width: GenZTokens.borderWidthFocus,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: GenZTokens.space4),
                           TextField(
                             controller: _bioController,
-                            style: AppFonts.body(color: ink),
+                            style: AppFonts.body(fontSize: 15, color: ink),
                             maxLines: 3,
                             decoration: InputDecoration(
                               labelText: 'profile.bio'.tr(),
-                              labelStyle: AppFonts.body(color: inkSoft),
+                              labelStyle: AppFonts.body(fontSize: 13, color: inkSoft),
                               prefixIcon: Icon(
                                 PhosphorIcons.article(),
                                 color: inkSoft,
                               ),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: inkSoft.withValues(alpha: 0.3),
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
-                              focusedBorder: const UnderlineInputBorder(
+                              focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: GenZTokens.orange,
-                                  width: 2,
+                                  color: accent,
+                                  width: GenZTokens.borderWidthFocus,
                                 ),
                               ),
                             ),
@@ -300,41 +319,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 36),
+                  const SizedBox(height: GenZTokens.space5),
 
                   // Save profile changes button
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: ink, width: 2.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: ink,
-                          blurRadius: 0,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _saveProfileData,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: GenZTokens.yellow,
-                          foregroundColor: GenZTokens.ink,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: _saveProfileData,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accent,
+                        foregroundColor: onAccent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusButton,
                           ),
                         ),
-                        child: Text(
-                          'profile.save'.tr(),
-                          style: AppFonts.heading(
-                            fontWeight: FontWeight.bold,
-                            color: GenZTokens.ink,
-                          ),
+                      ),
+                      child: Text(
+                        'profile.save'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: onAccent,
                         ),
                       ),
                     ),

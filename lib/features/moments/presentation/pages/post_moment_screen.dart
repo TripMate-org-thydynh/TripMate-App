@@ -121,21 +121,27 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
   Widget build(BuildContext context) {
     final isDark =
         widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     return Scaffold(
-      backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'moments.post_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -150,7 +156,10 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
             decoration: BoxDecoration(
               color: surface,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: ink, width: GenZTokens.borderWidthThin),
+              border: Border.all(
+                color: line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: _picked == null
                 ? Center(
@@ -179,7 +188,7 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
                     foregroundColor: ink,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: BorderSide(
-                      color: ink,
+                      color: line,
                       width: GenZTokens.borderWidthThin,
                     ),
                     shape: RoundedRectangleBorder(
@@ -207,7 +216,7 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
                     foregroundColor: ink,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: BorderSide(
-                      color: ink,
+                      color: line,
                       width: GenZTokens.borderWidthThin,
                     ),
                     shape: RoundedRectangleBorder(
@@ -234,24 +243,31 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
             enabled: !_busy,
             minLines: 2,
             maxLines: 4,
-            style: AppFonts.body(fontSize: 14, color: ink),
+            style: AppFonts.body(fontSize: 15, color: ink),
             decoration: InputDecoration(
               hintText: 'moments.caption_hint'.tr(),
               filled: true,
               fillColor: surface,
               contentPadding: const EdgeInsets.all(GenZTokens.space4),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                 borderSide: BorderSide(
-                  color: ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                 borderSide: BorderSide(
-                  color: ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                borderSide: BorderSide(
+                  color: accent,
+                  width: GenZTokens.borderWidthFocus,
                 ),
               ),
             ),
@@ -264,16 +280,14 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
               child: LinearProgressIndicator(
                 value: _progress > 0 ? _progress : null,
                 minHeight: 8,
-                backgroundColor: inkSoft.withValues(alpha: 0.2),
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  GenZTokens.green,
-                ),
+                backgroundColor: fill,
+                valueColor: AlwaysStoppedAnimation<Color>(accent),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'moments.uploading'.tr(args: ['${(_progress * 100).round()}']),
-              style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+              style: AppFonts.body(fontSize: 12, color: inkSoft),
             ),
           ],
           const SizedBox(height: GenZTokens.space5),
@@ -284,14 +298,15 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
               icon: Icon(
                 PhosphorIcons.paperPlaneTilt(PhosphorIconsStyle.fill),
                 size: 18,
+                color: _picked == null || _busy ? inkSoft : onAccent,
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: GenZTokens.green,
-                foregroundColor: GenZTokens.ink,
-                disabledBackgroundColor: inkSoft.withValues(alpha: 0.2),
+                backgroundColor: accent,
+                foregroundColor: onAccent,
+                disabledBackgroundColor: fill,
+                disabledForegroundColor: inkSoft,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 elevation: 0,
-                side: BorderSide(color: ink, width: GenZTokens.borderWidth),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 ),
@@ -300,8 +315,8 @@ class _PostMomentScreenState extends ConsumerState<PostMomentScreen> {
                 'moments.post'.tr(),
                 style: AppFonts.heading(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: GenZTokens.ink,
+                  fontWeight: FontWeight.w700,
+                  color: _picked == null || _busy ? inkSoft : onAccent,
                 ),
               ),
             ),

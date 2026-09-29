@@ -25,7 +25,15 @@ class TripPdfExporter {
     required List<Reservation> reservations,
     required BuildContext context,
   }) async {
-    final pdf = pw.Document();
+    // Phông mặc định của gói `pdf` (Helvetica) không có dấu tiếng Việt: tên
+    // chuyến, địa điểm ra ô vuông. Be Vietnam Pro tải qua PdfGoogleFonts và
+    // được cache sau lần đầu; gán ở theme của Document để mọi trang dùng chung.
+    final pdf = pw.Document(
+      theme: pw.ThemeData.withFont(
+        base: await PdfGoogleFonts.beVietnamProRegular(),
+        bold: await PdfGoogleFonts.beVietnamProBold(),
+      ),
+    );
 
     // Cover page
     pdf.addPage(
@@ -41,9 +49,9 @@ class TripPdfExporter {
                   width: double.infinity,
                   padding: const pw.EdgeInsets.all(32),
                   decoration: pw.BoxDecoration(
-                    color: const PdfColor.fromInt(0xFFF5822B),
+                    color: const PdfColor.fromInt(0xFFB4543A),
                     borderRadius: const pw.BorderRadius.all(
-                      pw.Radius.circular(16),
+                      pw.Radius.circular(14),
                     ),
                   ),
                   child: pw.Column(
@@ -130,7 +138,7 @@ class TripPdfExporter {
                     vertical: 6,
                   ),
                   decoration: pw.BoxDecoration(
-                    color: const PdfColor.fromInt(0xFFF5822B),
+                    color: const PdfColor.fromInt(0xFFB4543A),
                     borderRadius: const pw.BorderRadius.all(
                       pw.Radius.circular(8),
                     ),
@@ -218,10 +226,10 @@ class TripPdfExporter {
                       height: 16,
                       decoration: pw.BoxDecoration(
                         border: pw.Border.all(
-                          color: const PdfColor.fromInt(0xFF141210),
+                          color: const PdfColor.fromInt(0xFFE3DDD2),
                         ),
                         color: item.isPacked
-                            ? const PdfColor.fromInt(0xFF1FA85C)
+                            ? const PdfColor.fromInt(0xFF2F6D4F)
                             : PdfColors.white,
                         borderRadius: const pw.BorderRadius.all(
                           pw.Radius.circular(4),
@@ -358,17 +366,22 @@ class ExportPdfButton extends ConsumerWidget {
     final packingAsync = ref.watch(packingProvider(trip.id));
     final itineraryAsync = ref.watch(tripItineraryProvider(trip.id));
     final reservationsAsync = ref.watch(tripReservationsProvider(trip.id));
+    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+    final line = isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+    final danger = isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
+    final onDanger = isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
-        backgroundColor: GenZTokens.purple,
-        foregroundColor: Colors.white,
+        backgroundColor: fill,
+        foregroundColor: ink,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
           side: BorderSide(
-            color: isDarkMode ? GenZTokens.inkDark : GenZTokens.ink,
-            width: 2,
+            color: line,
+            width: GenZTokens.borderWidthThin,
           ),
         ),
         elevation: 0,
@@ -396,21 +409,22 @@ class ExportPdfButton extends ConsumerWidget {
                   'trips.pdf_export_failed'.tr(
                     namedArgs: {'err': friendlyError(e)},
                   ),
+                  style: TextStyle(color: onDanger),
                 ),
                 behavior: SnackBarBehavior.floating,
-                backgroundColor: GenZTokens.danger,
+                backgroundColor: danger,
               ),
             );
           }
         }
       },
-      icon: Icon(PhosphorIcons.filePdf(PhosphorIconsStyle.fill), size: 18),
+      icon: Icon(PhosphorIcons.filePdf(PhosphorIconsStyle.fill), size: 18, color: ink),
       label: Text(
         'trips.pdf_export'.tr(),
         style: AppFonts.heading(
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: Colors.white,
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: ink,
         ),
       ),
     );

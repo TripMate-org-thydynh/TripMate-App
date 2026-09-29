@@ -52,11 +52,33 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return VibeQuizScreen(isDarkMode: isDark);
         },
       ),
+      // Các màn mở từ widget / link ngoài là ROUTE CON của /dashboard.
+      //
+      // Trước đây chúng nằm ngang hàng với /dashboard: mở từ widget màn hình
+      // chính thì chồng màn CHỈ có đúng màn đó — không có màn chính bên dưới để
+      // back về, không có thanh điều hướng, người dùng bị kẹt. Là route con thì
+      // GoRouter dựng sẵn [Dashboard → màn con], nút back luôn về màn chính.
       GoRoute(
         path: '/dashboard',
         builder: (context, state) {
           return const DashboardScreen();
         },
+        routes: [
+          GoRoute(
+            path: 'viewer',
+            builder: (context, state) => const MomentViewerScreen(),
+          ),
+          GoRoute(
+            path: 'recap/:tripId',
+            builder: (context, state) {
+              final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+              return TripRecapReelScreen(
+                isDarkMode: isDark,
+                tripId: state.pathParameters['tripId'] ?? 'demo',
+              );
+            },
+          ),
+        ],
       ),
       // Deep link từ link mời: https://tripmate.app/join/<code>
       // hoặc tripmate://join/<code>.
@@ -70,17 +92,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
-      // Trip Wrapped / TikTok/Spotify style story recap reel
+      // Trip Wrapped: link cũ /recap/<id> → route con của dashboard.
       GoRoute(
         path: '/recap/:tripId',
-        builder: (context, state) {
-          final isDark = ref.watch(themeProvider) == ThemeMode.dark;
-          final tripId = state.pathParameters['tripId'] ?? 'demo';
-          return TripRecapReelScreen(
-            isDarkMode: isDark,
-            tripId: tripId,
-          );
-        },
+        redirect: (context, state) =>
+            '/dashboard/recap/${state.pathParameters['tripId'] ?? 'demo'}',
       ),
       // Widget màn hình chính mở thẳng vào đây: tripmate://moments/viewer
       //
@@ -88,7 +104,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // sẽ bị hiểu là mã mời chuyến và mở nhầm màn tham gia.
       GoRoute(
         path: '/viewer',
-        builder: (context, state) => const MomentViewerScreen(),
+        redirect: (context, state) => '/dashboard/viewer',
       ),
       // Custom scheme tripmate://join/<code> nơi 'join' là host còn path là '/<code>'
       GoRoute(
@@ -121,20 +137,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (authState.isLoading) return null;
 
       final uri = state.uri;
-      final isRecapUri = (uri.scheme == 'tripmate' && uri.host == 'recap') ||
-          state.matchedLocation.startsWith('/recap/');
-      if (isRecapUri) {
-        final id = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'demo';
-        if (!state.matchedLocation.startsWith('/recap/')) {
-          return '/recap/$id';
-        }
-        return null;
+      final isRecapUri = uri.scheme == 'tripmate' && uri.host == 'recap';
+      if (isRecapUri &&
+          !state.matchedLocation.startsWith('/dashboard/recap/')) {
+        final id = uri.pathSegments.isNotEmpty
+            ? uri.pathSegments.first
+            : 'demo';
+        return '/dashboard/recap/$id';
       }
 
       final isLoggingIn = state.matchedLocation == '/auth';
       final isSplash = state.matchedLocation == '/splash';
       final isOnboarding = state.matchedLocation == '/onboarding';
-      final isJoining = state.matchedLocation.startsWith('/join/') ||
+      final isJoining =
+          state.matchedLocation.startsWith('/join/') ||
           (uri.scheme == 'tripmate' && uri.host == 'join') ||
           (state.pathParameters['code'] != null);
       final isAuthenticated = authState.isAuthenticated;

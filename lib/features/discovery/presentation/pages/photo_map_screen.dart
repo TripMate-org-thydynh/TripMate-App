@@ -12,6 +12,7 @@ import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../moments/application/moments_providers.dart';
 import '../../../moments/domain/moment.dart';
 import '../../../../core/services/nominatim_service.dart';
+import '../../../../core/map/map_tiles.dart';
 
 class PhotoMapScreen extends ConsumerStatefulWidget {
   final String tripId;
@@ -34,9 +35,15 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
   bool _isLoadingAddress = false;
 
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _bg => Theme.of(context).scaffoldBackgroundColor;
+  Color get _inkSoft =>
+      widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _surface =>
       widget.isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _accent =>
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
   @override
   Widget build(BuildContext context) {
@@ -45,20 +52,25 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: _bg,
         elevation: 0,
         iconTheme: IconThemeData(color: _ink),
         title: Text(
           'photo.map_title'.tr(),
           style: AppFonts.heading(
-            fontWeight: FontWeight.w800,
-            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
             color: _ink,
           ),
         ),
       ),
       body: momentsAsync.when(
-        loading: () => Center(child: CircularProgressIndicator(color: _ink)),
+        loading: () => Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(_accent),
+          ),
+        ),
         error: (err, _) => AppErrorState(
           isDark: widget.isDarkMode,
           error: err,
@@ -66,10 +78,6 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
         ),
         data: (moments) {
           // Chỉ ghim khoảnh khắc CÓ toạ độ thật.
-          //
-          // Trước đây nhánh rỗng đổ vào 2 khoảnh khắc bịa (Thảo Ly ở Đà Lạt,
-          // Minh Nhật ở The Hill Station Cafe) kèm ảnh Unsplash — nên chuyến
-          // chưa đăng ảnh nào vẫn thấy bản đồ có người, tưởng là dữ liệu mình.
           final displayMoments = moments
               .where((m) => m.latitude != null && m.longitude != null)
               .toList();
@@ -97,52 +105,53 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                 mapController: _mapController,
                 options: MapOptions(initialCenter: center, initialZoom: 14.0),
                 children: [
-                  TileLayer(
-                    urlTemplate: widget.isDarkMode
-                        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' // Sleek Dark Mode map tiles
-                        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.tripmate.app',
-                  ),
+                  ...mapTileLayers(dark: widget.isDarkMode),
                   MarkerLayer(
                     markers: displayMoments.map((m) {
                       final point = LatLng(m.latitude!, m.longitude!);
                       final isSelected = _selectedMoment?.id == m.id;
                       return Marker(
                         point: point,
-                        width: isSelected ? 66 : 56,
-                        height: isSelected ? 66 : 56,
+                        width: isSelected ? 64 : 52,
+                        height: isSelected ? 64 : 52,
                         child: GestureDetector(
                           onTap: () => _onSelectMoment(m),
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: isSelected ? GenZTokens.yellow : _ink,
-                                width: isSelected ? 3.5 : 2.5,
+                                color: isSelected ? _accent : _surface,
+                                width: isSelected ? 2.5 : 1.5,
                               ),
-                              boxShadow: GenZTokens.hardShadow(_ink),
+                              boxShadow: GenZTokens.hardShadow(
+                                _ink,
+                                widget.isDarkMode,
+                              ),
                             ),
                             child: ClipOval(
                               child: CachedNetworkImage(
-                                // Marker bé xíu — không cần tải ảnh gốc.
                                 imageUrl: optimizedMedia(
                                   m.mediaUrl,
                                   width: 160,
                                 ),
                                 fit: BoxFit.cover,
                                 placeholder: (context, url) => Container(
-                                  color: GenZTokens.lilac,
-                                  child: const Center(
+                                  color: _fill,
+                                  child: Center(
                                     child: CircularProgressIndicator(
                                       strokeWidth: 1.5,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        _accent,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 errorWidget: (context, url, err) => Container(
-                                  color: GenZTokens.lilac,
+                                  color: _fill,
                                   child: Icon(
                                     PhosphorIcons.image(),
-                                    color: _ink,
+                                    color: _inkSoft,
+                                    size: 20,
                                   ),
                                 ),
                               ),
@@ -158,22 +167,22 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
               // Bottom floating details card if a moment is selected
               if (_selectedMoment != null)
                 Positioned(
-                  bottom: 24,
-                  left: 20,
-                  right: 20,
+                  bottom: GenZTokens.space5,
+                  left: GenZTokens.space4,
+                  right: GenZTokens.space4,
                   child: Container(
                     decoration: BoxDecoration(
                       color: _surface,
                       border: Border.all(
-                        color: _ink,
-                        width: GenZTokens.borderWidth,
+                        color: _line,
+                        width: GenZTokens.borderWidthThin,
                       ),
                       borderRadius: BorderRadius.circular(
                         GenZTokens.radiusCard,
                       ),
-                      boxShadow: GenZTokens.hardShadow(_ink),
+                      boxShadow: GenZTokens.hardShadow(_ink, widget.isDarkMode),
                     ),
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(GenZTokens.space4),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,9 +196,13 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                   _selectedMoment!.authorAvatar != null
                                   ? NetworkImage(_selectedMoment!.authorAvatar!)
                                   : null,
-                              backgroundColor: GenZTokens.lilac,
+                              backgroundColor: _fill,
                               child: _selectedMoment!.authorAvatar == null
-                                  ? Icon(PhosphorIcons.user(), size: 18, color: GenZTokens.ink)
+                                  ? Icon(
+                                      PhosphorIcons.user(),
+                                      size: 18,
+                                      color: _inkSoft,
+                                    )
                                   : null,
                             ),
                             const SizedBox(width: 10),
@@ -200,7 +213,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                   Text(
                                     _selectedMoment!.authorName,
                                     style: AppFonts.heading(
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 14,
                                       color: _ink,
                                     ),
@@ -211,42 +224,43 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                     ).format(_selectedMoment!.createdAt),
                                     style: AppFonts.mono(
                                       fontSize: 12,
-                                      color: widget.isDarkMode
-                                          ? GenZTokens.inkSoftDark
-                                          : GenZTokens.inkSoft,
+                                      color: _inkSoft,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             IconButton(
-                              icon: Icon(PhosphorIcons.x()),
+                              icon: Icon(PhosphorIcons.x(), size: 20),
                               onPressed: () {
                                 setState(() {
                                   _selectedMoment = null;
                                   _selectedAddress = null;
                                 });
                               },
-                              color: _ink,
+                              color: _inkSoft,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: GenZTokens.space3),
 
-                        // Image Preview with Brutalist look
+                        // Image Preview
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: CachedNetworkImage(
-                            imageUrl: optimizedMedia(
-                              _selectedMoment!.mediaUrl,
-                              width: 800,
+                          borderRadius: BorderRadius.circular(
+                            GenZTokens.radiusInput,
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: CachedNetworkImage(
+                              imageUrl: optimizedMedia(
+                                _selectedMoment!.mediaUrl,
+                                width: 800,
+                              ),
+                              fit: BoxFit.cover,
                             ),
-                            height: 180,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: GenZTokens.space3),
 
                         // Caption
                         if (_selectedMoment!.caption != null &&
@@ -254,12 +268,12 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                           Text(
                             _selectedMoment!.caption!,
                             style: AppFonts.body(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                               fontSize: 14,
                               color: _ink,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: GenZTokens.space2),
                         ],
 
                         // GPS location name/address
@@ -267,7 +281,7 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                           children: [
                             Icon(
                               PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
-                              color: GenZTokens.red,
+                              color: _accent,
                               size: 16,
                             ),
                             const SizedBox(width: 6),
@@ -289,10 +303,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: AppFonts.mono(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: widget.isDarkMode
-                                      ? GenZTokens.inkSoftDark
-                                      : GenZTokens.inkSoft,
+                                  fontWeight: FontWeight.w600,
+                                  color: _inkSoft,
                                 ),
                               ),
                             ),

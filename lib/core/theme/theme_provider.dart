@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'app_fonts.dart';
+import 'gen_z_tokens.dart';
 import 'gen_z_tokens.g.dart';
 import 'theme.dart';
 
-// ── Accent presets Gen Z Neo-Brutalist ───────────────────────────────────────
-// Tên enum giữ nguyên (key đã lưu trong SharedPreferences) — chỉ đổi màu/nhãn:
-// mint → Vàng/Tím · sun → Xanh lá/Vàng · pastel → Xanh dương/Hồng · grape → Cam/Ink
+// ── Accent presets (A×B: sáng kem, tối graphite) ────────────────────────────
+// Tên enum giữ nguyên (key đã lưu trong SharedPreferences).
+// Bảng màu mới: 7 sắc độ trầm cùng tông (REFACTOR_UI_SPEC.md mục 2).
 enum AppAccent { mint, sun, pastel, grape, neon, pine, cyber }
 
 /// Ba accent cuối phải đổi bằng XP mới dùng được. Bốn cái đầu luôn miễn phí.
@@ -28,21 +29,23 @@ const Map<AppAccent, String> kAccentThemeId = {
 extension AppAccentX on AppAccent {
   String get key => name;
 
-  // Lấy preset từ dsAccents (sinh từ design/tokens.json)
+  // Lấy preset từ dsAccents
   DsAccentPreset get _preset => dsAccents[name]!;
 
   // Primary accent (CTA, chip, khối màu)
   Color get accent => _preset.primary;
   Color get primary => accent;
+  Color get darkAccent => _preset.primaryDark;
 
-  // Màu cặp phụ trợ của preset (dùng cho khối màu thứ hai / trang trí)
-  Color get pair => _preset.pair;
+  // Màu cặp phụ trợ: spec 2 yêu cầu cho bằng chính primary (tránh chọi màu)
+  Color get pair => _preset.primary;
 
-  // Chữ trên accent — theo contrast WCAG AA từ tokens.json
+  // Chữ trên accent — theo contrast WCAG AA
   Color get onAccent => _preset.onPrimary;
+  Color get darkOnAccent => _preset.onPrimaryDark;
 
-  // Nền cream ấm nghiêng nhẹ về accent
-  Color get lightBackground => _preset.bg;
+  // Nền dùng chung nền kem, không nhuộm theo accent (spec mục 2)
+  Color get lightBackground => GenZTokens.cream;
 
   // Surface soft cho chip/tag
   Color get lightSoft => _preset.soft;
@@ -53,11 +56,21 @@ extension AppAccentX on AppAccent {
       AppAccent.sun: 'theme.accent_sun',
       AppAccent.pastel: 'theme.accent_pastel',
       AppAccent.grape: 'theme.accent_grape',
-      AppAccent.neon: 'xp.item_neon',
-      AppAccent.pine: 'xp.item_pine',
-      AppAccent.cyber: 'xp.item_cyber',
+      AppAccent.neon: 'theme.accent_neon',
+      AppAccent.pine: 'theme.accent_pine',
+      AppAccent.cyber: 'theme.accent_cyber',
     }[this]!;
-    return key.tr();
+    final trValue = key.tr();
+    if (trValue != key) return trValue;
+    return const {
+      AppAccent.mint: 'Đất nung',
+      AppAccent.sun: 'Hổ phách',
+      AppAccent.pastel: 'Xanh biển sâu',
+      AppAccent.grape: 'Mận chín',
+      AppAccent.neon: 'Rêu',
+      AppAccent.pine: 'Thông',
+      AppAccent.cyber: 'Thạch mực',
+    }[this]!;
   }
 }
 
@@ -65,7 +78,7 @@ extension AppAccentX on AppAccent {
 class ThemeNotifier extends StateNotifier<ThemeMode> {
   static const _themeKey = 'theme_mode';
 
-  // Default LIGHT: phong cách Gen Z cream (Spark) là mode chính; dark là tuỳ chọn.
+  // Default LIGHT: sáng kem (cream) là mode chính; dark (graphite) là tuỳ chọn.
   ThemeNotifier() : super(ThemeMode.light) {
     _loadTheme();
   }
@@ -114,11 +127,7 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
 
 // ── Accent provider ───────────────────────────────────────────────────────────
 class AccentNotifier extends StateNotifier<AppAccent> {
-  static const _accentKey = 'app_accent';
-
-  AccentNotifier() : super(AppAccent.mint) {
-    _load();
-  }
+  AccentNotifier() : super(AppAccent.mint);
 
   @override
   set state(AppAccent value) {
@@ -126,22 +135,10 @@ class AccentNotifier extends StateNotifier<AppAccent> {
     TripMateTheme.activeAccent = value;
   }
 
-  Future<void> _load() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final saved = prefs.getString(_accentKey);
-      if (saved != null) {
-        final match = AppAccent.values.where((a) => a.key == saved).firstOrNull;
-        if (match != null) state = match;
-      }
-    } catch (_) {}
-  }
-
-  Future<void> setAccent(AppAccent accent) async {
-    final prefs = await SharedPreferences.getInstance();
-    state = accent;
-    await prefs.setString(_accentKey, accent.key);
-  }
+  // Đổi accent đã bỏ: không đọc giá trị đã lưu. Khoá `app_accent` vẫn để
+  // nguyên trong SharedPreferences — xoá không cần thiết và không có lợi gì.
+  @Deprecated('Đã bỏ tính năng đổi accent — xem REFACTOR_UI_SPEC.md mục 2')
+  Future<void> setAccent(AppAccent accent) async {}
 }
 
 final accentProvider = StateNotifierProvider<AccentNotifier, AppAccent>((ref) {
@@ -180,7 +177,7 @@ extension AppFontOptionX on AppFontOption {
 class FontNotifier extends StateNotifier<AppFontOption> {
   static const _fontKey = 'app_font_option';
 
-  FontNotifier() : super(AppFontOption.playful) {
+  FontNotifier() : super(AppFontOption.modern) {
     _load();
   }
 
@@ -194,8 +191,7 @@ class FontNotifier extends StateNotifier<AppFontOption> {
             .firstOrNull;
         if (match != null) {
           state = match;
-          AppFonts.currentOption =
-              match; // Sync static option for inline styles
+          AppFonts.currentOption = match;
         }
       }
     } catch (_) {}
@@ -204,7 +200,7 @@ class FontNotifier extends StateNotifier<AppFontOption> {
   Future<void> setFontOption(AppFontOption option) async {
     final prefs = await SharedPreferences.getInstance();
     state = option;
-    AppFonts.currentOption = option; // Sync static option for inline styles
+    AppFonts.currentOption = option;
     await prefs.setString(_fontKey, option.key);
   }
 }

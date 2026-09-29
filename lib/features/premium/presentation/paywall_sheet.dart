@@ -37,11 +37,7 @@ class PaywallSheet extends ConsumerStatefulWidget {
   const PaywallSheet({super.key, this.quota, this.limit});
 
   /// Mở paywall. Trả `true` nếu người dùng bấm nâng cấp.
-  static Future<bool?> show(
-    BuildContext context, {
-    Quota? quota,
-    int? limit,
-  }) {
+  static Future<bool?> show(BuildContext context, {Quota? quota, int? limit}) {
     HapticFeedback.mediumImpact();
     return showModalBottomSheet<bool>(
       context: context,
@@ -85,8 +81,12 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     final n = '${widget.limit ?? ''}';
     return switch (widget.quota!) {
       Quota.activeTrips => 'paywall.headline_trips'.tr(namedArgs: {'n': n}),
-      Quota.membersPerTrip => 'paywall.headline_members'.tr(namedArgs: {'n': n}),
-      Quota.momentsPerTrip => 'paywall.headline_moments'.tr(namedArgs: {'n': n}),
+      Quota.membersPerTrip => 'paywall.headline_members'.tr(
+        namedArgs: {'n': n},
+      ),
+      Quota.momentsPerTrip => 'paywall.headline_moments'.tr(
+        namedArgs: {'n': n},
+      ),
       Quota.aiPerMonth => 'paywall.headline_ai'.tr(namedArgs: {'n': n}),
     };
   }
@@ -97,9 +97,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     // tuyệt đối không mở VietQR/Ví để tránh vi phạm chính sách dẫn đến bị gỡ app.
     if (kDistributionChannel == DistributionChannel.play) {
       final upgraded = await Navigator.of(context).push<bool>(
-        MaterialPageRoute(
-          builder: (_) => const SubscriptionCheckoutScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const SubscriptionCheckoutScreen()),
       );
       if (mounted && upgraded == true) {
         ref.invalidate(entitlementProvider);
@@ -175,9 +173,16 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final ink = theme.colorScheme.onSurface;
-    final accent = theme.colorScheme.primary;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final accent = theme.colorScheme.primary;
+    final onAccent = theme.colorScheme.onPrimary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
     final isPlayChannel = kDistributionChannel == DistributionChannel.play;
 
@@ -188,9 +193,9 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
         decoration: BoxDecoration(
           color: surface,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: ink, width: GenZTokens.borderWidth),
-          boxShadow: [BoxShadow(color: ink, offset: const Offset(0, 6))],
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+          boxShadow: GenZTokens.hardShadow(GenZTokens.ink, isDark),
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -202,8 +207,8 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   width: 44,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: ink.withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(999),
+                    color: line,
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   ),
                 ),
               ),
@@ -212,19 +217,16 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                 _headline(),
                 style: AppFonts.heading(
                   fontSize: 22,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   color: ink,
-                  height: 1.2,
-                  letterSpacing: -0.5,
+                  height: 1.25,
+                  letterSpacing: -0.3,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'paywall.sub'.tr(),
-                style: AppFonts.body(
-                  fontSize: 13,
-                  color: ink.withValues(alpha: 0.7),
-                ),
+                style: AppFonts.body(fontSize: 13, color: inkSoft),
               ),
               const SizedBox(height: 14),
 
@@ -241,7 +243,11 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   ),
                   highlighted: _plan == _SelectedPlan.squad,
                   ink: ink,
+                  inkSoft: inkSoft,
                   accent: accent,
+                  accentSoft: accentSoft,
+                  surface: surface,
+                  line: line,
                 ),
               ),
               const SizedBox(height: 8),
@@ -255,7 +261,11 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   ),
                   highlighted: _plan == _SelectedPlan.plusMonth,
                   ink: ink,
+                  inkSoft: inkSoft,
                   accent: accent,
+                  accentSoft: accentSoft,
+                  surface: surface,
+                  line: line,
                 ),
               ),
               const SizedBox(height: 12),
@@ -264,12 +274,17 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
               // chỉ hiện bảo đảm thanh toán của Google Play để không vi phạm chính sách nộp store.
               if (isPlayChannel)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
+                    color: fill,
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
                     border: Border.all(
-                      color: accent.withValues(alpha: 0.35),
+                      color: line,
                       width: GenZTokens.borderWidthThin,
                     ),
                   ),
@@ -282,7 +297,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                         'Google Play Billing',
                         style: AppFonts.heading(
                           fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: ink,
                         ),
                       ),
@@ -298,8 +313,13 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                         icon: PhosphorIcons.qrCode(),
                         selected: _gateway == _SelectedGateway.sepay,
                         ink: ink,
+                        inkSoft: inkSoft,
                         accent: accent,
-                        onTap: () => setState(() => _gateway = _SelectedGateway.sepay),
+                        accentSoft: accentSoft,
+                        fill: fill,
+                        line: line,
+                        onTap: () =>
+                            setState(() => _gateway = _SelectedGateway.sepay),
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -309,8 +329,13 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                         icon: PhosphorIcons.wallet(),
                         selected: _gateway == _SelectedGateway.momo,
                         ink: ink,
+                        inkSoft: inkSoft,
                         accent: accent,
-                        onTap: () => setState(() => _gateway = _SelectedGateway.momo),
+                        accentSoft: accentSoft,
+                        fill: fill,
+                        line: line,
+                        onTap: () =>
+                            setState(() => _gateway = _SelectedGateway.momo),
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -320,8 +345,13 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                         icon: PhosphorIcons.creditCard(),
                         selected: _gateway == _SelectedGateway.zalopay,
                         ink: ink,
+                        inkSoft: inkSoft,
                         accent: accent,
-                        onTap: () => setState(() => _gateway = _SelectedGateway.zalopay),
+                        accentSoft: accentSoft,
+                        fill: fill,
+                        line: line,
+                        onTap: () =>
+                            setState(() => _gateway = _SelectedGateway.zalopay),
                       ),
                     ),
                   ],
@@ -335,25 +365,29 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   onPressed: _loading ? null : _handleCheckout,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: accent,
-                    foregroundColor: GenZTokens.ink,
+                    foregroundColor: onAccent,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: ink, width: GenZTokens.borderWidth),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
                     ),
                   ),
                   child: _loading
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(onAccent),
+                          ),
                         )
                       : Text(
                           'paywall.cta'.tr(),
                           style: AppFonts.heading(
                             fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: GenZTokens.ink,
+                            fontWeight: FontWeight.w600,
+                            color: onAccent,
                           ),
                         ),
                 ),
@@ -364,10 +398,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
                     'paywall.later'.tr(),
-                    style: AppFonts.body(
-                      fontSize: 13,
-                      color: ink.withValues(alpha: 0.6),
-                    ),
+                    style: AppFonts.body(fontSize: 13, color: inkSoft),
                   ),
                 ),
               ),
@@ -384,7 +415,11 @@ class _GatewayChip extends StatelessWidget {
   final IconData icon;
   final bool selected;
   final Color ink;
+  final Color inkSoft;
   final Color accent;
+  final Color accentSoft;
+  final Color fill;
+  final Color line;
   final VoidCallback onTap;
 
   const _GatewayChip({
@@ -392,7 +427,11 @@ class _GatewayChip extends StatelessWidget {
     required this.icon,
     required this.selected,
     required this.ink,
+    required this.inkSoft,
     required this.accent,
+    required this.accentSoft,
+    required this.fill,
+    required this.line,
     required this.onTap,
   });
 
@@ -403,24 +442,26 @@ class _GatewayChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? accent.withValues(alpha: 0.22) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          color: selected ? accentSoft : fill,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
           border: Border.all(
-            color: selected ? ink : ink.withValues(alpha: 0.25),
-            width: selected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
+            color: selected ? accent : line,
+            width: selected
+                ? GenZTokens.borderWidth
+                : GenZTokens.borderWidthThin,
           ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 15, color: ink),
+            Icon(icon, size: 15, color: selected ? accent : inkSoft),
             const SizedBox(width: 6),
             Text(
               label,
               style: AppFonts.heading(
                 fontSize: 12,
-                fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                color: ink,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                color: selected ? accent : ink,
               ),
             ),
           ],
@@ -436,7 +477,11 @@ class _PlanCard extends StatelessWidget {
   final String perUnit;
   final bool highlighted;
   final Color ink;
+  final Color inkSoft;
   final Color accent;
+  final Color accentSoft;
+  final Color surface;
+  final Color line;
 
   const _PlanCard({
     required this.title,
@@ -444,20 +489,22 @@ class _PlanCard extends StatelessWidget {
     required this.perUnit,
     required this.highlighted,
     required this.ink,
+    required this.inkSoft,
     required this.accent,
+    required this.accentSoft,
+    required this.surface,
+    required this.line,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: highlighted
-            ? accent.withValues(alpha: 0.18)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        color: highlighted ? accentSoft : surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: highlighted ? ink : ink.withValues(alpha: 0.25),
+          color: highlighted ? accent : line,
           width: highlighted
               ? GenZTokens.borderWidth
               : GenZTokens.borderWidthThin,
@@ -473,17 +520,14 @@ class _PlanCard extends StatelessWidget {
                   title,
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     color: ink,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   perUnit,
-                  style: AppFonts.body(
-                    fontSize: 12,
-                    color: ink.withValues(alpha: 0.65),
-                  ),
+                  style: AppFonts.body(fontSize: 12, color: inkSoft),
                 ),
               ],
             ),
@@ -492,8 +536,8 @@ class _PlanCard extends StatelessWidget {
             price,
             style: AppFonts.heading(
               fontSize: 17,
-              fontWeight: FontWeight.w900,
-              color: ink,
+              fontWeight: FontWeight.w700,
+              color: highlighted ? accent : ink,
             ),
           ),
         ],

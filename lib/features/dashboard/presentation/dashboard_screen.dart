@@ -78,7 +78,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final isDark = ref.watch(themeProvider) == ThemeMode.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = theme.scaffoldBackgroundColor;
-    final accent = theme.colorScheme.primary;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
     // Body pages representing Home flow, Itinerary map, Create trip, Live crew tracking, and Profile
     final List<Widget> pages = [
@@ -152,23 +153,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       // thấy nội dung xuyên qua. Nền doodle phía sau cũng nhờ đó phủ liền mạch
       // tới đáy màn.
       extendBody: true,
-      body: Stack(
-        children: [
-          // Nền cream phẳng + doodle sparkle xoay/nhấp nhẹ liên tục
-          Positioned.fill(child: AnimatedDoodleBackground(ink: ink)),
-          SafeArea(
-            child: Column(
-              children: [
-                // Banner offline dùng chung cho mọi tab — không phải mỗi màn
-                // tự nhớ hiển thị.
-                const OfflineBanner(),
-                Expanded(
-                  child: IndexedStack(index: _selectedIndex, children: pages),
-                ),
-              ],
+      // Home và Cá nhân tự chừa thanh trạng thái: ảnh của chúng tràn lên tận mép trên.
+      body: SafeArea(
+        top: _selectedIndex != 0 && _selectedIndex != 4,
+        child: Column(
+          children: [
+            // Banner offline dùng chung cho mọi tab — không phải mỗi màn
+            // tự nhớ hiển thị.
+            const OfflineBanner(),
+            Expanded(
+              child: IndexedStack(index: _selectedIndex, children: pages),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       // Bottom nav: nút giữa nhô lên khỏi thanh, thanh lõm ôm quanh nó.
       //
@@ -186,7 +183,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         centerIndex: 2,
         bg: bg,
         ink: ink,
+        inkSoft: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+        line: isDark ? GenZTokens.lineDark : GenZTokens.line,
         accent: accent,
+        onAccent: onAccent,
+        isDark: isDark,
         onTap: (index) {
           HapticFeedback.selectionClick();
           setState(() => _selectedIndex = index);
@@ -255,92 +256,6 @@ class InvertedCircleClipper extends CustomClipper<Path> {
   }
 }
 
-/// Nền doodle brutalist: sparkle ✦ và dấu + rải rác, opacity thấp.
-/// Thay cho aurora mesh gradient cũ — Design DNA là khối màu phẳng.
-/// Nền doodle sparkle xoay/nhấp nhẹ liên tục — chuyển động sinh động nhưng
-/// tinh tế (opacity thấp). Tự chứa ticker + RepaintBoundary để không kéo
-/// theo repaint toàn màn hình.
-class AnimatedDoodleBackground extends StatefulWidget {
-  final Color ink;
-  const AnimatedDoodleBackground({super.key, required this.ink});
-
-  @override
-  State<AnimatedDoodleBackground> createState() =>
-      _AnimatedDoodleBackgroundState();
-}
-
-class _AnimatedDoodleBackgroundState extends State<AnimatedDoodleBackground>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 24),
-  )..repeat();
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, _) => CustomPaint(
-          painter: DoodleBackgroundPainter(ink: widget.ink, progress: _c.value),
-        ),
-      ),
-    );
-  }
-}
-
-class DoodleBackgroundPainter extends CustomPainter {
-  final Color ink;
-  final double progress;
-
-  DoodleBackgroundPainter({required this.ink, this.progress = 0});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = ink.withValues(alpha: 0.06)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    final rng = math.Random(7); // seed cố định để nền ổn định giữa các frame
-    for (var i = 0; i < 14; i++) {
-      final cx = rng.nextDouble() * size.width;
-      final cy = rng.nextDouble() * size.height;
-      final baseR = 5 + rng.nextDouble() * 7;
-      // Mỗi sparkle xoay + nhấp nhẹ theo pha riêng.
-      final phase = i * 0.7;
-      final spin = progress * math.pi * 2 * (i.isEven ? 1 : -1) + phase;
-      final r =
-          baseR * (0.85 + 0.15 * math.sin(progress * math.pi * 2 + phase));
-
-      canvas.save();
-      canvas.translate(cx, cy);
-      canvas.rotate(spin);
-      if (i.isEven) {
-        // Sparkle 4 cánh ✦
-        canvas.drawLine(Offset(-r, 0), Offset(r, 0), paint);
-        canvas.drawLine(Offset(0, -r), Offset(0, r), paint);
-      } else {
-        // Dấu + xoay 45°
-        final d = r * 0.7;
-        canvas.drawLine(Offset(-d, -d), Offset(d, d), paint);
-        canvas.drawLine(Offset(-d, d), Offset(d, -d), paint);
-      }
-      canvas.restore();
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant DoodleBackgroundPainter oldDelegate) =>
-      oldDelegate.ink != ink || oldDelegate.progress != progress;
-}
 
 /// Thanh điều hướng có vết lõm **bám theo tab đang chọn**.
 ///
@@ -358,7 +273,11 @@ class _NotchedNavBar extends StatelessWidget {
   final int centerIndex;
   final Color bg;
   final Color ink;
+  final Color inkSoft;
+  final Color line;
   final Color accent;
+  final Color onAccent;
+  final bool isDark;
   final ValueChanged<int> onTap;
 
   const _NotchedNavBar({
@@ -367,7 +286,11 @@ class _NotchedNavBar extends StatelessWidget {
     required this.centerIndex,
     required this.bg,
     required this.ink,
+    required this.inkSoft,
+    required this.line,
     required this.accent,
+    required this.onAccent,
+    required this.isDark,
     required this.onTap,
   });
 
@@ -425,7 +348,7 @@ class _NotchedNavBar extends StatelessWidget {
           // cùng nhịp, lệch một khung hình là thấy ngay nút rời khỏi hốc.
           return TweenAnimationBuilder<double>(
             tween: Tween(begin: targetX, end: targetX),
-            duration: const Duration(milliseconds: 320),
+            duration: const Duration(milliseconds: GenZTokens.durationBase),
             curve: Curves.easeOutCubic,
             builder: (context, notchX, _) {
               return Stack(
@@ -435,7 +358,7 @@ class _NotchedNavBar extends StatelessWidget {
                     child: CustomPaint(
                       painter: _NotchPainter(
                         bg: bg,
-                        ink: ink,
+                        line: line,
                         notchRadius: _fabRadius + _fabGap,
                         notchCenterX: notchX,
                         notchLift: _fabFloat,
@@ -492,7 +415,7 @@ class _NotchedNavBar extends StatelessWidget {
                 : Icon(
                     item.icon,
                     size: 22,
-                    color: ink.withValues(alpha: 0.55),
+                    color: inkSoft,
                   ),
           ),
           const SizedBox(height: 2),
@@ -502,9 +425,9 @@ class _NotchedNavBar extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: AppFonts.heading(
-              fontSize: 11.5,
+              fontSize: 12,
               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              color: selected ? ink : ink.withValues(alpha: 0.55),
+              color: selected ? ink : inkSoft,
             ),
           ),
         ],
@@ -523,15 +446,10 @@ class _NotchedNavBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: accent,
           shape: BoxShape.circle,
-          border: Border.all(color: ink, width: GenZTokens.borderWidth),
-          // Bóng cứng kiểu brutalist. Trước đây nút chìm vào hốc nên bóng chỉ
-          // chồng thêm một lớp đen; nay nút đã tách hẳn ra, bóng mới có việc:
-          // nói cho mắt biết nó đang bay phía trên thanh.
-          boxShadow: [
-            BoxShadow(color: ink, offset: const Offset(0, 4), blurRadius: 0),
-          ],
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+          boxShadow: GenZTokens.hardShadow(ink, isDark),
         ),
-        child: Icon(item.active, size: 26, color: GenZTokens.ink),
+        child: Icon(item.active, size: 26, color: onAccent),
       ),
     );
   }
@@ -540,7 +458,7 @@ class _NotchedNavBar extends StatelessWidget {
 /// Vẽ mặt thanh với một vết lõm hình cung, tâm tại [notchCenterX].
 class _NotchPainter extends CustomPainter {
   final Color bg;
-  final Color ink;
+  final Color line;
   final double notchRadius;
   final double notchCenterX;
 
@@ -552,7 +470,7 @@ class _NotchPainter extends CustomPainter {
 
   const _NotchPainter({
     required this.bg,
-    required this.ink,
+    required this.line,
     required this.notchRadius,
     required this.notchCenterX,
     required this.notchLift,
@@ -561,18 +479,7 @@ class _NotchPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Dùng `CircularNotchedRectangle` của Flutter thay vì tự ghép cung.
-    //
-    // Bản tự vẽ nối cung vào đường kẻ bằng một góc gãy, nên hai đầu hốc nhô lên
-    // thành hai cái "sừng" phía trên vạch ngăn cách navbar với màn hình. Lớp
-    // này dựng sẵn hai đoạn cong chuyển tiếp ở hai bên, cho đúng dáng hốc liền
-    // mạch — cũng chính là thứ Material dùng cho `BottomAppBar`.
     final host = Rect.fromLTWH(0, 0, size.width, size.height);
-    // Tâm hốc đặt SÁT mặt thanh, không theo tâm nút.
-    //
-    // Nút được cho bay cao hẳn lên, nên nếu lấy đúng tâm nút thì đường tròn chỉ
-    // cắt mặt thanh một đoạn rất nông — hốc gần như phẳng, nhìn không ra chỗ
-    // lõm. Hạ tâm xuống mép thanh thì cắt được gần trọn nửa dưới đường tròn, ra
-    // đúng dáng hõm ôm lấy nút.
     final guest = Rect.fromCircle(
       center: Offset(notchCenterX, -notchLift * 0.45),
       radius: notchRadius,
@@ -583,16 +490,16 @@ class _NotchPainter extends CustomPainter {
     canvas.drawPath(
       path,
       Paint()
-        ..color = ink
+        ..color = line
         ..style = PaintingStyle.stroke
-        ..strokeWidth = GenZTokens.borderWidth,
+        ..strokeWidth = GenZTokens.borderWidthThin,
     );
   }
 
   @override
   bool shouldRepaint(covariant _NotchPainter old) =>
       old.bg != bg ||
-      old.ink != ink ||
+      old.line != line ||
       old.notchRadius != notchRadius ||
       old.notchCenterX != notchCenterX ||
       old.notchLift != notchLift;

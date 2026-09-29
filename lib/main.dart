@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'core/theme/responsive.dart';
@@ -11,13 +13,24 @@ import 'core/api_service.dart';
 import 'core/services/widget_sync.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/network/api_client.dart';
+import 'core/services/push_notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
+  // Container riêng để push (chạy trước khi có widget) điều hướng được bằng
+  // router của app khi người dùng bấm vào thông báo.
+  final container = ProviderContainer();
+  unawaited(
+    PushNotifications.init(
+      onOpen: () => container.read(appRouterProvider).go('/dashboard'),
+    ),
+  );
+
   runApp(
-    ProviderScope(
+    UncontrolledProviderScope(
+      container: container,
       child: EasyLocalization(
         supportedLocales: const [Locale('vi'), Locale('en')],
         path: 'assets/translations',
@@ -58,6 +71,11 @@ class MyApp extends ConsumerWidget {
     ref.listen(authProvider, (prev, next) {
       if (next.isAuthenticated && prev?.isAuthenticated != true) {
         ref.read(widgetSyncProvider).refresh();
+        // Báo token máy cho server để nhận bản tin sáng.
+        PushNotifications.register(ref.read(apiClientProvider));
+      }
+      if (!next.isAuthenticated && prev?.isAuthenticated == true) {
+        PushNotifications.unregister();
       }
     });
 

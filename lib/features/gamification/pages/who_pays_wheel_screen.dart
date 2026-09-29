@@ -25,13 +25,39 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
   late AnimationController _spinController;
   late Animation<double> _spinAnimation;
 
+  List<Map<String, String>> _allMembers = [];
   List<Map<String, String>> _currentParticipants = [];
+  bool _hasInitialized = false;
+  bool _hasPromptedPicker = false;
   int _winnerIndex = -1;
   bool _isSpinning = false;
   double _startRotation = 0.0;
   double _endRotation = 0.0;
   double _lastTickRotation = 0.0;
   double _pointerAngle = 0.0;
+
+  void _openParticipantPicker() {
+    if (_isSpinning) return;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return _ParticipantPickerSheet(
+          allMembers: _allMembers,
+          initiallySelected: _currentParticipants,
+          isDark: isDark,
+          onConfirmed: (newSelected) {
+            setState(() {
+              _currentParticipants = newSelected;
+              _winnerIndex = -1;
+            });
+          },
+        );
+      },
+    );
+  }
 
   void _triggerPointerBounce() {
     setState(() {
@@ -150,104 +176,90 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     final winner = _currentParticipants[_winnerIndex];
     unawaited(_recordSpin(winner['name'] ?? ''));
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              boxShadow: [
-                BoxShadow(
-                  color: GenZTokens.red.withValues(alpha: 0.3),
-                  blurRadius: 0,
-                  spreadRadius: 2,
-                ),
-              ],
-              border: Border.all(
-                color: GenZTokens.red,
-                width: GenZTokens.borderWidth,
-              ),
+          backgroundColor: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            side: BorderSide(
+              color: line,
+              width: GenZTokens.borderWidthThin,
             ),
+          ),
+          elevation: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   tr('games.chaos_payer'),
                   style: AppFonts.heading(
-                    color: GenZTokens.red,
+                    color: danger,
                     fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.0,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: GenZTokens.red,
-                      width: 3,
+                      color: danger,
+                      width: 2,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: GenZTokens.red.withValues(alpha: 0.3),
-                        blurRadius: 0,
-                      ),
-                    ],
                   ),
                   child: CircleAvatar(
-                    radius: 48,
-                    backgroundColor: GenZTokens.red.withValues(alpha: 0.1),
+                    radius: 44,
+                    backgroundColor: danger.withValues(alpha: 0.12),
                     backgroundImage: NetworkImage(winner['avatar']!),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Text(
                   winner['name']!,
                   style: AppFonts.heading(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
                     color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   tr('games.wheel_loser'),
                   textAlign: TextAlign.center,
                   style: AppFonts.body(
                     fontSize: 13,
-                    height: 1.5,
+                    height: 1.4,
                     color: isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: GenZTokens.red,
-                    foregroundColor: GenZTokens.ink,
-                    minimumSize: const Size(double.infinity, 50),
+                    backgroundColor: danger,
+                    foregroundColor: onAccent,
+                    minimumSize: const Size(double.infinity, 48),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                      side: BorderSide(
-                        color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-                        width: GenZTokens.borderWidthThin,
-                      ),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
                     tr('games.accept_fate'),
                     style: AppFonts.heading(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       fontSize: 15,
-                      color: GenZTokens.ink,
+                      color: onAccent,
                     ),
                   ),
                 ),
@@ -262,10 +274,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
   @override
   Widget build(BuildContext context) {
     final tripsAsync = ref.watch(tripsProvider);
-    // Chỉ quay trên thành viên THẬT của chuyến. Trước đây khi chưa có chuyến,
-    // bánh xe rơi về 4 người bịa (Minh Nhật / Thảo Ly / Nam Trung / Duy Khang)
-    // — quay ra một người không tồn tại thì trò chơi vô nghĩa.
-    _currentParticipants = tripsAsync.maybeWhen(
+    _allMembers = tripsAsync.maybeWhen(
       data: (trips) {
         if (trips.isEmpty || trips.first.members.isEmpty) return const [];
         return trips.first.members
@@ -275,6 +284,27 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
       orElse: () => const [],
     );
 
+    if (!_hasInitialized && _allMembers.isNotEmpty) {
+      _hasInitialized = true;
+      if (_allMembers.length <= 10) {
+        _currentParticipants = List.from(_allMembers);
+      } else {
+        _currentParticipants = _allMembers.take(10).toList();
+        if (!_hasPromptedPicker) {
+          _hasPromptedPicker = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _allMembers.length > 10) {
+              _openParticipantPicker();
+            }
+          });
+        }
+      }
+    } else if (_allMembers.length <= 10 &&
+        _allMembers.isNotEmpty &&
+        _currentParticipants.length != _allMembers.length) {
+      _currentParticipants = List.from(_allMembers);
+    }
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -282,11 +312,12 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
     // vì một bánh xe rỗng hoặc (trước đây) bánh xe toàn người bịa.
     // Quay với 1 người là vô nghĩa (và bánh xe 1 múi hiển thị chữ lộn ngược),
     // nên yêu cầu tối thiểu 2 thành viên.
-    if (_currentParticipants.length < 2) {
+    if (_allMembers.length < 2) {
+      final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
       return Scaffold(
-        backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
+        backgroundColor: bgColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: bgColor,
           elevation: 0,
           iconTheme: IconThemeData(
             color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
@@ -301,12 +332,14 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
       );
     }
 
-    // Standard Palette colors
     final Color bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
-    final Color primaryColor = Theme.of(context).colorScheme.primary;
+    final Color accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final Color onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final Color surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final Color textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final Color textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final Color textSecondary =
+        isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final Color line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -328,12 +361,10 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                       onPressed: () => Navigator.pop(context),
                       icon: Icon(PhosphorIcons.arrowLeft(), color: textPrimary),
                       style: IconButton.styleFrom(
-                        backgroundColor: surfaceColor.withValues(
-                          alpha: isDark ? 0.3 : 0.8,
-                        ),
+                        backgroundColor: surfaceColor,
                         shape: const CircleBorder(),
                         side: BorderSide(
-                          color: textPrimary,
+                          color: line,
                           width: GenZTokens.borderWidthThin,
                         ),
                       ),
@@ -341,12 +372,13 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                     Text(
                       'trip.mate',
                       style: AppFonts.heading(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 18,
-                        color: primaryColor,
-                        letterSpacing: -0.5,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 17,
+                        color: accent,
+                        letterSpacing: -0.2,
                       ),
                     ),
+                    const SizedBox(width: 48),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -360,7 +392,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                   tr('games.who_pays_title'),
                   style: AppFonts.heading(
                     fontSize: 28,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: textPrimary,
                     letterSpacing: -0.5,
                   ),
@@ -368,11 +400,45 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                 const SizedBox(height: 8),
                 Text(
                   tr('games.chaos_mode_sub'),
-                  style: AppFonts.body(fontSize: 14, color: textSecondary),
+                  style: AppFonts.body(fontSize: 13, color: textSecondary),
                 ),
-                const SizedBox(height: 48),
+                if (_allMembers.length > 10) ...[
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: _isSpinning ? null : _openParticipantPicker,
+                    icon: Icon(
+                      PhosphorIcons.usersThree(),
+                      size: 18,
+                      color: accent,
+                    ),
+                    label: Text(
+                      tr(
+                        'games.select_participants_btn',
+                        namedArgs: {'count': '${_currentParticipants.length}'},
+                      ),
+                      style: AppFonts.heading(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: accent,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: surfaceColor,
+                      side: BorderSide(color: accent, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(GenZTokens.radiusButton),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 36),
 
-                // Spinning Wheel Widget Stack with comical floaty bubbles
+                // Spinning Wheel Widget Stack
                 SizedBox(
                   width: 360,
                   height: 360,
@@ -380,38 +446,32 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                     alignment: Alignment.center,
                     clipBehavior: Clip.none,
                     children: [
-                      // Left bubble: please not me
+                      // Left bubble
                       FloatingBubble(
                         text: tr('games.wheel_bubble_left'),
                         top: -12,
                         left: 4,
-                        textColor: GenZTokens.orange,
+                        textColor: textSecondary,
                         isDark: isDark,
                       ),
-                      // Right bubble: my wallet is empty
+                      // Right bubble
                       FloatingBubble(
                         text: tr('games.wheel_bubble_right'),
                         top: 160,
                         right: 4,
-                        textColor: GenZTokens.green,
+                        textColor: textSecondary,
                         isDark: isDark,
                       ),
-                      // Wheel glowing outer border container
+                      // Wheel border container
                       Container(
                         width: 312,
                         height: 312,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: GenZTokens.orange.withValues(alpha: 0.3),
-                            width: 6,
+                            color: line,
+                            width: 2,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: primaryColor.withValues(alpha: 0.15),
-                              blurRadius: 0,
-                            ),
-                          ],
                         ),
                       ),
                       // The Spinning Wheel
@@ -437,27 +497,21 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                       GestureDetector(
                         onTap: _spin,
                         child: Container(
-                          width: 64,
-                          height: 64,
+                          width: 60,
+                          height: 60,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                            color: surfaceColor,
                             border: Border.all(
-                              color: primaryColor,
-                              width: 3,
+                              color: accent,
+                              width: 2,
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: primaryColor.withValues(alpha: 0.4),
-                                blurRadius: 0,
-                              ),
-                            ],
                           ),
                           child: Center(
                             child: Icon(
                               PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
-                              color: primaryColor,
-                              size: 28,
+                              color: accent,
+                              size: 26,
                             ),
                           ),
                         ),
@@ -470,7 +524,7 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                           alignment: Alignment.topCenter,
                           child: Icon(
                             PhosphorIcons.caretDown(PhosphorIconsStyle.fill),
-                            color: primaryColor,
+                            color: accent,
                             size: 42,
                           ),
                         ),
@@ -478,41 +532,36 @@ class _WhoPaysWheelScreenState extends ConsumerState<WhoPaysWheelScreen>
                     ],
                   ),
                 ),
-                const SizedBox(height: 64),
+                const SizedBox(height: 56),
 
-                // Bottom Gradient "casino SPIN TO DECIDE" button
+                // Bottom Single Accent SPIN TO DECIDE button
                 GestureDetector(
                   onTap: _spin,
                   child: Container(
                     width: double.infinity,
-                    height: 56,
+                    height: 48,
                     decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryColor.withValues(alpha: 0.4),
-                          blurRadius: 0,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+                      color: accent,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           PhosphorIcons.diceFive(PhosphorIconsStyle.fill),
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          size: 24,
+                          color: onAccent,
+                          size: 22,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           tr('games.spin_cta'),
                           style: AppFonts.heading(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.0,
+                            color: onAccent,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
                           ),
                         ),
                       ],
@@ -538,25 +587,22 @@ class ChaosWheelPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final double radius = size.width / 2;
     final center = Offset(radius, radius);
-    final sectorAngle = (2 * pi) / participants.length;
+    final count = participants.length;
+    if (count < 2) return;
+    final sectorAngle = (2 * pi) / count;
 
-    final darkColors = [
-      GenZTokens.purple,
-      GenZTokens.green,
-      GenZTokens.orange,
-      GenZTokens.red,
+    final colors = const [
+      GenZTokens.chart1,
+      GenZTokens.chart2,
+      GenZTokens.chart3,
+      GenZTokens.chart4,
+      GenZTokens.chart5,
+      GenZTokens.chart6,
     ];
 
-    final lightColors = [
-      GenZTokens.orange,
-      GenZTokens.yellow,
-      GenZTokens.blue,
-      GenZTokens.green,
-    ];
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
-    final colors = isDark ? darkColors : lightColors;
-
-    for (int i = 0; i < participants.length; i++) {
+    for (int i = 0; i < count; i++) {
       final paint = Paint()
         ..color = colors[i % colors.length]
         ..style = PaintingStyle.fill;
@@ -570,10 +616,9 @@ class ChaosWheelPainter extends CustomPainter {
       );
 
       final borderPaint = Paint()
-        ..color = (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-            .withValues(alpha: 0.25)
+        ..color = line
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0;
+        ..strokeWidth = 1.5;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
@@ -583,16 +628,27 @@ class ChaosWheelPainter extends CustomPainter {
         borderPaint,
       );
 
-      final tp = TextPainter(textDirection: TextDirection.ltr);
-      tp.text = TextSpan(
-        text: participants[i]['name']!,
-        style: AppFonts.heading(
-          color: GenZTokens.ink,
-          fontWeight: FontWeight.w800,
-          fontSize: 13,
+      final tp = TextPainter(
+        text: TextSpan(
+          text: participants[i]['name'] ?? '',
+          style: AppFonts.heading(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 12,
+            shadows: const [
+              Shadow(
+                color: Color(0x66000000),
+                offset: Offset(0, 1),
+                blurRadius: 2,
+              ),
+            ],
+          ),
         ),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+        ellipsis: '…',
       );
-      tp.layout();
+      tp.layout(maxWidth: radius * 0.52);
 
       final angle = i * sectorAngle + (sectorAngle / 2);
       canvas.save();
@@ -607,7 +663,8 @@ class ChaosWheelPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant ChaosWheelPainter oldDelegate) =>
+      oldDelegate.participants != participants || oldDelegate.isDark != isDark;
 }
 
 class FlashingPill extends StatefulWidget {
@@ -643,26 +700,21 @@ class _FlashingPillState extends State<FlashingPill>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+
     return AnimatedBuilder(
       animation: _opacityAnimation,
       builder: (context, child) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
-            color: GenZTokens.red.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(30),
+            color: danger.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
             border: Border.all(
-              color: GenZTokens.red.withValues(alpha: _opacityAnimation.value),
-              width: 1.5,
+              color: danger.withValues(alpha: _opacityAnimation.value),
+              width: GenZTokens.borderWidthThin,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: GenZTokens.red
-                    .withValues(alpha: _opacityAnimation.value * 0.2),
-                blurRadius: 0,
-                spreadRadius: 1,
-              ),
-            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -670,8 +722,8 @@ class _FlashingPillState extends State<FlashingPill>
               Container(
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(
-                  color: GenZTokens.red,
+                decoration: BoxDecoration(
+                  color: danger,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -679,9 +731,9 @@ class _FlashingPillState extends State<FlashingPill>
               Text(
                 tr('games.chaos_mode'),
                 style: AppFonts.heading(
-                  color: GenZTokens.red,
+                  color: danger,
                   fontSize: 13,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -766,33 +818,410 @@ class _FloatingBubbleState extends State<FloatingBubble>
           );
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
-            color: (widget.isDark ? GenZTokens.paperDark : GenZTokens.paper)
-                .withValues(alpha: 0.85),
-            borderRadius: BorderRadius.circular(20),
+            color: widget.isDark ? GenZTokens.paperDark : GenZTokens.paper,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
             border: Border.all(
-              color: widget.isDark
-                  ? GenZTokens.inkDark.withValues(alpha: 0.2)
-                  : GenZTokens.ink,
-              width: 2,
+              color: widget.isDark ? GenZTokens.lineDark : GenZTokens.line,
+              width: GenZTokens.borderWidthThin,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: (widget.isDark ? GenZTokens.inkDark : GenZTokens.ink)
-                    .withValues(alpha: 0.1),
-                blurRadius: 0,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
           child: Text(
             widget.text,
             style: AppFonts.body(
               color: widget.textColor,
               fontSize: 12,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ParticipantPickerSheet extends StatefulWidget {
+  final List<Map<String, String>> allMembers;
+  final List<Map<String, String>> initiallySelected;
+  final bool isDark;
+  final ValueChanged<List<Map<String, String>>> onConfirmed;
+
+  const _ParticipantPickerSheet({
+    required this.allMembers,
+    required this.initiallySelected,
+    required this.isDark,
+    required this.onConfirmed,
+  });
+
+  @override
+  State<_ParticipantPickerSheet> createState() =>
+      _ParticipantPickerSheetState();
+}
+
+class _ParticipantPickerSheetState extends State<_ParticipantPickerSheet> {
+  late List<Map<String, String>> _selected;
+  late TextEditingController _searchController;
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = List.from(widget.initiallySelected);
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = widget.isDark;
+    final bg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+
+    final filtered = widget.allMembers.where((m) {
+      if (_query.trim().isEmpty) return true;
+      final name = (m['name'] ?? '').toLowerCase();
+      return name.contains(_query.trim().toLowerCase());
+    }).toList();
+
+    final isValidCount = _selected.length >= 2 && _selected.length <= 10;
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              // Drag Handle
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: line,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tr('games.select_participants_title'),
+                            style: AppFonts.heading(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: ink,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            tr('games.select_participants_subtitle'),
+                            style: AppFonts.body(
+                              fontSize: 12,
+                              color: inkSoft,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isValidCount
+                            ? accent.withValues(alpha: 0.12)
+                            : GenZTokens.warning.withValues(alpha: 0.12),
+                        borderRadius:
+                            BorderRadius.circular(GenZTokens.radiusPill),
+                        border: Border.all(
+                          color: isValidCount
+                              ? accent
+                              : (isDark
+                                  ? GenZTokens.warningDark
+                                  : GenZTokens.warning),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        '${_selected.length}/10',
+                        style: AppFonts.mono(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isValidCount
+                              ? accent
+                              : (isDark
+                                  ? GenZTokens.warningDark
+                                  : GenZTokens.warning),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              // Search Input Field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (val) => setState(() => _query = val),
+                  style: AppFonts.body(fontSize: 14, color: ink),
+                  decoration: InputDecoration(
+                    hintText: tr('games.search_member'),
+                    hintStyle: AppFonts.body(fontSize: 14, color: inkSoft),
+                    prefixIcon: Icon(
+                      PhosphorIcons.magnifyingGlass(),
+                      color: inkSoft,
+                      size: 18,
+                    ),
+                    suffixIcon: _query.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(
+                              PhosphorIcons.xCircle(PhosphorIconsStyle.fill),
+                              color: inkSoft,
+                              size: 18,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _query = '');
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: fill,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(GenZTokens.radiusButton),
+                      borderSide: BorderSide(
+                        color: line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(GenZTokens.radiusButton),
+                      borderSide: BorderSide(
+                        color: accent,
+                        width: GenZTokens.borderWidthFocus,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Member List
+              Flexible(
+                child: filtered.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 36),
+                        child: Center(
+                          child: Text(
+                            tr('common.empty'),
+                            style: AppFonts.body(fontSize: 14, color: inkSoft),
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 6,
+                        ),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, _) => Divider(
+                          color: line,
+                          height: 1,
+                          thickness: 0.5,
+                        ),
+                        itemBuilder: (context, i) {
+                          final member = filtered[i];
+                          final isChecked = _selected.any(
+                            (s) => s['name'] == member['name'],
+                          );
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (isChecked) {
+                                  _selected.removeWhere(
+                                    (s) => s['name'] == member['name'],
+                                  );
+                                } else {
+                                  if (_selected.length >= 10) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          tr('games.max_participants_warning'),
+                                        ),
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  _selected.add(member);
+                                }
+                              });
+                            },
+                            borderRadius:
+                                BorderRadius.circular(GenZTokens.radiusButton),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 4,
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor:
+                                        accent.withValues(alpha: 0.12),
+                                    backgroundImage: (member['avatar'] != null &&
+                                            member['avatar']!.isNotEmpty)
+                                        ? NetworkImage(member['avatar']!)
+                                        : null,
+                                    child: (member['avatar'] == null ||
+                                            member['avatar']!.isEmpty)
+                                        ? Text(
+                                            (member['name']?.isNotEmpty ?? false)
+                                                ? member['name']![0].toUpperCase()
+                                                : '?',
+                                            style: AppFonts.heading(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                              color: accent,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      member['name'] ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppFonts.body(
+                                        fontSize: 15,
+                                        fontWeight: isChecked
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                        color: ink,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(
+                                    isChecked
+                                        ? PhosphorIcons.checkSquare(
+                                            PhosphorIconsStyle.fill,
+                                          )
+                                        : PhosphorIcons.square(),
+                                    color: isChecked ? accent : inkSoft,
+                                    size: 24,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              // Warning if < 2 selected
+              if (_selected.length < 2)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 4,
+                  ),
+                  child: Text(
+                    tr('games.min_participants_warning'),
+                    style: AppFonts.body(
+                      fontSize: 12,
+                      color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 8),
+              // Confirm button
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: ElevatedButton(
+                  onPressed: isValidCount
+                      ? () {
+                          widget.onConfirmed(_selected);
+                          Navigator.pop(context);
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accent,
+                    foregroundColor: onAccent,
+                    disabledBackgroundColor:
+                        isDark ? GenZTokens.fillDark : GenZTokens.fill,
+                    disabledForegroundColor:
+                        isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft,
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(GenZTokens.radiusButton),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    tr(
+                      'games.confirm_selection',
+                      namedArgs: {'count': '${_selected.length}'},
+                    ),
+                    style: AppFonts.heading(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: isValidCount
+                          ? onAccent
+                          : (isDark
+                              ? GenZTokens.inkSoftDark
+                              : GenZTokens.inkSoft),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -190,8 +190,16 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
       HapticFeedback.heavyImpact();
       _showBingoCelebrationDialog();
       // Ăn được một hàng thì XP vào squad thật, không chỉ hiện dialog.
+      // Đồng thời kết thúc ván hiện tại trên server để lần sau vào màn tạo ván mới.
       final tripId = ref.read(activeTripIdProvider);
+      final sessionId = _sessionId;
       if (tripId != null) {
+        if (sessionId != null) {
+          ref
+              .read(gamesRepositoryProvider)
+              .endBingo(tripId, sessionId)
+              .catchError((_) {});
+        }
         ref
             .read(gamesRepositoryProvider)
             .createSession(
@@ -214,9 +222,13 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
   }
 
   void _showBingoCelebrationDialog() {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     final surfaceColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
     final inkColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
 
     showDialog(
       context: context,
@@ -227,74 +239,69 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             const Positioned.fill(child: ConfettiOverlay()),
             Center(
               child: Dialog(
-                backgroundColor: Colors.transparent,
-                child: Container(
-                  padding: const EdgeInsets.all(28),
-                  decoration: BoxDecoration(
-                    color: surfaceColor,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: inkColor, width: 2.5),
-                    boxShadow: [
-                      BoxShadow(color: inkColor, offset: const Offset(0, 6)),
-                    ],
+                backgroundColor: surfaceColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  side: BorderSide(
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
                   ),
+                ),
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         'games.bingo_win'.tr(),
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          color: GenZTokens.orange,
-                          letterSpacing: 1.0,
+                        style: AppFonts.heading(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: accent,
+                          letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         'games.bingo_full'.tr(),
                         style: AppFonts.heading(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
                           color: inkColor,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       Text(
                         'games.bingo_line_win'.tr(),
                         textAlign: TextAlign.center,
                         style: AppFonts.body(
                           fontSize: 13,
-                          height: 1.5,
+                          height: 1.4,
                           color: isDark
                               ? GenZTokens.inkSoftDark
                               : GenZTokens.inkSoft,
                         ),
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 24),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Container(
                           width: double.infinity,
-                          height: 50,
+                          height: 48,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: GenZTokens.orange,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: inkColor, width: 2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: inkColor,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
+                            color: accent,
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusButton,
+                            ),
                           ),
                           child: Text(
                             'games.awesome'.tr(),
                             style: AppFonts.heading(
                               fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              color: GenZTokens.ink,
+                              fontWeight: FontWeight.w700,
+                              color: onAccent,
                             ),
                           ),
                         ),
@@ -312,123 +319,89 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
 
     // Design System colors
     final bgStart = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final primary = Theme.of(context).colorScheme.primary;
-    final secondary = isDark ? GenZTokens.green : GenZTokens.yellow;
+    final primary = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final secondary = isDark ? GenZTokens.successDark : GenZTokens.success;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textMuted = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: bgStart),
-        child: Stack(
-          children: [
-            // Glowing background orbs
-            if (isDark) ...[
-              Positioned(
-                top: -50,
-                right: -100,
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
+      backgroundColor: bgStart,
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            children: [
+              // Top App Bar
+              _buildTopAppBar(textPrimary),
+
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 12),
+
+                      // Heading titles
+                      _buildHeaderSection(textPrimary, textMuted),
+
+                      const SizedBox(height: 24),
+
+                      // Chaos level progress bar panel
+                      _buildChaosProgressCard(
+                        surface,
+                        secondary,
+                        textPrimary,
+                        textMuted,
+                        isDark,
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      // 3x3 Bingo Grid
+                      _buildBingoGrid(
+                        surface,
+                        primary,
+                        secondary,
+                        textPrimary,
+                        textMuted,
+                        isDark,
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      // Financial Reward unlocked alert card
+                      _buildRewardCard(
+                        surface,
+                        primary,
+                        secondary,
+                        textPrimary,
+                        textMuted,
+                        isDark,
+                      ),
+
+                      const SizedBox(height: 32),
+                    ],
                   ),
-                  child: Container(color: Colors.transparent),
-                ),
-              ),
-              Positioned(
-                bottom: 200,
-                left: -100,
-                child: Container(
-                  width: 250,
-                  height: 250,
-                  decoration: BoxDecoration(
-                    color: secondary.withValues(alpha: 0.08),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Container(color: Colors.transparent),
                 ),
               ),
             ],
-
-            SafeArea(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Column(
-                  children: [
-                    // Top App Bar
-                    _buildTopAppBar(textPrimary),
-
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 12),
-
-                            // Heading titles
-                            _buildHeaderSection(textPrimary, textMuted),
-
-                            const SizedBox(height: 24),
-
-                            // Chaos level progress bar panel
-                            _buildChaosProgressCard(
-                              surface,
-                              secondary,
-                              textPrimary,
-                              textMuted,
-                              isDark,
-                            ),
-
-                            const SizedBox(height: 28),
-
-                            // 3x3 Bingo Grid
-                            _buildBingoGrid(
-                              surface,
-                              primary,
-                              secondary,
-                              textPrimary,
-                              textMuted,
-                              isDark,
-                            ),
-
-                            const SizedBox(height: 28),
-
-                            // Financial Reward unlocked alert card
-                            _buildRewardCard(
-                              surface,
-                              primary,
-                              secondary,
-                              textPrimary,
-                              textMuted,
-                              isDark,
-                            ),
-
-                            const SizedBox(height: 32),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTopAppBar(Color textPrimary) {
-    final isDark = widget.isDarkMode;
+    final isDark =
+        widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -446,9 +419,9 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
           Text(
             'trip.mate',
             style: AppFonts.heading(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -1.0,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.2,
               color: textPrimary,
             ),
           ),
@@ -477,7 +450,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             'games.bingo_title'.tr(),
             style: AppFonts.heading(
               fontSize: 28,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w700,
               letterSpacing: -0.5,
               color: textPrimary,
             ),
@@ -486,7 +459,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
           Text(
             'games.bingo_sub'.tr(),
             style: AppFonts.body(
-              fontSize: 14,
+              fontSize: 13,
               color: textMuted,
               fontWeight: FontWeight.w500,
             ),
@@ -507,15 +480,17 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     final remainingCount = _bingoTiles
         .where((t) => t['state'] != 'completed')
         .length;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
-        color: surface.withValues(alpha: isDark ? 0.35 : 0.65),
-        borderRadius: BorderRadius.circular(24),
+        color: surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: isDark ? GenZTokens.inkDark : GenZTokens.ink,
-          width: 2,
+          color: line,
+          width: GenZTokens.borderWidthThin,
         ),
       ),
       child: Column(
@@ -527,8 +502,8 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
               Text(
                 'games.chaos_level'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                   color: textMuted,
                 ),
               ),
@@ -537,8 +512,8 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 // "Level 3: Unhinged" du chua tick o nao.
                 'games.chaos_level_n'.tr(args: ['${_chaosLevel()}']),
                 style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                   color: secondary,
                 ),
               ),
@@ -549,13 +524,12 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             children: [
               Expanded(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   child: SizedBox(
                     height: 8,
                     child: LinearProgressIndicator(
                       value: currentChaosRatio,
-                      backgroundColor: (isDark ? GenZTokens.inkDark : GenZTokens.ink)
-                          .withValues(alpha: 0.05),
+                      backgroundColor: fill,
                       valueColor: AlwaysStoppedAnimation<Color>(secondary),
                     ),
                   ),
@@ -565,8 +539,8 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
               Text(
                 '${(currentChaosRatio * 100).toInt()}%',
                 style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                   color: textPrimary,
                 ),
               ),
@@ -580,7 +554,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                 : 'games.bingo_unleashed'.tr(),
             style: AppFonts.body(
               fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: textMuted,
             ),
           ),
@@ -597,6 +571,11 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     Color textMuted,
     bool isDark,
   ) {
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -611,27 +590,24 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
         final tile = _bingoTiles[index];
         final state = tile['state'] as String;
 
-        Color tileBg = surface.withValues(alpha: isDark ? 0.35 : 0.65);
-        Color tileBorder = (isDark ? GenZTokens.inkDark : GenZTokens.ink).withValues(
-          alpha: 0.1,
-        );
-        double borderWidth = 1.0;
-        List<BoxShadow>? tileGlow;
+        Color tileBg = surface;
+        Color tileBorder = line;
+        double borderWidth = GenZTokens.borderWidthThin;
+        Color tileTextColor = textPrimary;
+        Color tileIconColor = textPrimary;
 
         if (state == 'completed') {
-          tileBg = secondary.withValues(alpha: 0.15);
-          tileBorder = secondary;
-          borderWidth = 1.5;
-          tileGlow = [
-            BoxShadow(color: secondary.withValues(alpha: 0.1), blurRadius: 0),
-          ];
-        } else if (state == 'active') {
-          tileBg = primary.withValues(alpha: 0.12);
+          tileBg = accentSoft;
           tileBorder = primary;
-          borderWidth = 1.5;
-          tileGlow = [
-            BoxShadow(color: primary.withValues(alpha: 0.1), blurRadius: 0),
-          ];
+          borderWidth = GenZTokens.borderWidth;
+          tileTextColor = primary;
+          tileIconColor = primary;
+        } else if (state == 'active') {
+          tileBg = fill;
+          tileBorder = primary;
+          borderWidth = GenZTokens.borderWidth;
+          tileTextColor = textPrimary;
+          tileIconColor = primary;
         }
 
         return BouncingTile(
@@ -653,9 +629,15 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     'games.bingo_tile_checked'.tr(
                       namedArgs: {'tile': (tile['titleKey'] as String).tr()},
                     ),
+                    style: AppFonts.body(
+                      fontSize: 13,
+                      color: isDark
+                          ? GenZTokens.onAccentDark
+                          : GenZTokens.onAccent,
+                    ),
                   ),
                   behavior: SnackBarBehavior.floating,
-                  backgroundColor: secondary,
+                  backgroundColor: primary,
                 ),
               );
             }
@@ -665,9 +647,8 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
             curve: Curves.easeInOut,
             decoration: BoxDecoration(
               color: tileBg,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
               border: Border.all(color: tileBorder, width: borderWidth),
-              boxShadow: tileGlow,
             ),
             padding: const EdgeInsets.all(8),
             child: Stack(
@@ -679,7 +660,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     Icon(
                       tile['icon'] as IconData,
                       size: 24,
-                      color: state == 'completed' ? GenZTokens.ink : textPrimary,
+                      color: tileIconColor,
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -688,11 +669,11 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: AppFonts.heading(
-                        fontSize: 11.5,
+                        fontSize: 12,
                         fontWeight: state == 'completed'
-                            ? FontWeight.w900
-                            : FontWeight.bold,
-                        color: state == 'completed' ? GenZTokens.ink : textPrimary,
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        color: tileTextColor,
                       ),
                     ),
                   ],
@@ -703,7 +684,7 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
                     right: 2,
                     child: Icon(
                       PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
-                      color: secondary,
+                      color: primary,
                       size: 14,
                     ),
                   )
@@ -740,65 +721,68 @@ class _TripBingoScreenState extends ConsumerState<TripBingoScreen>
     // Truoc day the nay in cung "+50 Chaos Points awarded" ke ca khi chua tick o nao.
     final done = _bingoTiles.where((t) => t['state'] == 'completed').length;
     final lines = _completedLineIndices.length;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        decoration: BoxDecoration(
-          color: surface.withValues(alpha: isDark ? 0.45 : 0.75),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: secondary, width: 2),
-          boxShadow: [
-            BoxShadow(color: secondary.withValues(alpha: 0.05), blurRadius: 0),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(
+          color: line,
+          width: GenZTokens.borderWidthThin,
         ),
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: secondary.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                PhosphorIcons.trophy(PhosphorIconsStyle.fill),
-                color: secondary,
-                size: 24,
-              ),
+      ),
+      padding: const EdgeInsets.all(GenZTokens.space4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: accentSoft,
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    lines > 0
-                        ? 'games.bingo_lines_completed'
-                            .tr(namedArgs: {'count': '$lines'})
-                        : 'games.bingo_no_lines'.tr(),
-                    style: AppFonts.heading(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'games.bingo_tiles_count'.tr(
-                      namedArgs: {'done': '$done', 'total': '${_bingoTiles.length}'},
-                    ),
-                    style: AppFonts.body(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: textMuted,
-                    ),
-                  ),
-                ],
-              ),
+            child: Icon(
+              PhosphorIcons.trophy(PhosphorIconsStyle.fill),
+              color: primary,
+              size: 24,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  lines > 0
+                      ? 'games.bingo_lines_completed'
+                          .tr(namedArgs: {'count': '$lines'})
+                      : 'games.bingo_no_lines'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'games.bingo_tiles_count'.tr(
+                    namedArgs: {
+                      'done': '$done',
+                      'total': '${_bingoTiles.length}',
+                    },
+                  ),
+                  style: AppFonts.body(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: textMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -824,12 +808,12 @@ class _ConfettiOverlayState extends State<ConfettiOverlay>
     final random = Random();
     return _ConfettiParticle(
       color: [
-        GenZTokens.yellow,
-        GenZTokens.orange,
-        GenZTokens.green,
-        GenZTokens.purple,
-        GenZTokens.pink,
-        GenZTokens.blue,
+        GenZTokens.chart1,
+        GenZTokens.chart2,
+        GenZTokens.chart3,
+        GenZTokens.chart4,
+        GenZTokens.chart5,
+        GenZTokens.chart6,
       ][random.nextInt(6)],
       x: random.nextDouble(),
       y: -0.1 - random.nextDouble() * 0.4,

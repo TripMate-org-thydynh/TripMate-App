@@ -192,7 +192,72 @@ class MateyChatService {
       'tripId': ?tripId,
     });
     final res = (data is Map) ? data['response'] : null;
-    return _textOf(res) ?? prompt;
+    return _planText(res) ?? _textOf(res) ?? prompt;
+  }
+
+  /// Hỏi Matey và nhận câu trả lời **chảy từng mẩu chữ**.
+  ///
+  /// Trả về luồng các mẩu chữ nối tiếp nhau. Màn chat ghép dần vào bong bóng
+  /// nên chữ hiện ngay thay vì đợi trọn câu trả lời — trước đây đường JSON
+  /// mất 8 giây mới thấy gì.
+  ///
+  /// [history] là vài lượt gần nhất, để câu hỏi nối tiếp kiểu "chỗ đó vé bao
+  /// nhiêu?" hiểu được.
+  Stream<String> askStream({
+    required String prompt,
+    String? tripId,
+    List<({String role, String content})> history = const [],
+  }) async* {
+    final stream = _client.postSse('/ai/chat/stream', {
+      'type': 'ITINERARY_PLAN',
+      'prompt': prompt,
+      'tripId': ?tripId,
+      if (history.isNotEmpty)
+        'history': history
+            .map((t) => {'role': t.role, 'content': t.content})
+            .toList(),
+    });
+    await for (final (event, data) in stream) {
+      switch (event) {
+        case 'chunk':
+          final t = data['text'];
+          if (t is String && t.isNotEmpty) yield t;
+        case 'error':
+          // Lỗi tới giữa luồng nên không còn mã HTTP để bắt — dựng lại thành
+          // ngoại lệ quen thuộc để màn chat xử lý như mọi lỗi khác.
+          throw ApiException(
+            '${data['message'] ?? 'errors.unknown_error'}',
+            statusCode: data['status'] is int ? data['status'] as int : 500,
+          );
+        case 'done':
+          return;
+      }
+    }
+  }
+
+  /// Câu trả lời dạng lịch trình (`{days: [{day, title, activities: [...]}]}`)
+  /// → văn bản đọc được trong bong bóng chat.
+  ///
+  /// Trước đây chỉ lấy chuỗi DÀI NHẤT trong JSON, tức là một câu "reason" của
+  /// một hoạt động — hỏi gì cũng chỉ nhận về một mẩu câu trả lời.
+  String? _planText(Object? res) {
+    if (res is! Map || res['days'] is! List) return null;
+    final out = StringBuffer();
+    for (final d in (res['days'] as List).whereType<Map>()) {
+      final title = '${d['title'] ?? ''}'.trim();
+      if (out.isNotEmpty) out.writeln();
+      if (title.isNotEmpty) out.writeln(title);
+      for (final a in (d['activities'] as List? ?? const []).whereType<Map>()) {
+        final time = '${a['time'] ?? ''}'.trim();
+        final loc = '${a['location'] ?? ''}'.trim();
+        final why = '${a['reason'] ?? ''}'.trim();
+        final head = [time, loc].where((e) => e.isNotEmpty).join(' — ');
+        out.writeln('• $head');
+        if (why.isNotEmpty) out.writeln('  $why');
+      }
+    }
+    final text = out.toString().trim();
+    return text.isEmpty ? null : text;
   }
 
   /// Xin AI đặt caption — dùng đúng `CAPTION_GEN`.

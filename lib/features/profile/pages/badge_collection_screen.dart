@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,19 +24,22 @@ class BadgeCollectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark =
         isDarkMode || Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'games.badges_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -50,7 +54,7 @@ class BadgeCollectionScreen extends ConsumerWidget {
           .watch(badgesProvider)
           .when(
             loading: () =>
-                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                Center(child: CircularProgressIndicator(color: accent, strokeWidth: 2)),
             error: (e, _) => AppErrorState(
               isDark: isDark,
               error: e,
@@ -66,14 +70,18 @@ class BadgeCollectionScreen extends ConsumerWidget {
                 );
               }
               return RefreshIndicator(
+                color: accent,
                 onRefresh: () async => ref.invalidate(badgesProvider),
                 child: GridView.builder(
-                  padding: const EdgeInsets.all(GenZTokens.space5),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  padding: const EdgeInsets.all(GenZTokens.space4),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: GenZTokens.space4,
-                    mainAxisSpacing: GenZTokens.space4,
-                    childAspectRatio: 0.92,
+                    crossAxisSpacing: GenZTokens.space3,
+                    mainAxisSpacing: GenZTokens.space3,
+                    mainAxisExtent: max(
+                      148.0,
+                      MediaQuery.textScalerOf(context).scale(48) + 98,
+                    ),
                   ),
                   itemCount: badges.length,
                   itemBuilder: (context, i) =>
@@ -89,6 +97,9 @@ class BadgeCollectionScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -100,13 +111,11 @@ class BadgeCollectionScreen extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.all(GenZTokens.space4),
         decoration: BoxDecoration(
-          color: b.unlocked ? GenZTokens.yellow : surface,
+          color: b.unlocked ? surface : fill,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: ink,
-            width: b.unlocked
-                ? GenZTokens.borderWidth
-                : GenZTokens.borderWidthThin,
+            color: line,
+            width: GenZTokens.borderWidthThin,
           ),
         ),
         child: Column(
@@ -117,7 +126,7 @@ class BadgeCollectionScreen extends ConsumerWidget {
                   ? PhosphorIcons.trophy(PhosphorIconsStyle.fill)
                   : PhosphorIcons.lockKey(),
               size: 26,
-              color: b.unlocked ? GenZTokens.ink : inkSoft,
+              color: b.unlocked ? warning : inkSoft,
             ),
             const Spacer(),
             Text(
@@ -125,9 +134,9 @@ class BadgeCollectionScreen extends ConsumerWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppFonts.heading(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-                color: b.unlocked ? GenZTokens.ink : ink,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: b.unlocked ? ink : inkSoft,
               ),
             ),
             const SizedBox(height: 4),
@@ -135,7 +144,7 @@ class BadgeCollectionScreen extends ConsumerWidget {
               '${b.current} / ${b.target}',
               style: AppFonts.body(
                 fontSize: 12,
-                color: b.unlocked ? GenZTokens.ink : inkSoft,
+                color: inkSoft,
               ),
             ),
           ],

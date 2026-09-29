@@ -21,13 +21,18 @@ class XpBalanceChip extends ConsumerWidget {
         .watch(xpWalletProvider)
         .maybeWhen(data: (w) => w.balance, orElse: () => null);
 
+    final bg = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: GenZTokens.yellow,
-        borderRadius: BorderRadius.circular(999),
+        color: bg,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
         border: Border.all(
-          color: GenZTokens.ink,
+          color: line,
           width: GenZTokens.borderWidthThin,
         ),
       ),
@@ -36,17 +41,17 @@ class XpBalanceChip extends ConsumerWidget {
         children: [
           Icon(
             PhosphorIcons.lightning(PhosphorIconsStyle.fill),
-            size: 15,
-            color: GenZTokens.ink,
+            size: 14,
+            color: warning,
           ),
-          const SizedBox(width: 3),
+          const SizedBox(width: 4),
           Text(
             // Chưa tải xong thì hiện '—' thay vì 0, để không ai tưởng mình hết XP.
             balance == null ? '—' : '$balance',
             style: AppFonts.heading(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w900,
-              color: GenZTokens.ink,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: ink,
             ),
           ),
         ],

@@ -13,8 +13,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../core/theme/gen_z_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'data/profile_provider.dart';
 
+import '../../core/widgets/faded_image.dart';
+import '../trips/application/trips_providers.dart';
 import 'pages/badge_collection_screen.dart';
 import 'pages/edit_profile_screen.dart';
 import 'pages/friends_list_screen.dart';
@@ -25,7 +28,6 @@ import 'pages/social_links_manager_screen.dart';
 import '../gamification/pages/squad_leaderboard_screen.dart';
 import 'pages/sticker_inventory_screen.dart';
 import 'pages/xp_wallet_screen.dart';
-import 'pages/theme_marketplace_screen.dart';
 import 'pages/travel_atlas_screen.dart';
 import 'pages/backup_restore_screen.dart';
 import 'pages/tripmate_mcp_screen.dart';
@@ -84,25 +86,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color surfaceColor,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(32),
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
       child: Container(
         decoration: BoxDecoration(
           color: surfaceColor,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210),
-            width: 2.5,
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
           ),
-          // Hard shadow brutalist (đặc, không blur).
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.6)
-                  : const Color(0xFF141210),
-              blurRadius: 0,
-              offset: const Offset(0, 6),
-            ),
-          ],
         ),
         child: child,
       ),
@@ -128,15 +120,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final int emptyFlex = 100 - fillFlex;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0x332D3449)
-            : Colors.black.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(20),
+        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black,
-          width: 2,
+          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+          width: GenZTokens.borderWidthThin,
         ),
       ),
       child: Column(
@@ -147,7 +137,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             children: [
               Row(
                 children: [
-                  Icon(Icons.military_tech, color: textPrimaryColor, size: 20),
+                  Icon(PhosphorIcons.medal(), color: textPrimaryColor, size: 20),
                   const SizedBox(width: 4),
                   Text(
                     'Lvl $level',
@@ -181,14 +171,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           ),
           const SizedBox(height: 10),
 
-          // Custom Glowing Progress Bar
+          // Progress Bar
           Container(
             height: 8,
             decoration: BoxDecoration(
               color: isDark
-                  ? const Color(0xFF060E20)
-                  : Colors.black.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(4),
+                  ? GenZTokens.fillDark
+                  : GenZTokens.fill,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
             ),
             child: Row(
               children: [
@@ -197,15 +187,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   child: Container(
                     decoration: BoxDecoration(
                       color: primaryColor,
-                      borderRadius: BorderRadius.circular(4),
-                      boxShadow: isDark
-                          ? [
-                              BoxShadow(
-                                color: primaryColor.withValues(alpha: 0.5),
-                                blurRadius: 0,
-                              ),
-                            ]
-                          : null,
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                     ),
                   ),
                 ),
@@ -231,7 +213,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             },
             child: Row(
               children: [
-                Icon(Icons.group, color: primaryColor, size: 16),
+                Icon(PhosphorIcons.users(), color: primaryColor, size: 16),
                 const SizedBox(width: 6),
                 RichText(
                   text: TextSpan(
@@ -252,7 +234,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   ),
                 ),
                 const SizedBox(width: 4),
-                Icon(Icons.verified, color: primaryColor, size: 12),
+                Icon(PhosphorIcons.sealCheck(PhosphorIconsStyle.fill), color: primaryColor, size: 12),
               ],
             ),
           ),
@@ -268,21 +250,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     Color surface,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? surface.withValues(alpha: 0.8) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent, width: 2),
-        boxShadow: [
-          BoxShadow(color: accent.withValues(alpha: 0.1), blurRadius: 0),
-        ],
+        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+        border: Border.all(color: accent, width: 1.5),
       ),
       child: Text(
         label,
         style: AppFonts.body(
           fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: isDark ? accent : Colors.black87,
+          fontWeight: FontWeight.w600,
+          color: accent,
         ),
       ),
     );
@@ -320,7 +299,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }
 
   Widget _buildBadgeCard({
-    required String emoji,
+    IconData? icon,
+    String? emoji,
     required String title,
     required String tier,
     required bool isRare,
@@ -329,10 +309,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color primaryColor,
   }) {
     // Theme-aware để không bị chìm trên nền kem (trước đây chỉ hợp nền tối).
-    final isDark = widget.isDarkMode ?? false;
-    final ink = isDark ? const Color(0xFFFDF6D3) : const Color(0xFF141210);
-    final sub = isDark ? const Color(0xFFB8AE9C) : const Color(0xFF4A453E);
-    final surface = isDark ? const Color(0xFF262019) : const Color(0xFFFFFDF5);
+    final isDark = widget.isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final sub = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
 
     return GestureDetector(
       onTap: onTap,
@@ -342,18 +322,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           color: surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: ink, width: 2),
-          // Hard shadow brutalist cho card đã mở khoá.
-          boxShadow: isLocked
-              ? null
-              : [
-                  BoxShadow(
-                    color: ink,
-                    blurRadius: 0,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
         child: Opacity(
           opacity: isLocked ? 0.55 : 1.0,
@@ -361,8 +334,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               isLocked
-                  ? Icon(Icons.lock, color: sub, size: 30)
-                  : Text(emoji, style: const TextStyle(fontSize: 28)),
+                  ? Icon(PhosphorIcons.lockKey(), color: sub, size: 30)
+                  : (icon != null
+                      ? Icon(icon, color: primaryColor, size: 28)
+                      : (emoji != null
+                          ? Text(emoji, style: const TextStyle(fontSize: 28))
+                          : Icon(PhosphorIcons.trophy(), color: primaryColor, size: 28))),
               const SizedBox(height: 8),
               Text(
                 title,
@@ -379,7 +356,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               Text(
                 tier,
                 style: AppFonts.body(
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: sub,
                 ),
@@ -398,21 +375,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color surfaceColor,
     required Color textPrimary,
   }) {
+    final isDark = widget.isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: surfaceColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
-              blurRadius: 0,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
+          ),
         ),
         child: Column(
           children: [
@@ -427,7 +401,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           imageUrl: imageUrl,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
                             child: const Center(
                               child: SizedBox(
                                 width: 20,
@@ -437,7 +411,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                           ),
                           errorWidget: (context, url, error) =>
-                              const Icon(Icons.broken_image),
+                              Icon(PhosphorIcons.imageBroken()),
                         ),
                 ),
               ),
@@ -486,15 +460,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required Color surfaceColor,
   }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isDark ? surfaceColor : Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
           border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black,
-            width: 2,
+            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+            width: GenZTokens.borderWidthThin,
           ),
         ),
         child: Row(
@@ -506,17 +480,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isDark
-                    ? const Color(0xFF1A1712)
-                    : Colors.black.withValues(alpha: 0.03),
-                border: Border.all(color: accentColor, width: 1.5),
-                boxShadow: isDark
-                    ? [
-                        BoxShadow(
-                          color: accentColor.withValues(alpha: 0.3),
-                          blurRadius: 0,
-                        ),
-                      ]
-                    : null,
+                    ? GenZTokens.fillDark
+                    : GenZTokens.fill,
+                border: Border.all(
+                  color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                  width: GenZTokens.borderWidthThin,
+                ),
               ),
               child: Icon(icon, color: accentColor, size: 20),
             ),
@@ -532,7 +501,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   Text(
                     description,
                     style: AppFonts.body(
-                      fontSize: 13.5,
+                      fontSize: 13,
                       color: textPrimaryColor,
                       height: 1.4,
                     ),
@@ -578,8 +547,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: const Color(0xFF262019),
-                                      width: 2.0,
+                                      color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                                      width: GenZTokens.borderWidth,
                                     ),
                                   ),
                                   child: ClipRRect(
@@ -596,13 +565,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               fit: BoxFit.cover,
                                               placeholder: (context, url) =>
                                                   Container(
-                                                    color: Colors.black
-                                                        .withValues(alpha: 0.1),
+                                                    color: isDark
+                                                        ? GenZTokens.paperDark
+                                                        : GenZTokens.paper,
                                                   ),
                                               errorWidget:
                                                   (context, url, error) =>
-                                                      const Icon(
-                                                        Icons.person,
+                                                      Icon(
+                                                        PhosphorIcons.user(),
                                                         size: 16,
                                                       ),
                                             ),
@@ -623,20 +593,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF1A1712)
-                                  : Colors.black.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(10),
+                                  ? GenZTokens.fillDark
+                                  : GenZTokens.fill,
+                              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                               border: Border.all(
-                                color: const Color(0xFF1FA85C),
-                                width: 2,
+                                color: isDark ? GenZTokens.successDark : GenZTokens.success,
+                                width: GenZTokens.borderWidthThin,
                               ),
                             ),
                             child: Text(
                               '+$extraFriends',
                               style: AppFonts.body(
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1FA85C),
+                                color: isDark ? GenZTokens.successDark : GenZTokens.success,
                               ),
                             ),
                           ),
@@ -665,22 +635,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final currentAccent = ref.watch(accentProvider);
     final currentMode = ref.watch(themeProvider);
 
-    // standard design tokens — driven by selected accent
-    final primaryColor = currentAccent.accent;
-    final secondaryColor = currentAccent.lightSoft;
-    final tertiaryColor = currentAccent.accent;
+    // standard design tokens
+    final primaryColor = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final secondaryColor = isDark
+        ? GenZTokens.accentDark.withValues(alpha: 0.15)
+        : GenZTokens.accentSoft;
+    final tertiaryColor = primaryColor;
     final backgroundColor = isDark
-        ? const Color(0xFF1A1712)
-        : currentAccent.lightBackground;
+        ? GenZTokens.creamDark
+        : GenZTokens.cream;
     final surfaceColor = isDark
-        ? const Color(0xFF262019)
-        : const Color(0xFFFFFDF5);
+        ? GenZTokens.paperDark
+        : GenZTokens.paper;
     final textPrimaryColor = isDark
-        ? const Color(0xFFFFFDF5)
-        : const Color(0xFF141210);
+        ? GenZTokens.inkDark
+        : GenZTokens.ink;
     final textSecondaryColor = isDark
-        ? const Color(0xFFB8AE9C)
-        : const Color(0xFF4A453E);
+        ? GenZTokens.inkSoftDark
+        : GenZTokens.inkSoft;
 
     // dynamic variables
     final name = _userProfile?['name'] ?? 'Traveller';
@@ -721,79 +693,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       backgroundColor: backgroundColor,
       body: Stack(
         children: [
-          // 1. Ambient Background Layer (Mesh Gradients)
-          if (isDark) ...[
-            Container(
-              decoration: const BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(0.8, -0.6),
-                  radius: 1.2,
-                  colors: [
-                    Color(0x3D8B5CF6), // Soft Stitch Purple mesh glow
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(-0.8, 0.2),
-                  radius: 1.5,
-                  colors: [
-                    Color(0x2834D399), // Soft Stitch Mint mesh glow
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ] else ...[
-            Container(
-              decoration: const BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(0.8, -0.6),
-                  radius: 1.2,
-                  colors: [
-                    Color(0x1CE0533C), // Soft Stitch Coral glow
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(-0.8, 0.2),
-                  radius: 1.5,
-                  colors: [
-                    Color(0x0BEBA83A), // Soft Stitch Gold glow
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ],
 
-          // 2. Cinematic Karst Landscape Backdrop
-          Positioned.fill(
-            child: ExcludeSemantics(
-              child: Opacity(
-                opacity: 0.08,
-                child: CachedNetworkImage(
-                  imageUrl:
-                      'https://lh3.googleusercontent.com/aida-public/AB6AXuDfg2dp9ry6aHIrv4JHeegtgAeoKxtfPqfps3NrOjR23AqjuVwWWroH0bqiv280TXdhXdJ6kB0LvDLTXAHaaimh1S7KlUIhGd0KH64hjwwX15BOvanpGufgafC7FB3a5RqoRobYB_cO3EHjkZO2dKGhAbC-RiERcZrxNnY2T63yYzxFfttbVN2AoteXwtO-Ul1cg-NF51y5Dry-f1CDCxMUxXaf-iHp1Zzr49wnjlQV7lJug_glX_gJU8UFFwEFT4sSARQ-TscJrRdB',
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const SizedBox(),
-                  errorWidget: (context, url, error) => const SizedBox(),
-                ),
+          // Ảnh bìa chuyến gần nhất tràn đầu trang, tan dần xuống màu nền.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: FadedImage(
+              imageUrl: ref.watch(tripsProvider).maybeWhen(
+                data: (trips) => trips
+                    .map((t) => t.coverImage)
+                    .firstWhere(
+                      (c) => c != null && c.startsWith('http'),
+                      orElse: () => null,
+                    ),
+                orElse: () => null,
               ),
-            ),
-          ),
-
-          // Blur overlay
-          Positioned.fill(
-            child: Container(
-              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.02),
+              topFade: true,
+              fadeTo: backgroundColor,
+              height: 460,
+              glowExtent: 360,
             ),
           ),
 
@@ -807,13 +726,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                     SliverAppBar(
                       expandedHeight: 88.0,
                       floating: false,
-                      pinned: true,
-                      backgroundColor: backgroundColor,
+                      // Trong suốt, cuộn đi cùng nội dung — để ảnh đầu trang
+                      // tràn lên tận mép trên thay vì bị thanh này che.
+                      pinned: false,
+                      backgroundColor: Colors.transparent,
+                      surfaceTintColor: Colors.transparent,
                       elevation: 0,
                       centerTitle: false,
                       titleSpacing: 4,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Container(color: Colors.transparent),
+                      flexibleSpace: const FlexibleSpaceBar(
+                        background: SizedBox(),
                       ),
                       leading: Padding(
                         padding: const EdgeInsets.only(left: 16.0, top: 12.0),
@@ -833,12 +755,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         shape: BoxShape.circle,
                                         color: surfaceColor,
                                         border: Border.all(
-                                          color: textPrimaryColor,
-                                          width: 2.5,
+                                          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                                          width: GenZTokens.borderWidthThin,
                                         ),
                                       ),
                                       child: Icon(
-                                        Icons.arrow_back_rounded,
+                                        PhosphorIcons.arrowLeft(),
                                         color: textPrimaryColor,
                                         size: 22,
                                       ),
@@ -851,8 +773,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: textPrimaryColor,
-                                      width: 2.5,
+                                      color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                                      width: GenZTokens.borderWidthThin,
                                     ),
                                   ),
                                   child: ClipRRect(
@@ -862,12 +784,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         imageUrl: avatarUrl,
                                         fit: BoxFit.cover,
                                         placeholder: (context, url) => Container(
-                                          color: Colors.black.withValues(
-                                            alpha: 0.1,
-                                          ),
+                                          color: isDark
+                                              ? GenZTokens.paperDark
+                                              : GenZTokens.paper,
                                         ),
                                         errorWidget: (context, url, error) =>
-                                            const Icon(Icons.person),
+                                            Icon(PhosphorIcons.user()),
                                       ),
                                     ),
                                   ),
@@ -908,8 +830,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                 shape: BoxShape.circle,
                                 color: surfaceColor,
                                 border: Border.all(
-                                  color: textPrimaryColor,
-                                  width: 2.0,
+                                  color: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Center(
@@ -932,8 +854,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Semantics(
                               button: true,
                               label: isDark
-                                  ? 'Chuyển sang chế độ sáng'
-                                  : 'Chuyển sang chế độ tối',
+                                  ? 'profile.theme_light_short'.tr()
+                                  : 'profile.theme_dark_short'.tr(),
                               child: GestureDetector(
                                 onTapDown: (details) {
                                   widget.onThemeToggleWithPosition!(
@@ -944,8 +866,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   padding: const EdgeInsets.all(6.0),
                                   child: Icon(
                                     isDark
-                                        ? Icons.light_mode_outlined
-                                        : Icons.dark_mode_outlined,
+                                        ? PhosphorIcons.sun()
+                                        : PhosphorIcons.moon(),
                                     color: textPrimaryColor,
                                     size: 22,
                                   ),
@@ -954,47 +876,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             ),
                           ),
                         Padding(
-                          padding: const EdgeInsets.only(right: 2.0, top: 12.0),
-                          child: Center(
-                            child: IconButton(
-                              tooltip: 'Chợ giao diện',
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(
-                                minWidth: 34,
-                                minHeight: 34,
-                              ),
-                              icon: Icon(
-                                Icons.palette_outlined,
-                                color: textPrimaryColor,
-                                size: 22,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ThemeMarketplaceScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        Padding(
                           padding: const EdgeInsets.only(
                             right: 12.0,
                             top: 12.0,
                           ),
                           child: Center(
                             child: IconButton(
-                              tooltip: 'Kho nhãn dán',
+                              tooltip: 'xp.my_stickers'.tr(),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(
                                 minWidth: 34,
                                 minHeight: 34,
                               ),
                               icon: Icon(
-                                Icons.add_reaction_outlined,
+                                PhosphorIcons.smiley(),
                                 color: textPrimaryColor,
                                 size: 22,
                               ),
@@ -1045,24 +940,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     ),
                                     child: Column(
                                       children: [
-                                        // User name glow text
+                                        // User name text
                                         Text(
                                           name,
                                           style: AppFonts.heading(
                                             fontSize: 32,
                                             fontWeight: FontWeight.w800,
                                             color: textPrimaryColor,
-                                            shadows: isDark
-                                                ? [
-                                                    Shadow(
-                                                      color: Colors.white
-                                                          .withValues(
-                                                            alpha: 0.3,
-                                                          ),
-                                                      blurRadius: 0,
-                                                    ),
-                                                  ]
-                                                : null,
                                           ),
                                         ),
                                         const SizedBox(height: 4),
@@ -1081,7 +965,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                 );
                                               },
                                               child: Icon(
-                                                Icons.link,
+                                                PhosphorIcons.link(),
                                                 color: primaryColor.withValues(
                                                   alpha: 0.6,
                                                 ),
@@ -1140,7 +1024,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                   ? 'profile.badge_rookie'.tr()
                                                   : 'profile.badge_planner'
                                                         .tr(),
-                                              const Color(0xFFFF9E80),
+                                              primaryColor,
                                               isDark,
                                               surfaceColor,
                                             ),
@@ -1154,15 +1038,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                               .tr()
                                                         : 'profile.badge_new_member'
                                                               .tr()),
-                                              secondaryColor,
+                                              textSecondaryColor,
                                               isDark,
                                               surfaceColor,
                                             ),
                                           ],
                                         ),
                                         const SizedBox(height: 24),
-                                        const Divider(
-                                          color: Colors.white12,
+                                        Divider(
+                                          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
                                           height: 1,
                                         ),
                                         const SizedBox(height: 20),
@@ -1187,33 +1071,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               horizontal: 16,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: GenZTokens.yellow,
+                                              color: isDark
+                                                  ? GenZTokens.fillDark
+                                                  : GenZTokens.fill,
                                               borderRadius:
-                                                  BorderRadius.circular(16),
+                                                  BorderRadius.circular(GenZTokens.radiusCard),
                                               border: Border.all(
-                                                color: GenZTokens.ink,
-                                                width: 2,
-                                              ),
-                                              boxShadow: GenZTokens.hardShadow(
-                                                GenZTokens.ink,
+                                                color: isDark
+                                                    ? GenZTokens.lineDark
+                                                    : GenZTokens.line,
+                                                width: GenZTokens.borderWidthThin,
                                               ),
                                             ),
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                const Icon(
-                                                  Icons.explore_outlined,
-                                                  color: GenZTokens.ink,
+                                                Icon(
+                                                  PhosphorIcons.compass(),
+                                                  color: textPrimaryColor,
+                                                  size: 18,
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Text(
                                                   'profile.open_travel_atlas'
                                                       .tr(),
-                                                  style: AppFonts.heading(
-                                                    fontWeight: FontWeight.w900,
-                                                    fontSize: 12,
-                                                    color: GenZTokens.ink,
+                                                  style: AppFonts.body(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: textPrimaryColor,
                                                   ),
                                                 ),
                                               ],
@@ -1276,7 +1162,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   child: Stack(
                                     clipBehavior: Clip.none,
                                     children: [
-                                      // Glowing avatar container
+                                      // Clean avatar container
                                       GestureDetector(
                                         onTap: () {
                                           Navigator.push(
@@ -1293,39 +1179,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         child: AnimatedBuilder(
                                           animation: _pulseController,
                                           builder: (context, child) {
-                                            final glowVal =
-                                                20.0 +
-                                                (_pulseController.value * 20.0);
                                             return Container(
                                               width: 128,
                                               height: 128,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
+                                                color: surfaceColor,
                                                 border: Border.all(
-                                                  color: backgroundColor,
-                                                  width: 4.0,
+                                                  color: primaryColor,
+                                                  width: GenZTokens.borderWidth,
                                                 ),
-                                                boxShadow: isDark
-                                                    ? [
-                                                        BoxShadow(
-                                                          color: primaryColor
-                                                              .withValues(
-                                                                alpha: 0.5,
-                                                              ),
-                                                          blurRadius: glowVal,
-                                                          spreadRadius: 2,
-                                                        ),
-                                                      ]
-                                                    : [
-                                                        BoxShadow(
-                                                          color: primaryColor
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              ),
-                                                          blurRadius: 0,
-                                                          spreadRadius: 1,
-                                                        ),
-                                                      ],
                                               ),
                                               child: ClipRRect(
                                                 borderRadius:
@@ -1340,17 +1203,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                       context,
                                                       url,
                                                     ) => Container(
-                                                      color: Colors.black
-                                                          .withValues(
-                                                            alpha: 0.1,
-                                                          ),
+                                                      color: isDark
+                                                          ? GenZTokens.paperDark
+                                                          : GenZTokens.paper,
                                                     ),
                                                     errorWidget: (
                                                       context,
                                                       url,
                                                       error,
-                                                    ) => const Icon(
-                                                      Icons.person,
+                                                    ) => Icon(
+                                                      PhosphorIcons.user(),
                                                       size: 40,
                                                     ),
                                                   ),
@@ -1373,33 +1235,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? const Color(0xFF1A1712)
-                                                  : Colors.white,
+                                              color: surfaceColor,
                                               borderRadius:
-                                                  BorderRadius.circular(16),
+                                                  BorderRadius.circular(GenZTokens.radiusPill),
                                               border: Border.all(
                                                 color: isDark
-                                                    ? Colors.white24
-                                                    : Colors.black12,
-                                                width: 1.0,
+                                                    ? GenZTokens.lineDark
+                                                    : GenZTokens.line,
+                                                width: GenZTokens.borderWidthThin,
                                               ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black
-                                                      .withValues(alpha: 0.2),
-                                                  blurRadius: 0,
-                                                ),
-                                              ],
                                             ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                const Text(
-                                                  '✈️',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                  ),
+                                                Icon(
+                                                  PhosphorIcons.airplaneTilt(),
+                                                  size: 14,
+                                                  color: textPrimaryColor,
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Flexible(
@@ -1443,19 +1295,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: isDark
-                                          ? const Color(
-                                              0xFF262019,
-                                            ).withValues(alpha: 0.6)
-                                          : Colors.white,
+                                      color: surfaceColor,
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 2,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
-                                      Icons.edit,
+                                      PhosphorIcons.pencilSimple(),
                                       color: primaryColor,
                                       size: 18,
                                     ),
@@ -1471,7 +1321,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           Row(
                             children: [
                               Icon(
-                                Icons.workspace_premium,
+                                PhosphorIcons.crown(),
                                 color: tertiaryColor,
                                 size: 24,
                               ),
@@ -1497,9 +1347,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                               children: _userBadges.isEmpty
                                   ? [
                                       _buildBadgeCard(
-                                        emoji: '🔥',
+                                        icon: PhosphorIcons.fire(),
                                         title: 'profile.badge_chaos_king'.tr(),
-                                        tier: 'Gold Tier',
+                                        tier: 'profile.gold_tier'.tr(),
                                         isRare: true,
                                         onTap: () => Navigator.push(
                                           context,
@@ -1511,9 +1361,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         primaryColor: primaryColor,
                                       ),
                                       _buildBadgeCard(
-                                        emoji: '📸',
+                                        icon: PhosphorIcons.camera(),
                                         title: 'profile.badge_paparazzi'.tr(),
-                                        tier: 'Silver Tier',
+                                        tier: 'profile.silver_tier'.tr(),
                                         isRare: false,
                                         onTap: () => Navigator.push(
                                           context,
@@ -1525,9 +1375,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         primaryColor: primaryColor,
                                       ),
                                       _buildBadgeCard(
-                                        emoji: '🍜',
+                                        icon: PhosphorIcons.bowlFood(),
                                         title: 'profile.badge_street_food'.tr(),
-                                        tier: 'Rare Tier',
+                                        tier: 'profile.rare_tier'.tr(),
                                         isRare: true,
                                         onTap: () => Navigator.push(
                                           context,
@@ -1539,7 +1389,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         primaryColor: primaryColor,
                                       ),
                                       _buildBadgeCard(
-                                        emoji: '🔒',
+                                        icon: PhosphorIcons.lock(),
                                         title: 'profile.badge_locked_name'.tr(),
                                         tier: 'profile.badge_locked'.tr(),
                                         isRare: false,
@@ -1557,7 +1407,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                           badge['title'] ??
                                           'profile.titles'.tr();
 
-                                      String emoji = '🏆';
+                                      String? emoji;
+                                      IconData? icon;
                                       String cleanTitle = title;
 
                                       final RegExp emojiRegExp = RegExp(
@@ -1568,20 +1419,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         title,
                                       );
                                       if (match != null) {
-                                        emoji = match.group(0) ?? '🏆';
-                                        cleanTitle = title
-                                            .replaceAll(emoji, '')
-                                            .trim();
+                                        emoji = match.group(0);
+                                        if (emoji != null) {
+                                          cleanTitle = title
+                                              .replaceAll(emoji, '')
+                                              .trim();
+                                        }
+                                      } else {
+                                        icon = PhosphorIcons.trophy();
                                       }
 
                                       return _buildBadgeCard(
+                                        icon: icon,
                                         emoji: emoji,
                                         title: cleanTitle,
                                         tier: isLocked
                                             ? 'profile.badge_locked'.tr()
                                             : (badge['id'] == 'b1'
-                                                  ? 'Gold Tier'
-                                                  : 'Silver Tier'),
+                                                  ? 'profile.gold_tier'.tr()
+                                                  : 'profile.silver_tier'.tr()),
                                         isRare:
                                             badge['id'] == 'b1' ||
                                             badge['id'] == 'b3',
@@ -1612,7 +1468,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                 child: Row(
                                   children: [
                                     Icon(
-                                      Icons.auto_awesome,
+                                      PhosphorIcons.sparkle(),
                                       color: primaryColor,
                                       size: 24,
                                     ),
@@ -1718,7 +1574,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           Row(
                             children: [
                               Icon(
-                                Icons.history,
+                                PhosphorIcons.clockCounterClockwise(),
                                 color: secondaryColor,
                                 size: 24,
                               ),
@@ -1774,7 +1630,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     children: [
                                       for (final a in items.take(3)) ...[
                                         _buildChaosFeedCard(
-                                          icon: Icons.bolt_outlined,
+                                          icon: PhosphorIcons.lightning(),
                                           accentColor: primaryColor,
                                           description: _activityText(a),
                                           time: a.tripName,
@@ -1811,7 +1667,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           Row(
                             children: [
                               Icon(
-                                Icons.settings_outlined,
+                                PhosphorIcons.gear(),
                                 color: primaryColor,
                                 size: 24,
                               ),
@@ -1828,17 +1684,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           ),
                           const SizedBox(height: 16),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? Colors.white.withValues(alpha: 0.08)
-                                      : Colors.black,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -1849,17 +1705,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? const Color(0xFF1A1712)
-                                          : Colors.black.withValues(
-                                              alpha: 0.03,
-                                            ),
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
-                                      Icons.language_rounded,
+                                      PhosphorIcons.globe(),
                                       color: primaryColor,
                                       size: 20,
                                     ),
@@ -1935,13 +1791,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? Colors.white.withValues(alpha: 0.08)
-                                      : Colors.black,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -1952,17 +1808,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? const Color(0xFF1A1712)
-                                          : Colors.black.withValues(
-                                              alpha: 0.03,
-                                            ),
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
-                                      Icons.shield_outlined,
+                                      PhosphorIcons.shieldCheck(),
                                       color: primaryColor,
                                       size: 20,
                                     ),
@@ -1993,7 +1849,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     ),
                                   ),
                                   Icon(
-                                    Icons.arrow_forward,
+                                    PhosphorIcons.arrowRight(),
                                     size: 14,
                                     color: textSecondaryColor,
                                   ),
@@ -2015,13 +1871,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? Colors.white.withValues(alpha: 0.08)
-                                      : Colors.black,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -2032,17 +1888,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? const Color(0xFF1A1712)
-                                          : Colors.black.withValues(
-                                              alpha: 0.03,
-                                            ),
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
-                                      Icons.backup_outlined,
+                                      PhosphorIcons.cloudArrowUp(),
                                       color: primaryColor,
                                       size: 20,
                                     ),
@@ -2073,7 +1929,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     ),
                                   ),
                                   Icon(
-                                    Icons.arrow_forward,
+                                    PhosphorIcons.arrowRight(),
                                     size: 14,
                                     color: textSecondaryColor,
                                   ),
@@ -2095,13 +1951,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                             child: Container(
                               padding: const EdgeInsets.all(18),
                               decoration: BoxDecoration(
-                                color: isDark ? surfaceColor : Colors.white,
-                                borderRadius: BorderRadius.circular(20),
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                                 border: Border.all(
                                   color: isDark
-                                      ? Colors.white.withValues(alpha: 0.08)
-                                      : Colors.black,
-                                  width: 2,
+                                      ? GenZTokens.lineDark
+                                      : GenZTokens.line,
+                                  width: GenZTokens.borderWidthThin,
                                 ),
                               ),
                               child: Row(
@@ -2112,17 +1968,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isDark
-                                          ? const Color(0xFF1A1712)
-                                          : Colors.black.withValues(
-                                              alpha: 0.03,
-                                            ),
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
                                       border: Border.all(
-                                        color: primaryColor,
-                                        width: 1.5,
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
                                       ),
                                     ),
                                     child: Icon(
-                                      Icons.smart_toy_outlined,
+                                      PhosphorIcons.robot(),
                                       color: primaryColor,
                                       size: 20,
                                     ),
@@ -2153,7 +2009,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                     ),
                                   ),
                                   Icon(
-                                    Icons.arrow_forward,
+                                    PhosphorIcons.arrowRight(),
                                     size: 14,
                                     color: textSecondaryColor,
                                   ),
@@ -2182,17 +2038,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     required AppAccent currentAccent,
     required ThemeMode currentMode,
   }) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final currentFont = ref.watch(fontProvider);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: ink, width: GenZTokens.borderWidth),
-          boxShadow: GenZTokens.hardShadow(ink),
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2206,12 +2062,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isDark
-                        ? const Color(0xFF1A1712)
-                        : Colors.black.withValues(alpha: 0.03),
-                    border: Border.all(color: primaryColor, width: 1.5),
+                        ? GenZTokens.fillDark
+                        : GenZTokens.fill,
+                    border: Border.all(color: line, width: GenZTokens.borderWidthThin),
                   ),
                   child: Icon(
-                    Icons.palette_outlined,
+                    PhosphorIcons.palette(),
                     color: primaryColor,
                     size: 20,
                   ),
@@ -2244,16 +2100,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 Container(
                   decoration: BoxDecoration(
                     color: isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : Colors.black.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(999),
+                        ? GenZTokens.fillDark
+                        : GenZTokens.fill,
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                    border: Border.all(
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
                   ),
                   padding: const EdgeInsets.all(2),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildModeBtn(
-                        icon: Icons.light_mode_outlined,
+                        icon: PhosphorIcons.sun(),
                         label: 'profile.theme_light_short'.tr(),
                         selected: currentMode == ThemeMode.light,
                         primaryColor: primaryColor,
@@ -2272,7 +2132,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         },
                       ),
                       _buildModeBtn(
-                        icon: Icons.dark_mode_outlined,
+                        icon: PhosphorIcons.moon(),
                         label: 'profile.theme_dark_short'.tr(),
                         selected: currentMode == ThemeMode.dark,
                         primaryColor: primaryColor,
@@ -2297,131 +2157,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             ),
 
             const SizedBox(height: 16),
-
-            // Bảng màu: 4 accent miễn phí + 3 accent đổi bằng XP.
-            //
-            // Accent premium chưa mua thì KHÓA — bấm vào mở thẳng chợ thay vì
-            // đổi màu, để không ai dùng được thứ chưa trả XP.
-            Builder(
-              builder: (context) {
-                final ownedThemeIds = ref
-                    .watch(themeStoreProvider)
-                    .maybeWhen(
-                      data: (items) =>
-                          items.where((t) => t.owned).map((t) => t.id).toSet(),
-                      orElse: () => <String>{},
-                    );
-                bool unlocked(AppAccent a) =>
-                    !kPremiumAccents.contains(a) ||
-                    ownedThemeIds.contains(kAccentThemeId[a]);
-
-                return Row(
-                  children: AppAccent.values.map((accent) {
-                    final selected = accent == currentAccent;
-                    final isUnlocked = unlocked(accent);
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!isUnlocked) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ThemeMarketplaceScreen(isDarkMode: isDark),
-                              ),
-                            );
-                            return;
-                          }
-                          ref.read(accentProvider.notifier).setAccent(accent);
-                        },
-                        child: Column(
-                          children: [
-                            // Swatch cặp màu preset (accent trên, pair dưới),
-                            // viền ink + hard shadow khi được chọn
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              height: 44,
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: ink,
-                                  width: selected
-                                      ? GenZTokens.borderWidth
-                                      : 1.5,
-                                ),
-                                boxShadow: selected
-                                    ? [
-                                        BoxShadow(
-                                          color: ink,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Stack(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            color: accent.accent,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Container(color: accent.pair),
-                                        ),
-                                      ],
-                                    ),
-                                    if (selected)
-                                      Center(
-                                        child: Container(
-                                          padding: const EdgeInsets.all(2),
-                                          decoration: BoxDecoration(
-                                            color: GenZTokens.paper,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: GenZTokens.ink,
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: const Icon(
-                                            Icons.check_rounded,
-                                            color: GenZTokens.ink,
-                                            size: 16,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              accent.label,
-                              style: AppFonts.body(
-                                fontSize: 12,
-                                fontWeight: selected
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                                color: selected
-                                    ? primaryColor
-                                    : textSecondaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-
-            const SizedBox(height: 16),
-            Divider(color: ink, thickness: 1.5),
+            Divider(color: line, thickness: 1.0),
             const SizedBox(height: 16),
 
             Text(
@@ -2439,10 +2175,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 final isSelected = fontOpt == currentFont;
 
                 final textColor = isSelected
-                    ? currentAccent.onAccent
+                    ? onAccent
                     : textPrimaryColor;
                 final textSecColor = isSelected
-                    ? currentAccent.onAccent.withValues(alpha: 0.7)
+                    ? onAccent.withValues(alpha: 0.75)
                     : textSecondaryColor;
 
                 // Preview styles for each font option
@@ -2537,25 +2273,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                     decoration: BoxDecoration(
                       color: isSelected
                           ? primaryColor
-                          : isDark
-                          ? Colors.white.withValues(alpha: 0.05)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(14),
+                          : surfaceColor,
+                      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
                       border: Border.all(
                         color: isSelected
                             ? primaryColor
-                            : ink.withValues(alpha: 0.2),
-                        width: isSelected ? 2.5 : 1.5,
+                            : line,
+                        width: isSelected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
                       ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: ink,
-                                offset: const Offset(0, 3),
-                                blurRadius: 0,
-                              ),
-                            ]
-                          : null,
                     ),
                     child: Row(
                       children: [
@@ -2574,11 +2299,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: ink,
+                              color: onAccent,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              Icons.check_rounded,
+                              PhosphorIcons.check(),
                               color: primaryColor,
                               size: 14,
                             ),
@@ -2615,17 +2340,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: selected
-              ? (isDark ? Colors.white.withValues(alpha: 0.15) : Colors.white)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(999),
-          boxShadow: selected
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 0,
-                  ),
-                ]
-              : null,
+              ? (isDark ? GenZTokens.paperDark : GenZTokens.paper)
+              : (isDark ? GenZTokens.fillDark : GenZTokens.fill),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -2668,14 +2385,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? primaryColor.withValues(alpha: 0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+              ? (isDark ? GenZTokens.accentDark.withValues(alpha: 0.15) : GenZTokens.accentSoft)
+              : (isDark ? GenZTokens.fillDark : GenZTokens.fill),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
           border: Border.all(
             color: isSelected
                 ? primaryColor
-                : (isDark ? Colors.white24 : Colors.black12),
-            width: 1.2,
+                : (isDark ? GenZTokens.lineDark : GenZTokens.line),
+            width: isSelected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
           ),
         ),
         child: Text(
@@ -2685,7 +2402,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             fontWeight: FontWeight.bold,
             color: isSelected
                 ? primaryColor
-                : (isDark ? Colors.white70 : Colors.black54),
+                : (isDark
+                    ? GenZTokens.inkSoftDark
+                    : GenZTokens.inkSoft),
           ),
         ),
       ),

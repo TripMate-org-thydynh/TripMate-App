@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Chỉ khai báo quyền app THỰC SỰ dùng. Khai thừa sẽ lệch với bảng
          Data Safety trên Google Play và làm người dùng ngại cài. -->
+    <!-- Đọc GPS trong EXIF ảnh người dùng chọn (Đoán địa điểm từ ảnh). Không có
+         quyền này Android che toạ độ trong ảnh. -->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- CAMERA: Squad Cam (khung ngắm trực tiếp, chụp ảnh và quay clip ngắn),
          image_picker (chụp ảnh vị trí, quét vé). -->
@@ -9,6 +12,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- VIBRATE: HapticFeedback ở các thao tác chính. -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Android 13+ phải xin quyền này thì thông báo đẩy (bản tin sáng) mới hiện. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Máy không có camera vẫn cài được; Squad Cam sẽ báo lỗi rõ ràng. -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -103,6 +108,13 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Gọi xe từ điểm dừng lịch trình: Grab (deep link) + Be (mở app). -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="grab"/>
+        </intent>
+        <package android:name="com.grabtaxi.passenger"/>
+        <package android:name="xyz.be.customer"/>
         <!-- url_launcher: cho phép canLaunchUrl thấy app thanh toán + trình duyệt -->
         <intent>
             <action android:name="android.intent.action.VIEW"/>

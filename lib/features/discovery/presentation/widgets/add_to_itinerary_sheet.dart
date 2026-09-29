@@ -15,7 +15,7 @@ import '../../../trips/application/trips_providers.dart';
 ///
 /// Trước đây hàm lưu chỉ là `Future.delayed(1s)` kèm chú thích "Simulate NestJS
 /// POST request", rồi hiện dấu tick và đóng — người dùng thấy "Successfully
-/// added to Itinerary! 🎉" nhưng không có gì được ghi. Nay gọi
+/// added to Itinerary!" nhưng không có gì được ghi. Nay gọi
 /// `POST /trips/:id/itinerary` thật và báo lỗi nếu hỏng.
 class AddToItinerarySheet extends ConsumerStatefulWidget {
   final String placeName;
@@ -73,11 +73,11 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
     super.initState();
     _successController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 300),
     );
     _scaleAnimation = CurvedAnimation(
       parent: _successController,
-      curve: Curves.elasticOut,
+      curve: Curves.easeOutCubic,
     );
   }
 
@@ -92,8 +92,6 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
   String? get _tripId => widget.tripId ?? ref.read(activeTripIdProvider);
 
   /// Số ngày của chuyến, để danh sách ngày không vượt quá độ dài thật.
-  ///
-  /// Trước đây bộ chọn ngày cứng là `[1, 2, 3]` bất kể chuyến dài bao nhiêu.
   int get _tripDays {
     final id = _tripId;
     if (id == null) return 3;
@@ -148,7 +146,6 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             category: _activeTag,
           );
       if (!mounted) return;
-      // Lịch trình đã đổi — buộc màn lịch trình tải lại.
       ref.invalidate(tripItineraryProvider(tripId));
       setState(() {
         _isSaving = false;
@@ -169,7 +166,6 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSaving = false);
-      // Nói thẳng là lưu hỏng, thay vì hiện dấu tick như trước.
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,
@@ -179,25 +175,10 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isDark = widget.isDarkMode;
-
-    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
-    // va viet cung accent cua preset *grape*, nen doi theme khong an.
-    final primaryColor = Theme.of(context).colorScheme.primary;
-    final secondaryColor = isDark
-        ? GenZTokens.success
-        : GenZTokens.yellow;
-    final bgColor = Theme.of(context).scaffoldBackgroundColor;
-    final surfaceColor = isDark
-        ? GenZTokens.paperDark
-        : GenZTokens.paper;
-    final textColor = isDark
-        ? GenZTokens.inkDark
-        : GenZTokens.ink;
-    final subTextColor = isDark
-        ? GenZTokens.inkSoftDark
-        : GenZTokens.inkSoft;
+    final sheetBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.88,
@@ -206,47 +187,33 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
       builder: (_, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            color: bgColor,
+            color: sheetBg,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(32),
-              topRight: Radius.circular(32),
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
             ),
-            border: Border.all(
-              color: isDark
-                  ? GenZTokens.paperDark
-                  : GenZTokens.ink,
-              width: 2,
-            ),
-            boxShadow: GenZTokens.hardShadow(
-              isDark ? GenZTokens.inkDark : GenZTokens.ink,
-            ),
+            border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+            boxShadow: GenZTokens.hardShadow(ink, isDark),
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(32),
-              topRight: Radius.circular(32),
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
             ),
             child: SingleChildScrollView(
               controller: scrollController,
               physics: const BouncingScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
+                  horizontal: GenZTokens.space4,
+                  vertical: GenZTokens.space4,
                 ),
                 child: AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOutCubic,
                   child: _showSuccess
-                      ? _buildSuccessView(primaryColor, isDark, textColor)
-                      : _buildFormView(
-                          theme,
-                          primaryColor,
-                          secondaryColor,
-                          surfaceColor,
-                          textColor,
-                          subTextColor,
-                          isDark,
-                        ),
+                      ? _buildSuccessView(isDark)
+                      : _buildFormView(isDark),
                 ),
               ),
             ),
@@ -256,44 +223,45 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
     );
   }
 
-  Widget _buildSuccessView(Color primaryColor, bool isDark, Color textColor) {
+  Widget _buildSuccessView(bool isDark) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final successColor = isDark ? GenZTokens.successDark : GenZTokens.success;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 50),
+        const SizedBox(height: 40),
         ScaleTransition(
           scale: _scaleAnimation,
           child: Container(
-            width: 88,
-            height: 88,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: GenZTokens.success.withValues(alpha: 0.15),
-              border: Border.all(color: GenZTokens.success, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: GenZTokens.success.withValues(alpha: 0.25),
-                  blurRadius: 0,
-                ),
-              ],
+              color: successColor.withValues(alpha: 0.12),
+              border: Border.all(
+                color: successColor,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Icon(
               PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
-              color: GenZTokens.success,
-              size: 54,
+              color: successColor,
+              size: 48,
             ),
           ),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 20),
         Text(
           'itinerary.added_success'.tr(),
           style: AppFonts.heading(
-            fontSize: 24,
-            fontWeight: FontWeight.w900,
-            color: textColor,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: ink,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Text(
           'itinerary.scheduled_desc'.tr(
             namedArgs: {
@@ -303,42 +271,43 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             },
           ),
           textAlign: TextAlign.center,
-          style: AppFonts.body(
-            fontSize: 14,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          style: AppFonts.body(fontSize: 14, color: inkSoft),
         ),
-        const SizedBox(height: 60),
+        const SizedBox(height: 48),
       ],
     );
   }
 
-  Widget _buildFormView(
-    ThemeData theme,
-    Color primaryColor,
-    Color secondaryColor,
-    Color surfaceColor,
-    Color textColor,
-    Color subTextColor,
-    bool isDark,
-  ) {
+  Widget _buildFormView(bool isDark) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+    final onAccentSoft = isDark
+        ? GenZTokens.onAccentSoftDark
+        : GenZTokens.onAccentSoft;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Slide drag handle
         Center(
           child: Container(
-            width: 44,
-            height: 5,
+            width: 36,
+            height: 4,
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.15)
-                  : Colors.black.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(3),
+              color: line,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: GenZTokens.space4),
 
         // Header Title
         Row(
@@ -347,10 +316,9 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             Text(
               'ai.vibe_add'.tr(),
               style: AppFonts.heading(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                color: textColor,
-                letterSpacing: -0.5,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: ink,
               ),
             ),
             GestureDetector(
@@ -359,143 +327,103 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.black.withValues(alpha: 0.05),
+                  color: fill,
+                  border: Border.all(
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
                 ),
-                child: Icon(
-                  PhosphorIcons.x(),
-                  size: 16,
-                  color: textColor.withValues(alpha: 0.8),
-                ),
+                child: Icon(PhosphorIcons.x(), size: 16, color: inkSoft),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        // Ô tìm kiếm, hàng chip lọc và tiêu đề "Hidden Gems" đã bỏ:
-        // tất cả đều không bấm được, và sheet này mở ra là đã biết sẵn
-        // địa điểm cần thêm rồi.
-        const SizedBox(height: 16),
+        const SizedBox(height: GenZTokens.space4),
 
-        // Detailed Cafe Card representing widget.placeName / The Hill Station
+        // Detailed Card representing place
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: isDark
-                  ? GenZTokens.paperDark
-                  : GenZTokens.ink,
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-                blurRadius: 0,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            color: surface,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            border: Border.all(color: line, width: GenZTokens.borderWidthThin),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Cover Photo
-              Stack(
-                children: [
-                  // Nền màu, không phải ảnh Unsplash ngẫu nhiên.
-                  //
-                  // Địa điểm nay là thật (do AI trả về hoặc người dùng nhập)
-                  // nhưng app không có ảnh của nó, nên một tấm ảnh lạ dán vào
-                  // đây khiến người dùng tưởng đó là ảnh chỗ mình sắp thêm.
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(22),
-                        topRight: Radius.circular(22),
-                      ),
-                      color: Color(0xFF8B4DE8),
-                    ),
+              // Cover placeholder
+              Container(
+                height: 100,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(13),
+                    topRight: Radius.circular(13),
                   ),
-                  // Darken overlay
-                  Container(
-                    height: 150,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(22),
-                        topRight: Radius.circular(22),
-                      ),
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.black.withValues(alpha: 0.4),
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
+                  color: fill,
+                ),
+                child: Center(
+                  child: Icon(
+                    PhosphorIcons.mapPin(PhosphorIconsStyle.fill),
+                    size: 36,
+                    color: accent,
                   ),
-                  // Hai overlay "Café & Deli" và điểm "4.9" đã bỏ:
-                  // app không có phân loại lẫn đánh giá cho địa điểm này.
-                ],
+                ),
               ),
 
               // Card details + Schedule form parameters
               Padding(
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(GenZTokens.space4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.placeName,
                       style: AppFonts.heading(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: textColor,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: ink,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(PhosphorIcons.mapPin(), color: subTextColor, size: 12),
-                        const SizedBox(width: 4),
-                        Text(
-                          widget.placeAddress.isNotEmpty
-                              ? widget.placeAddress
-                              : '',
-                          style: AppFonts.body(
-                            fontSize: 12,
-                            color: subTextColor,
+                    if (widget.placeAddress.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.mapPin(),
+                            color: inkSoft,
+                            size: 14,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Divider(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.06),
-                    ),
-                    const SizedBox(height: 10),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              widget.placeAddress,
+                              style: AppFonts.body(
+                                fontSize: 13,
+                                color: inkSoft,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: GenZTokens.space3),
+                    Divider(color: line),
+                    const SizedBox(height: GenZTokens.space2),
 
                     // Inline Schedule pickers
                     Text(
                       'itinerary.schedule_spot'.tr(),
                       style: AppFonts.heading(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: textColor.withValues(alpha: 0.9),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: ink,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: GenZTokens.space2),
 
                     // Days selector
-                    //
-                    // Phải cuộn ngang: chuyến dài (7 ngày trở lên) làm hàng nút
-                    // tràn khỏi màn — "RIGHT OVERFLOWED BY 142 PIXELS".
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -512,37 +440,27 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                 });
                               },
                               child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
+                                duration: const Duration(milliseconds: 150),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? primaryColor.withValues(alpha: 0.15)
-                                      : (isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.04,
-                                              )
-                                            : Colors.black.withValues(
-                                                alpha: 0.03,
-                                              )),
-                                  borderRadius: BorderRadius.circular(12),
+                                  color: isSelected ? accentSoft : fill,
+                                  borderRadius: BorderRadius.circular(
+                                    GenZTokens.radiusButton,
+                                  ),
                                   border: Border.all(
-                                    color: isSelected
-                                        ? primaryColor
-                                        : Colors.transparent,
-                                    width: 1,
+                                    color: isSelected ? accent : line,
+                                    width: GenZTokens.borderWidthThin,
                                   ),
                                 ),
                                 child: Text(
                                   'common.day_n'.tr(namedArgs: {'n': '$day'}),
                                   style: AppFonts.heading(
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: isSelected
-                                        ? primaryColor
-                                        : subTextColor,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelected ? onAccentSoft : inkSoft,
                                   ),
                                 ),
                               ),
@@ -551,11 +469,11 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                         }).toList(),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: GenZTokens.space3),
 
                     // Time option picker
                     SizedBox(
-                      height: 34,
+                      height: 36,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
@@ -572,38 +490,28 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                                 });
                               },
                               child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
+                                duration: const Duration(milliseconds: 150),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
                                   vertical: 8,
                                 ),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? secondaryColor.withValues(alpha: 0.15)
-                                      : (isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.04,
-                                              )
-                                            : Colors.black.withValues(
-                                                alpha: 0.03,
-                                              )),
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: isSelected ? accentSoft : fill,
+                                  borderRadius: BorderRadius.circular(
+                                    GenZTokens.radiusButton,
+                                  ),
                                   border: Border.all(
-                                    color: isSelected
-                                        ? secondaryColor
-                                        : Colors.transparent,
-                                    width: 1,
+                                    color: isSelected ? accent : line,
+                                    width: GenZTokens.borderWidthThin,
                                   ),
                                 ),
                                 child: Text(
                                   time,
                                   style: AppFonts.heading(
                                     fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: isSelected
-                                        ? secondaryColor
-                                        : subTextColor,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelected ? onAccentSoft : inkSoft,
                                   ),
                                 ),
                               ),
@@ -612,106 +520,82 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
                         },
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: GenZTokens.space3),
 
                     // Alter Ego Notes
                     Container(
-                      height: 38,
+                      height: 44,
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.03)
-                            : Colors.black.withValues(alpha: 0.02),
-                        borderRadius: BorderRadius.circular(10),
+                        color: fill,
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusInput,
+                        ),
                         border: Border.all(
-                          color: isDark
-                              ? GenZTokens.paperDark
-                              : GenZTokens.ink,
-                          width: 2,
+                          color: line,
+                          width: GenZTokens.borderWidthThin,
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 12),
+                      alignment: Alignment.centerLeft,
                       child: TextField(
                         controller: _notesController,
-                        style: AppFonts.body(fontSize: 13, color: textColor),
+                        style: AppFonts.body(fontSize: 14, color: ink),
                         decoration: InputDecoration(
                           hintText: 'itinerary.notes_hint'.tr(),
-                          hintStyle: TextStyle(
-                            color: subTextColor,
-                            fontSize: 13,
+                          hintStyle: AppFonts.body(
+                            color: inkSoft,
+                            fontSize: 14,
                           ),
                           border: InputBorder.none,
                           isDense: true,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    Divider(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.06),
-                    ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: GenZTokens.space4),
+                    Divider(color: line),
+                    const SizedBox(height: GenZTokens.space3),
 
-                    // Crew also down to go + Gradient Add to Trip button
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Cụm "Also down to go" đã bỏ: đó là avatar của
-                        // những người bịa, không ai xác nhận đi cùng cả.
-                        const SizedBox.shrink(),
-
-                        // Add to Trip Button (Kinetic Gradient)
-                        GestureDetector(
-                          onTap: _isSaving ? null : _saveToItinerary,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: primaryColor.withValues(alpha: 0.3),
-                                  blurRadius: 0,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: _isSaving
-                                ? const SizedBox(
-                                    width: 14,
-                                    height: 14,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        GenZTokens.ink,
-                                      ),
-                                    ),
-                                  )
-                                : Row(
-                                    children: [
-                                      Icon(
-                                        PhosphorIcons.plusCircle(),
-                                        color: GenZTokens.ink,
-                                        size: 14,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        'itinerary.add_to_trip'.tr(),
-                                        style: AppFonts.heading(
-                                          color: GenZTokens.ink,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
+                    // Add to Trip Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton.icon(
+                        onPressed: _isSaving ? null : _saveToItinerary,
+                        icon: _isSaving
+                            ? SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    onAccent,
                                   ),
+                                ),
+                              )
+                            : Icon(
+                                PhosphorIcons.plus(),
+                                color: onAccent,
+                                size: 18,
+                              ),
+                        label: Text(
+                          'itinerary.add_to_trip'.tr(),
+                          style: AppFonts.heading(
+                            color: onAccent,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ],
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: accent,
+                          foregroundColor: onAccent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusButton,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -719,9 +603,7 @@ class _AddToItinerarySheetState extends ConsumerState<AddToItinerarySheet>
             ],
           ),
         ),
-        // Khối "More spots nearby" đã bỏ: đó là các quán in cứng
-        // (Morning Glory Original...) không liên quan chuyến nào.
-        const SizedBox(height: 20),
+        const SizedBox(height: GenZTokens.space4),
       ],
     );
   }

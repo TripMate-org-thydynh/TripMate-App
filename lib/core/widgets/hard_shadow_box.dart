@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/gen_z_tokens.dart';
 
-/// Hộp nền brutalist: viền ink dày + hard shadow lệch (0,4) blur 0.
-/// Dùng làm khối nền cho mọi component tùy biến.
+/// Hộp bề mặt nổi (sheet, dialog, menu): viền line 1px,
+/// bóng mờ nhẹ ở light mode, không bóng ở dark mode (spec mục 4).
 class HardShadowBox extends StatelessWidget {
   final Widget child;
   final Color? color;
@@ -19,7 +19,7 @@ class HardShadowBox extends StatelessWidget {
     this.color,
     this.borderColor,
     this.shadowColor,
-    this.borderWidth = GenZTokens.borderWidth,
+    this.borderWidth = GenZTokens.borderWidthThin,
     this.radius = GenZTokens.radiusCard,
     this.padding,
     this.showShadow = true,
@@ -28,16 +28,20 @@ class HardShadowBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
 
     return DecoratedBox(
       decoration: BoxDecoration(
         color: color ?? surface,
         borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: borderColor ?? ink, width: borderWidth),
+        border: Border.all(
+          color: borderColor ?? line,
+          width: borderWidth,
+        ),
         boxShadow: showShadow
-            ? GenZTokens.hardShadow(shadowColor ?? ink)
+            ? GenZTokens.hardShadow(shadowColor ?? ink, isDark)
             : null,
       ),
       child: padding != null ? Padding(padding: padding!, child: child) : child,

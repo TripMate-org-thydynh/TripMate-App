@@ -17,24 +17,27 @@ class OfflineBanner extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    const bgColor = GenZTokens.orange;
-    final borderInk = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    const textInk = GenZTokens.ink;
+    final warning = isDark ? GenZTokens.warningDark : GenZTokens.warning;
+    final bg = isDark ? const Color(0xFF28231C) : const Color(0xFFFBF6ED);
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderInk, width: 2),
-        boxShadow: GenZTokens.hardShadow(borderInk),
+        color: bg,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(
+          color: warning.withValues(alpha: isDark ? 0.4 : 0.3),
+          width: GenZTokens.borderWidthThin,
+        ),
       ),
       child: Row(
         children: [
-          Icon(PhosphorIcons.wifiSlash(), color: textInk, size: 20),
-          const SizedBox(width: 10),
+          Icon(PhosphorIcons.wifiSlash(), color: warning, size: 20),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,16 +46,16 @@ class OfflineBanner extends ConsumerWidget {
                 Text(
                   'errors.viewing_offline'.tr(),
                   style: AppFonts.heading(
-                    color: textInk,
-                    fontWeight: FontWeight.w900,
+                    color: ink,
+                    fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    letterSpacing: 0.3,
+                    letterSpacing: -0.1,
                   ),
                 ),
                 Text(
                   'errors.offline_cache'.tr(),
                   style: AppFonts.body(
-                    color: textInk.withValues(alpha: 0.85),
+                    color: inkSoft,
                     fontSize: 12,
                   ),
                 ),

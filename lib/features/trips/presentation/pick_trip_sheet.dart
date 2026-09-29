@@ -33,10 +33,11 @@ class PickTripSheet extends ConsumerWidget {
     );
   }
 
-  Color _bg(BuildContext context) => Theme.of(context).scaffoldBackgroundColor;
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _sub => isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,29 +48,32 @@ class PickTripSheet extends ConsumerWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.72,
       ),
       decoration: BoxDecoration(
-        color: _bg(context),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        border: Border(
-          top: BorderSide(color: _ink, width: 2.5),
-          left: BorderSide(color: _ink, width: 2.5),
-          right: BorderSide(color: _ink, width: 2.5),
+        color: _surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
         ),
+        border: Border(
+          top: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+          left: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+          right: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+        ),
+        boxShadow: GenZTokens.hardShadow(_ink, isDarkMode),
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: Container(
-                  width: 40,
+                  width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: _sub.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(99),
+                    color: _sub.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   ),
                 ),
               ),
@@ -77,9 +81,9 @@ class PickTripSheet extends ConsumerWidget {
               Text(
                 title ?? 'trips.pick_trip'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
                   color: _ink,
                 ),
               ),
@@ -118,24 +122,24 @@ class PickTripSheet extends ConsumerWidget {
         Navigator.pop(context, t);
       },
       color: _surface,
-      radius: 16,
-      borderWidth: 2,
-      depth: 3,
-      padding: const EdgeInsets.all(14),
+      radius: GenZTokens.radiusCard,
+      borderWidth: GenZTokens.borderWidthThin,
+      depth: 1,
+      padding: const EdgeInsets.all(12),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: GenZTokens.yellow,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: _ink, width: 2),
+              color: isDarkMode ? GenZTokens.fillDark : GenZTokens.fill,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
             ),
             child: Icon(
               PhosphorIcons.ticket(PhosphorIconsStyle.fill),
-              color: GenZTokens.ink,
-              size: 22,
+              color: _accent,
+              size: 20,
             ),
           ),
           const SizedBox(width: 12),
@@ -149,7 +153,7 @@ class PickTripSheet extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppFonts.heading(
                     fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w700,
                     color: _ink,
                   ),
                 ),
@@ -180,7 +184,7 @@ class PickTripSheet extends ConsumerWidget {
             msg,
             textAlign: TextAlign.center,
             style: AppFonts.body(
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: FontWeight.w600,
               color: _sub,
             ),

@@ -29,6 +29,12 @@ class TripMomentsFeedScreen extends ConsumerWidget {
       _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
   Color _primaryOf(BuildContext context) =>
       Theme.of(context).colorScheme.primary;
+  Color _onPrimaryOf(BuildContext context) =>
+      Theme.of(context).colorScheme.onPrimary;
+  Color _lineOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.lineDark : GenZTokens.line;
+  Color _fillOf(BuildContext context) =>
+      _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
   Color _textPri(BuildContext context) =>
       _isDark(context) ? GenZTokens.inkDark : GenZTokens.ink;
   Color _textSec(BuildContext context) =>
@@ -42,16 +48,18 @@ class TripMomentsFeedScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(momentsProvider(tripId));
+    final bg = _bgOf(context);
     return Scaffold(
-      backgroundColor: _bgOf(context),
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: Text(
           'moments.title'.tr(),
           style: AppFonts.heading(
             fontSize: 17,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             color: _textPri(context),
           ),
         ),
@@ -82,9 +90,8 @@ class TripMomentsFeedScreen extends ConsumerWidget {
         height: 280,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: (_isDark(context) ? GenZTokens.inkDark : GenZTokens.ink)
-              .withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(20),
+          color: _fillOf(context),
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         ),
       ),
     ),
@@ -98,14 +105,17 @@ class TripMomentsFeedScreen extends ConsumerWidget {
           children: [
             Icon(
               PhosphorIcons.cloudSlash(),
-              color: GenZTokens.danger,
+              color: _isDark(context)
+                  ? GenZTokens.dangerDark
+                  : GenZTokens.danger,
               size: 40,
             ),
             const SizedBox(height: 12),
             Text(
               'moments.load_failed'.tr(),
               style: AppFonts.heading(
-                fontWeight: FontWeight.w800,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
                 color: _textPri(context),
               ),
             ),
@@ -113,7 +123,10 @@ class TripMomentsFeedScreen extends ConsumerWidget {
             FilledButton.icon(
               style: FilledButton.styleFrom(
                 backgroundColor: _primaryOf(context),
-                foregroundColor: GenZTokens.ink,
+                foregroundColor: _onPrimaryOf(context),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                ),
               ),
               onPressed: () => ref.invalidate(momentsProvider(tripId)),
               icon: Icon(PhosphorIcons.arrowsClockwise()),
@@ -136,7 +149,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _primaryOf(context).withValues(alpha: 0.12),
+                color: _fillOf(context),
               ),
               child: Icon(
                 PhosphorIcons.camera(PhosphorIconsStyle.fill),
@@ -149,14 +162,14 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               'moments.empty'.tr(),
               style: AppFonts.heading(
                 fontSize: 17,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w700,
                 color: _textPri(context),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               'moments.empty_sub'.tr(),
-              style: AppFonts.body(fontSize: 14, color: _textSec(context)),
+              style: AppFonts.body(fontSize: 15, color: _textSec(context)),
             ),
           ],
         ),
@@ -169,12 +182,10 @@ class TripMomentsFeedScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: _surfaceOf(context),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: _isDark(context)
-              ? GenZTokens.inkDark.withValues(alpha: 0.12)
-              : GenZTokens.ink,
-          width: 2,
+          color: _lineOf(context),
+          width: GenZTokens.borderWidthThin,
         ),
       ),
       child: Column(
@@ -187,7 +198,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundColor: _primaryOf(context).withValues(alpha: 0.15),
+                  backgroundColor: _fillOf(context),
                   backgroundImage: m.authorAvatar != null
                       ? NetworkImage(m.authorAvatar!)
                       : null,
@@ -196,7 +207,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                           m.authorName.characters.first,
                           style: AppFonts.heading(
                             color: _textPri(context),
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                           ),
                         )
                       : null,
@@ -206,7 +217,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                   child: Text(
                     m.authorName,
                     style: AppFonts.heading(
-                      fontSize: 14,
+                      fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: _textPri(context),
                     ),
@@ -227,13 +238,12 @@ class TripMomentsFeedScreen extends ConsumerWidget {
             child: CachedNetworkImage(
               imageUrl: m.mediaUrl,
               fit: BoxFit.cover,
-              placeholder: (c, url) =>
-                  Container(color: _primaryOf(context).withValues(alpha: 0.08)),
+              placeholder: (c, url) => Container(color: _fillOf(context)),
               errorWidget: (c, url, err) => Container(
-                color: _primaryOf(context).withValues(alpha: 0.08),
+                color: _fillOf(context),
                 child: Icon(
                   PhosphorIcons.image(),
-                  color: _primaryOf(context),
+                  color: _textSec(context),
                   size: 40,
                 ),
               ),
@@ -250,7 +260,9 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                     children: [
                       Icon(
                         PhosphorIcons.heart(PhosphorIconsStyle.fill),
-                        color: _primaryOf(context),
+                        color: m.reactionCount > 0
+                            ? _primaryOf(context)
+                            : _textSec(context),
                         size: 20,
                       ),
                       const SizedBox(width: 5),
@@ -285,7 +297,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               child: Text(
                 m.caption!,
                 style: AppFonts.body(
-                  fontSize: 14,
+                  fontSize: 15,
                   color: _textPri(context),
                   height: 1.3,
                 ),

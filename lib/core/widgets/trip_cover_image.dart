@@ -4,32 +4,51 @@ import 'package:flutter/material.dart';
 import '../theme/gen_z_tokens.dart';
 
 /// Ảnh bìa chuyến — nhận cả **asset path** lẫn **URL**.
-///
-/// Ảnh bìa do người dùng chọn lúc tạo chuyến được lưu dưới dạng đường dẫn asset
-/// (`assets/images/cover_tokyo_drift.webp`), nhưng nơi hiển thị lại dùng
-/// `CachedNetworkImage` vốn chỉ hiểu URL — nên ảnh bìa luôn im lặng rơi về nền
-/// xanh trơn. Widget này chọn đúng loại theo giá trị nhận được.
+/// Tuân thủ quy chuẩn spec mục 8: tỷ lệ cố định (16:9 cho ảnh bìa, 4:3 cho danh sách, 1:1 cho ô lưới),
+/// scrim thống nhất ở 40% dưới của ảnh.
 class TripCoverImage extends StatelessWidget {
   final String? source;
   final BoxFit fit;
 
-  /// Màu nền khi không có ảnh / ảnh lỗi.
-  final Color fallbackColor;
+  /// Màu nền khi không có ảnh / ảnh lỗi. Mặc định dùng fill/fillDark.
+  final Color? fallbackColor;
 
-  /// Nhãn ngữ nghĩa cho trình đọc màn hình (ví dụ: 'Ảnh bìa chuyến đi Đà Lạt').
+  /// Tỷ lệ khung hình cố định (ảnh bìa 16:9, danh sách 4:3, ô lưới 1:1).
+  /// Null nếu widget cha đã ràng buộc kích thước (ví dụ SizedBox, Stack fit expand).
+  final double? aspectRatio;
+
+  /// Bật scrim gradient thống nhất (từ transparent tới #000000 alpha 0.55 ở 40% dưới).
+  final bool withScrim;
+
+  /// Nhãn ngữ nghĩa cho trình đọc màn hình.
   final String? semanticLabel;
 
-  /// Nếu là true, bỏ qua ngữ nghĩa hoàn toàn (dùng khi ảnh chỉ mang tính trang trí hoặc đã có tiêu đề bên cạnh).
+  /// Nếu là true, bỏ qua ngữ nghĩa hoàn toàn.
   final bool excludeSemantics;
 
   const TripCoverImage({
     super.key,
     required this.source,
     this.fit = BoxFit.cover,
-    this.fallbackColor = GenZTokens.green,
+    this.fallbackColor,
+    this.aspectRatio,
+    this.withScrim = false,
     this.semanticLabel,
     this.excludeSemantics = false,
   });
+
+  /// Gradient scrim chuẩn theo spec mục 8:
+  /// dọc từ transparent tới #000000 alpha 0.55 ở 40% dưới của ảnh.
+  static const LinearGradient unifiedScrim = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    stops: [0.0, 0.6, 1.0],
+    colors: [
+      Colors.transparent,
+      Colors.transparent,
+      Color(0x8C000000),
+    ],
+  );
 
   bool get _isAsset => source != null && source!.startsWith('assets/');
   bool get _isUrl =>
@@ -38,28 +57,47 @@ class TripCoverImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final src = source;
-    if (src == null || src.isEmpty) {
-      return ExcludeSemantics(child: ColoredBox(color: fallbackColor));
-    }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = fallbackColor ?? (isDark ? GenZTokens.fillDark : GenZTokens.fill);
 
-    Widget content;
-    if (_isAsset) {
-      content = Image.asset(
+    final src = source;
+    Widget imageContent;
+
+    if (src == null || src.isEmpty) {
+      imageContent = ColoredBox(color: bg);
+    } else if (_isAsset) {
+      imageContent = Image.asset(
         src,
         fit: fit,
-        errorBuilder: (_, _, _) => ColoredBox(color: fallbackColor),
+        errorBuilder: (_, _, _) => ColoredBox(color: bg),
       );
     } else if (_isUrl) {
-      content = CachedNetworkImage(
+      imageContent = CachedNetworkImage(
         imageUrl: src,
         fit: fit,
-        placeholder: (_, _) => ColoredBox(color: fallbackColor),
-        errorWidget: (_, _, _) => ColoredBox(color: fallbackColor),
+        placeholder: (_, _) => ColoredBox(color: bg),
+        errorWidget: (_, _, _) => ColoredBox(color: bg),
       );
     } else {
-      // Giá trị lạ (BE trả khoá nội bộ chẳng hạn) — không đoán, dùng nền màu.
-      return ExcludeSemantics(child: ColoredBox(color: fallbackColor));
+      imageContent = ColoredBox(color: bg);
+    }
+
+    Widget content = withScrim
+        ? Stack(
+            fit: StackFit.passthrough,
+            children: [
+              imageContent,
+              const Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(gradient: unifiedScrim),
+                ),
+              ),
+            ],
+          )
+        : imageContent;
+
+    if (aspectRatio != null) {
+      content = AspectRatio(aspectRatio: aspectRatio!, child: content);
     }
 
     if (excludeSemantics || semanticLabel == null) {

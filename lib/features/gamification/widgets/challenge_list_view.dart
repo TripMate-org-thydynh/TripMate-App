@@ -41,8 +41,8 @@ class ChallengeListScreen extends ConsumerWidget {
         title: Text(
           titleKey.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -84,14 +84,22 @@ class ChallengeListScreen extends ConsumerWidget {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Container(
       padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
-        color: c.completed ? GenZTokens.green : surface,
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidth),
-        boxShadow: GenZTokens.hardShadow(ink),
+        border: Border.all(
+          color: c.completed ? success : line,
+          width: c.completed
+              ? GenZTokens.borderWidth
+              : GenZTokens.borderWidthThin,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,9 +110,9 @@ class ChallengeListScreen extends ConsumerWidget {
                 child: Text(
                   c.title,
                   style: AppFonts.heading(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: c.completed ? GenZTokens.ink : ink,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: ink,
                   ),
                 ),
               ),
@@ -115,10 +123,10 @@ class ChallengeListScreen extends ConsumerWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: GenZTokens.yellow,
+                  color: fill,
                   borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   border: Border.all(
-                    color: GenZTokens.ink,
+                    color: line,
                     width: GenZTokens.borderWidthThin,
                   ),
                 ),
@@ -127,7 +135,7 @@ class ChallengeListScreen extends ConsumerWidget {
                   style: AppFonts.mono(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: GenZTokens.ink,
+                    color: ink,
                   ),
                 ),
               ),
@@ -139,9 +147,7 @@ class ChallengeListScreen extends ConsumerWidget {
             style: AppFonts.body(
               fontSize: 13,
               height: 1.4,
-              color: c.completed
-                  ? GenZTokens.ink.withValues(alpha: 0.8)
-                  : inkSoft,
+              color: inkSoft,
             ),
           ),
           const SizedBox(height: GenZTokens.space4),
@@ -150,9 +156,9 @@ class ChallengeListScreen extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: c.percent / 100,
               minHeight: 10,
-              backgroundColor: ink.withValues(alpha: 0.15),
+              backgroundColor: fill,
               valueColor: AlwaysStoppedAnimation(
-                c.completed ? GenZTokens.ink : GenZTokens.green,
+                c.completed ? success : accent,
               ),
             ),
           ),
@@ -164,7 +170,7 @@ class ChallengeListScreen extends ConsumerWidget {
             style: AppFonts.mono(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: c.completed ? GenZTokens.ink : inkSoft,
+              color: c.completed ? success : inkSoft,
             ),
           ),
         ],

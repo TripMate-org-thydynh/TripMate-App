@@ -22,10 +22,7 @@ class PremiumHubScreen extends StatefulWidget {
   State<PremiumHubScreen> createState() => _PremiumHubScreenState();
 }
 
-class _PremiumHubScreenState extends State<PremiumHubScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _shimmerController;
-
+class _PremiumHubScreenState extends State<PremiumHubScreen> {
   /// Theo đúng chế độ sáng/tối của app thay vì giữ cờ riêng — cờ riêng làm màn
   /// này lệch pha với theme người dùng đã chọn.
   bool get _isDarkMode => Theme.of(context).brightness == Brightness.dark;
@@ -39,34 +36,20 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _shimmerController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final isDark = _isDarkMode;
 
-    final primaryColor = isDark ? GenZTokens.lilac : GenZTokens.purple;
-    final secondaryColor = isDark ? GenZTokens.yellow : GenZTokens.orange;
-    final tertiaryColor = isDark ? GenZTokens.orange : GenZTokens.yellow;
-
     final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final textSecondary =
-        isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final glassBorder = textPrimary; // viền ink brutalist
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final accent = Theme.of(context).colorScheme.primary;
+    final onAccent = Theme.of(context).colorScheme.onPrimary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -95,8 +78,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                       Text(
                         tr('premium.elite_squad'),
                         style: AppFonts.heading(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
                           color: textPrimary,
                         ),
                       ),
@@ -121,17 +104,12 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                 Text(
                                   'TripMate',
                                   style: AppFonts.heading(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: -1.5,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.5,
                                     color: textPrimary,
                                   ),
                                 ),
-                                // Username THẬT của user.
-                                //
-                                // Trước đây in cứng '@adventure_seeker' nên ai
-                                // mở màn Premium cũng thấy tên tài khoản của
-                                // một người không tồn tại.
                                 Consumer(
                                   builder: (context, ref, _) {
                                     final p = ref
@@ -148,8 +126,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                       '@$name',
                                       style: AppFonts.body(
                                         fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: tertiaryColor,
+                                        fontWeight: FontWeight.w600,
+                                        color: accent,
                                       ),
                                     );
                                   },
@@ -160,12 +138,12 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: tertiaryColor.withValues(alpha: 0.15),
+                                color: accentSoft,
                               ),
                               child: Icon(
                                 PhosphorIcons.crown(),
-                                color: tertiaryColor,
-                                size: 24,
+                                color: accent,
+                                size: 22,
                               ),
                             ),
                           ],
@@ -175,10 +153,10 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                         Text(
                           tr('premium.hero_sub'),
                           style: AppFonts.heading(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
                             color: textPrimary,
-                            height: 1.3,
+                            height: 1.35,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -188,7 +166,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                           tr('premium.cinematic_themes'),
                           style: AppFonts.heading(
                             fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             color: textPrimary,
                           ),
                         ),
@@ -201,7 +179,6 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                             itemCount: _themes.length,
                             itemBuilder: (context, index) {
                               final thm = _themes[index];
-                              final isNeon = thm == 'Tokyo Neon';
                               return Container(
                                 margin: const EdgeInsets.only(right: 8),
                                 padding: const EdgeInsets.symmetric(
@@ -209,36 +186,22 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isDark
-                                      ? GenZTokens.paperDark
-                                      : GenZTokens.paper,
-                                  borderRadius: BorderRadius.circular(19),
-                                  border: Border.all(
-                                    color: isNeon
-                                        ? secondaryColor
-                                        : glassBorder,
-                                    width: isNeon ? 1.5 : 1.0,
+                                  color: cardBg,
+                                  borderRadius: BorderRadius.circular(
+                                    GenZTokens.radiusPill,
                                   ),
-                                  boxShadow: isNeon
-                                      ? [
-                                          BoxShadow(
-                                            color: secondaryColor.withValues(
-                                              alpha: 0.25,
-                                            ),
-                                            blurRadius: 0,
-                                          ),
-                                        ]
-                                      : null,
+                                  border: Border.all(
+                                    color: line,
+                                    width: GenZTokens.borderWidthThin,
+                                  ),
                                 ),
                                 child: Center(
                                   child: Text(
                                     thm,
-                                    style: AppFonts.heading(
+                                    style: AppFonts.body(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: isNeon
-                                          ? secondaryColor
-                                          : textPrimary,
+                                      fontWeight: FontWeight.w500,
+                                      color: textPrimary,
                                     ),
                                   ),
                                 ),
@@ -253,7 +216,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                           tr('premium.feat_identity_title'),
                           tr('premium.feat_identity_desc'),
                           PhosphorIcons.sparkle(),
-                          primaryColor,
+                          accent,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -261,7 +225,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                           tr('premium.feat_spots_title'),
                           tr('premium.feat_spots_desc'),
                           PhosphorIcons.mapPin(),
-                          secondaryColor,
+                          accent,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -269,7 +234,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                           tr('premium.feat_reactions_title'),
                           tr('premium.feat_reactions_desc'),
                           PhosphorIcons.smiley(),
-                          tertiaryColor,
+                          accent,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -277,83 +243,64 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                           tr('premium.feat_storage_title'),
                           tr('premium.feat_storage_desc'),
                           PhosphorIcons.cloudArrowUp(),
-                          primaryColor,
+                          accent,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
 
                         const SizedBox(height: 28),
 
-                        // Shimmering payment/join button (GenZ style with yellow accent)
-                        AnimatedBuilder(
-                          animation: _shimmerController,
-                          builder: (context, child) {
-                            return ShaderMask(
-                              shaderCallback: (bounds) {
-                                return LinearGradient(
-                                  colors: [
-                                    Colors.white.withValues(alpha: 0.1),
-                                    Colors.white.withValues(alpha: 0.9),
-                                    Colors.white.withValues(alpha: 0.1),
-                                  ],
-                                  stops: const [0.35, 0.5, 0.65],
-                                  transform: SlideGradientTransform(
-                                    percent: _shimmerController.value,
-                                  ),
-                                ).createShader(bounds);
-                              },
-                              blendMode: BlendMode.srcATop,
-                              child: child,
+                        // Join button (single accent CTA)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SubscriptionCheckoutScreen(),
+                              ),
                             );
                           },
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SubscriptionCheckoutScreen(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: GenZTokens.yellow,
-                                borderRadius: BorderRadius.circular(28),
-                                border: Border.all(
-                                  color: textPrimary,
-                                  width: 2,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: textPrimary,
-                                    blurRadius: 0,
-                                    offset: const Offset(0, 4),
+                          child: Container(
+                            width: double.infinity,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: accent,
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusButton,
+                              ),
+                              boxShadow: isDark
+                                  ? const []
+                                  : [
+                                      BoxShadow(
+                                        color: GenZTokens.ink.withValues(
+                                          alpha: 0.08,
+                                        ),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                            ),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    tr('premium.join_elite'),
+                                    style: AppFonts.heading(
+                                      color: onAccent,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    PhosphorIcons.arrowRight(),
+                                    color: onAccent,
+                                    size: 18,
                                   ),
                                 ],
-                              ),
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      tr('premium.join_elite'),
-                                      style: AppFonts.heading(
-                                        color: GenZTokens.ink,
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      PhosphorIcons.arrowRight(),
-                                      color: GenZTokens.ink,
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
                               ),
                             ),
                           ),
@@ -366,7 +313,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                           tr('premium.services_settings'),
                           style: AppFonts.heading(
                             fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             color: textPrimary,
                           ),
                         ),
@@ -386,7 +333,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                             );
                           },
                           cardBg,
-                          glassBorder,
+                          line,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -405,7 +353,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                             );
                           },
                           cardBg,
-                          glassBorder,
+                          line,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -424,7 +373,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                             );
                           },
                           cardBg,
-                          glassBorder,
+                          line,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -445,7 +395,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                             );
                           },
                           cardBg,
-                          glassBorder,
+                          line,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -464,7 +415,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                             );
                           },
                           cardBg,
-                          glassBorder,
+                          line,
+                          fill,
                           textPrimary,
                           textSecondary,
                         ),
@@ -486,7 +438,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
     String title,
     String subtitle,
     IconData icon,
-    Color glowColor,
+    Color iconColor,
+    Color iconBg,
     Color textPrimary,
     Color textSecondary,
   ) {
@@ -497,11 +450,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: glowColor.withValues(alpha: 0.15),
-            ),
-            child: Icon(icon, color: glowColor, size: 16),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: iconBg),
+            child: Icon(icon, color: iconColor, size: 16),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -512,7 +462,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
                   title,
                   style: AppFonts.heading(
                     fontSize: 13,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: textPrimary,
                   ),
                 ),
@@ -535,7 +485,8 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
     IconData icon,
     VoidCallback onTap,
     Color cardBg,
-    Color glassBorder,
+    Color line,
+    Color fill,
     Color textPrimary,
     Color textSecondary,
   ) {
@@ -543,17 +494,20 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: glassBorder, width: 2),
-        boxShadow: [BoxShadow(color: glassBorder, offset: const Offset(0, 3))],
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: ListTile(
         onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        ),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: textPrimary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(10),
+            color: fill,
+            borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
           ),
           child: Icon(icon, size: 18, color: textPrimary),
         ),
@@ -561,7 +515,7 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
           title,
           style: AppFonts.heading(
             fontSize: 13,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             color: textPrimary,
           ),
         ),
@@ -576,16 +530,5 @@ class _PremiumHubScreenState extends State<PremiumHubScreen>
         ),
       ),
     );
-  }
-}
-
-class SlideGradientTransform extends GradientTransform {
-  final double percent;
-  const SlideGradientTransform({required this.percent});
-
-  @override
-  Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
-    final double dx = bounds.width * (percent * 2.0 - 1.0);
-    return Matrix4.translationValues(dx, 0.0, 0.0);
   }
 }

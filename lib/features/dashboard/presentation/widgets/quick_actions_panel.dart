@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
@@ -160,15 +161,24 @@ class QuickActionsPanel extends StatelessWidget {
     }
   }
 
-  void _showAllActionsSheet(BuildContext context) {
-    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-    final paper = isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+  Color get _textSec =>
+      isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _onAccent =>
+      isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
+  void _showAllActionsSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: paper,
+      backgroundColor: _surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(GenZTokens.radiusCard),
+        ),
       ),
       builder: (ctx) {
         return SafeArea(
@@ -184,13 +194,13 @@ class QuickActionsPanel extends StatelessWidget {
                     Text(
                       'dashboard.quick_actions'.tr(),
                       style: AppFonts.heading(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 18,
-                        color: ink,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 17,
+                        color: _textPri,
                       ),
                     ),
                     IconButton(
-                      icon: Icon(PhosphorIcons.x(), color: ink, size: 20),
+                      icon: Icon(PhosphorIcons.x(), color: _textPri, size: 20),
                       onPressed: () => Navigator.pop(ctx),
                     ),
                   ],
@@ -206,12 +216,12 @@ class QuickActionsPanel extends StatelessWidget {
                         Navigator.pop(ctx);
                         _handleTap(context, type);
                       },
-                      color: paper,
-                      borderColor: ink,
-                      shadowColor: ink,
+                      color: _fill,
+                      borderColor: _line,
+                      shadowColor: _textPri,
                       borderWidth: GenZTokens.borderWidthThin,
                       radius: GenZTokens.radiusPill,
-                      depth: 2,
+                      depth: 1,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
                         vertical: 10,
@@ -219,14 +229,14 @@ class QuickActionsPanel extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(_secondaryIcon(type), size: 16, color: ink),
+                          Icon(_secondaryIcon(type), size: 16, color: _accent),
                           const SizedBox(width: 8),
                           Text(
                             (action['labelKey'] as String).tr(),
                             style: AppFonts.body(
                               fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: ink,
+                              fontWeight: FontWeight.w600,
+                              color: _textPri,
                             ),
                           ),
                         ],
@@ -245,8 +255,6 @@ class QuickActionsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ink = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -258,17 +266,17 @@ class QuickActionsPanel extends StatelessWidget {
               Text(
                 'dashboard.quick_actions'.tr(),
                 style: AppFonts.heading(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17,
                   letterSpacing: -0.5,
-                  color: ink,
+                  color: _textPri,
                 ),
               ),
               const SizedBox(width: 8),
               PillTag(
                 text: 'dashboard.quick_tag'.tr(),
                 icon: PhosphorIcons.lightning(PhosphorIconsStyle.fill),
-                color: GenZTokens.yellow,
+                selected: true,
               ),
               const Spacer(),
               GestureDetector(
@@ -280,15 +288,15 @@ class QuickActionsPanel extends StatelessWidget {
                       'common.more'.tr(),
                       style: AppFonts.body(
                         fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: ink.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w600,
+                        color: _textSec,
                       ),
                     ),
                     const SizedBox(width: 2),
                     Icon(
                       PhosphorIcons.caretRight(),
                       size: 14,
-                      color: ink.withValues(alpha: 0.6),
+                      color: _textSec,
                     ),
                   ],
                 ),
@@ -298,73 +306,101 @@ class QuickActionsPanel extends StatelessWidget {
         ),
         const SizedBox(height: 14),
 
-        // ── Primary 2×2 Spark-style colored cards ────────────────────────────
+        // ── Primary 2×2 Cards ────────────────────────────────────────────────
         GridView.builder(
+          // Home không có SafeArea trên → phải tắt padding tự động theo thanh trạng thái.
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio: 1.9,
+            mainAxisExtent: max(
+              136.0,
+              MediaQuery.textScalerOf(context).scale(52) + 84,
+            ),
           ),
           itemCount: _primaryActions.length,
           itemBuilder: (context, index) {
             final action = _primaryActions[index];
             final type = action['type'] as String;
-            // Mỗi ô một khối màu accent đặc — chữ và viền LUÔN là ink
-            const cardColors = [
-              GenZTokens.yellow,
-              GenZTokens.lilac,
-              GenZTokens.green,
-              GenZTokens.pink,
-            ];
-            final bgColor = cardColors[index % cardColors.length];
+
+            // Ô đầu (Chia tiền) là hành động chính → tô màu nhấn.
+            final hero = index == 0;
+            final bg = hero ? _accent : _surface;
+            final fg = hero ? _onAccent : _textPri;
+            final fgSoft = hero ? _onAccent.withValues(alpha: 0.8) : _textSec;
+            final iconBg = hero
+                ? _onAccent.withValues(alpha: 0.16)
+                : Theme.of(context).colorScheme.primaryContainer;
+            final iconFg = hero
+                ? _onAccent
+                : Theme.of(context).colorScheme.onPrimaryContainer;
 
             return PopIn(
               index: index,
               child: PressableCard(
                 onTap: () => _handleTap(context, type),
-                color: bgColor,
-                borderColor: ink,
-                shadowColor: ink,
-                radius: GenZTokens.radiusButton,
+                color: bg,
+                borderColor: hero ? bg : _line,
+                shadowColor: _textPri,
+                borderWidth: GenZTokens.borderWidthThin,
+                depth: 1,
+                radius: GenZTokens.radiusCard,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: GenZTokens.paper,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: GenZTokens.ink,
-                            width: GenZTokens.borderWidthThin,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: iconBg,
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusButton,
+                              ),
+                            ),
+                            child: Icon(
+                              _primaryIcon(type),
+                              size: 22,
+                              color: iconFg,
+                            ),
                           ),
-                        ),
-                        child: Icon(
-                          _primaryIcon(type),
-                          size: 18,
-                          color: GenZTokens.ink,
-                        ),
+                          const Spacer(),
+                          Icon(
+                            PhosphorIcons.arrowUpRight(),
+                            size: 18,
+                            color: fgSoft,
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          (action['labelKey'] as String).tr(),
-                          style: AppFonts.heading(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: GenZTokens.ink,
-                            letterSpacing: -0.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      const Spacer(),
+                      Text(
+                        (action['labelKey'] as String).tr(),
+                        style: AppFonts.heading(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: fg,
+                          letterSpacing: -0.3,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${action['labelKey']}_desc'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 12,
+                          color: fgSoft,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),

@@ -16,18 +16,14 @@ import '../data/ai_repository.dart';
 /// `/ai/trips/:id/personality` với chuyến thật; AI bận thì BE trả 503 và màn
 /// này hiện đúng thông báo đó.
 class AiPersonalityAnalysisScreen extends ConsumerWidget {
-  const AiPersonalityAnalysisScreen({super.key});
+  final bool? isDarkMode;
 
-  static const _cardColors = [
-    GenZTokens.yellow,
-    GenZTokens.lilac,
-    GenZTokens.pink,
-    GenZTokens.green,
-  ];
+  const AiPersonalityAnalysisScreen({super.key, this.isDarkMode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark =
+        isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final tripId = ref.watch(activeTripIdProvider);
@@ -35,14 +31,15 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: bg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'ai.personality_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
             color: ink,
           ),
         ),
@@ -91,7 +88,7 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
                         itemCount: roasts.length,
                         separatorBuilder: (_, _) =>
                             const SizedBox(height: GenZTokens.space4),
-                        itemBuilder: (_, i) => _card(roasts[i], i),
+                        itemBuilder: (ctx, i) => _card(ctx, isDark, roasts[i]),
                       ),
                     );
                   },
@@ -99,50 +96,69 @@ class AiPersonalityAnalysisScreen extends ConsumerWidget {
     );
   }
 
-  Widget _card(SquadRoast r, int index) {
+  Widget _card(BuildContext context, bool isDark, SquadRoast r) {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final accent = Theme.of(context).colorScheme.primary;
+    final accentSoft =
+        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(GenZTokens.space5),
       decoration: BoxDecoration(
-        color: _cardColors[index % _cardColors.length],
+        color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
         border: Border.all(
-          color: GenZTokens.ink,
-          width: GenZTokens.borderWidth,
+          color: line,
+          width: GenZTokens.borderWidthThin,
         ),
-        boxShadow: GenZTokens.hardShadow(GenZTokens.ink),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            r.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppFonts.heading(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: GenZTokens.ink,
-            ),
-          ),
-          if (r.type.isNotEmpty) ...[
-            const SizedBox(height: 2),
-            Text(
-              r.type,
-              style: AppFonts.heading(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w700,
-                color: GenZTokens.ink,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  r.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppFonts.heading(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: ink,
+                  ),
+                ),
               ),
-            ),
-          ],
+              if (r.type.isNotEmpty)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: accentSoft,
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                  ),
+                  child: Text(
+                    r.type,
+                    style: AppFonts.heading(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: accent,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           if (r.roast.isNotEmpty) ...[
             const SizedBox(height: GenZTokens.space3),
             Text(
               r.roast,
               style: AppFonts.body(
-                fontSize: 13.5,
-                color: GenZTokens.ink,
+                fontSize: 15,
+                color: inkSoft,
                 height: 1.45,
               ),
             ),

@@ -9,6 +9,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Firebase (thông báo đẩy) chỉ bật khi đã có google-services.json. Plugin này
+// làm build GÃY nếu thiếu file, mà file lại chứa cấu hình riêng của dự án nên
+// không commit — áp cứng thì ai clone repo về cũng không build được. Thiếu file
+// thì app vẫn chạy bình thường, chỉ không nhận thông báo đẩy.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 // Keystore release đọc từ android/key.properties (file này KHÔNG commit).
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")

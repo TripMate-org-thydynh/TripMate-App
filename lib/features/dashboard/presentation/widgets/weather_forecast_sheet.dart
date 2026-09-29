@@ -28,8 +28,14 @@ class WeatherForecastSheet extends StatelessWidget {
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _inkSoft =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _paper => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
-  Color _bg(BuildContext context) => Theme.of(context).scaffoldBackgroundColor;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _info => isDarkMode ? GenZTokens.infoDark : GenZTokens.info;
+  Color get _warning => isDarkMode ? GenZTokens.warningDark : GenZTokens.warning;
+  Color get _danger => isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
+  Color _bg(BuildContext context) =>
+      isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
 
   static const _weekdaysVi = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
   static const _weekdaysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -61,8 +67,10 @@ class WeatherForecastSheet extends StatelessWidget {
       builder: (context, scrollCtrl) => Container(
         decoration: BoxDecoration(
           color: _bg(context),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          border: Border.all(color: _ink, width: 2),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(GenZTokens.radiusCard),
+          ),
+          border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
         ),
         child: Column(
           children: [
@@ -71,7 +79,7 @@ class WeatherForecastSheet extends StatelessWidget {
               width: 44,
               height: 5,
               decoration: BoxDecoration(
-                color: _inkSoft.withValues(alpha: 0.4),
+                color: _line,
                 borderRadius: BorderRadius.circular(99),
               ),
             ),
@@ -88,8 +96,8 @@ class WeatherForecastSheet extends StatelessWidget {
                         Text(
                           'weather.forecast_16'.tr(),
                           style: AppFonts.heading(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
                             color: _ink,
                           ),
                         ),
@@ -97,7 +105,7 @@ class WeatherForecastSheet extends StatelessWidget {
                           '${weather.temp.toStringAsFixed(0)}°C · ${weather.description}',
                           style: AppFonts.body(
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w400,
                             color: _inkSoft,
                           ),
                         ),
@@ -107,7 +115,7 @@ class WeatherForecastSheet extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(color: _ink.withValues(alpha: 0.1), height: 1),
+            Divider(color: _line, height: 1),
             Expanded(
               child: ListView.builder(
                 controller: scrollCtrl,
@@ -130,9 +138,14 @@ class WeatherForecastSheet extends StatelessWidget {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: _paper,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: _ink.withValues(alpha: 0.06)),
+                      color: _surface,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusCard,
+                      ),
+                      border: Border.all(
+                        color: _line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -142,7 +155,7 @@ class WeatherForecastSheet extends StatelessWidget {
                             _dayLabel(context, d.date, i),
                             style: AppFonts.heading(
                               fontSize: 13,
-                              fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w700,
                               color: _ink,
                             ),
                           ),
@@ -153,7 +166,7 @@ class WeatherForecastSheet extends StatelessWidget {
                           '${d.minTemp.toStringAsFixed(0)}°',
                           style: AppFonts.mono(
                             fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w500,
                             color: _inkSoft,
                           ),
                         ),
@@ -166,7 +179,7 @@ class WeatherForecastSheet extends StatelessWidget {
                                 Container(
                                   height: 6,
                                   decoration: BoxDecoration(
-                                    color: _ink.withValues(alpha: 0.08),
+                                    color: _fill,
                                     borderRadius: BorderRadius.circular(99),
                                   ),
                                 ),
@@ -176,11 +189,11 @@ class WeatherForecastSheet extends StatelessWidget {
                                     height: 6,
                                     width: c.maxWidth * widthFrac,
                                     decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
+                                      gradient: LinearGradient(
                                         colors: [
-                                          GenZTokens.blue,
-                                          GenZTokens.yellow,
-                                          GenZTokens.orange,
+                                          _info,
+                                          _warning,
+                                          _danger,
                                         ],
                                       ),
                                       borderRadius: BorderRadius.circular(99),
@@ -196,7 +209,7 @@ class WeatherForecastSheet extends StatelessWidget {
                           '${d.maxTemp.toStringAsFixed(0)}°',
                           style: AppFonts.mono(
                             fontSize: 13,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                             color: _ink,
                           ),
                         ),

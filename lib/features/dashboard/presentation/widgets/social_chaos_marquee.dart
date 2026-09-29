@@ -74,15 +74,21 @@ class _MarqueeStripState extends State<_MarqueeStrip> {
 
   @override
   Widget build(BuildContext context) {
-    // Dải marquee brutalist: khối vàng đặc, viền ink trên/dưới, chữ mono.
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final fill = isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+    final textPri = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
+    final accent = isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+
     return Container(
       height: 42,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
+        // Bán trong suốt: dải này nằm đè lên ảnh bìa ở đầu Home.
+        color: fill.withValues(alpha: 0.55),
         border: Border.symmetric(
           horizontal: BorderSide(
-            color: GenZTokens.ink,
+            color: line.withValues(alpha: 0.5),
             width: GenZTokens.borderWidthThin,
           ),
         ),
@@ -105,14 +111,14 @@ class _MarqueeStripState extends State<_MarqueeStrip> {
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
                       letterSpacing: 0.5,
-                      color: GenZTokens.ink,
+                      color: textPri,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Icon(
                     PhosphorIcons.star(PhosphorIconsStyle.fill),
                     size: 12,
-                    color: GenZTokens.ink,
+                    color: accent,
                   ),
                 ],
               ),

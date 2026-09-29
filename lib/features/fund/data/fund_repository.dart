@@ -16,17 +16,13 @@ class FundUser {
   final String name;
   final String? avatarUrl;
 
-  const FundUser({
-    required this.id,
-    required this.name,
-    this.avatarUrl,
-  });
+  const FundUser({required this.id, required this.name, this.avatarUrl});
 
   factory FundUser.fromJson(Map<String, dynamic> j) => FundUser(
-        id: j['id']?.toString() ?? '',
-        name: j['name']?.toString() ?? '',
-        avatarUrl: j['avatarUrl'] as String?,
-      );
+    id: j['id']?.toString() ?? '',
+    name: j['name']?.toString() ?? '',
+    avatarUrl: j['avatarUrl'] as String?,
+  );
 }
 
 /// Một khoản đóng góp vào quỹ.
@@ -48,17 +44,17 @@ class FundContribution {
   });
 
   factory FundContribution.fromJson(Map<String, dynamic> j) => FundContribution(
-        id: j['id']?.toString() ?? '',
-        amount: _toDouble(j['amount']),
-        note: j['note'] as String?,
-        status: j['status'] as String?,
-        createdAt: j['createdAt'] != null
-            ? DateTime.tryParse(j['createdAt'].toString())?.toLocal()
-            : null,
-        user: j['user'] is Map
-            ? FundUser.fromJson((j['user'] as Map).cast<String, dynamic>())
-            : null,
-      );
+    id: j['id']?.toString() ?? '',
+    amount: _toDouble(j['amount']),
+    note: j['note'] as String?,
+    status: j['status'] as String?,
+    createdAt: j['createdAt'] != null
+        ? DateTime.tryParse(j['createdAt'].toString())?.toLocal()
+        : null,
+    user: j['user'] is Map
+        ? FundUser.fromJson((j['user'] as Map).cast<String, dynamic>())
+        : null,
+  );
 }
 
 /// Quỹ chuyến đi kèm tiến độ và danh sách các khoản đóng góp.
@@ -85,9 +81,9 @@ class TripFund {
     final rawContributions = j['contributions'];
     final contributions = rawContributions is List
         ? rawContributions
-            .whereType<Map>()
-            .map((e) => FundContribution.fromJson(e.cast<String, dynamic>()))
-            .toList()
+              .whereType<Map>()
+              .map((e) => FundContribution.fromJson(e.cast<String, dynamic>()))
+              .toList()
         : <FundContribution>[];
 
     return TripFund(

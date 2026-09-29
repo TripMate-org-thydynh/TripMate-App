@@ -94,31 +94,39 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final cream = isDark ? GenZTokens.creamDark : GenZTokens.cream;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: cream,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: cream,
         elevation: 0,
         iconTheme: IconThemeData(color: ink),
         title: Text(
           'ai.vibe_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(GenZTokens.space5),
+        padding: const EdgeInsets.all(GenZTokens.space4),
         children: [
           _searchBox(isDark),
-          const SizedBox(height: GenZTokens.space5),
+          const SizedBox(height: GenZTokens.space4),
           if (_loading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 48),
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 48),
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    isDark ? GenZTokens.accentDark : GenZTokens.accent,
+                  ),
+                ),
+              ),
             )
           else if (_error != null)
             AppErrorState(isDark: isDark, error: _error, onRetry: _run)
@@ -138,7 +146,11 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
 
   Widget _searchBox(bool isDark) {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
 
     return Row(
       children: [
@@ -147,9 +159,10 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
             controller: _input,
             textInputAction: TextInputAction.search,
             onSubmitted: (_) => _run(),
-            style: AppFonts.body(fontSize: 14, color: ink),
+            style: AppFonts.body(fontSize: 15, color: ink),
             decoration: InputDecoration(
               hintText: 'ai.vibe_placeholder'.tr(),
+              hintStyle: AppFonts.body(fontSize: 15, color: inkSoft),
               filled: true,
               fillColor: surface,
               contentPadding: const EdgeInsets.symmetric(
@@ -157,36 +170,49 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
                 vertical: 14,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                 borderSide: BorderSide(
-                  color: ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
                 borderSide: BorderSide(
-                  color: ink,
+                  color: line,
                   width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                borderSide: BorderSide(
+                  color: accent,
+                  width: GenZTokens.borderWidthFocus,
                 ),
               ),
             ),
           ),
         ),
         const SizedBox(width: GenZTokens.space3),
-        ElevatedButton(
-          onPressed: _loading ? null : _run,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: GenZTokens.pink,
-            foregroundColor: GenZTokens.ink,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-            elevation: 0,
-            side: BorderSide(color: ink, width: GenZTokens.borderWidth),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+        SizedBox(
+          height: 48,
+          child: OutlinedButton(
+            onPressed: _loading ? null : _run,
+            style: OutlinedButton.styleFrom(
+              backgroundColor: fill,
+              foregroundColor: ink,
+              side: BorderSide(color: line, width: GenZTokens.borderWidthThin),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              ),
+            ),
+            child: Icon(
+              PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+              size: 20,
+              color: ink,
             ),
           ),
-          child: Icon(PhosphorIcons.sparkle(PhosphorIconsStyle.fill), size: 20),
         ),
       ],
     );
@@ -196,14 +222,24 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final pct = m.matchPercentage.clamp(0, 100);
 
+    final statusColor = pct >= 80
+        ? (isDark ? GenZTokens.successDark : GenZTokens.success)
+        : pct >= 60
+        ? (isDark ? GenZTokens.warningDark : GenZTokens.warning)
+        : (isDark ? GenZTokens.dangerDark : GenZTokens.danger);
+
     return Container(
-      padding: const EdgeInsets.all(GenZTokens.space5),
+      padding: const EdgeInsets.all(GenZTokens.space4),
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: ink, width: GenZTokens.borderWidth),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,16 +255,16 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
                           ? _input.text.trim()
                           : m.locationName,
                       style: AppFonts.heading(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
                         color: ink,
                       ),
                     ),
                     if (m.locationAddress.isNotEmpty) ...[
-                      const SizedBox(height: 2),
+                      const SizedBox(height: GenZTokens.space1),
                       Text(
                         m.locationAddress,
-                        style: AppFonts.body(fontSize: 12.5, color: inkSoft),
+                        style: AppFonts.body(fontSize: 13, color: inkSoft),
                       ),
                     ],
                   ],
@@ -238,27 +274,22 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
-                  vertical: 8,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  // Hợp gu thì xanh, tàm tạm thì vàng, lệch thì cam.
-                  color: pct >= 80
-                      ? GenZTokens.green
-                      : pct >= 60
-                      ? GenZTokens.yellow
-                      : GenZTokens.orange,
-                  borderRadius: BorderRadius.circular(999),
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                   border: Border.all(
-                    color: ink,
+                    color: statusColor.withValues(alpha: 0.3),
                     width: GenZTokens.borderWidthThin,
                   ),
                 ),
                 child: Text(
                   '$pct%',
                   style: AppFonts.heading(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    color: GenZTokens.ink,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: statusColor,
                   ),
                 ),
               ),
@@ -277,16 +308,18 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: GenZTokens.lilac,
-                      borderRadius: BorderRadius.circular(999),
+                      color: fill,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusPill,
+                      ),
                       border: Border.all(
-                        color: ink,
+                        color: line,
                         width: GenZTokens.borderWidthThin,
                       ),
                     ),
                     child: Text(
                       t,
-                      style: AppFonts.body(fontSize: 12, color: GenZTokens.ink),
+                      style: AppFonts.body(fontSize: 12, color: inkSoft),
                     ),
                   ),
               ],
@@ -296,20 +329,20 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
             const SizedBox(height: GenZTokens.space4),
             Text(
               m.analysis,
-              style: AppFonts.body(fontSize: 14, color: ink, height: 1.45),
+              style: AppFonts.body(fontSize: 15, color: ink, height: 1.45),
             ),
           ],
           const SizedBox(height: GenZTokens.space5),
           SizedBox(
             width: double.infinity,
+            height: 48,
             child: ElevatedButton.icon(
               onPressed: () => _addToItinerary(m),
-              icon: Icon(PhosphorIcons.plus(), size: 18),
+              icon: Icon(PhosphorIcons.plus(), size: 18, color: onAccent),
               style: ElevatedButton.styleFrom(
-                backgroundColor: GenZTokens.yellow,
-                foregroundColor: GenZTokens.ink,
+                backgroundColor: accent,
+                foregroundColor: onAccent,
                 elevation: 0,
-                side: BorderSide(color: ink, width: GenZTokens.borderWidth),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 ),
@@ -317,9 +350,9 @@ class _AIVibeMatchScreenState extends ConsumerState<AIVibeMatchScreen> {
               label: Text(
                 'ai.vibe_add'.tr(),
                 style: AppFonts.heading(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: GenZTokens.ink,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: onAccent,
                 ),
               ),
             ),

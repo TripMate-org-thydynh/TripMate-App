@@ -64,16 +64,14 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
 
     // Generate falling color particle sparks
     _particles.clear();
-    const sparkColors = [
-      GenZTokens.yellow,
-      GenZTokens.orange,
-      GenZTokens.green,
-      GenZTokens.magenta,
-      GenZTokens.purple,
-      GenZTokens.red,
-      GenZTokens.lilac,
-      GenZTokens.blue,
-      GenZTokens.pink,
+    final sparkPalette = [
+      GenZTokens.chart1,
+      GenZTokens.chart2,
+      GenZTokens.chart3,
+      GenZTokens.chart4,
+      GenZTokens.chart5,
+      GenZTokens.chart6,
+      widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent,
     ];
     for (int i = 0; i < 40; i++) {
       _particles.add(
@@ -82,7 +80,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
           y: 80 + _random.nextDouble() * 50,
           vx: (_random.nextDouble() - 0.5) * 10,
           vy: (_random.nextDouble() - 0.5) * 8 - 4,
-          color: sparkColors[_random.nextInt(sparkColors.length)],
+          color: sparkPalette[_random.nextInt(sparkPalette.length)],
           size: _random.nextDouble() * 6 + 3,
         ),
       );
@@ -101,23 +99,18 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
+    final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+    final success = isDark ? GenZTokens.successDark : GenZTokens.success;
 
-    // Accent theo theme dang chon: truoc day hai nhanh ternary y het nhau
-    // va viet cung accent cua preset *grape*, nen doi theme khong an.
-    final primaryColor = Theme.of(context).colorScheme.primary;
-    final secondaryColor = isDark
-        ? GenZTokens.green
-        : GenZTokens.yellow;
-
-    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final bgColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final cardBg = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final textPrimary = isDark
-        ? GenZTokens.inkDark
-        : GenZTokens.ink;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final textSecondary = isDark
         ? GenZTokens.inkSoftDark
         : GenZTokens.inkSoft;
-    final glassBorder = textPrimary; // viền ink brutalist
 
     if (_particlesController.isAnimating) {
       for (var p in _particles) {
@@ -151,10 +144,10 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: AppFonts.heading(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w900,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
                                 color: textPrimary,
-                                letterSpacing: -1.0,
+                                letterSpacing: -0.5,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -164,24 +157,16 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                               ),
                               style: AppFonts.body(
                                 fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? secondaryColor : GenZTokens.green,
+                                fontWeight: FontWeight.w600,
+                                color: success,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      // Đã gỡ nút "LIVE MAP": màn đích vẽ vị trí cứng của các
-                      // thành viên bịa, mà app không thu thập vị trí thật (đã bỏ
-                      // quyền GPS). Khôi phục khi có chia sẻ vị trí thật.
                     ],
                   ),
                   const SizedBox(height: 20),
-
-                  // Đã gỡ khối "mini map" ở đây: nó vẽ 3 pin cứng mang tên
-                  // Nam Trung / Ly / Nhật trên một lưới giả, trong khi app không
-                  // thu thập vị trí thật của thành viên nào (đã bỏ quyền GPS).
-                  // Khôi phục khi có tính năng chia sẻ vị trí thật.
 
                   // Circular Vibe energy meter gauge & Shake booster panel (2 columns)
                   Row(
@@ -193,14 +178,17 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: cardBg,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: glassBorder, width: 2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: glassBorder,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusCard,
+                            ),
+                            border: Border.all(
+                              color: line,
+                              width: GenZTokens.borderWidthThin,
+                            ),
+                            boxShadow: GenZTokens.hardShadow(
+                              textPrimary,
+                              isDark,
+                            ),
                           ),
                           child: Stack(
                             alignment: Alignment.center,
@@ -209,10 +197,8 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                 size: const Size(110, 110),
                                 painter: EnergyCirclePainter(
                                   progress: _vibeEnergy(),
-                                  color: secondaryColor,
-                                  backgroundColor: isDark
-                                      ? GenZTokens.inkDark.withValues(alpha: 0.1)
-                                      : GenZTokens.ink.withValues(alpha: 0.1),
+                                  color: accent,
+                                  backgroundColor: fill,
                                 ),
                               ),
                               Column(
@@ -222,15 +208,15 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                     '${(_vibeEnergy() * 100).toInt()}%',
                                     style: AppFonts.heading(
                                       fontSize: 24,
-                                      fontWeight: FontWeight.w900,
-                                      color: secondaryColor,
+                                      fontWeight: FontWeight.w700,
+                                      color: accent,
                                     ),
                                   ),
                                   Text(
                                     'live.vibe_energy'.tr(),
                                     style: AppFonts.body(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
                                       color: textSecondary,
                                     ),
                                   ),
@@ -259,14 +245,14 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                           child: Container(
                             height: 180,
                             decoration: BoxDecoration(
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: primaryColor.withValues(alpha: 0.3),
-                                  blurRadius: 0,
-                                ),
-                              ],
+                              color: accent,
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusCard,
+                              ),
+                              boxShadow: GenZTokens.hardShadow(
+                                textPrimary,
+                                isDark,
+                              ),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(16),
@@ -276,15 +262,15 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                   Icon(
                                     PhosphorIcons.vibrate(),
                                     size: 40,
-                                    color: GenZTokens.ink,
+                                    color: onAccent,
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
                                     'live.shake_hint'.tr(),
                                     textAlign: TextAlign.center,
                                     style: AppFonts.heading(
-                                      color: GenZTokens.ink,
-                                      fontWeight: FontWeight.bold,
+                                      color: onAccent,
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 13,
                                     ),
                                   ),
@@ -302,8 +288,8 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                   Text(
                     'live.updates'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                       color: textPrimary,
                     ),
                   ),
@@ -356,9 +342,12 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                                   a.label,
                                   a.tripName,
                                   cardBg,
-                                  glassBorder,
+                                  line,
+                                  fill,
+                                  accent,
                                   textPrimary,
                                   textSecondary,
+                                  isDark,
                                 ),
                             ],
                           );
@@ -442,28 +431,37 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
     String title,
     String time,
     Color cardBg,
-    Color glassBorder,
+    Color line,
+    Color fill,
+    Color accent,
     Color textPrimary,
     Color textSecondary,
+    bool isDark,
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: cardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: glassBorder, width: 2),
-        boxShadow: [BoxShadow(color: glassBorder, offset: const Offset(0, 3))],
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(textPrimary, isDark),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: GenZTokens.yellow.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
+              color: fill,
+              borderRadius: BorderRadius.circular(
+                GenZTokens.radiusButton,
+              ),
+              border: Border.all(
+                color: line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
-            child: Icon(icon, size: 20, color: textPrimary),
+            child: Icon(icon, size: 20, color: accent),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -473,7 +471,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                 Text(
                   title,
                   style: AppFonts.heading(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     fontSize: 13,
                     color: textPrimary,
                   ),
@@ -583,45 +581,4 @@ class EnergyCirclePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
-
-class MiniMapGridPainter extends CustomPainter {
-  final bool isDark;
-  final Color primaryColor;
-
-  MiniMapGridPainter({required this.isDark, required this.primaryColor});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final gridPaint = Paint()
-      ..color = ink.withValues(alpha: 0.02)
-      ..strokeWidth = 1.0;
-
-    for (double i = 0; i < size.width; i += 30) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), gridPaint);
-    }
-    for (double j = 0; j < size.height; j += 30) {
-      canvas.drawLine(Offset(0, j), Offset(size.width, j), gridPaint);
-    }
-
-    final roadPaint = Paint()
-      ..color = ink.withValues(alpha: isDark ? 0.05 : 0.04)
-      ..strokeWidth = 6.0
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final path = Path();
-    path.moveTo(0, 30);
-    path.quadraticBezierTo(100, 40, 160, 100);
-    path.quadraticBezierTo(200, 160, size.width, 140);
-
-    path.moveTo(80, 0);
-    path.lineTo(60, size.height);
-
-    canvas.drawPath(path, roadPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

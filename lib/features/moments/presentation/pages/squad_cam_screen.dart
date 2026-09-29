@@ -266,7 +266,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: GenZTokens.creamDark,
       body: SafeArea(
         child: _initError != null
             ? AppErrorState(
@@ -313,7 +313,11 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
           child: Row(
             children: [
               IconButton(
-                icon: Icon(PhosphorIcons.x(), color: Colors.white, size: 28),
+                icon: Icon(
+                  PhosphorIcons.x(),
+                  color: GenZTokens.onAccent,
+                  size: 28,
+                ),
                 tooltip: 'common.close'.tr(),
                 onPressed: () => Navigator.pop(context),
               ),
@@ -332,8 +336,8 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                     'moments.recording'.tr(),
                     style: AppFonts.heading(
                       fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: GenZTokens.ink,
+                      fontWeight: FontWeight.w700,
+                      color: GenZTokens.onAccent,
                     ),
                   ),
                 ),
@@ -351,12 +355,12 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.45),
+                color: GenZTokens.ink.withValues(alpha: 0.45),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(
                 'moments.cam_hint'.tr(),
-                style: AppFonts.body(fontSize: 12.5, color: Colors.white),
+                style: AppFonts.body(fontSize: 12, color: GenZTokens.onAccent),
               ),
             ),
           ),
@@ -387,8 +391,8 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                       shape: BoxShape.circle,
                       color: _recording
                           ? GenZTokens.danger
-                          : Colors.white.withValues(alpha: 0.25),
-                      border: Border.all(color: Colors.white, width: 5),
+                          : GenZTokens.onAccent.withValues(alpha: 0.25),
+                      border: Border.all(color: GenZTokens.onAccent, width: 5),
                     ),
                   ),
                 ),
@@ -399,7 +403,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                     ? IconButton(
                         icon: Icon(
                           PhosphorIcons.cameraRotate(),
-                          color: Colors.white,
+                          color: GenZTokens.onAccent,
                           size: 30,
                         ),
                         tooltip: 'moments.flip_camera'.tr(),
@@ -423,11 +427,11 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
               // Video: hiện nền tối + biểu tượng thay vì phát lại — người dùng
               // vừa quay xong nên đã biết nội dung; phát lại chỉ làm chậm.
               ? Container(
-                  color: Colors.black87,
+                  color: GenZTokens.creamDark,
                   child: Center(
                     child: Icon(
                       PhosphorIcons.videoCamera(),
-                      color: Colors.white54,
+                      color: GenZTokens.onAccent.withValues(alpha: 0.54),
                       size: 72,
                     ),
                   ),
@@ -442,7 +446,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
           top: 8,
           left: 8,
           child: IconButton(
-            icon: Icon(PhosphorIcons.x(), color: Colors.white, size: 28),
+            icon: Icon(PhosphorIcons.x(), color: GenZTokens.onAccent, size: 28),
             tooltip: 'common.close'.tr(),
             onPressed: _sending
                 ? null
@@ -464,19 +468,22 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                 enabled: !_sending,
                 textAlign: TextAlign.center,
                 maxLength: 60,
-                style: AppFonts.body(fontSize: 15, color: Colors.white),
+                style: AppFonts.body(fontSize: 15, color: GenZTokens.onAccent),
                 decoration: InputDecoration(
                   counterText: '',
                   hintText: 'moments.caption_short'.tr(),
-                  hintStyle: AppFonts.body(color: Colors.white70),
+                  hintStyle: AppFonts.body(
+                    fontSize: 15,
+                    color: GenZTokens.onAccent.withValues(alpha: 0.7),
+                  ),
                   filled: true,
-                  fillColor: Colors.black.withValues(alpha: 0.45),
+                  fillColor: GenZTokens.ink.withValues(alpha: 0.55),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -488,9 +495,11 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                   child: LinearProgressIndicator(
                     value: _progress > 0 ? _progress : null,
                     minHeight: 6,
-                    backgroundColor: Colors.white24,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      GenZTokens.green,
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary.withValues(
+                      alpha: 0.24,
+                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -503,22 +512,33 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
                   icon: Icon(
                     PhosphorIcons.paperPlaneTilt(PhosphorIconsStyle.fill),
                     size: 20,
+                    color: _sending
+                        ? GenZTokens.inkSoftDark
+                        : Theme.of(context).colorScheme.onPrimary,
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: GenZTokens.green,
-                    foregroundColor: GenZTokens.ink,
-                    disabledBackgroundColor: Colors.white24,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    disabledBackgroundColor: Theme.of(context).colorScheme.onPrimary.withValues(
+                      alpha: 0.24,
+                    ),
+                    disabledForegroundColor: GenZTokens.inkSoftDark,
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
                     ),
                   ),
                   label: Text(
                     'moments.send_to_squad'.tr(),
                     style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: GenZTokens.ink,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: _sending
+                          ? GenZTokens.inkSoftDark
+                          : Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                 ),

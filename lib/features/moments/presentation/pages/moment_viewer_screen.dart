@@ -127,8 +127,8 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
         Text(
           'moments.viewer_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
             color: ink,
           ),
         ),
@@ -203,12 +203,14 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
 
   Widget _slide(WidgetMoment m, bool isDark, Color ink) {
     final frame = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
       child: Column(
         children: [
-          // Khung ảnh vuông viền dày — cùng ngôn ngữ hình ảnh với widget ngoài
-          // màn hình chính, để người dùng nhận ra ngay là cùng một tấm.
           Expanded(
             child: Center(
               child: AspectRatio(
@@ -217,28 +219,28 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: frame,
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: ink, width: 2),
-                    boxShadow: [
-                      BoxShadow(color: ink, offset: const Offset(0, 6)),
-                    ],
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                    border: Border.all(
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                    boxShadow: GenZTokens.hardShadow(ink, isDark),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                     child: m.imageUrl.isEmpty
-                        ? Container(color: ink.withValues(alpha: 0.08))
+                        ? Container(color: fill)
                         : CachedNetworkImage(
                             imageUrl: m.imageUrl,
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
-                            placeholder: (_, _) =>
-                                Container(color: ink.withValues(alpha: 0.06)),
+                            placeholder: (_, _) => Container(color: fill),
                             errorWidget: (_, _, _) => Container(
-                              color: ink.withValues(alpha: 0.08),
+                              color: fill,
                               child: Icon(
                                 PhosphorIcons.imageBroken(),
-                                color: ink.withValues(alpha: 0.4),
+                                color: inkSoft,
                               ),
                             ),
                           ),
@@ -251,8 +253,8 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
           Text(
             m.authorName,
             style: AppFonts.heading(
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
               color: ink,
             ),
           ),
@@ -262,10 +264,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: AppFonts.body(
-              fontSize: 13,
-              color: ink.withValues(alpha: 0.65),
-            ),
+            style: AppFonts.body(fontSize: 13, color: inkSoft),
           ),
           const SizedBox(height: 18),
           _reactionBar(m, isDark, ink),
@@ -276,13 +275,19 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
 
   Widget _reactionBar(WidgetMoment m, bool isDark, Color ink) {
     final picked = _reacted[m.id];
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final accent = Theme.of(context).colorScheme.primary;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: ink, width: 2),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+        border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(ink, isDark),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -291,18 +296,24 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
             GestureDetector(
               onTap: () => _react(m, e),
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 160),
+                duration: const Duration(milliseconds: GenZTokens.durationFast),
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: picked == e
-                      ? accent.withValues(alpha: 0.9)
-                      : Colors.transparent,
+                  color: picked == e ? accentSoft : null,
                   shape: BoxShape.circle,
+                  border: picked == e
+                      ? Border.all(
+                          color: accent,
+                          width: GenZTokens.borderWidthThin,
+                        )
+                      : null,
                 ),
                 child: AnimatedScale(
-                  duration: const Duration(milliseconds: 160),
-                  scale: picked == e ? 1.18 : 1,
+                  duration: const Duration(
+                    milliseconds: GenZTokens.durationFast,
+                  ),
+                  scale: picked == e ? 1.15 : 1,
                   child: Text(e, style: const TextStyle(fontSize: 22)),
                 ),
               ),

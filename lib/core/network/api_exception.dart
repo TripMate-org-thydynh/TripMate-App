@@ -66,7 +66,8 @@ class ApiException implements Exception {
     }
 
     if (status == 401) {
-      final isDefaultOrEmpty = message.trim().isEmpty ||
+      final isDefaultOrEmpty =
+          message.trim().isEmpty ||
           message.trim().toLowerCase() == 'unauthorized' ||
           message == 'errors.unknown_error'.tr();
       if (isDefaultOrEmpty) {
