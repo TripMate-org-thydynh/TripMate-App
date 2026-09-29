@@ -15,6 +15,7 @@ import '../../application/expense_export.dart';
 import '../../application/expenses_providers.dart';
 import '../../domain/expense.dart';
 import 'add_expense_sheet.dart';
+import 'ai_expense_parse_screen.dart';
 import '../../../../core/widgets/offline_banner.dart';
 
 /// Số dư & quyết toán của 1 chuyến — wired thật vào BE (`/expenses/balances`).
@@ -88,6 +89,25 @@ class TripBalancesScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'expense.ai_title'.tr(),
+            icon: Icon(
+              PhosphorIcons.sparkle(PhosphorIconsStyle.fill),
+              color: _primary(context),
+            ),
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AiExpenseParseScreen(
+                    tripId: tripId,
+                    isDarkMode: isDarkMode,
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             tooltip: 'expense.export'.tr(),
             icon: Icon(PhosphorIcons.export(), color: _textPri),
