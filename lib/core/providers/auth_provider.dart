@@ -112,6 +112,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       ApiService.authToken = null; // Synchronize with ApiService
       state = AuthState(isLoading: false);
+
+      // Bản sao offline lịch trình/chi tiêu của từng chuyến (`cache_*`) là dữ
+      // liệu cá nhân: đăng xuất mà để lại thì người dùng sau trên cùng máy
+      // vẫn đọc được. Dọn sau khi đã đăng xuất để lỗi ở đây không chặn logout.
+      final prefs = await SharedPreferences.getInstance();
+      for (final k in prefs.getKeys().where((k) => k.startsWith('cache_'))) {
+        await prefs.remove(k);
+      }
     } catch (_) {
       // Handle fallback
     }

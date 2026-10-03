@@ -43,6 +43,14 @@ class MomentsRepository {
   Future<void> updateCaption(String tripId, String momentId, String caption) =>
       _client.patchData('${_base(tripId)}/$momentId', {'caption': caption});
 
+  /// Ghost Cam: bao nhiêu ảnh đang chờ tráng và tráng lúc nào.
+  Future<GhostStatus> developing(String tripId) async {
+    final data = await _client.getData('${_base(tripId)}/developing');
+    return GhostStatus.fromJson(
+      data is Map ? data.cast<String, dynamic>() : const {},
+    );
+  }
+
   Future<void> delete(String tripId, String momentId) =>
       _client.deleteData('${_base(tripId)}/$momentId');
 
@@ -58,6 +66,7 @@ class MomentsRepository {
     String? caption,
     double? latitude,
     double? longitude,
+    bool isGhost = false,
   }) async {
     final res = await _client.postData(_base(tripId), {
       'mediaUrl': mediaUrl,
@@ -67,6 +76,7 @@ class MomentsRepository {
       'caption': ?caption,
       'latitude': ?latitude,
       'longitude': ?longitude,
+      if (isGhost) 'isGhost': true,
     });
     return Moment.fromJson(res as Map<String, dynamic>);
   }
@@ -82,6 +92,36 @@ final tripMomentsProvider = FutureProvider.family<List<Moment>, String>((
 ) async {
   return ref.watch(momentsRepositoryProvider).fetch(tripId);
 });
+
+/// Trạng thái Ghost Cam của một chuyến.
+class GhostStatus {
+  final int total;
+  final int mine;
+  final DateTime? revealAt;
+  final bool revealed;
+
+  const GhostStatus({
+    this.total = 0,
+    this.mine = 0,
+    this.revealAt,
+    this.revealed = true,
+  });
+
+  /// Số ảnh của người khác đang chờ — người xem chưa thấy được.
+  int get hidden => total - mine;
+
+  factory GhostStatus.fromJson(Map<String, dynamic> j) => GhostStatus(
+    total: j['total'] as int? ?? 0,
+    mine: j['mine'] as int? ?? 0,
+    revealAt: DateTime.tryParse(j['revealAt']?.toString() ?? '')?.toLocal(),
+    revealed: j['revealed'] as bool? ?? true,
+  );
+}
+
+final ghostStatusProvider = FutureProvider.autoDispose
+    .family<GhostStatus, String>((ref, tripId) {
+      return ref.watch(momentsRepositoryProvider).developing(tripId);
+    });
 
 /// Kỷ niệm rút gọn cho scrapbook màn Home (gộp từ nhiều chuyến).
 class RecentMoment {

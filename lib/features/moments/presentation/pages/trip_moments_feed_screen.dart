@@ -7,7 +7,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/theme/gen_z_tokens.dart';
+import '../../../../core/widgets/report_sheet.dart';
+import '../../../profile/data/profile_provider.dart';
 import '../../application/moments_providers.dart';
+import '../../data/moments_repository.dart';
 import '../../domain/moment.dart';
 
 /// Feed khoảnh khắc của chuyến — wired BE thật (`/trips/:tripId/moments`).
@@ -66,7 +69,10 @@ class TripMomentsFeedScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         color: _primaryOf(context),
-        onRefresh: () async => ref.invalidate(momentsProvider(tripId)),
+        onRefresh: () async {
+          ref.invalidate(momentsProvider(tripId));
+          ref.invalidate(ghostStatusProvider(tripId));
+        },
         child: async.when(
           loading: () => _skeleton(context),
           error: (e, _) => _error(context, ref, e),
@@ -74,10 +80,49 @@ class TripMomentsFeedScreen extends ConsumerWidget {
               ? _empty(context)
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: moments.length,
-                  itemBuilder: (context, i) => _card(context, ref, moments[i]),
+                  // Mục đầu là banner Ghost Cam (rỗng khi không có ảnh chờ).
+                  itemCount: moments.length + 1,
+                  itemBuilder: (context, i) => i == 0
+                      ? _ghostBanner(context, ref)
+                      : _card(context, ref, moments[i - 1]),
                 ),
         ),
+      ),
+    );
+  }
+
+  /// "N ảnh đang tráng" — chỉ đếm ảnh của người khác (ảnh của mình đã hiện
+  /// trong feed với nhãn riêng). Không dùng màu nhấn: màn này đã có nút tim.
+  Widget _ghostBanner(BuildContext context, WidgetRef ref) {
+    final status = ref.watch(ghostStatusProvider(tripId)).valueOrNull;
+    if (status == null || status.revealed || status.hidden <= 0) {
+      return const SizedBox.shrink();
+    }
+    final when = status.revealAt == null
+        ? ''
+        : DateFormat('dd/MM', context.locale.languageCode)
+              .format(status.revealAt!);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _fillOf(context),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _lineOf(context)),
+      ),
+      child: Row(
+        children: [
+          Icon(PhosphorIcons.ghost(), size: 22, color: _textSec(context)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'moments.ghost_banner'.tr(
+                namedArgs: {'count': '${status.hidden}', 'date': when},
+              ),
+              style: AppFonts.body(fontSize: 13, color: _textPri(context)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -177,6 +222,32 @@ class TripMomentsFeedScreen extends ConsumerWidget {
     ],
   );
 
+  /// Nhãn cho ảnh ghost của chính mình: chỉ mình thấy cho tới ngày tráng.
+  Widget _developingPill(BuildContext context, Moment m) {
+    final when = m.revealAt == null
+        ? ''
+        : DateFormat('dd/MM', context.locale.languageCode).format(m.revealAt!);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: _fillOf(context),
+        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+        border: Border.all(color: _lineOf(context)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(PhosphorIcons.ghost(), size: 14, color: _textSec(context)),
+          const SizedBox(width: 4),
+          Text(
+            'moments.ghost_developing'.tr(namedArgs: {'date': when}),
+            style: AppFonts.body(fontSize: 12, color: _textSec(context)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _card(BuildContext context, WidgetRef ref, Moment m) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -223,11 +294,29 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                if (m.isGhost)
+                if (m.developing)
+                  _developingPill(context, m)
+                else if (m.isGhost)
                   Icon(
                     PhosphorIcons.ghost(),
                     size: 18,
                     color: _textSec(context),
+                  ),
+                if (m.authorId != null &&
+                    m.authorId != ref.watch(profileDataProvider).profile?['id'])
+                  IconButton(
+                    tooltip: 'report.title'.tr(),
+                    visualDensity: VisualDensity.compact,
+                    icon: Icon(
+                      PhosphorIcons.flag(),
+                      size: 18,
+                      color: _textSec(context),
+                    ),
+                    onPressed: () => ReportSheet.show(
+                      context,
+                      target: ReportTarget.moment,
+                      targetId: m.id,
+                    ),
                   ),
               ],
             ),

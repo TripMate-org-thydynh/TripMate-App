@@ -10,6 +10,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/widgets/faded_image.dart';
+import '../../../core/widgets/report_sheet.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../profile/data/profile_provider.dart';
 import '../data/itinerary_templates_repository.dart';
@@ -45,7 +46,19 @@ class TemplateDetailScreen extends ConsumerWidget {
         actions: [
           if (async.valueOrNull case final t?)
             if (t.authorId == ref.watch(profileDataProvider).profile?['id'])
-              _ownerMenu(context, ref, t),
+              _ownerMenu(context, ref, t)
+            else
+              // Mẫu công khai là nội dung người dùng tạo: Play bắt buộc có
+              // cách báo cáo ngay tại chỗ.
+              IconButton(
+                tooltip: 'report.title'.tr(),
+                icon: Icon(PhosphorIcons.flag(), color: ink),
+                onPressed: () => ReportSheet.show(
+                  context,
+                  target: ReportTarget.template,
+                  targetId: t.id,
+                ),
+              ),
         ],
       ),
       body: async.when(

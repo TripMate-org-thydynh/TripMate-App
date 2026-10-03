@@ -57,7 +57,9 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
       showGlobalSnack('auth.username_min'.tr(), isError: true);
       return;
     }
-    if (password.length < 6) {
+    // Tài khoản mới: tối thiểu 8 ký tự (khớp server). Đăng nhập chỉ chặn ô
+    // trống để tài khoản cũ có mật khẩu 6–7 ký tự vẫn vào được.
+    if (_isRegister ? password.length < 8 : password.isEmpty) {
       showGlobalSnack('auth.password_min'.tr(), isError: true);
       return;
     }

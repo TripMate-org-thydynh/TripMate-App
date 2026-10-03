@@ -71,6 +71,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
     scopes: const ['email', 'profile'],
   );
   String? _tempSupabaseId;
+  // Vé đăng ký do server cấp sau khi xác minh OTP / Google; bắt buộc khi gọi
+  // /auth/register.
+  String? _tempRegistrationToken;
   String? _tempEmail;
   String? _tempAuthToken;
   Map<String, dynamic>? _tempUser;
@@ -1026,20 +1029,20 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
           ),
         ),
         const SizedBox(height: 32),
-        // Ô nhập OTP dạng 4 khối
+        // Ô nhập OTP dạng 6 khối (server gửi mã 6 số)
         Center(
           child: Stack(
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 250,
+                width: 304,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(4, (i) {
+                  children: List.generate(6, (i) {
                     final filled = i < code.length;
                     final active = i == code.length;
                     return Container(
-                      width: 52,
+                      width: 44,
                       height: 58,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -1066,13 +1069,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
               ),
               // TextField trong suốt phủ lên, bắt input + focus khi chạm.
               SizedBox(
-                width: 250,
+                width: 304,
                 height: 58,
                 child: TextField(
                   controller: _otpController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  maxLength: 4,
+                  maxLength: 6,
                   autofocus: true,
                   showCursor: false,
                   textAlign: TextAlign.center,
@@ -1134,7 +1137,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
           child: ElevatedButton(
             onPressed: () async {
               if (_isSubmitting) return;
-              if (_otpController.text.length == 4) {
+              if (_otpController.text.length == 6) {
                 setState(() => _isSubmitting = true);
                 try {
                   final input = _emailController.text.trim();
@@ -1176,6 +1179,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
                     } else {
                       _tempSupabaseId = data['supabaseId']?.toString();
                       _tempEmail = data['email']?.toString();
+                      _tempRegistrationToken =
+                          data['registrationToken']?.toString();
                       if (mounted) {
                         _nextStep();
                       }
@@ -1311,6 +1316,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
 
                     // Call Register API on the NestJS backend
                     final regRes = await ApiService.post('/auth/register', {
+                      'registrationToken': _tempRegistrationToken ?? '',
                       'email': email,
                       'name': _nameController.text.trim(),
                       'username': _usernameController.text.trim(),
@@ -1593,6 +1599,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         } else {
           _tempSupabaseId = data['supabaseId']?.toString();
           _tempEmail = data['email']?.toString() ?? account.email;
+          _tempRegistrationToken = data['registrationToken']?.toString();
           _nameController.text =
               data['name']?.toString() ?? account.displayName ?? '';
           if (mounted) setState(() => _currentStep = 3);

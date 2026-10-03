@@ -6,6 +6,11 @@ import 'package:tripmate/features/premium/presentation/paywall_sheet.dart';
 
 import 'helpers/localized.dart';
 
+// Paywall đọc gói hiện tại để chặn mua trùng; không ghi đè thì nó gọi API thật.
+final _free = [
+  entitlementProvider.overrideWith((ref) async => Entitlement.free),
+];
+
 /// Paywall phải **nói đúng thứ vừa bị chặn**.
 ///
 /// Đây là điểm khác biệt giữa một paywall dùng được và một popup quảng cáo:
@@ -14,8 +19,10 @@ import 'helpers/localized.dart';
 void main() {
   setUpAll(initLocalization);
 
-  Widget wrap(Widget child) =>
-      ProviderScope(child: localized(Scaffold(body: child)));
+  Widget wrap(Widget child) => ProviderScope(
+    overrides: _free,
+    child: localized(Scaffold(body: child)),
+  );
 
   testWidgets('nêu đúng hạn mức chuyến và con số vừa chạm', (tester) async {
     await tester.pumpWidget(
@@ -61,6 +68,7 @@ void main() {
     bool? result;
     await tester.pumpWidget(
       ProviderScope(
+        overrides: _free,
         child: localized(
           Scaffold(
             body: Builder(

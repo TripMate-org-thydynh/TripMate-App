@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -115,10 +117,11 @@ final trialStatusProvider = FutureProvider<TrialStatus>((ref) async {
 
 /// Mã thiết bị ổn định, sinh tại máy và lưu lại.
 ///
-/// Không dùng id phần cứng (IMEI, Android ID, IDFV): chúng là định danh bền
-/// gắn với một con người, cả hai kho ứng dụng đều siết việc thu thập, và ở đây
-/// không cần tới mức đó. Một chuỗi ngẫu nhiên sinh lần đầu chạy trả lời đủ câu
-/// hỏi duy nhất mà server cần: "cài đặt này đã xin dùng thử bao giờ chưa".
+/// Không dùng id phần cứng (IMEI, IDFV): chúng là định danh bền gắn với một
+/// con người, cả hai kho ứng dụng đều siết việc thu thập. Một chuỗi ngẫu nhiên
+/// sinh lần đầu chạy trả lời câu hỏi "cài đặt này đã xin dùng thử bao giờ
+/// chưa". Trên Android, [trialDeviceId] ưu tiên Android ID (riêng cho app,
+/// Google cho dùng để chống gian lận) — hàm này là đường lui ở nơi khác.
 ///
 /// Người dùng xoá dữ liệu app là mất — và điều đó chấp nhận được: đây chỉ là
 /// một trong nhiều tín hiệu, không phải chốt chặn. Server không bao giờ nhận
@@ -138,6 +141,48 @@ Future<String> deviceInstallId() async {
   return id;
 }
 
+const _trustChannel = MethodChannel('tripmate/device_trust');
+
+/// Số project Google Cloud đã liên kết Play Integrity trong Play Console.
+/// Truyền lúc build: `--dart-define=PLAY_INTEGRITY_PROJECT=<số project>`.
+/// Để trống thì app không xin token và server xét theo luật cũ.
+const _integrityProject = String.fromEnvironment('PLAY_INTEGRITY_PROJECT');
+
+/// Mã thiết bị gửi kèm khi xin dùng thử.
+///
+/// Trên Android là Android ID (SSAID) — xem chú thích ở `MainActivity.kt`:
+/// riêng cho app này, sống qua gỡ cài đặt lại, và server chỉ lưu băm có salt.
+/// Khác với [deviceInstallId], nó chỉ có giá trị khi đi kèm token Play
+/// Integrity; một mình thì client vẫn bịa được. Nơi khác (web, iOS) hoặc khi
+/// đọc lỗi thì quay về [deviceInstallId].
+Future<String> trialDeviceId() async {
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    try {
+      final id = await _trustChannel.invokeMethod<String>('androidId');
+      if (id != null && RegExp(r'^[\w.:-]{8,128}$').hasMatch(id)) return id;
+    } catch (_) {}
+  }
+  return deviceInstallId();
+}
+
+/// Token Play Integrity gắn với [deviceId], hoặc `null` nếu không lấy được.
+///
+/// Không lấy được (chưa cấu hình, máy không có Play, mạng chậm) thì vẫn xin
+/// dùng thử bình thường — chỉ là server không có bảo chứng cho mã thiết bị.
+Future<String?> integrityToken(String deviceId) async {
+  final project = int.tryParse(_integrityProject);
+  if (project == null) return null;
+  if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return null;
+  try {
+    return await _trustChannel.invokeMethod<String>('integrityToken', {
+      'cloudProjectNumber': project,
+      'deviceId': deviceId,
+    }).timeout(const Duration(seconds: 8));
+  } catch (_) {
+    return null;
+  }
+}
+
 /// Bắt đầu / dừng dùng thử.
 class TrialActions {
   final Ref _ref;
@@ -148,8 +193,11 @@ class TrialActions {
   /// Chỉ gửi `deviceId`. Số ngày và gói do server quyết định — gửi lên cũng bị
   /// bỏ qua, và không nên tạo cảm giác là client có tiếng nói ở đó.
   Future<void> start() async {
+    final deviceId = await trialDeviceId();
+    final token = await integrityToken(deviceId);
     await _ref.read(apiClientProvider).postData('/premium/trial/start', {
-      'deviceId': await deviceInstallId(),
+      'deviceId': deviceId,
+      'integrityToken': ?token,
     });
     _invalidate();
   }

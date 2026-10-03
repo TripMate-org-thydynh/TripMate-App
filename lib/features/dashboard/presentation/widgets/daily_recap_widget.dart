@@ -296,7 +296,10 @@ class DailyRecapWidget extends ConsumerWidget {
                             children: [
                               PillTag(
                                 text: item['title'] as String,
-                                color: themeColor,
+                                // Nền tint nhạt + chữ đậm cùng tông: tránh chữ
+                                // trùng màu nền trên màu trạng thái tầm trung.
+                                color: themeColor.withValues(alpha: 0.16),
+                                foreground: themeColor,
                               ),
                               const SizedBox(width: 8),
                               Flexible(

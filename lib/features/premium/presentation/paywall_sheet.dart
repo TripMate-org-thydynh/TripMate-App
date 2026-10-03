@@ -71,7 +71,10 @@ class PaywallSheet extends ConsumerStatefulWidget {
 }
 
 class _PaywallSheetState extends ConsumerState<PaywallSheet> {
-  _SelectedPlan _plan = _SelectedPlan.squad;
+  // Chọn sẵn gói rẻ nhất mở được giới hạn vừa chạm. PLUS đã mở khoá mọi hạn
+  // mức; Squad chỉ thêm ghế cho người khác — chọn sẵn nó là đẩy người dùng tới
+  // gói đắt nhất mà họ không cần.
+  _SelectedPlan _plan = _SelectedPlan.plusMonth;
   _SelectedGateway _gateway = _SelectedGateway.sepay;
   bool _loading = false;
 
@@ -185,6 +188,18 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         : GenZTokens.accentSoft;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
     final isPlayChannel = kDistributionChannel == DistributionChannel.play;
+
+    // Kênh Play: gói tự gia hạn, mua thêm khi đang còn gói là trả trùng kỳ.
+    // Chỉ cho mua khi là NÂNG cấp (PLUS → SQUAD). Kênh ví thì mua thêm được
+    // cộng nối vào hạn cũ (EntitlementService.grant) — đó là cách gia hạn.
+    final ent = ref.watch(entitlementProvider).valueOrNull;
+    final ownActive =
+        ent != null &&
+        ent.via == 'own' &&
+        !ent.isTrial &&
+        (ent.activeUntil?.isAfter(DateTime.now()) ?? false);
+    final isUpgrade = ent?.plan == 'PLUS' && _plan == _SelectedPlan.squad;
+    final blockedByActive = isPlayChannel && ownActive && !isUpgrade;
 
     return SafeArea(
       top: false,
@@ -358,11 +373,28 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                 ),
 
               const SizedBox(height: 14),
+              if (blockedByActive) ...[
+                Text(
+                  'paywall.already_active'.tr(
+                    namedArgs: {
+                      'plan': ent.plan,
+                      'date': DateFormat(
+                        'dd/MM/yyyy',
+                        locale,
+                      ).format(ent.activeUntil!.toLocal()),
+                    },
+                  ),
+                  style: AppFonts.body(fontSize: 13, color: inkSoft),
+                ),
+                const SizedBox(height: 10),
+              ],
               SizedBox(
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _loading ? null : _handleCheckout,
+                  onPressed: _loading || blockedByActive
+                      ? null
+                      : _handleCheckout,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: accent,
                     foregroundColor: onAccent,

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -12,10 +13,10 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../profile/data/xp_repository.dart';
-import '../../../profile/pages/sticker_store_screen.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_message.dart';
+import '../widgets/sticker_picker_sheet.dart';
 
 /// Chat nhóm realtime — history qua REST, live qua socket.io (`/chat`).
 class TripChatLiveScreen extends ConsumerStatefulWidget {
@@ -241,98 +242,13 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
         });
   }
 
-  /// Mở bảng chọn sticker — chỉ hiện sticker THẬT SỰ đã sở hữu.
+  /// Mở bảng chọn sticker: sticker cá nhân + sticker đã đổi bằng XP.
   void _openStickerPicker() {
     HapticFeedback.selectionClick();
-    final dark = _isDark(context);
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: _surfaceOf(context),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
-      ),
-      builder: (sheetCtx) => Consumer(
-        builder: (context, ref, _) => ref
-            .watch(myStickersProvider)
-            .when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(40),
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-              ),
-              error: (_, _) => Padding(
-                padding: const EdgeInsets.all(28),
-                child: Text(
-                  'errors.load_failed'.tr(),
-                  style: AppFonts.body(color: _textSecOf(context)),
-                ),
-              ),
-              data: (stickers) {
-                if (stickers.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.all(28),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'xp.inventory_empty'.tr(),
-                          textAlign: TextAlign.center,
-                          style: AppFonts.body(
-                            color: _textSecOf(context),
-                            height: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _primaryOf(context),
-                            foregroundColor: _onAccentOf(context),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(sheetCtx);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    StickerStoreScreen(isDarkMode: dark),
-                              ),
-                            );
-                          },
-                          child: Text('xp.open_store'.tr()),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return GridView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: stickers.length,
-                  itemBuilder: (_, i) => GestureDetector(
-                    onTap: () {
-                      Navigator.pop(sheetCtx);
-                      _sendSticker(stickers[i].id);
-                    },
-                    child: Center(
-                      child: stickers[i].emoji != null
-                          ? Text(
-                              stickers[i].emoji!,
-                              style: const TextStyle(fontSize: 36),
-                            )
-                          : Icon(PhosphorIcons.sticker(), size: 32),
-                    ),
-                  ),
-                );
-              },
-            ),
-      ),
+    StickerPickerSheet.show(
+      context,
+      tripId: widget.tripId,
+      onPick: _sendSticker,
     );
   }
 
@@ -551,7 +467,20 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               // Tin nhắn sticker: `content` là MÃ sticker (stk-fire), không phải
               // chữ để đọc. Đổi sang emoji cỡ lớn, nếu không người nhận sẽ thấy
               // đúng chuỗi "stk-fire".
-              child: m.type == 'STICKER'
+              // Sticker cá nhân: server đặt sẵn `mediaUrl` là ảnh sticker.
+              child: m.type == 'STICKER' && (m.mediaUrl?.isNotEmpty ?? false)
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl: m.mediaUrl!,
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : m.type == 'STICKER'
                   ? _stickerEmoji(m.content) != null
                         ? Text(
                             _stickerEmoji(m.content)!,

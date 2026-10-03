@@ -9,6 +9,7 @@ import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../premium/presentation/paywall_sheet.dart';
 import '../../trips/application/trips_providers.dart';
 import '../../trips/data/trips_repository.dart';
 import '../../trips/presentation/trip_hub_screen.dart';
@@ -155,6 +156,7 @@ class _AiCustomizeScreenState extends ConsumerState<AiCustomizeScreen> {
       });
       HapticFeedback.mediumImpact();
     } catch (e) {
+      if (mounted && await PaywallSheet.maybeShow(context, e)) return;
       showGlobalSnack(
         e is ApiException ? e.message : 'errors.unknown_error'.tr(),
         isError: true,

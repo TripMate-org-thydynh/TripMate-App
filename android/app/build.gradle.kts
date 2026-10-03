@@ -95,3 +95,8 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    // Play Integrity (Standard API): bảo chứng mã thiết bị khi xin dùng thử.
+    implementation("com.google.android.play:integrity:1.4.0")
+}

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/api_service.dart';
 import '../../../core/theme/app_fonts.dart';
@@ -111,6 +112,11 @@ class _SubscriptionSettingsScreenState
     final plan = _sub?['plan'] as String? ?? 'PLUS';
     final via = _sub?['via'] as String? ?? 'own';
     final isTrial = _sub?['isTrial'] as bool? ?? false;
+    final yearly = _sub?['billingCycle'] == 'YEARLY';
+    // Gói Play tự gia hạn và trừ tiền qua Google — khác hẳn gói trả bằng ví.
+    final isPlay = _sub?['provider'] == 'GOOGLE_PLAY' && via == 'own';
+    final manageUrl = _sub?['manageUrl'] as String?;
+    final autoRenew = _sub?['autoRenew'] as bool? ?? false;
 
     return RefreshIndicator(
       onRefresh: _fetch,
@@ -141,7 +147,10 @@ class _SubscriptionSettingsScreenState
                   // bị thu tiền — chưa đồng nào rời tài khoản của họ.
                   isTrial
                       ? 'trial.badge'.tr()
-                      : 'premium.price_monthly'.tr(args: [_money(price)]),
+                      : (yearly
+                                ? 'premium.price_yearly'
+                                : 'premium.price_monthly')
+                            .tr(args: [_money(price)]),
                   style: AppFonts.body(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -218,6 +227,13 @@ class _SubscriptionSettingsScreenState
                         ? 'trial.settings_notice'.tr()
                         : via == 'seat'
                         ? 'premium.via_seat_notice'.tr()
+                        : isPlay
+                        ? (autoRenew
+                                  ? (yearly
+                                        ? 'premium.play_autorenew_yearly'
+                                        : 'premium.play_autorenew_monthly')
+                                  : 'premium.play_canceled_notice')
+                              .tr()
                         : 'premium.no_autorenew_notice'.tr(),
                     style: AppFonts.body(
                       fontSize: 13,
@@ -229,6 +245,41 @@ class _SubscriptionSettingsScreenState
               ],
             ),
           ),
+          // Google Play yêu cầu huỷ gói phải dễ như lúc mua: một nút, thẳng tới
+          // trang gói trên Play. Nút viền — màu nhấn của màn đã dành cho thẻ gói.
+          if (isPlay && manageUrl != null) ...[
+            const SizedBox(height: GenZTokens.space4),
+            SizedBox(
+              height: 48,
+              child: OutlinedButton.icon(
+                onPressed: () => launchUrl(
+                  Uri.parse(manageUrl),
+                  mode: LaunchMode.externalApplication,
+                ),
+                icon: Icon(PhosphorIcons.arrowSquareOut(), size: 18),
+                label: Text(
+                  'premium.play_manage_cta'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: ink,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: ink,
+                  side: BorderSide(
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -56,7 +56,9 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
           style: AppFonts.heading(fontWeight: FontWeight.w700, color: _textPri),
         ),
         content: Text(
-          'settings.delete_warn_1'.tr() + 'settings.delete_warn_2'.tr(),
+          'settings.delete_warn_1'.tr() +
+              'settings.delete_warn_2'.tr() +
+              'settings.delete_warn_play'.tr(),
           style: AppFonts.body(color: _textSec, height: 1.4),
         ),
         actions: [

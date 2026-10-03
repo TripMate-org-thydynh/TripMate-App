@@ -6,8 +6,16 @@ class Moment {
   final String mediaUrl;
   final String type;
   final bool isGhost;
+
+  /// Ghost Cam: ảnh của chính mình còn đang "tráng" — server chỉ trả cờ này
+  /// cho người chụp; người khác chưa thấy ảnh cho tới [revealAt].
+  final bool developing;
+  final DateTime? revealAt;
   final String? caption;
   final String authorName;
+
+  /// Id người đăng — để biết ảnh nào của mình (không tự báo cáo).
+  final String? authorId;
   final String? authorAvatar;
   final int commentCount;
   final int reactionCount;
@@ -21,8 +29,11 @@ class Moment {
     required this.mediaUrl,
     required this.type,
     this.isGhost = false,
+    this.developing = false,
+    this.revealAt,
     this.caption,
     required this.authorName,
+    this.authorId,
     this.authorAvatar,
     this.commentCount = 0,
     this.reactionCount = 0,
@@ -40,11 +51,14 @@ class Moment {
       mediaUrl: j['mediaUrl'] as String? ?? '',
       type: j['type'] as String? ?? 'PHOTO',
       isGhost: j['isGhost'] as bool? ?? false,
+      developing: j['developing'] as bool? ?? false,
+      revealAt: DateTime.tryParse(j['revealAt']?.toString() ?? '')?.toLocal(),
       caption: j['caption'] as String?,
       authorName: user is Map
           ? (user['name'] as String? ?? 'common.anonymous'.tr())
           : 'common.anonymous'.tr(),
       authorAvatar: user is Map ? user['avatarUrl'] as String? : null,
+      authorId: user is Map ? user['id'] as String? : null,
       commentCount: count is Map ? (count['comments'] as int? ?? 0) : 0,
       reactionCount: count is Map ? (count['reactions'] as int? ?? 0) : 0,
       createdAt:
@@ -69,8 +83,11 @@ class Moment {
     mediaUrl: mediaUrl,
     type: type,
     isGhost: isGhost,
+    developing: developing,
+    revealAt: revealAt,
     caption: caption,
     authorName: authorName,
+    authorId: authorId,
     authorAvatar: authorAvatar,
     commentCount: commentCount,
     reactionCount: reactionCount ?? this.reactionCount,

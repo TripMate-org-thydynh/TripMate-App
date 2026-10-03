@@ -2,6 +2,7 @@ import '../../features/moments/presentation/pages/moment_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../api_service.dart';
 import '../providers/auth_provider.dart';
 import '../theme/theme_provider.dart';
 import '../../features/splash/presentation/splash_screen.dart';
@@ -22,7 +23,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
   final themeNotifier = ref.read(themeProvider.notifier);
 
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/splash',
     routes: [
       GoRoute(
@@ -193,4 +194,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
   );
+  // Cho tầng gọi API (không có BuildContext) mở được sheet trên navigator
+  // hiện tại — ví dụ paywall khi server trả QUOTA_EXCEEDED.
+  ApiService.routerNavigatorKey = router.routerDelegate.navigatorKey;
+  return router;
 });

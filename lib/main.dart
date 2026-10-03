@@ -14,9 +14,12 @@ import 'core/services/widget_sync.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/network/api_client.dart';
 import 'core/services/push_notifications.dart';
+import 'core/services/crash_reporter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Trước mọi thứ khác: lỗi lúc khởi động cũng phải được ghi nhận.
+  CrashReporter.install();
   await EasyLocalization.ensureInitialized();
 
   // Container riêng để push (chạy trước khi có widget) điều hướng được bằng

@@ -62,6 +62,10 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
   double _progress = 0;
   final TextEditingController _caption = TextEditingController();
 
+  /// Ghost Cam: ảnh "tráng" khi chuyến kết thúc. Giữ nguyên giữa các lần
+  /// chụp trong cùng phiên để chụp liền tay không phải bật lại.
+  bool _ghost = false;
+
   /// Video ngắn — dài hơn thì vừa tốn data vừa mất tính "khoảnh khắc".
   static const Duration _maxClip = Duration(seconds: 10);
 
@@ -227,10 +231,12 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
             mediaUrl: uploaded.url,
             type: _shotIsVideo ? 'VIDEO' : 'PHOTO',
             caption: caption.isEmpty ? null : caption,
+            isGhost: _ghost,
           );
 
       if (!mounted) return;
       ref.invalidate(momentsProvider(widget.tripId));
+      ref.invalidate(ghostStatusProvider(widget.tripId));
       ref.invalidate(recentMomentsProvider);
       ref.invalidate(xpWalletProvider);
       // Đẩy sang widget màn hình chính ngay — đây chính là vòng lặp của Locket:
@@ -239,7 +245,9 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
 
       if (!mounted) return;
       HapticFeedback.mediumImpact();
-      showGlobalSnack('moments.sent_to_squad'.tr());
+      showGlobalSnack(
+        (_ghost ? 'moments.ghost_sent' : 'moments.sent_to_squad').tr(),
+      );
       setState(() {
         _shot = null;
         _sending = false;
@@ -418,6 +426,60 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
     );
   }
 
+  /// Nút bật/tắt Ghost Cam ở màn xem lại. Khung camera luôn tối nên dùng
+  /// màu chữ sáng cố định như các nút khác trên màn này.
+  Widget _ghostToggle() {
+    final on = _ghost;
+    return Semantics(
+      toggled: on,
+      button: true,
+      label: 'moments.ghost_toggle'.tr(),
+      child: GestureDetector(
+        onTap: _sending
+            ? null
+            : () {
+                HapticFeedback.selectionClick();
+                setState(() => _ghost = !_ghost);
+              },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: on
+                ? GenZTokens.onAccent.withValues(alpha: 0.92)
+                : GenZTokens.ink.withValues(alpha: 0.55),
+            borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+            border: Border.all(
+              color: GenZTokens.onAccent.withValues(alpha: on ? 1 : 0.4),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                on ? PhosphorIcons.ghost(PhosphorIconsStyle.fill) : PhosphorIcons.ghost(),
+                size: 18,
+                color: on ? GenZTokens.ink : GenZTokens.onAccent,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  on ? 'moments.ghost_on_hint'.tr() : 'moments.ghost_toggle'.tr(),
+                  style: AppFonts.body(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: on ? GenZTokens.ink : GenZTokens.onAccent,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // ── Xem lại trước khi gửi ────────────────────────────────────────────────
   Widget _reviewView() {
     return Stack(
@@ -463,6 +525,8 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              _ghostToggle(),
+              const SizedBox(height: 10),
               TextField(
                 controller: _caption,
                 enabled: !_sending,
