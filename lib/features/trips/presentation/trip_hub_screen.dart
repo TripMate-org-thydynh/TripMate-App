@@ -1,46 +1,80 @@
 import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../../core/widgets/trip_cover_image.dart';
-import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
+import '../../../core/providers/auth_provider.dart';
+import '../../../core/utils/app_share.dart';
+import '../../../core/widgets/gen_z_widgets.dart';
+import '../../../core/widgets/trip_cover_image.dart';
+import '../../checkins/presentation/trip_checkins_screen.dart';
+import '../../documents/presentation/trip_documents_screen.dart';
+import '../../expense_tracker/presentation/pages/trip_balances_screen.dart';
+import '../../fund/presentation/trip_fund_screen.dart';
+import '../../invites/presentation/trip_invites_screen.dart';
+import '../../journal/presentation/trip_journal_screen.dart';
+import '../../moments/presentation/pages/trip_moments_feed_screen.dart';
+import '../../notes/presentation/trip_notes_screen.dart';
+import '../../packing/presentation/trip_packing_screen.dart';
+import '../../reservations/presentation/trip_reservations_screen.dart';
+import '../../social/presentation/pages/trip_chat_live_screen.dart';
+import '../../social/presentation/pages/trip_polls_screen.dart';
+import '../../todos/presentation/trip_todos_screen.dart';
+import '../../trip_planner/presentation/trip_itinerary_screen.dart';
+import '../../trip_planner/presentation/trip_map_screen.dart';
+import '../../trip_planner/presentation/trip_wishlist_screen.dart';
+import '../../vacay/presentation/vacay_screen.dart';
+import '../application/trips_providers.dart';
+import '../data/trips_repository.dart';
 import '../domain/trip.dart';
 import '../domain/trip_vibe.dart';
 import 'edit_trip_sheet.dart';
-import '../../../core/widgets/gen_z_widgets.dart';
-import '../../expense_tracker/presentation/pages/trip_balances_screen.dart';
-import '../../fund/presentation/trip_fund_screen.dart';
-import '../../social/presentation/pages/trip_polls_screen.dart';
-import '../../trip_planner/presentation/trip_wishlist_screen.dart';
-import '../../trip_planner/presentation/trip_itinerary_screen.dart';
-import '../../moments/presentation/pages/trip_moments_feed_screen.dart';
-import '../../social/presentation/pages/trip_chat_live_screen.dart';
-import '../../packing/presentation/trip_packing_screen.dart';
-import '../../reservations/presentation/trip_reservations_screen.dart';
-import '../../trip_planner/presentation/trip_map_screen.dart';
-import '../../todos/presentation/trip_todos_screen.dart';
-import '../../notes/presentation/trip_notes_screen.dart';
-import '../../checkins/presentation/trip_checkins_screen.dart';
-import '../../documents/presentation/trip_documents_screen.dart';
-import '../../journal/presentation/trip_journal_screen.dart';
-import '../../invites/presentation/trip_invites_screen.dart';
-import '../../vacay/presentation/vacay_screen.dart';
 import 'trip_pdf_export.dart';
 
 /// Trang chủ 1 chuyến — gom mọi vertical về một chỗ (kiến trúc sạch).
-class TripHubScreen extends StatelessWidget {
+class TripHubScreen extends ConsumerStatefulWidget {
   final Trip trip;
   final bool isDarkMode;
   const TripHubScreen({super.key, required this.trip, this.isDarkMode = false});
 
+  @override
+  ConsumerState<TripHubScreen> createState() => _TripHubScreenState();
+}
+
+class _TripHubScreenState extends ConsumerState<TripHubScreen> {
+  late Trip _trip;
+
+  @override
+  void initState() {
+    super.initState();
+    _trip = widget.trip;
+  }
+
+  bool _isEnglish(BuildContext context) {
+    final locale =
+        EasyLocalization.of(context)?.locale ??
+        Localizations.maybeLocaleOf(context);
+    return locale?.languageCode == 'en';
+  }
+
+  Future<void> _refreshTripDetail() async {
+    try {
+      final fresh = await ref.read(tripsRepositoryProvider).fetchTrip(_trip.id);
+      if (mounted) {
+        setState(() => _trip = fresh);
+      }
+    } catch (_) {}
+  }
+
+  bool get isDarkMode => widget.isDarkMode;
+
   Color _bgOf(BuildContext context) =>
       isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
 
-  Color get _surface =>
-      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
@@ -48,6 +82,7 @@ class TripHubScreen extends StatelessWidget {
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
+  Color get _danger => isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
 
   // Rút gọn tiền: 3.000.000 → "3tr", 500000 → "500k".
   String _fmtMoney(double v) {
@@ -59,8 +94,206 @@ class TripHubScreen extends StatelessWidget {
     return v.toStringAsFixed(0);
   }
 
+  Future<void> _showMembersSheet() async {
+    await _refreshTripDetail();
+    if (!mounted) return;
+    final isEn = _isEnglish(context);
+    final currentUserId =
+        ref.read(authProvider).user?['id']?.toString() ?? '';
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) {
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final members = _trip.members;
+            final myMember = members
+                .where((m) => m.id == currentUserId)
+                .firstOrNull;
+            final isCreator =
+                myMember != null &&
+                (myMember.role == 'OWNER' ||
+                    myMember.role == 'CREATOR' ||
+                    myMember.role == 'ADMIN');
+
+            return Container(
+              decoration: BoxDecoration(
+                color: _surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(GenZTokens.radiusCard),
+                ),
+                border: Border.all(
+                  color: _line,
+                  width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 36,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: _line,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        isEn ? 'Trip Members' : 'Thành viên chuyến đi',
+                        style: AppFonts.heading(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: _ink,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      if (members.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Text(
+                            isEn
+                                ? 'No member details available.'
+                                : 'Chưa có danh sách thành viên chi tiết.',
+                            style: AppFonts.body(
+                              fontSize: 14,
+                              color: _textSec,
+                            ),
+                          ),
+                        )
+                      else
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 320),
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: members.length,
+                            separatorBuilder: (_, _) =>
+                                Divider(color: _line, height: 1),
+                            itemBuilder: (_, idx) {
+                              final m = members[idx];
+                              final isMe = m.id == currentUserId;
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: CircleAvatar(
+                                  backgroundColor: _fill,
+                                  child: Text(
+                                    m.name.isNotEmpty
+                                        ? m.name[0].toUpperCase()
+                                        : '?',
+                                    style: AppFonts.heading(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: _accent,
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  isMe
+                                      ? '${m.name} (${isEn ? "You" : "Bạn"})'
+                                      : m.name,
+                                  style: AppFonts.heading(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: _ink,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  m.role,
+                                  style: AppFonts.mono(
+                                    fontSize: 11,
+                                    color: _textSec,
+                                  ),
+                                ),
+                                trailing: isCreator && !isMe && m.id.isNotEmpty
+                                    ? IconButton(
+                                        tooltip: isEn
+                                            ? 'Remove member'
+                                            : 'Xoá thành viên',
+                                        icon: Icon(
+                                          PhosphorIcons.userMinus(),
+                                          color: _danger,
+                                          size: 20,
+                                        ),
+                                        onPressed: () async {
+                                          try {
+                                            await ref
+                                                .read(tripsProvider.notifier)
+                                                .removeMember(_trip.id, m.id);
+                                            await _refreshTripDetail();
+                                            setSheetState(() {});
+                                          } catch (_) {}
+                                        },
+                                      )
+                                    : null,
+                              );
+                            },
+                          ),
+                        ),
+                      if (!isCreator) ...[
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              Navigator.pop(sheetCtx);
+                              try {
+                                await ref
+                                    .read(tripsProvider.notifier)
+                                    .leaveTrip(_trip.id);
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                }
+                              } catch (_) {}
+                            },
+                            icon: Icon(
+                              PhosphorIcons.signOut(),
+                              color: _danger,
+                              size: 18,
+                            ),
+                            label: Text(
+                              isEn ? 'Leave Trip' : 'Rời chuyến đi',
+                              style: AppFonts.heading(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: _danger,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: _danger),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  GenZTokens.radiusButton,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final trip = _trip;
+    final isEn = _isEnglish(context);
     return Scaffold(
       backgroundColor: _bgOf(context),
       body: CustomScrollView(
@@ -72,6 +305,11 @@ class TripHubScreen extends StatelessWidget {
             iconTheme: IconThemeData(color: _textPri),
             actions: [
               IconButton(
+                tooltip: isEn ? 'Members' : 'Thành viên',
+                icon: Icon(PhosphorIcons.users(), color: _textPri),
+                onPressed: _showMembersSheet,
+              ),
+              IconButton(
                 tooltip: 'trips.edit'.tr(),
                 icon: Icon(PhosphorIcons.pencilSimple(), color: _textPri),
                 onPressed: () async {
@@ -81,13 +319,21 @@ class TripHubScreen extends StatelessWidget {
                     isDarkMode,
                   );
                   if (ok == true && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('trips.updated'.tr()),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    Navigator.pop(context);
+                    final list = ref.read(tripsProvider).valueOrNull;
+                    final updated = list
+                        ?.where((t) => t.id == trip.id)
+                        .firstOrNull;
+                    if (updated != null) {
+                      setState(() => _trip = updated);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('trips.updated'.tr()),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    } else {
+                      Navigator.pop(context);
+                    }
                   }
                 },
               ),
@@ -101,11 +347,9 @@ class TripHubScreen extends StatelessWidget {
                 style: AppFonts.heading(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  // Ảnh tan xuống màu nền ở mép dưới → chữ thường đọc được.
                   color: _textPri,
                 ),
               ),
-              // Ảnh bìa chuyến phủ header, tan dần xuống màu nền (concept A/B).
               background: SizedBox.expand(
                 child: Stack(
                   fit: StackFit.expand,
@@ -118,7 +362,12 @@ class TripHubScreen extends StatelessWidget {
                       Align(
                         alignment: Alignment.topRight,
                         child: Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.fromLTRB(
+                            20,
+                            MediaQuery.paddingOf(context).top + 8,
+                            20,
+                            20,
+                          ),
                           child: Icon(
                             PhosphorIcons.airplaneTilt(PhosphorIconsStyle.fill),
                             color: _ink.withValues(alpha: 0.15),
@@ -164,6 +413,7 @@ class TripHubScreen extends StatelessWidget {
                         context,
                         '${trip.memberCount}',
                         'trips.members_unit'.tr(),
+                        onTap: _showMembersSheet,
                       ),
                       const SizedBox(width: 12),
                       _stat(
@@ -287,186 +537,188 @@ class TripHubScreen extends StatelessWidget {
                           mainAxisExtent: tileExtent,
                         ),
                         children: [
-                      _tile(
-                        context,
-                        PhosphorIcons.scales(PhosphorIconsStyle.fill),
-                        'expense.split_title'.tr(),
-                        'hub.balances'.tr(),
-                        () => TripBalancesScreen(
-                          tripId: trip.id,
-                          tripName: trip.name,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.piggyBank(PhosphorIconsStyle.fill),
-                        'fund.title'.tr(),
-                        'hub.fund_sub'.tr(),
-                        () => TripFundScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
-                        'hub.polls'.tr(),
-                        'hub.polls_sub'.tr(),
-                        () => TripPollsScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.heart(PhosphorIconsStyle.fill),
-                        'trips.hub_wishlist'.tr(),
-                        'hub.wishlist_sub'.tr(),
-                        () => TripWishlistScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
-                        'itinerary.title'.tr(),
-                        'hub.itinerary_sub'.tr(),
-                        () => TripItineraryScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
-                        'hub.map'.tr(),
-                        'hub.map_sub'.tr(),
-                        () => TripMapScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.camera(PhosphorIconsStyle.fill),
-                        'moments.title'.tr(),
-                        'hub.moments'.tr(),
-                        () => TripMomentsFeedScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.chatCircle(PhosphorIconsStyle.fill),
-                        'trips.hub_squad_chat'.tr(),
-                        'hub.chat_sub'.tr(),
-                        () => TripChatLiveScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.suitcaseRolling(PhosphorIconsStyle.fill),
-                        'packing.title'.tr(),
-                        'hub.packing_sub'.tr(),
-                        () => TripPackingScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.listChecks(PhosphorIconsStyle.fill),
-                        'hub.todos'.tr(),
-                        'hub.todos_sub'.tr(),
-                        () => TripTodosScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.ticket(PhosphorIconsStyle.fill),
-                        'reservations.title'.tr(),
-                        'hub.reservations_sub'.tr(),
-                        () => TripReservationsScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.note(PhosphorIconsStyle.fill),
-                        'hub.notes'.tr(),
-                        'hub.notes_sub'.tr(),
-                        () => TripNotesScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.checkSquare(PhosphorIconsStyle.fill),
-                        'checkins.title'.tr(),
-                        'hub.checkins_sub'.tr(),
-                        () => TripCheckinsScreen(
-                          tripId: trip.id,
-                          tripDays: trip.durationDays,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.file(PhosphorIconsStyle.fill),
-                        'trips.hub_documents'.tr(),
-                        'hub.documents_sub'.tr(),
-                        () => TripDocumentsScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
-                        'trips.hub_journal'.tr(),
-                        'hub.journal_sub'.tr(),
-                        () => TripJournalScreen(
-                          tripId: trip.id,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.calendar(PhosphorIconsStyle.fill),
-                        'trips.hub_leave_days'.tr(),
-                        'hub.vacay'.tr(),
-                        () => VacayScreen(isDarkMode: isDarkMode),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.link(PhosphorIconsStyle.fill),
-                        'invites.limited_code'.tr(),
-                        'invites.manage'.tr(),
-                        () => TripInvitesScreen(
-                          tripId: trip.id,
-                          tripName: trip.name,
-                          isDarkMode: isDarkMode,
-                        ),
-                      ),
-                      _tile(
-                        context,
-                        PhosphorIcons.shareNetwork(PhosphorIconsStyle.fill),
-                        'trips.hub_invite_squad'.tr(),
-                        'trips.code_label'.tr(
-                          namedArgs: {'code': trip.inviteCode},
-                        ),
-                        null,
-                      ),
-                    ],
+                          _tile(
+                            context,
+                            PhosphorIcons.scales(PhosphorIconsStyle.fill),
+                            'expense.split_title'.tr(),
+                            'hub.balances'.tr(),
+                            () => TripBalancesScreen(
+                              tripId: trip.id,
+                              tripName: trip.name,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.piggyBank(PhosphorIconsStyle.fill),
+                            'fund.title'.tr(),
+                            'hub.fund_sub'.tr(),
+                            () => TripFundScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.chartBar(PhosphorIconsStyle.fill),
+                            'hub.polls'.tr(),
+                            'hub.polls_sub'.tr(),
+                            () => TripPollsScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.heart(PhosphorIconsStyle.fill),
+                            'trips.hub_wishlist'.tr(),
+                            'hub.wishlist_sub'.tr(),
+                            () => TripWishlistScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
+                            'itinerary.title'.tr(),
+                            'hub.itinerary_sub'.tr(),
+                            () => TripItineraryScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
+                            'hub.map'.tr(),
+                            'hub.map_sub'.tr(),
+                            () => TripMapScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.camera(PhosphorIconsStyle.fill),
+                            'moments.title'.tr(),
+                            'hub.moments'.tr(),
+                            () => TripMomentsFeedScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.chatCircle(PhosphorIconsStyle.fill),
+                            'trips.hub_squad_chat'.tr(),
+                            'hub.chat_sub'.tr(),
+                            () => TripChatLiveScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.suitcaseRolling(
+                              PhosphorIconsStyle.fill,
+                            ),
+                            'packing.title'.tr(),
+                            'hub.packing_sub'.tr(),
+                            () => TripPackingScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.listChecks(PhosphorIconsStyle.fill),
+                            'hub.todos'.tr(),
+                            'hub.todos_sub'.tr(),
+                            () => TripTodosScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.ticket(PhosphorIconsStyle.fill),
+                            'reservations.title'.tr(),
+                            'hub.reservations_sub'.tr(),
+                            () => TripReservationsScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.note(PhosphorIconsStyle.fill),
+                            'hub.notes'.tr(),
+                            'hub.notes_sub'.tr(),
+                            () => TripNotesScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.checkSquare(PhosphorIconsStyle.fill),
+                            'checkins.title'.tr(),
+                            'hub.checkins_sub'.tr(),
+                            () => TripCheckinsScreen(
+                              tripId: trip.id,
+                              tripDays: trip.durationDays,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.file(PhosphorIconsStyle.fill),
+                            'trips.hub_documents'.tr(),
+                            'hub.documents_sub'.tr(),
+                            () => TripDocumentsScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.bookOpen(PhosphorIconsStyle.fill),
+                            'trips.hub_journal'.tr(),
+                            'hub.journal_sub'.tr(),
+                            () => TripJournalScreen(
+                              tripId: trip.id,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.calendar(PhosphorIconsStyle.fill),
+                            'trips.hub_leave_days'.tr(),
+                            'hub.vacay'.tr(),
+                            () => VacayScreen(isDarkMode: isDarkMode),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.link(PhosphorIconsStyle.fill),
+                            'invites.limited_code'.tr(),
+                            'invites.manage'.tr(),
+                            () => TripInvitesScreen(
+                              tripId: trip.id,
+                              tripName: trip.name,
+                              isDarkMode: isDarkMode,
+                            ),
+                          ),
+                          _tile(
+                            context,
+                            PhosphorIcons.shareNetwork(PhosphorIconsStyle.fill),
+                            'trips.hub_invite_squad'.tr(),
+                            'trips.code_label'.tr(
+                              namedArgs: {'code': trip.inviteCode},
+                            ),
+                            null,
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -488,38 +740,42 @@ class TripHubScreen extends StatelessWidget {
     String value,
     String label, {
     bool mono = false,
+    VoidCallback? onTap,
   }) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: _surface,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
-          boxShadow: GenZTokens.hardShadow(_ink, isDarkMode),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: mono
-                  ? AppFonts.mono(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: _accent,
-                    )
-                  : AppFonts.heading(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: _textPri,
-                    ),
-            ),
-            Text(label, style: AppFonts.body(fontSize: 12, color: _textSec)),
-          ],
-        ),
+    final card = Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+        boxShadow: GenZTokens.hardShadow(_ink, isDarkMode),
       ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: mono
+                ? AppFonts.mono(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _accent,
+                  )
+                : AppFonts.heading(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: _textPri,
+                  ),
+          ),
+          Text(label, style: AppFonts.body(fontSize: 12, color: _textSec)),
+        ],
+      ),
+    );
+    return Expanded(
+      child: onTap == null
+          ? card
+          : GestureDetector(onTap: onTap, child: card),
     );
   }
 
@@ -530,11 +786,13 @@ class TripHubScreen extends StatelessWidget {
     String sub,
     Widget Function()? builder,
   ) {
+    final trip = _trip;
     return PressableCard(
       onTap: () {
         HapticFeedback.selectionClick();
         if (builder == null) {
-          Share.share(
+          AppShare.shareText(
+            context,
             'trips.share_body'.tr(
               namedArgs: {'name': trip.name, 'code': trip.inviteCode},
             ),
@@ -557,13 +815,12 @@ class TripHubScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: _fill,
               borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-              border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+              border: Border.all(
+                color: _line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
-            child: Icon(
-              icon,
-              color: _accent,
-              size: 20,
-            ),
+            child: Icon(icon, color: _accent, size: 20),
           ),
           const Spacer(),
           Text(

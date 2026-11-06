@@ -248,6 +248,219 @@ class TripMomentsFeedScreen extends ConsumerWidget {
     );
   }
 
+  void _openCommentsSheet(BuildContext context, WidgetRef ref, Moment m) {
+    final isDark = _isDark(context);
+    final surface = _surfaceOf(context);
+    final line = _lineOf(context);
+    final fill = _fillOf(context);
+    final textPri = _textPri(context);
+    final textSec = _textSec(context);
+    final primary = _primaryOf(context);
+    final onPrimary = _onPrimaryOf(context);
+    final ctrl = TextEditingController();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetCtx) {
+        var sending = false;
+        return StatefulBuilder(
+          builder: (sheetCtx, setModalState) {
+            final latestList = ref.watch(momentsProvider(tripId)).valueOrNull;
+            final current =
+                latestList?.where((x) => x.id == m.id).firstOrNull ?? m;
+            final bottomInset = MediaQuery.viewInsetsOf(sheetCtx).bottom;
+            final safeBottom = MediaQuery.paddingOf(sheetCtx).bottom;
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 12,
+                bottom: (bottomInset > safeBottom ? bottomInset : safeBottom) + 14,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 38,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: line,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    '${'moments.comment_action'.tr()} (${current.commentCount})',
+                    style: AppFonts.heading(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: textPri,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 280),
+                    child: current.comments.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Center(
+                              child: Text(
+                                isDark
+                                    ? 'Chưa có bình luận nào. Hãy mở lời trước nhé!'
+                                    : 'Chưa có bình luận nào. Hãy mở lời trước nhé!',
+                                style: AppFonts.body(
+                                  fontSize: 13,
+                                  color: textSec,
+                                ),
+                              ),
+                            ),
+                          )
+                        : ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: current.comments.length,
+                            separatorBuilder: (_, _) =>
+                                Divider(height: 14, color: line),
+                            itemBuilder: (_, idx) {
+                              final c = current.comments[idx];
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 14,
+                                    backgroundColor: fill,
+                                    backgroundImage: c.authorAvatar != null &&
+                                            c.authorAvatar!.isNotEmpty
+                                        ? CachedNetworkImageProvider(
+                                            c.authorAvatar!,
+                                          )
+                                        : null,
+                                    child: c.authorAvatar == null ||
+                                            c.authorAvatar!.isEmpty
+                                        ? Text(
+                                            c.authorName.isNotEmpty
+                                                ? c.authorName.characters.first
+                                                : '?',
+                                            style: AppFonts.heading(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                              color: textPri,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          c.authorName,
+                                          style: AppFonts.heading(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                            color: textPri,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          c.content,
+                                          style: AppFonts.body(
+                                            fontSize: 14,
+                                            color: textPri,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: ctrl,
+                          style: AppFonts.body(fontSize: 14, color: textPri),
+                          decoration: InputDecoration(
+                            hintText: 'Viết bình luận cho khoảnh khắc này...',
+                            hintStyle: AppFonts.body(
+                              fontSize: 13,
+                              color: textSec,
+                            ),
+                            filled: true,
+                            fillColor: fill,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusPill,
+                              ),
+                              borderSide: BorderSide(color: line),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusPill,
+                              ),
+                              borderSide: BorderSide(color: line),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton.filled(
+                        style: IconButton.styleFrom(
+                          backgroundColor: primary,
+                          foregroundColor: onPrimary,
+                        ),
+                        onPressed: sending
+                            ? null
+                            : () async {
+                                final text = ctrl.text.trim();
+                                if (text.isEmpty) return;
+                                setModalState(() => sending = true);
+                                try {
+                                  await ref
+                                      .read(momentsProvider(tripId).notifier)
+                                      .addComment(m.id, text);
+                                  ctrl.clear();
+                                } finally {
+                                  if (sheetCtx.mounted) {
+                                    setModalState(() => sending = false);
+                                  }
+                                }
+                              },
+                        icon: Icon(
+                          PhosphorIcons.paperPlaneRight(
+                            PhosphorIconsStyle.fill,
+                          ),
+                          size: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    ).whenComplete(ctrl.dispose);
+  }
+
   Widget _card(BuildContext context, WidgetRef ref, Moment m) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -270,12 +483,15 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                 CircleAvatar(
                   radius: 16,
                   backgroundColor: _fillOf(context),
-                  backgroundImage: m.authorAvatar != null
-                      ? NetworkImage(m.authorAvatar!)
+                  backgroundImage:
+                      m.authorAvatar != null && m.authorAvatar!.isNotEmpty
+                      ? CachedNetworkImageProvider(m.authorAvatar!)
                       : null,
-                  child: m.authorAvatar == null
+                  child: m.authorAvatar == null || m.authorAvatar!.isEmpty
                       ? Text(
-                          m.authorName.characters.first,
+                          m.authorName.isNotEmpty
+                              ? m.authorName.characters.first
+                              : '?',
                           style: AppFonts.heading(
                             color: _textPri(context),
                             fontWeight: FontWeight.w700,
@@ -327,6 +543,7 @@ class TripMomentsFeedScreen extends ConsumerWidget {
             child: CachedNetworkImage(
               imageUrl: m.mediaUrl,
               fit: BoxFit.cover,
+              memCacheWidth: 800,
               placeholder: (c, url) => Container(color: _fillOf(context)),
               errorWidget: (c, url, err) => Container(
                 color: _fillOf(context),
@@ -367,15 +584,29 @@ class TripMomentsFeedScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 18),
-                Icon(
-                  PhosphorIcons.chatCircle(),
-                  color: _textSec(context),
-                  size: 20,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  '${m.commentCount}',
-                  style: AppFonts.body(fontSize: 13, color: _textSec(context)),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => _openCommentsSheet(context, ref, m),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(
+                          PhosphorIcons.chatCircle(),
+                          color: _textSec(context),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          '${m.commentCount}',
+                          style: AppFonts.body(
+                            fontSize: 13,
+                            color: _textSec(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../../premium/data/entitlement_provider.dart';
 import '../../premium/presentation/paywall_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -6,10 +8,10 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/utils/app_share.dart';
 import '../application/trips_providers.dart';
 
 /// Bottom sheet: Tạo chuyến mới hoặc Tham gia bằng mã mời — wired vào BE thật.
@@ -22,9 +24,13 @@ class CreateTripSheet extends ConsumerStatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
+      builder: (sheetCtx) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          bottom: math.max(
+                MediaQuery.viewInsetsOf(sheetCtx).bottom,
+                MediaQuery.paddingOf(sheetCtx).bottom,
+              ) +
+              16,
         ),
         child: CreateTripSheet(isDarkMode: isDarkMode),
       ),
@@ -149,9 +155,11 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
               vibe: _vibe,
               isPublic: _isPublic,
             );
-        if (mounted) Navigator.pop(context);
+        if (!mounted) return;
+        Navigator.pop(context);
         // Mời squad ngay: chia sẻ mã mời chuyến vừa tạo.
-        await Share.share(
+        await AppShare.shareText(
+          context,
           'trips.share_body'.tr(
             namedArgs: {'name': trip.name, 'code': trip.inviteCode},
           ),

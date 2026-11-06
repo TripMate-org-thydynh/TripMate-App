@@ -1,0 +1,34 @@
+{
+  "project": "TripMate",
+  "platform": "ios",
+  "provider": "github",
+  "github": {
+    "owner": "TripMate-org-thydynh",
+    "repo": "TripMate-App"
+  },
+  "ios": {
+    "path": "ios",
+    "bundleId": "com.tripmate.tripmate",
+    "configuration": "Release"
+  },
+  "flutter": {
+    "version": "3.38.5",
+    "watch": {
+      "dirs": [
+        "lib"
+      ],
+      "patterns": [
+        ".dart"
+      ],
+      "ignore": [
+        ".g.dart",
+        ".freezed.dart"
+      ],
+      "debounce": 100
+    }
+  },
+  "mobai": {
+    "url": "http://localhost:8686",
+    "device_id": "00008120-000C618026D1A01E"
+  }
+}

@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,17 +10,10 @@ import '../../../core/api_service.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/widgets/state_views.dart';
+import '../data/entitlement_provider.dart';
 import '../data/trial_provider.dart';
 
 /// Thiết lập gói cước.
-///
-/// Trước đây màn này dựng sẵn một gói "Elite Squad" đang chạy cho MỌI tài
-/// khoản: ngày gia hạn 20/06/2026, nguồn tiền "Visa **** 4242", công tắc tự
-/// động gia hạn và nút huỷ gói — tất cả đều không gọi đâu cả, kể cả với người
-/// chưa từng mua. Nay đọc trạng thái thật từ `/premium/subscriptions`.
-///
-/// Gói bán qua Google Play Billing nên việc đổi nguồn tiền, bật/tắt gia hạn và
-/// huỷ gói đều do Play quản lý — app không dựng lại các công tắc đó.
 class SubscriptionSettingsScreen extends ConsumerStatefulWidget {
   const SubscriptionSettingsScreen({super.key});
 
@@ -30,13 +25,24 @@ class SubscriptionSettingsScreen extends ConsumerStatefulWidget {
 class _SubscriptionSettingsScreenState
     extends ConsumerState<SubscriptionSettingsScreen> {
   Map<String, dynamic>? _sub;
+  List<Map<String, dynamic>> _squadSeats = const [];
   bool _loading = true;
   bool _failed = false;
+  bool _restoring = false;
+  bool _addingSeat = false;
+  final TextEditingController _seatIdentifierController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _fetch();
+  }
+
+  @override
+  void dispose() {
+    _seatIdentifierController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetch() async {
@@ -45,18 +51,102 @@ class _SubscriptionSettingsScreenState
       _failed = false;
     });
     final res = await ApiService.get('/premium/subscriptions');
+    List<Map<String, dynamic>> seats = const [];
+    if (res is Map &&
+        res['status'] == 'ACTIVE' &&
+        res['plan'] == 'SQUAD' &&
+        (res['via'] == null || res['via'] == 'own')) {
+      try {
+        final seatsRes = await ApiService.get('/premium/squad/seats');
+        final rawList = seatsRes is List
+            ? seatsRes
+            : (seatsRes is Map ? seatsRes['seats'] as List? : null);
+        if (rawList != null) {
+          seats = rawList
+              .whereType<Map>()
+              .map((e) => e.cast<String, dynamic>())
+              .toList();
+        }
+      } catch (_) {}
+    }
     if (!mounted) return;
     setState(() {
-      _sub = res;
+      _sub = res is Map ? res.cast<String, dynamic>() : null;
+      _squadSeats = seats;
       _failed = res == null;
       _loading = false;
     });
+  }
+
+  Future<void> _restorePurchases() async {
+    if (_restoring) return;
+    setState(() => _restoring = true);
+    try {
+      await InAppPurchase.instance.restorePurchases();
+      ref.invalidate(entitlementProvider);
+      await _fetch();
+      if (mounted) {
+        final isEn = context.locale.languageCode == 'en';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isEn
+                  ? 'Purchases restored successfully'
+                  : 'Đã khôi phục giao dịch mua',
+            ),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        final isEn = context.locale.languageCode == 'en';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isEn
+                  ? 'Could not restore purchases'
+                  : 'Không thể khôi phục giao dịch mua',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _restoring = false);
+    }
+  }
+
+  Future<void> _addSquadSeat() async {
+    final identifier = _seatIdentifierController.text.trim();
+    if (identifier.isEmpty || _addingSeat) return;
+    setState(() => _addingSeat = true);
+    try {
+      final res = await ApiService.post('/premium/squad/seats', {
+        'identifier': identifier,
+        'email': identifier,
+      });
+      if (!mounted) return;
+      if (res != null) {
+        _seatIdentifierController.clear();
+        await _fetch();
+      }
+    } catch (_) {
+    } finally {
+      if (mounted) setState(() => _addingSeat = false);
+    }
+  }
+
+  Future<void> _removeSquadSeat(String userId) async {
+    try {
+      await ApiService.delete('/premium/squad/seats/$userId');
+      if (mounted) await _fetch();
+    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final isEn = context.locale.languageCode == 'en';
 
     return Scaffold(
       backgroundColor: isDark ? GenZTokens.creamDark : GenZTokens.cream,
@@ -72,6 +162,19 @@ class _SubscriptionSettingsScreenState
             color: ink,
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: _restoring ? null : _restorePurchases,
+            child: Text(
+              isEn ? 'Restore' : 'Khôi phục',
+              style: AppFonts.heading(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
       ),
       body: _body(isDark),
     );
@@ -98,6 +201,7 @@ class _SubscriptionSettingsScreenState
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final accent = Theme.of(context).colorScheme.primary;
     final accentSoft = isDark
@@ -105,18 +209,17 @@ class _SubscriptionSettingsScreenState
         : GenZTokens.accentSoft;
     final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
     final price = (_sub?['price'] as num?)?.toInt() ?? 0;
-    // `activeUntil`, không phải `nextBillingDate`: backend chưa từng trả về
-    // trường đó, nên trước đây ngày hết hạn luôn null và dòng này không bao giờ
-    // hiện — kể cả với người đang có gói.
     final next = _parseDate(_sub?['activeUntil'] as String?);
     final plan = _sub?['plan'] as String? ?? 'PLUS';
     final via = _sub?['via'] as String? ?? 'own';
     final isTrial = _sub?['isTrial'] as bool? ?? false;
     final yearly = _sub?['billingCycle'] == 'YEARLY';
-    // Gói Play tự gia hạn và trừ tiền qua Google — khác hẳn gói trả bằng ví.
-    final isPlay = _sub?['provider'] == 'GOOGLE_PLAY' && via == 'own';
+    final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
+    final isPlay =
+        !isIOS && _sub?['provider'] == 'GOOGLE_PLAY' && via == 'own';
     final manageUrl = _sub?['manageUrl'] as String?;
     final autoRenew = _sub?['autoRenew'] as bool? ?? false;
+    final isEn = context.locale.languageCode == 'en';
 
     return RefreshIndicator(
       onRefresh: _fetch,
@@ -143,8 +246,6 @@ class _SubscriptionSettingsScreenState
                 ),
                 const SizedBox(height: GenZTokens.space2),
                 Text(
-                  // Đang dùng thử thì KHÔNG hiện "39.000đ/tháng" như thể đang
-                  // bị thu tiền — chưa đồng nào rời tài khoản của họ.
                   isTrial
                       ? 'trial.badge'.tr()
                       : (yearly
@@ -175,7 +276,6 @@ class _SubscriptionSettingsScreenState
           ),
           if (isTrial) ...[
             const SizedBox(height: GenZTokens.space4),
-            // Nút dừng đặt ngay đây, ngang hàng với thẻ gói.
             SizedBox(
               height: 48,
               child: OutlinedButton(
@@ -204,8 +304,6 @@ class _SubscriptionSettingsScreenState
             ),
           ],
           const SizedBox(height: GenZTokens.space5),
-          // Gói mua qua ví là trả một lần cho một kỳ, KHÔNG tự động gia hạn —
-          // ví Việt Nam không có cơ chế trừ tiền định kỳ.
           Container(
             padding: const EdgeInsets.all(GenZTokens.space4),
             decoration: BoxDecoration(
@@ -245,8 +343,6 @@ class _SubscriptionSettingsScreenState
               ],
             ),
           ),
-          // Google Play yêu cầu huỷ gói phải dễ như lúc mua: một nút, thẳng tới
-          // trang gói trên Play. Nút viền — màu nhấn của màn đã dành cho thẻ gói.
           if (isPlay && manageUrl != null) ...[
             const SizedBox(height: GenZTokens.space4),
             SizedBox(
@@ -277,6 +373,174 @@ class _SubscriptionSettingsScreenState
                     ),
                   ),
                 ),
+              ),
+            ),
+          ],
+          const SizedBox(height: GenZTokens.space4),
+          SizedBox(
+            height: 48,
+            child: OutlinedButton.icon(
+              onPressed: _restoring ? null : _restorePurchases,
+              icon: Icon(PhosphorIcons.arrowsClockwise(), size: 18),
+              label: Text(
+                isEn ? 'Restore Purchases' : 'Khôi phục giao dịch mua',
+                style: AppFonts.heading(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: ink,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: ink,
+                side: BorderSide(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                ),
+              ),
+            ),
+          ),
+          if (plan == 'SQUAD' && via == 'own') ...[
+            const SizedBox(height: GenZTokens.space6),
+            Text(
+              isEn
+                  ? 'Squad Members (5 seats)'
+                  : 'Quản lý thành viên Squad (5 ghế)',
+              style: AppFonts.heading(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: ink,
+              ),
+            ),
+            const SizedBox(height: GenZTokens.space3),
+            Container(
+              padding: const EdgeInsets.all(GenZTokens.space4),
+              decoration: BoxDecoration(
+                color: surface,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                border: Border.all(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _seatIdentifierController,
+                          style: AppFonts.body(fontSize: 14, color: ink),
+                          decoration: InputDecoration(
+                            hintText: isEn
+                                ? 'Enter email or username'
+                                : 'Nhập email hoặc username',
+                            hintStyle: AppFonts.body(
+                              fontSize: 13,
+                              color: inkSoft,
+                            ),
+                            filled: true,
+                            fillColor: fill,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusInput,
+                              ),
+                              borderSide: BorderSide(color: line),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                GenZTokens.radiusInput,
+                              ),
+                              borderSide: BorderSide(color: line),
+                            ),
+                          ),
+                          onSubmitted: (_) => _addSquadSeat(),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: _addingSeat ? null : _addSquadSeat,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: accent,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusButton,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          isEn ? 'Add' : 'Thêm',
+                          style: AppFonts.heading(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: GenZTokens.space3),
+                  if (_squadSeats.isEmpty)
+                    Text(
+                      isEn
+                          ? 'No Squad members added yet.'
+                          : 'Chưa có thành viên nào trong gói Squad.',
+                      style: AppFonts.body(fontSize: 13, color: inkSoft),
+                    )
+                  else
+                    ..._squadSeats.map((seat) {
+                      final seatUser =
+                          (seat['user'] as Map?)?.cast<String, dynamic>() ??
+                          seat;
+                      final seatUserId =
+                          seatUser['id']?.toString() ??
+                          seat['userId']?.toString() ??
+                          '';
+                      final seatName =
+                          seatUser['fullName']?.toString() ??
+                          seatUser['username']?.toString() ??
+                          seatUser['email']?.toString() ??
+                          seatUserId;
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          backgroundColor: accentSoft,
+                          child: Icon(
+                            PhosphorIcons.user(),
+                            size: 16,
+                            color: accent,
+                          ),
+                        ),
+                        title: Text(
+                          seatName,
+                          style: AppFonts.heading(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: ink,
+                          ),
+                        ),
+                        trailing: seatUserId.isNotEmpty
+                            ? IconButton(
+                                onPressed: () => _removeSquadSeat(seatUserId),
+                                icon: Icon(
+                                  PhosphorIcons.trash(),
+                                  size: 18,
+                                  color: danger,
+                                ),
+                              )
+                            : null,
+                      );
+                    }),
+                ],
               ),
             ),
           ],

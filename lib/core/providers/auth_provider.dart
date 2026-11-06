@@ -49,8 +49,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _loadSession();
   }
 
-  Future<bool> _onboardingFlag() async {
+  Future<bool> _onboardingFlag([
+    String? userId,
+    Map<String, dynamic>? user,
+  ]) async {
     final prefs = await SharedPreferences.getInstance();
+    final serverVibes = user?['vibeTags'];
+    if (serverVibes is List && serverVibes.isNotEmpty) {
+      if (userId != null && userId.isNotEmpty) {
+        await prefs.setBool('${_onboardingKey}_$userId', true);
+      }
+      return true;
+    }
+    if (userId != null && userId.isNotEmpty) {
+      final userFlag = prefs.getBool('${_onboardingKey}_$userId');
+      if (userFlag != null) return userFlag;
+    }
     return prefs.getBool(_onboardingKey) ?? false;
   }
 
@@ -58,10 +72,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final token = await _secure.read(key: _tokenKey);
       final userStr = await _secure.read(key: _userKey);
-      final onboardingDone = await _onboardingFlag();
 
       if (token != null && userStr != null) {
         final user = jsonDecode(userStr) as Map<String, dynamic>;
+        final userId = user['id']?.toString();
+        final onboardingDone = await _onboardingFlag(userId, user);
         ApiService.authToken = token; // Synchronize with ApiService
         state = AuthState(
           token: token,
@@ -70,6 +85,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           onboardingDone: onboardingDone,
         );
       } else {
+        final onboardingDone = await _onboardingFlag();
         state = AuthState(isLoading: false, onboardingDone: onboardingDone);
       }
     } catch (_) {
@@ -81,7 +97,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _secure.write(key: _tokenKey, value: token);
       await _secure.write(key: _userKey, value: jsonEncode(user));
-      final onboardingDone = await _onboardingFlag();
+      final userId = user['id']?.toString();
+      final onboardingDone = await _onboardingFlag(userId, user);
 
       ApiService.authToken = token; // Synchronize with ApiService
       state = AuthState(
@@ -99,24 +116,35 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_onboardingKey, true);
+      final userId = state.user?['id']?.toString();
+      if (userId != null && userId.isNotEmpty) {
+        await prefs.setBool('${_onboardingKey}_$userId', true);
+      }
     } catch (_) {
       // ignore persistence failure, vẫn cập nhật state
     }
     state = state.copyWith(onboardingDone: true);
   }
 
+  Future<void> markOnboardingComplete() => completeOnboarding();
+
   Future<void> logout() async {
     try {
+      final userId = state.user?['id']?.toString();
       await _secure.delete(key: _tokenKey);
       await _secure.delete(key: _userKey);
 
       ApiService.authToken = null; // Synchronize with ApiService
-      state = AuthState(isLoading: false);
+      state = AuthState(isLoading: false, onboardingDone: false);
 
       // Bản sao offline lịch trình/chi tiêu của từng chuyến (`cache_*`) là dữ
       // liệu cá nhân: đăng xuất mà để lại thì người dùng sau trên cùng máy
       // vẫn đọc được. Dọn sau khi đã đăng xuất để lỗi ở đây không chặn logout.
       final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_onboardingKey);
+      if (userId != null && userId.isNotEmpty) {
+        await prefs.remove('${_onboardingKey}_$userId');
+      }
       for (final k in prefs.getKeys().where((k) => k.startsWith('cache_'))) {
         await prefs.remove(k);
       }

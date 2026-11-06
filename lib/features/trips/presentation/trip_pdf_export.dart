@@ -322,6 +322,7 @@ class TripPdfExporter {
     await Printing.sharePdf(
       bytes: await pdf.save(),
       filename: 'tripmate_${trip.name.replaceAll(' ', '_')}.pdf',
+      bounds: const Rect.fromLTWH(0, 0, 100, 100),
     );
   }
 

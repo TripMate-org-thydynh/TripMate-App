@@ -65,6 +65,8 @@ class _FakeTripsRepo implements TripsRepository {
   Future<void> leaveTrip(String id) async {}
   @override
   Future<void> deleteTrip(String id) async {}
+  @override
+  Future<void> removeMember(String tripId, String memberUserId) async {}
 }
 
 class _FakeNotifRepo implements NotificationsRepository {

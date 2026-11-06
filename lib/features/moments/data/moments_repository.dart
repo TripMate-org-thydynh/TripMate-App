@@ -1,24 +1,88 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/network/api_client.dart';
 import '../domain/moment.dart';
 
 /// Repository cho Moments — `/trips/:tripId/moments`.
+/// Tích hợp 2 tầng Local Snapshot Cache (L1 RAM + L2 SharedPreferences)
+/// kết hợp với Shared Redis Board Cache ở Backend để bảng kỷ niệm mở tức thì.
 class MomentsRepository {
   final ApiClient _client;
   MomentsRepository(this._client);
 
+  static final Map<String, List<Moment>> _l1SnapshotCache =
+      <String, List<Moment>>{};
+
+  static String _prefsKey(String tripId) => 'board_snapshot_v1_$tripId';
+
   String _base(String tripId) => '/trips/$tripId/moments';
 
-  Future<List<Moment>> fetch(String tripId) async {
-    final data = await _client.getData(_base(tripId));
-    if (data is List) {
-      return data
-          .whereType<Map>()
-          .map((e) => Moment.fromJson(e.cast<String, dynamic>()))
-          .toList();
+  /// Đọc nhanh snapshot đã lưu trong RAM hoặc SharedPreferences (nếu có).
+  static List<Moment>? peekMemorySnapshot(String tripId) {
+    final hit = _l1SnapshotCache[tripId];
+    return hit != null ? List<Moment>.unmodifiable(hit) : null;
+  }
+
+  Future<List<Moment>?> loadCachedSnapshot(String tripId) async {
+    final l1 = _l1SnapshotCache[tripId];
+    if (l1 != null && l1.isNotEmpty) {
+      return List<Moment>.from(l1);
     }
-    return const [];
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey(tripId));
+      if (raw == null || raw.isEmpty) return null;
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        final list = decoded
+            .whereType<Map>()
+            .map((e) => Moment.fromJson(e.cast<String, dynamic>()))
+            .toList();
+        _l1SnapshotCache[tripId] = list;
+        return List<Moment>.from(list);
+      }
+    } catch (_) {
+      // Ignore corrupt local cache
+    }
+    return null;
+  }
+
+  Future<void> _saveSnapshot(
+    String tripId,
+    List<Moment> moments, {
+    List<Map<String, dynamic>>? rawJsonList,
+  }) async {
+    _l1SnapshotCache[tripId] = List<Moment>.from(moments);
+    if (rawJsonList != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_prefsKey(tripId), jsonEncode(rawJsonList));
+      } catch (_) {
+        // Ignore storage write errors in restricted environments
+      }
+    }
+  }
+
+  Future<List<Moment>> fetch(String tripId) async {
+    try {
+      final data = await _client.getData(_base(tripId));
+      if (data is List) {
+        final rawMaps = data
+            .whereType<Map>()
+            .map((e) => e.cast<String, dynamic>())
+            .toList();
+        final list = rawMaps.map(Moment.fromJson).toList();
+        await _saveSnapshot(tripId, list, rawJsonList: rawMaps);
+        return list;
+      }
+      return const [];
+    } catch (e) {
+      final cached = await loadCachedSnapshot(tripId);
+      if (cached != null) return cached;
+      rethrow;
+    }
   }
 
   /// Kỷ niệm mới nhất trên MỌI chuyến của user — dùng cho scrapbook màn Home.
@@ -36,12 +100,78 @@ class MomentsRepository {
   Future<void> react(String tripId, String momentId, String emoji) => _client
       .postData('${_base(tripId)}/$momentId/reactions', {'emoji': emoji});
 
-  Future<void> comment(String tripId, String momentId, String text) => _client
-      .postData('${_base(tripId)}/$momentId/comments', {'content': text});
+  Future<MomentComment?> comment(
+    String tripId,
+    String momentId,
+    String text,
+  ) async {
+    final res = await _client.postData('${_base(tripId)}/$momentId/comments', {
+      'content': text,
+    });
+    if (res is Map) {
+      return MomentComment.fromJson(res.cast<String, dynamic>());
+    }
+    return null;
+  }
 
   /// Đặt lại caption cho khoảnh khắc (chỉ tác giả sửa được).
   Future<void> updateCaption(String tripId, String momentId, String caption) =>
       _client.patchData('${_base(tripId)}/$momentId', {'caption': caption});
+
+  /// Cập nhật vị trí, góc xoay, bộ lọc màu, ghim hoặc yêu thích trên Shared Memory Photo Board.
+  Future<Moment?> updateBoardLayout(
+    String tripId,
+    String momentId, {
+    double? boardX,
+    double? boardY,
+    double? boardRotation,
+    double? boardScale,
+    String? boardFilter,
+    String? noteColor,
+    bool? isPinned,
+    bool? isFavorite,
+    String? caption,
+  }) async {
+    final payload = <String, dynamic>{
+      'boardX': ?boardX,
+      'boardY': ?boardY,
+      'boardRotation': ?boardRotation,
+      'boardScale': ?boardScale,
+      'boardFilter': ?boardFilter,
+      'noteColor': ?noteColor,
+      'isPinned': ?isPinned,
+      'isFavorite': ?isFavorite,
+      'caption': ?caption,
+    };
+    final res = await _client.patchData(
+      '${_base(tripId)}/$momentId/layout',
+      payload,
+    );
+    if (res is Map) {
+      final updated = Moment.fromJson(res.cast<String, dynamic>());
+      final existing = _l1SnapshotCache[tripId];
+      if (existing != null) {
+        final idx = existing.indexWhere((m) => m.id == momentId);
+        if (idx != -1) {
+          existing[idx] = updated;
+        }
+      }
+      return updated;
+    }
+    return null;
+  }
+
+  /// Bật/tắt yêu thích trên bảng ảnh kỷ niệm.
+  Future<bool?> toggleFavorite(String tripId, String momentId) async {
+    final res = await _client.postData(
+      '${_base(tripId)}/$momentId/favorite',
+      const {},
+    );
+    if (res is Map && res['isFavorite'] is bool) {
+      return res['isFavorite'] as bool;
+    }
+    return null;
+  }
 
   /// Ghost Cam: bao nhiêu ảnh đang chờ tráng và tráng lúc nào.
   Future<GhostStatus> developing(String tripId) async {
@@ -51,8 +181,10 @@ class MomentsRepository {
     );
   }
 
-  Future<void> delete(String tripId, String momentId) =>
-      _client.deleteData('${_base(tripId)}/$momentId');
+  Future<void> delete(String tripId, String momentId) async {
+    await _client.deleteData('${_base(tripId)}/$momentId');
+    _l1SnapshotCache[tripId]?.removeWhere((m) => m.id == momentId);
+  }
 
   /// Tạo khoảnh khắc mới.
   ///
@@ -67,6 +199,13 @@ class MomentsRepository {
     double? latitude,
     double? longitude,
     bool isGhost = false,
+    double? boardX,
+    double? boardY,
+    double? boardRotation,
+    String? boardFilter,
+    String? noteColor,
+    bool? isPinned,
+    bool? isFavorite,
   }) async {
     final res = await _client.postData(_base(tripId), {
       'mediaUrl': mediaUrl,
@@ -77,8 +216,20 @@ class MomentsRepository {
       'latitude': ?latitude,
       'longitude': ?longitude,
       if (isGhost) 'isGhost': true,
+      'boardX': ?boardX,
+      'boardY': ?boardY,
+      'boardRotation': ?boardRotation,
+      'boardFilter': ?boardFilter,
+      'noteColor': ?noteColor,
+      'isPinned': ?isPinned,
+      'isFavorite': ?isFavorite,
     });
-    return Moment.fromJson(res as Map<String, dynamic>);
+    final created = Moment.fromJson(res as Map<String, dynamic>);
+    final existing = _l1SnapshotCache[tripId];
+    if (existing != null) {
+      _l1SnapshotCache[tripId] = [created, ...existing];
+    }
+    return created;
   }
 }
 

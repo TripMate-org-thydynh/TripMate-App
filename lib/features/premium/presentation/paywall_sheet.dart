@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/api_service.dart';
@@ -11,6 +13,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../data/apple_billing_service.dart';
 import '../data/entitlement_provider.dart';
 import '../pages/subscription_checkout_screen.dart';
 import 'vietqr_payment_sheet.dart';
@@ -77,6 +80,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
   _SelectedPlan _plan = _SelectedPlan.plusMonth;
   _SelectedGateway _gateway = _SelectedGateway.sepay;
   bool _loading = false;
+  bool _restoring = false;
 
   /// Dòng tiêu đề gắn với đúng thứ vừa bị chặn.
   String _headline() {
@@ -94,13 +98,45 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
     };
   }
 
+  Future<void> _restorePurchases() async {
+    if (_restoring) return;
+    setState(() => _restoring = true);
+    try {
+      if (kDistributionChannel == DistributionChannel.appstore) {
+        await AppleBillingService.instance.restore();
+      } else {
+        await InAppPurchase.instance.restorePurchases();
+      }
+      ref.invalidate(entitlementProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('paywall.restore_success'.tr()),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('paywall.restore_failed'.tr()),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _restoring = false);
+    }
+  }
+
   Future<void> _handleCheckout() async {
-    // Nếu là kênh Play (bản phát hành CH Play): Google bắt buộc thanh toán qua Play Billing.
-    // Điều hướng sang SubscriptionCheckoutScreen để người dùng mua qua Google Play,
-    // tuyệt đối không mở VietQR/Ví để tránh vi phạm chính sách dẫn đến bị gỡ app.
-    if (kDistributionChannel == DistributionChannel.play) {
+    final planCode = _plan == _SelectedPlan.squad ? 'SQUAD' : 'PLUS';
+    // Nếu là kênh Store (bản phát hành CH Play / App Store): bắt buộc thanh toán qua Store.
+    if (kDistributionChannel == DistributionChannel.play ||
+        kDistributionChannel == DistributionChannel.appstore) {
       final upgraded = await Navigator.of(context).push<bool>(
-        MaterialPageRoute(builder: (_) => const SubscriptionCheckoutScreen()),
+        MaterialPageRoute(
+          builder: (_) => SubscriptionCheckoutScreen(initialPlan: planCode),
+        ),
       );
       if (mounted && upgraded == true) {
         ref.invalidate(entitlementProvider);
@@ -111,7 +147,6 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
 
     setState(() => _loading = true);
     try {
-      final planCode = _plan == _SelectedPlan.squad ? 'SQUAD' : 'PLUS';
       final months = _plan == _SelectedPlan.plusYear ? 12 : 1;
       final method = switch (_gateway) {
         _SelectedGateway.sepay => 'SEPAY',
@@ -137,7 +172,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         if (!mounted) return;
 
         if (_gateway == _SelectedGateway.sepay && qrUrl.isNotEmpty) {
-          await VietQrPaymentSheet.show(
+          final paid = await VietQrPaymentSheet.show(
             context,
             orderCode: orderCode,
             amount: amount,
@@ -145,28 +180,26 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
             payUrl: payUrl,
             bankInfo: bankInfo,
           );
-          if (mounted) {
-            Navigator.of(context).pop(true);
+          if (paid == true) {
+            ref.invalidate(entitlementProvider);
+            if (mounted) {
+              Navigator.of(context).pop(true);
+            }
           }
         } else {
           final uri = Uri.tryParse(payUrl ?? '');
           if (uri != null) {
             await launchUrl(uri, mode: LaunchMode.externalApplication);
           }
+          ref.invalidate(entitlementProvider);
           if (mounted) {
-            Navigator.of(context).pop(true);
+            Navigator.of(context).pop(false);
           }
         }
-        ref.invalidate(entitlementProvider);
         return;
       }
-      if (mounted) {
-        Navigator.of(context).pop(true);
-      }
     } catch (_) {
-      if (mounted) {
-        Navigator.of(context).pop(true);
-      }
+      // Do not pop(true) on error
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -188,8 +221,12 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         : GenZTokens.accentSoft;
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'vi';
     final isPlayChannel = kDistributionChannel == DistributionChannel.play;
+    final isAppStoreChannel =
+        kDistributionChannel == DistributionChannel.appstore;
+    final isStoreChannel = isPlayChannel || isAppStoreChannel;
+    final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
 
-    // Kênh Play: gói tự gia hạn, mua thêm khi đang còn gói là trả trùng kỳ.
+    // Kênh Store (Play / App Store): gói tự gia hạn, mua thêm khi đang còn gói là trả trùng kỳ.
     // Chỉ cho mua khi là NÂNG cấp (PLUS → SQUAD). Kênh ví thì mua thêm được
     // cộng nối vào hạn cũ (EntitlementService.grant) — đó là cách gia hạn.
     final ent = ref.watch(entitlementProvider).valueOrNull;
@@ -199,7 +236,7 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
         !ent.isTrial &&
         (ent.activeUntil?.isAfter(DateTime.now()) ?? false);
     final isUpgrade = ent?.plan == 'PLUS' && _plan == _SelectedPlan.squad;
-    final blockedByActive = isPlayChannel && ownActive && !isUpgrade;
+    final blockedByActive = isStoreChannel && ownActive && !isUpgrade;
 
     return SafeArea(
       top: false,
@@ -285,9 +322,9 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
               ),
               const SizedBox(height: 12),
 
-              // Bộ chọn phương thức thanh toán: Nếu là kênh Google Play thì ẩn VietQR/Ví,
-              // chỉ hiện bảo đảm thanh toán của Google Play để không vi phạm chính sách nộp store.
-              if (isPlayChannel)
+              // Bộ chọn phương thức thanh toán: Nếu là kênh Store thì ẩn VietQR/Ví,
+              // chỉ hiện bảo đảm thanh toán của cửa hàng để không vi phạm chính sách nộp store.
+              if (isStoreChannel)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -309,7 +346,9 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                       Icon(PhosphorIcons.shieldCheck(), size: 16, color: ink),
                       const SizedBox(width: 8),
                       Text(
-                        'Google Play Billing',
+                        isAppStoreChannel || isIOS
+                            ? 'Apple App Store'
+                            : 'Google Play Billing',
                         style: AppFonts.heading(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -425,14 +464,25 @@ class _PaywallSheetState extends ConsumerState<PaywallSheet> {
                 ),
               ),
               const SizedBox(height: 4),
-              Center(
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: Text(
-                    'paywall.later'.tr(),
-                    style: AppFonts.body(fontSize: 13, color: inkSoft),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: _restoring ? null : _restorePurchases,
+                    child: Text(
+                      'paywall.restore_purchases'.tr(),
+                      style: AppFonts.body(fontSize: 13, color: inkSoft),
+                    ),
                   ),
-                ),
+                  Text('•', style: AppFonts.body(fontSize: 13, color: inkSoft)),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text(
+                      'paywall.later'.tr(),
+                      style: AppFonts.body(fontSize: 13, color: inkSoft),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

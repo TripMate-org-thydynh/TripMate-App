@@ -112,7 +112,20 @@ class TripsRepository {
     return Trip.fromJson((data as Map).cast<String, dynamic>());
   }
 
-  Future<void> leaveTrip(String id) => _client.deleteData('/trips/$id/leave');
+  Future<void> leaveTrip(String id) async {
+    try {
+      await _client.deleteData('/trips/$id/leave');
+    } on ApiException catch (e) {
+      if (e.statusCode == 404 || e.statusCode == 405) {
+        await _client.postData('/trips/$id/leave', const {});
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> removeMember(String id, String userId) =>
+      _client.deleteData('/trips/$id/members/$userId');
 
   Future<void> deleteTrip(String id) => _client.deleteData('/trips/$id');
 

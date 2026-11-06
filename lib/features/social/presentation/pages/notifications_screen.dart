@@ -4,13 +4,43 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 
 import '../../data/notifications_repository.dart';
 
-final pushNotificationsEnabledProvider = StateProvider<bool>((ref) => true);
-final smsNotificationsEnabledProvider = StateProvider<bool>((ref) => false);
-final emailNotificationsEnabledProvider = StateProvider<bool>((ref) => false);
+class _PersistedBoolNotifier extends StateNotifier<bool> {
+  final String _key;
+  _PersistedBoolNotifier(this._key, bool defaultValue) : super(defaultValue) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(_key) && mounted) {
+      state = prefs.getBool(_key) ?? state;
+    }
+  }
+
+  Future<void> setValue(bool val) async {
+    state = val;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_key, val);
+  }
+}
+
+final pushNotificationsEnabledProvider =
+    StateNotifierProvider<_PersistedBoolNotifier, bool>(
+      (ref) => _PersistedBoolNotifier('notif_push_enabled', true),
+    );
+final smsNotificationsEnabledProvider =
+    StateNotifierProvider<_PersistedBoolNotifier, bool>(
+      (ref) => _PersistedBoolNotifier('notif_sms_enabled', false),
+    );
+final emailNotificationsEnabledProvider =
+    StateNotifierProvider<_PersistedBoolNotifier, bool>(
+      (ref) => _PersistedBoolNotifier('notif_email_enabled', false),
+    );
 
 /// Trung tâm thông báo — wired BE thật (`/notifications`).
 class NotificationsScreen extends ConsumerWidget {
@@ -355,9 +385,8 @@ class NotificationsScreen extends ConsumerWidget {
                     onChanged: (val) {
                       HapticFeedback.lightImpact();
                       ref
-                              .read(pushNotificationsEnabledProvider.notifier)
-                              .state =
-                          val;
+                          .read(pushNotificationsEnabledProvider.notifier)
+                          .setValue(val);
                     },
                     borderCol: borderCol,
                     isDark: isDark,
@@ -371,8 +400,9 @@ class NotificationsScreen extends ConsumerWidget {
                     value: smsEnabled,
                     onChanged: (val) {
                       HapticFeedback.lightImpact();
-                      ref.read(smsNotificationsEnabledProvider.notifier).state =
-                          val;
+                      ref
+                          .read(smsNotificationsEnabledProvider.notifier)
+                          .setValue(val);
                       debugPrint('SMS notification simulation set to: $val');
                     },
                     borderCol: borderCol,
@@ -388,9 +418,8 @@ class NotificationsScreen extends ConsumerWidget {
                     onChanged: (val) {
                       HapticFeedback.lightImpact();
                       ref
-                              .read(emailNotificationsEnabledProvider.notifier)
-                              .state =
-                          val;
+                          .read(emailNotificationsEnabledProvider.notifier)
+                          .setValue(val);
                       debugPrint('Email notification simulation set to: $val');
                     },
                     borderCol: borderCol,

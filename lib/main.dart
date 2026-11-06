@@ -15,6 +15,11 @@ import 'core/providers/auth_provider.dart';
 import 'core/network/api_client.dart';
 import 'core/services/push_notifications.dart';
 import 'core/services/crash_reporter.dart';
+import 'features/premium/data/entitlement_provider.dart';
+import 'features/premium/data/trial_provider.dart';
+import 'features/trips/application/trips_providers.dart';
+import 'features/dashboard/data/home_feed_repository.dart';
+import 'features/profile/data/profile_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,7 +76,7 @@ class MyApp extends ConsumerWidget {
     // Đồng bộ widget mỗi lần mở app: đây là một trong hai lần cập nhật chắc
     // chắn (lần kia là ngay sau khi chính mình gửi ảnh). Ảnh của người khác
     // phụ thuộc lịch làm mới của hệ điều hành — xem ios/WIDGET_SETUP.md.
-    ref.listen(authProvider, (prev, next) {
+    ref.listen<AuthState>(authProvider, (prev, next) {
       if (next.isAuthenticated && prev?.isAuthenticated != true) {
         ref.read(widgetSyncProvider).refresh();
         // Báo token máy cho server để nhận bản tin sáng.
@@ -79,6 +84,14 @@ class MyApp extends ConsumerWidget {
       }
       if (!next.isAuthenticated && prev?.isAuthenticated == true) {
         PushNotifications.unregister();
+        ref.read(widgetSyncProvider).clear();
+        ref.invalidate(entitlementProvider);
+        ref.invalidate(trialStatusProvider);
+        ref.invalidate(tripsProvider);
+        ref.invalidate(upNextProvider);
+        ref.invalidate(expenseSummaryProvider);
+        ref.invalidate(squadActivitiesProvider);
+        ref.invalidate(profileDataProvider);
       }
     });
 

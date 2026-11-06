@@ -136,11 +136,19 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
+    final now = DateTime.now();
+    final minDate = isStart
+        ? now.subtract(const Duration(days: 365))
+        : (_startDate ?? now);
+    final rawInitial = isStart
+        ? (_startDate ?? now)
+        : (_endDate ?? _startDate ?? now);
+    final initialDate = rawInitial.isBefore(minDate) ? minDate : rawInitial;
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+      initialDate: initialDate,
+      firstDate: minDate,
+      lastDate: now.add(const Duration(days: 365 * 5)),
       builder: (context, child) {
         return Theme(data: Theme.of(context), child: child!);
       },
@@ -149,6 +157,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       setState(() {
         if (isStart) {
           _startDate = picked;
+          if (_endDate != null && _startDate!.isAfter(_endDate!)) {
+            _endDate = _startDate;
+          }
         } else {
           _endDate = picked;
         }
@@ -1024,6 +1035,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                   ? Image.asset(
                                                       'assets/images/avatar_minh_nhat.webp',
                                                       fit: BoxFit.cover,
+                                                      cacheWidth: 120,
                                                     )
                                                   : CachedNetworkImage(
                                                       imageUrl:
@@ -1093,6 +1105,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                   ? Image.asset(
                                                       'assets/images/avatar_thao_ly.webp',
                                                       fit: BoxFit.cover,
+                                                      cacheWidth: 120,
                                                     )
                                                   : CachedNetworkImage(
                                                       imageUrl:
@@ -1155,6 +1168,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                             child: Image.asset(
                                               'assets/images/avatar_user.webp',
                                               fit: BoxFit.cover,
+                                              cacheWidth: 120,
                                               semanticLabel: 'trips.avatar_user'
                                                   .tr(),
                                               errorBuilder:
@@ -1280,6 +1294,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               child: Image.asset(
                 'assets/images/avatar_user.webp',
                 fit: BoxFit.cover,
+                cacheWidth: 120,
                 semanticLabel: 'trips.avatar_user'.tr(),
                 errorBuilder: (context, error, stackTrace) => Icon(
                   PhosphorIcons.circleDashed(),

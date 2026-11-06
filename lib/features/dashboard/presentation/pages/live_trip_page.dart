@@ -311,14 +311,28 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                             ),
                           ),
                         ),
+                        // Lỗi mạng thoáng qua lúc mở app từng làm khối này kẹt
+                        // tới khi tắt app (FutureProvider không tự thử lại) —
+                        // nên phải có nút thử lại.
                         error: (_, _) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Text(
-                            'errors.load_failed'.tr(),
-                            style: AppFonts.body(
-                              fontSize: 13,
-                              color: textSecondary,
-                            ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'errors.load_failed'.tr(),
+                                  style: AppFonts.body(
+                                    fontSize: 13,
+                                    color: textSecondary,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    ref.invalidate(squadActivitiesProvider),
+                                child: Text('general.retry'.tr()),
+                              ),
+                            ],
                           ),
                         ),
                         data: (items) {

@@ -10,9 +10,11 @@ import '../../../../core/network/error_message.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 
 import '../../../../core/services/payment_launcher.dart';
+import '../../../dashboard/data/home_feed_repository.dart';
 import '../../../social/presentation/pages/trip_polls_screen.dart';
 import '../../application/expense_export.dart';
 import '../../application/expenses_providers.dart';
+import '../../data/expenses_repository.dart';
 import '../../domain/expense.dart';
 import 'add_expense_sheet.dart';
 import 'ai_expense_parse_screen.dart';
@@ -32,6 +34,16 @@ class TripBalancesScreen extends ConsumerWidget {
     this.isDarkMode = false,
   });
 
+  static const _categoryKeys = {
+    'FOOD': 'expense.cat_food',
+    'ACCOMMODATION': 'expense.cat_stay',
+    'TRANSPORT': 'expense.cat_transport',
+    'ACTIVITIES': 'expense.cat_activities',
+    'SHOPPING': 'expense.cat_shopping',
+    'ENTERTAINMENT': 'expense.cat_fun',
+    'OTHER': 'expense.cat_other',
+  };
+
   Color get _bg => isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
   Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color _primary(BuildContext context) => Theme.of(context).colorScheme.primary;
@@ -44,10 +56,14 @@ class TripBalancesScreen extends ConsumerWidget {
   Color get _textPri => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+  Color get _danger => isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
+  Color get _success =>
+      isDarkMode ? GenZTokens.successDark : GenZTokens.success;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(tripBalancesProvider(tripId));
+    final expensesAsync = ref.watch(tripExpensesProvider(tripId));
 
     return Scaffold(
       backgroundColor: _bg,
@@ -140,11 +156,14 @@ class TripBalancesScreen extends ConsumerWidget {
           Expanded(
             child: RefreshIndicator(
               color: _primary(context),
-              onRefresh: () async => ref.refresh(tripBalancesProvider(tripId)),
+              onRefresh: () async {
+                ref.invalidate(tripExpensesProvider(tripId));
+                return ref.refresh(tripBalancesProvider(tripId).future);
+              },
               child: async.when(
                 loading: () => _skeleton(),
                 error: (e, _) => _error(context, ref, e),
-                data: (result) => _content(context, result),
+                data: (result) => _content(context, ref, result, expensesAsync),
               ),
             ),
           ),
@@ -352,7 +371,10 @@ class TripBalancesScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
                 ),
               ),
-              onPressed: () => ref.refresh(tripBalancesProvider(tripId)),
+              onPressed: () {
+                ref.invalidate(tripExpensesProvider(tripId));
+                ref.invalidate(tripBalancesProvider(tripId));
+              },
               icon: Icon(PhosphorIcons.arrowsClockwise()),
               label: Text(
                 'general.retry'.tr(),
@@ -365,8 +387,14 @@ class TripBalancesScreen extends ConsumerWidget {
     ],
   );
 
-  Widget _content(BuildContext context, BalancesResult result) {
-    if (result.balances.isEmpty) {
+  Widget _content(
+    BuildContext context,
+    WidgetRef ref,
+    BalancesResult result,
+    AsyncValue<List<Expense>> expensesAsync,
+  ) {
+    final expenses = expensesAsync.valueOrNull ?? const <Expense>[];
+    if (result.balances.isEmpty && expenses.isEmpty) {
       return ListView(
         children: [
           const SizedBox(height: 130),
@@ -439,8 +467,25 @@ class TripBalancesScreen extends ConsumerWidget {
         ],
 
         // Balances per member
+        if (result.balances.isNotEmpty) ...[
+          Text(
+            'expense.per_person'.tr(),
+            style: AppFonts.heading(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: _textPri,
+            ),
+          ),
+          const SizedBox(height: 14),
+          ...result.balances.map((b) => _balanceRow(context, b)),
+          const SizedBox(height: 28),
+        ],
+
+        // Individual expenses list
         Text(
-          'expense.per_person'.tr(),
+          context.locale.languageCode == 'en'
+              ? 'Expense history'
+              : 'Lịch sử chi tiêu',
           style: AppFonts.heading(
             fontSize: 17,
             fontWeight: FontWeight.w700,
@@ -448,8 +493,259 @@ class TripBalancesScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 14),
-        ...result.balances.map((b) => _balanceRow(context, b)),
+        expensesAsync.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (err, _) => Text(
+            friendlyError(err),
+            style: AppFonts.body(fontSize: 13, color: _danger),
+          ),
+          data: (items) {
+            if (items.isEmpty) {
+              return Text(
+                'expense.empty'.tr(),
+                style: AppFonts.body(fontSize: 13, color: _textSec),
+              );
+            }
+            return Column(
+              children: [
+                for (final exp in items) _expenseCard(context, ref, exp),
+              ],
+            );
+          },
+        ),
       ],
+    );
+  }
+
+  Future<void> _handlePaySplit(
+    BuildContext context,
+    WidgetRef ref,
+    Expense expense,
+    ExpenseShare split,
+  ) async {
+    HapticFeedback.selectionClick();
+    try {
+      await ref
+          .read(expensesRepositoryProvider)
+          .payShare(tripId, expense.id, split.userId);
+      ref.invalidate(tripExpensesProvider(tripId));
+      ref.invalidate(tripBalancesProvider(tripId));
+      invalidateHomeAggregatesFrom(ref);
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(friendlyError(e)),
+          backgroundColor: _danger,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleDeleteExpense(
+    BuildContext context,
+    WidgetRef ref,
+    Expense expense,
+  ) async {
+    HapticFeedback.heavyImpact();
+    final isEn = context.locale.languageCode == 'en';
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          side: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+        ),
+        title: Text(
+          isEn ? 'Delete expense?' : 'Xoá khoản chi?',
+          style: AppFonts.heading(fontWeight: FontWeight.w700, color: _textPri),
+        ),
+        content: Text(
+          isEn
+              ? 'Are you sure you want to delete this expense?'
+              : 'Bạn có chắc muốn xoá khoản chi này khỏi chuyến đi?',
+          style: AppFonts.body(color: _textSec),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: _danger,
+              foregroundColor:
+                  isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              ),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(isEn ? 'Delete' : 'Xoá'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await ref
+          .read(expensesRepositoryProvider)
+          .deleteExpense(tripId, expense.id);
+      ref.invalidate(tripExpensesProvider(tripId));
+      ref.invalidate(tripBalancesProvider(tripId));
+      invalidateHomeAggregatesFrom(ref);
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(friendlyError(e)),
+          backgroundColor: _danger,
+        ),
+      );
+    }
+  }
+
+  Widget _expenseCard(BuildContext context, WidgetRef ref, Expense expense) {
+    final isEn = context.locale.languageCode == 'en';
+    final catLabel = (_categoryKeys[expense.category] ?? 'expense.cat_other').tr();
+    final title = (expense.description != null &&
+            expense.description!.trim().isNotEmpty)
+        ? expense.description!.trim()
+        : catLabel;
+    final payerName = expense.paidBy?.name ?? 'common.anonymous'.tr();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppFonts.heading(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: _textPri,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$catLabel · ${isEn ? 'Paid by' : 'Người trả'}: $payerName',
+                      style: AppFonts.body(fontSize: 12, color: _textSec),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                formatMoney(
+                  expense.amount,
+                  locale: context.locale.languageCode,
+                ),
+                style: AppFonts.heading(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: _textPri,
+                ),
+              ),
+              const SizedBox(width: 4),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                tooltip: isEn ? 'Delete' : 'Xoá',
+                icon: Icon(PhosphorIcons.trash(), size: 18, color: _danger),
+                onPressed: () => _handleDeleteExpense(context, ref, expense),
+              ),
+            ],
+          ),
+          if (expense.splits.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Divider(color: _line, height: 1),
+            const SizedBox(height: 8),
+            for (final split in expense.splits)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    Icon(
+                      split.isPaid
+                          ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                          : PhosphorIcons.clock(),
+                      size: 15,
+                      color: split.isPaid ? _success : _textSec,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '${split.user.name} · ${formatMoney(split.shareAmount, locale: context.locale.languageCode)}',
+                        style: AppFonts.body(
+                          fontSize: 13,
+                          color: _textPri,
+                        ),
+                      ),
+                    ),
+                    if (split.isPaid)
+                      Text(
+                        isEn ? 'Paid' : 'Đã trả',
+                        style: AppFonts.body(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: _success,
+                        ),
+                      )
+                    else if (split.userId.isNotEmpty)
+                      GestureDetector(
+                        onTap: () =>
+                            _handlePaySplit(context, ref, expense, split),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _accentSoft,
+                            borderRadius: BorderRadius.circular(
+                              GenZTokens.radiusPill,
+                            ),
+                            border: Border.all(
+                              color: _primary(context),
+                              width: GenZTokens.borderWidthThin,
+                            ),
+                          ),
+                          child: Text(
+                            isEn ? 'Mark paid' : 'Đánh dấu đã trả',
+                            style: AppFonts.body(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: _primary(context),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -548,9 +844,7 @@ class TripBalancesScreen extends ConsumerWidget {
 
   Widget _balanceRow(BuildContext context, MemberBalance b) {
     final positive = b.balance >= 0;
-    final color = positive
-        ? (isDarkMode ? GenZTokens.successDark : GenZTokens.success)
-        : (isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger);
+    final color = positive ? _success : _danger;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),

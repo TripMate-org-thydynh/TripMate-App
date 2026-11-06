@@ -16,6 +16,7 @@ import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../../../profile/data/xp_repository.dart';
+import '../../application/memory_board_audio_controller.dart';
 import '../../application/moments_providers.dart';
 import '../../data/moments_repository.dart';
 
@@ -59,8 +60,10 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
   bool _shotIsVideo = false;
 
   bool _sending = false;
+  bool _sendSuccess = false;
   double _progress = 0;
   final TextEditingController _caption = TextEditingController();
+  final MemoryBoardAudioController _audio = MemoryBoardAudioController();
 
   /// Ghost Cam: ảnh "tráng" khi chuyến kết thúc. Giữ nguyên giữa các lần
   /// chụp trong cùng phiên để chụp liền tay không phải bật lại.
@@ -73,6 +76,7 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _audio.init();
     _boot();
   }
 
@@ -81,19 +85,29 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
     WidgetsBinding.instance.removeObserver(this);
     _caption.dispose();
     _cam?.dispose();
+    _audio.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final cam = _cam;
-    if (cam == null || !cam.value.isInitialized) return;
     // Nhả camera khi app xuống nền, dựng lại khi quay lên — nếu không, app khác
     // không mở được camera và lúc quay lại khung ngắm sẽ đen.
     if (state == AppLifecycleState.inactive) {
+      final cam = _cam;
+      if (cam == null) return;
+      _cam = null;
+      if (mounted) {
+        setState(() {
+          _initializing = true;
+          _recording = false;
+        });
+      }
       cam.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      _start(_camIndex);
+      if (_cameras.isNotEmpty) {
+        _start(_camIndex);
+      }
     }
   }
 
@@ -244,19 +258,32 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
       await ref.read(widgetSyncProvider).refresh();
 
       if (!mounted) return;
+      setState(() {
+        _sendSuccess = true;
+      });
+      _audio.playPop();
       HapticFeedback.mediumImpact();
+
+      // Giữ tick thành công ~850ms để người dùng cảm nhận được phản hồi trực quan + âm thanh
+      await Future.delayed(const Duration(milliseconds: 850));
+      if (!mounted) return;
+
       showGlobalSnack(
         (_ghost ? 'moments.ghost_sent' : 'moments.sent_to_squad').tr(),
       );
       setState(() {
         _shot = null;
         _sending = false;
+        _sendSuccess = false;
         _progress = 0;
         _caption.clear();
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _sending = false);
+      setState(() {
+        _sending = false;
+        _sendSuccess = false;
+      });
       // Chuyến đã đầy 100 khoảnh khắc → paywall, không phải snackbar lỗi.
       if (await PaywallSheet.maybeShow(context, e)) return;
       if (!mounted) return;
@@ -299,7 +326,10 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
 
   // ── Khung ngắm ───────────────────────────────────────────────────────────
   Widget _cameraView() {
-    final cam = _cam!;
+    final cam = _cam;
+    if (cam == null || !cam.value.isInitialized) {
+      return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+    }
     return Stack(
       children: [
         Positioned.fill(
@@ -610,6 +640,137 @@ class _SquadCamScreenState extends ConsumerState<SquadCamScreen>
             ],
           ),
         ),
+        if (_sending)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.68),
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 320),
+                  transitionBuilder: (child, anim) => ScaleTransition(
+                    scale: CurvedAnimation(
+                      parent: anim,
+                      curve: Curves.elasticOut,
+                    ),
+                    child: child,
+                  ),
+                  child: _sendSuccess
+                      ? Container(
+                          key: const ValueKey('squad_cam_success'),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 26,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xEE1E1D1B),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: GenZTokens.success.withValues(alpha: 0.45),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: GenZTokens.success.withValues(alpha: 0.3),
+                                blurRadius: 28,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 62,
+                                height: 62,
+                                decoration: const BoxDecoration(
+                                  color: GenZTokens.success,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.check_rounded,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                'Đã ghim ảnh!',
+                                style: AppFonts.heading(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Khoảnh khắc đã được chia sẻ',
+                                style: AppFonts.body(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          key: const ValueKey('squad_cam_sending'),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 24,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xEE1E1D1B),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              width: 1.2,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 52,
+                                height: 52,
+                                child: CircularProgressIndicator(
+                                  value: _progress > 0 ? _progress : null,
+                                  strokeWidth: 4,
+                                  valueColor: const AlwaysStoppedAnimation<Color>(
+                                    GenZTokens.accent,
+                                  ),
+                                  backgroundColor: Colors.white12,
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                'Đang gửi cho Squad...',
+                                style: AppFonts.heading(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              if (_progress > 0) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${(_progress * 100).toInt()}%',
+                                  style: AppFonts.mono(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: GenZTokens.accent,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

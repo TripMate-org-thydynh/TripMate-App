@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../services/media_uploader.dart';
 import '../theme/gen_z_tokens.dart';
 
 /// Ảnh bìa chuyến — nhận cả **asset path** lẫn **URL**.
@@ -69,12 +70,15 @@ class TripCoverImage extends StatelessWidget {
       imageContent = Image.asset(
         src,
         fit: fit,
+        cacheWidth: 800,
         errorBuilder: (_, _, _) => ColoredBox(color: bg),
       );
     } else if (_isUrl) {
       imageContent = CachedNetworkImage(
-        imageUrl: src,
+        imageUrl: cdnUrlForTier(src, CdnTier.background),
+        cacheKey: cdnCacheKey(src, tier: CdnTier.background),
         fit: fit,
+        memCacheWidth: CdnTier.background.width,
         placeholder: (_, _) => ColoredBox(color: bg),
         errorWidget: (_, _, _) => ColoredBox(color: bg),
       );

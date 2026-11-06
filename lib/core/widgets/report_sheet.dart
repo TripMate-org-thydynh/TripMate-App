@@ -9,14 +9,15 @@ import '../theme/app_fonts.dart';
 import '../theme/gen_z_tokens.dart';
 
 /// Loại nội dung báo cáo — khớp enum `ReportTarget` ở BE.
-enum ReportTarget { template, moment, chatMessage, user }
+enum ReportTarget { template, moment, chatMessage, chat, user, review }
 
 extension on ReportTarget {
   String get wire => switch (this) {
     ReportTarget.template => 'TEMPLATE',
     ReportTarget.moment => 'MOMENT',
-    ReportTarget.chatMessage => 'CHAT_MESSAGE',
+    ReportTarget.chatMessage || ReportTarget.chat => 'CHAT_MESSAGE',
     ReportTarget.user => 'USER',
+    ReportTarget.review => 'REVIEW',
   };
 }
 

@@ -384,16 +384,17 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 ),
               ),
             ),
-            ExcludeSemantics(
-              child: Image.network(
-                place.image,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) =>
-                    const SizedBox.shrink(),
-                loadingBuilder: (context, child, progress) =>
-                    progress == null ? child : const SizedBox.shrink(),
+            if (place.image.trim().isNotEmpty)
+              ExcludeSemantics(
+                child: Image.network(
+                  place.image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stack) =>
+                      const SizedBox.shrink(),
+                  loadingBuilder: (context, child, progress) =>
+                      progress == null ? child : const SizedBox.shrink(),
+                ),
               ),
-            ),
             // Scrim
             Container(
               decoration: const BoxDecoration(

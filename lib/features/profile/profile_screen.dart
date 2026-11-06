@@ -7,15 +7,16 @@ import 'data/xp_repository.dart';
 import '../moments/data/moments_repository.dart';
 import '../moments/presentation/pages/memory_wall_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/app_messenger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../core/theme/gen_z_tokens.dart';
+import '../../core/providers/auth_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'data/profile_provider.dart';
 
+import '../../core/services/media_uploader.dart';
 import '../../core/widgets/faded_image.dart';
 import '../trips/application/trips_providers.dart';
 import 'pages/badge_collection_screen.dart';
@@ -396,9 +397,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 aspectRatio: 1.0,
                 child: ExcludeSemantics(
                   child: imageUrl.startsWith('assets/')
-                      ? Image.asset(imageUrl, fit: BoxFit.cover)
+                      ? Image.asset(imageUrl, fit: BoxFit.cover, cacheWidth: 400)
                       : CachedNetworkImage(
-                          imageUrl: imageUrl,
+                          imageUrl: MediaUploader.cdnUrlForTier(
+                            imageUrl,
+                            CdnTier.boardThumb,
+                          ),
+                          cacheKey: MediaUploader.cdnCacheKey(
+                            imageUrl,
+                            tier: CdnTier.boardThumb,
+                          ),
+                          memCacheWidth: CdnTier.boardThumb.width,
+                          maxWidthDiskCache: CdnTier.boardThumb.width,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
@@ -1197,7 +1207,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                                   label: 'Ảnh đại diện của $name',
                                                   image: true,
                                                   child: CachedNetworkImage(
-                                                    imageUrl: avatarUrl,
+                                                    imageUrl: MediaUploader.cdnUrlForTier(
+                                                      avatarUrl,
+                                                      CdnTier.avatar,
+                                                    ),
+                                                    cacheKey: MediaUploader.cdnCacheKey(
+                                                      avatarUrl,
+                                                      tier: CdnTier.avatar,
+                                                    ),
+                                                    memCacheWidth: CdnTier.avatar.width,
+                                                    maxWidthDiskCache: CdnTier.avatar.width,
                                                     fit: BoxFit.cover,
                                                     placeholder: (
                                                       context,
@@ -1283,14 +1302,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                 top: 80,
                                 right: 16,
                                 child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             const EditProfileScreen(),
                                       ),
                                     );
+                                    if (mounted) {
+                                      ref.invalidate(profileDataProvider);
+                                      ref
+                                          .read(profileDataProvider.notifier)
+                                          .loadProfile(forceRefresh: true);
+                                    }
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
@@ -1339,68 +1364,65 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                           const SizedBox(height: 16),
 
                           // Horizontal Scrolling Achievement Badges list
-                          SizedBox(
-                            height: 136,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              physics: const BouncingScrollPhysics(),
-                              children: _userBadges.isEmpty
-                                  ? [
-                                      _buildBadgeCard(
-                                        icon: PhosphorIcons.fire(),
-                                        title: 'profile.badge_chaos_king'.tr(),
-                                        tier: 'profile.gold_tier'.tr(),
-                                        isRare: true,
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const BadgeCollectionScreen(),
+                          _userBadges.isEmpty
+                              ? GestureDetector(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const BadgeCollectionScreen(),
+                                    ),
+                                  ),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: surfaceColor,
+                                      borderRadius: BorderRadius.circular(
+                                        GenZTokens.radiusCard,
+                                      ),
+                                      border: Border.all(
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          PhosphorIcons.medal(),
+                                          color: textSecondaryColor,
+                                          size: 24,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            context.locale.languageCode == 'en'
+                                                ? 'No badges unlocked yet. Complete trips with your squad to earn achievements!'
+                                                : 'Chưa mở khoá huy hiệu nào. Hãy tạo và hoàn thành chuyến đi cùng hội bạn để nhận huy hiệu!',
+                                            style: AppFonts.body(
+                                              fontSize: 13,
+                                              color: textSecondaryColor,
+                                              height: 1.4,
+                                            ),
                                           ),
                                         ),
-                                        primaryColor: primaryColor,
-                                      ),
-                                      _buildBadgeCard(
-                                        icon: PhosphorIcons.camera(),
-                                        title: 'profile.badge_paparazzi'.tr(),
-                                        tier: 'profile.silver_tier'.tr(),
-                                        isRare: false,
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const BadgeCollectionScreen(),
-                                          ),
+                                        Icon(
+                                          PhosphorIcons.caretRight(),
+                                          size: 16,
+                                          color: textSecondaryColor,
                                         ),
-                                        primaryColor: primaryColor,
-                                      ),
-                                      _buildBadgeCard(
-                                        icon: PhosphorIcons.bowlFood(),
-                                        title: 'profile.badge_street_food'.tr(),
-                                        tier: 'profile.rare_tier'.tr(),
-                                        isRare: true,
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const BadgeCollectionScreen(),
-                                          ),
-                                        ),
-                                        primaryColor: primaryColor,
-                                      ),
-                                      _buildBadgeCard(
-                                        icon: PhosphorIcons.lock(),
-                                        title: 'profile.badge_locked_name'.tr(),
-                                        tier: 'profile.badge_locked'.tr(),
-                                        isRare: false,
-                                        isLocked: true,
-                                        onTap: () => showGlobalSnack(
-                                          'common.feature_wip2'.tr(),
-                                        ),
-                                        primaryColor: primaryColor,
-                                      ),
-                                    ]
-                                  : _userBadges.map<Widget>((badge) {
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : SizedBox(
+                                  height: 136,
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const BouncingScrollPhysics(),
+                                    children: _userBadges.map<Widget>((badge) {
                                       final isLocked =
                                           badge['unlockedAt'] == null;
                                       final title =
@@ -1454,8 +1476,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         primaryColor: primaryColor,
                                       );
                                     }).toList(),
-                            ),
-                          ),
+                                  ),
+                                ),
 
                           const SizedBox(height: 36),
 
@@ -1553,7 +1575,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                             MaterialPageRoute(
                                               builder: (_) => MemoryWallScreen(
                                                 isDarkMode: isDark,
-                                                onThemeToggle: () {},
                                               ),
                                             ),
                                           ),
@@ -2000,6 +2021,160 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                         const SizedBox(height: 2),
                                         Text(
                                           'profile.mcp_title'.tr(),
+                                          style: AppFonts.body(
+                                            fontSize: 12,
+                                            color: textSecondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    PhosphorIcons.arrowRight(),
+                                    size: 14,
+                                    color: textSecondaryColor,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 12),
+                          // Đăng xuất (Log out)
+                          GestureDetector(
+                            onTap: () async {
+                              final isEn = context.locale.languageCode == 'en';
+                              final dangerColor = isDark
+                                  ? GenZTokens.dangerDark
+                                  : GenZTokens.danger;
+                              final ok = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  backgroundColor: surfaceColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      GenZTokens.radiusCard,
+                                    ),
+                                    side: BorderSide(
+                                      color: isDark
+                                          ? GenZTokens.lineDark
+                                          : GenZTokens.line,
+                                      width: GenZTokens.borderWidthThin,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    isEn ? 'Log out?' : 'Đăng xuất?',
+                                    style: AppFonts.heading(
+                                      fontWeight: FontWeight.bold,
+                                      color: textPrimaryColor,
+                                    ),
+                                  ),
+                                  content: Text(
+                                    isEn
+                                        ? 'Are you sure you want to log out of your account?'
+                                        : 'Bạn có chắc muốn đăng xuất khỏi tài khoản hiện tại?',
+                                    style: AppFonts.body(
+                                      color: textSecondaryColor,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, false),
+                                      child: Text(
+                                        'general.cancel'.tr(),
+                                        style: AppFonts.body(
+                                          color: textSecondaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                    FilledButton(
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: dangerColor,
+                                        foregroundColor: isDark
+                                            ? GenZTokens.onAccentDark
+                                            : GenZTokens.onAccent,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            GenZTokens.radiusButton,
+                                          ),
+                                        ),
+                                      ),
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      child: Text(
+                                        isEn ? 'Log out' : 'Đăng xuất',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (ok == true) {
+                                await ref.read(authProvider.notifier).logout();
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                color: surfaceColor,
+                                borderRadius: BorderRadius.circular(
+                                  GenZTokens.radiusCard,
+                                ),
+                                border: Border.all(
+                                  color: (isDark
+                                          ? GenZTokens.dangerDark
+                                          : GenZTokens.danger)
+                                      .withValues(alpha: 0.35),
+                                  width: GenZTokens.borderWidthThin,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isDark
+                                          ? GenZTokens.fillDark
+                                          : GenZTokens.fill,
+                                      border: Border.all(
+                                        color: isDark
+                                            ? GenZTokens.lineDark
+                                            : GenZTokens.line,
+                                        width: GenZTokens.borderWidthThin,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      PhosphorIcons.signOut(),
+                                      color: isDark
+                                          ? GenZTokens.dangerDark
+                                          : GenZTokens.danger,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          context.locale.languageCode == 'en'
+                                              ? 'Log out'
+                                              : 'Đăng xuất',
+                                          style: AppFonts.heading(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark
+                                                ? GenZTokens.dangerDark
+                                                : GenZTokens.danger,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          context.locale.languageCode == 'en'
+                                              ? 'Sign out of this device'
+                                              : 'Thoát khỏi tài khoản trên thiết bị này',
                                           style: AppFonts.body(
                                             fontSize: 12,
                                             color: textSecondaryColor,

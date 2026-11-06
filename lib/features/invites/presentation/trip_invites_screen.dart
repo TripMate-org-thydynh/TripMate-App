@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/utils/app_share.dart';
 import '../application/invites_providers.dart';
 import '../data/invites_repository.dart';
 
@@ -264,7 +264,8 @@ class _TripInvitesScreenState extends ConsumerState<TripInvitesScreen> {
 
   void _shareInvite(TripInvite invite) {
     final code = invite.code;
-    Share.share(
+    AppShare.shareText(
+      context,
       'invites.share_body'.tr(
         namedArgs: {'name': widget.tripName, 'code': code},
       ),

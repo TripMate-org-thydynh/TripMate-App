@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../moments/data/moments_repository.dart';
 import '../../data/home_feed_repository.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/widgets/faded_image.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
@@ -66,32 +65,82 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     });
   }
 
+  (double, double) _coordsForTrip(Trip? trip) {
+    final text = '${trip?.destination ?? ''} ${trip?.name ?? ''}'.toLowerCase();
+    if (text.contains('hà nội') || text.contains('ha noi') || text.contains('hanoi')) {
+      return (21.0285, 105.8542);
+    }
+    if (text.contains('đà nẵng') || text.contains('da nang') || text.contains('danang')) {
+      return (16.0470, 108.2060);
+    }
+    if (text.contains('sài gòn') ||
+        text.contains('sai gon') ||
+        text.contains('hồ chí minh') ||
+        text.contains('ho chi minh') ||
+        text.contains('hcm') ||
+        text.contains('tp.hcm')) {
+      return (10.7769, 106.7009);
+    }
+    if (text.contains('phú quốc') || text.contains('phu quoc')) {
+      return (10.2899, 103.9840);
+    }
+    if (text.contains('nha trang')) {
+      return (12.2388, 109.1967);
+    }
+    if (text.contains('đà lạt') || text.contains('da lat') || text.contains('dalat')) {
+      return (11.9406, 108.4452);
+    }
+    if (text.contains('sa pa') || text.contains('sapa')) {
+      return (22.3364, 103.8438);
+    }
+    if (text.contains('hạ long') || text.contains('ha long') || text.contains('halong')) {
+      return (20.9599, 107.0425);
+    }
+    if (text.contains('ninh bình') || text.contains('ninh binh')) {
+      return (20.2506, 105.9745);
+    }
+    if (text.contains('hội an') || text.contains('hoi an')) {
+      return (15.8801, 108.3380);
+    }
+    if (text.contains('huế') || text.contains('hue')) {
+      return (16.4637, 107.5909);
+    }
+    if (text.contains('vũng tàu') || text.contains('vung tau')) {
+      return (10.3460, 107.0843);
+    }
+    if (text.contains('quy nhơn') || text.contains('quy nhon')) {
+      return (13.7830, 109.2197);
+    }
+    if (text.contains('cần thơ') || text.contains('can tho')) {
+      return (10.0452, 105.7469);
+    }
+    if (text.contains('bangkok')) {
+      return (13.7563, 100.5018);
+    }
+    if (text.contains('tokyo')) {
+      return (35.6762, 139.6503);
+    }
+    if (text.contains('seoul')) {
+      return (37.5665, 126.9780);
+    }
+    if (text.contains('singapore')) {
+      return (1.3521, 103.8198);
+    }
+    return (11.9406, 108.4452);
+  }
+
   Future<void> _fetchWeather() async {
     try {
       final tripsAsync = ref.read(tripsProvider);
-      double lat = 11.9406;
-      double lng = 108.4452;
-      String tripName = '';
+      Trip? activeTrip;
 
       tripsAsync.whenData((trips) {
         if (trips.isNotEmpty) {
-          tripName = trips.first.name;
+          activeTrip = trips.first;
         }
       });
 
-      final name = tripName.toLowerCase();
-      if (name.contains('hà nội') || name.contains('ha noi')) {
-        lat = 21.0285;
-        lng = 105.8542;
-      } else if (name.contains('đà nẵng') || name.contains('da nang')) {
-        lat = 16.0470;
-        lng = 108.2060;
-      } else if (name.contains('sài gòn') ||
-          name.contains('hồ chí minh') ||
-          name.contains('hcm')) {
-        lat = 10.7769;
-        lng = 106.7009;
-      }
+      final (lat, lng) = _coordsForTrip(activeTrip);
 
       final weather = await ref
           .read(weatherServiceProvider)
@@ -171,12 +220,14 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 offset: Offset(0, -(_scroll.hasClients ? _scroll.offset : 0.0)),
                 child: child,
               ),
-              child: FadedImage(
-                imageUrl: cover,
-                fadeTo: _bg,
-                height: topInset + _heroImageHeight,
-                glowExtent: 420,
-                topFade: true,
+              child: RepaintBoundary(
+                child: FadedImage(
+                  imageUrl: cover,
+                  fadeTo: _bg,
+                  height: topInset + _heroImageHeight,
+                  glowExtent: 420,
+                  topFade: true,
+                ),
               ),
             ),
           _buildScroll(context),
@@ -1421,7 +1472,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               MaterialPageRoute(
                                 builder: (_) => MemoryWallScreen(
                                   isDarkMode: isDarkMode,
-                                  onThemeToggle: onThemeToggle,
                                 ),
                               ),
                             ),
@@ -1539,7 +1589,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           const SizedBox(height: 12),
           Text(
             title,
-            style: GoogleFonts.patrickHand(
+            style: AppFonts.body(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: _ink,
@@ -1548,7 +1598,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           const SizedBox(height: 2),
           Text(
             author,
-            style: GoogleFonts.patrickHand(fontSize: 14, color: _inkSoft),
+            style: AppFonts.body(fontSize: 14, color: _inkSoft),
           ),
           const SizedBox(height: 4),
           Row(

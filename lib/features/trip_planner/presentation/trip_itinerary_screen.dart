@@ -209,22 +209,41 @@ class TripItineraryScreen extends ConsumerWidget {
         ),
       ),
     );
-    if (ok != true || placeCtrl.text.trim().isEmpty) return;
+    final dayText = dayCtrl.text.trim();
+    final timeText = timeCtrl.text.trim();
+    final placeText = placeCtrl.text.trim();
+    final addrText = addrCtrl.text.trim();
+    dayCtrl.dispose();
+    timeCtrl.dispose();
+    placeCtrl.dispose();
+    addrCtrl.dispose();
+
+    if (ok != true || placeText.isEmpty) return;
     HapticFeedback.lightImpact();
-    await ref
-        .read(itineraryRepositoryProvider)
-        .create(
-          tripId,
-          day: int.tryParse(dayCtrl.text.trim()) ?? 1,
-          startTime: timeCtrl.text.trim(),
-          placeName: placeCtrl.text.trim(),
-          placeAddress: addrCtrl.text.trim().isEmpty
-              ? null
-              : addrCtrl.text.trim(),
-          category: selectedCategory,
+    try {
+      await ref
+          .read(itineraryRepositoryProvider)
+          .create(
+            tripId,
+            day: int.tryParse(dayText) ?? 1,
+            startTime: timeText,
+            placeName: placeText,
+            placeAddress: addrText.isEmpty ? null : addrText,
+            category: selectedCategory,
+          );
+      ref.invalidate(tripItineraryProvider(tripId));
+      invalidateHomeAggregatesFrom(ref);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('common.save_failed'.tr()),
+            backgroundColor: _dangerOf(context),
+            behavior: SnackBarBehavior.floating,
+          ),
         );
-    ref.invalidate(tripItineraryProvider(tripId));
-    invalidateHomeAggregatesFrom(ref);
+      }
+    }
   }
 
   Future<void> _deleteItem(

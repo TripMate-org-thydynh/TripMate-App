@@ -78,13 +78,14 @@ class ApiService {
       Dio(
           BaseOptions(
             baseUrl: baseUrl,
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 15),
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 25),
           ),
         )
         ..interceptors.add(
           InterceptorsWrapper(
             onRequest: (options, handler) {
+              options.baseUrl = baseUrl;
               // Chỉ gắn token thật; không dùng dummy-token fallback.
               if (authToken != null) {
                 options.headers['authorization'] = 'Bearer $authToken';
@@ -204,6 +205,16 @@ class ApiService {
       return _unwrap(response.data);
     } catch (e) {
       _surfaceError(e, 'PATCH', path);
+      return null;
+    }
+  }
+
+  static Future<dynamic> delete(String path, [Map<String, dynamic>? body]) async {
+    try {
+      final response = await _dio.delete(path, data: body);
+      return _unwrap(response.data);
+    } catch (e) {
+      _surfaceError(e, 'DELETE', path);
       return null;
     }
   }
