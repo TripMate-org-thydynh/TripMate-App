@@ -171,8 +171,23 @@ class ApiClient {
     }
   }
 
-  Future<dynamic> postData(String path, [Map<String, dynamic>? body]) =>
-      _send(() => dio.post(path, data: body), 'POST', path);
+  /// [receiveTimeout] ghi đè mặc định 25s cho request chậm (AI: backend thử
+  /// Gemini rồi lần lượt các model Claude, dễ vượt 25s).
+  Future<dynamic> postData(
+    String path, [
+    Map<String, dynamic>? body,
+    Duration? receiveTimeout,
+  ]) => _send(
+    () => dio.post(
+      path,
+      data: body,
+      options: receiveTimeout == null
+          ? null
+          : Options(receiveTimeout: receiveTimeout),
+    ),
+    'POST',
+    path,
+  );
 
   Future<dynamic> patchData(String path, [Map<String, dynamic>? body]) =>
       _send(() => dio.patch(path, data: body), 'PATCH', path);
