@@ -40,7 +40,34 @@ class OfflineMapStore {
     final base = await getApplicationSupportDirectory();
     final d = Directory('${base.path}/map_tiles');
     if (!d.existsSync()) d.createSync(recursive: true);
+    // Dọn một lần mỗi phiên, chạy nền: không làm chậm tile đầu tiên.
+    _prune(d).catchError((_) {});
     return _dir = d;
+  }
+
+  /// Trần dung lượng cache khi xem bản đồ bình thường (tải trước đã có
+  /// [maxPrefetchTiles]). Vượt [_maxBytes] thì xoá tile cũ nhất tới còn
+  /// [_targetBytes] — trước đây thư mục này lớn không giới hạn.
+  static const _maxBytes = 150 * 1024 * 1024;
+  static const _targetBytes = 100 * 1024 * 1024;
+
+  Future<void> _prune(Directory d) async {
+    final files = <File, FileStat>{};
+    var total = 0;
+    await for (final e in d.list()) {
+      if (e is! File) continue;
+      final st = await e.stat();
+      files[e] = st;
+      total += st.size;
+    }
+    if (total <= _maxBytes) return;
+    final oldest = files.entries.toList()
+      ..sort((a, b) => a.value.modified.compareTo(b.value.modified));
+    for (final e in oldest) {
+      if (total <= _targetBytes) break;
+      total -= e.value.size;
+      await e.key.delete().catchError((_) => e.key);
+    }
   }
 
   /// Tên file ổn định cho một URL tile (không cần thư viện băm).

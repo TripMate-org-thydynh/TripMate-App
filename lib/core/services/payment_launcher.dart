@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -52,16 +51,25 @@ class PaymentLauncher {
     required double amount,
     required String note,
   }) {
-    final text = '$recipientPhone | ${amount.toStringAsFixed(0)}đ | $note';
+    final cleanPhone = recipientPhone.trim();
+    final text = cleanPhone.isEmpty
+        ? '${amount.toStringAsFixed(0)}đ | $note'
+        : '$cleanPhone | ${amount.toStringAsFixed(0)}đ | $note';
     return Clipboard.setData(ClipboardData(text: text));
   }
 
   /// Thử mở Momo. Trả về true nếu mở được app/web.
   static Future<bool> launchMomo(String phone) async {
+    final cleanPhone = phone.trim();
     // 1) App scheme
     if (await _tryLaunch(Uri.parse('momo://'))) return true;
-    // 2) Universal link hồ sơ người nhận
-    if (await _tryLaunch(Uri.parse('https://me.momo.vn/$phone'))) return true;
+    // 2) Universal link hồ sơ người nhận (chỉ khi có SĐT)
+    if (cleanPhone.isNotEmpty) {
+      if (await _tryLaunch(Uri.parse('https://me.momo.vn/$cleanPhone'))) {
+        return true;
+      }
+    }
+    if (await _tryLaunch(Uri.parse('https://momo.vn/'))) return true;
     return false;
   }
 
@@ -99,14 +107,8 @@ class _PaymentSheet extends StatelessWidget {
     required this.isDark,
   });
 
-  Color get _primary => GenZTokens.accent;
-  Color get _surface => isDark ? GenZTokens.paperDark : GenZTokens.paper;
-  Color get _bg => isDark ? GenZTokens.creamDark : GenZTokens.cream;
-  Color get _textPri => isDark ? GenZTokens.inkDark : GenZTokens.ink;
-  Color get _textSec =>
-      isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-
-  Future<void> _handle(BuildContext context, String method) async {
+  Future<void> _handle(BuildContext context, String method, bool effectiveDark) async {
+    final primary = effectiveDark ? GenZTokens.accentDark : GenZTokens.accent;
     // Luôn copy sẵn thông tin để người dùng dán nhanh.
     await PaymentLauncher.copyTransferInfo(
       recipientPhone: recipientPhone,
@@ -126,7 +128,9 @@ class _PaymentSheet extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: ok ? _primary : (isDark ? GenZTokens.paperDark : GenZTokens.inkSoft),
+        backgroundColor: ok
+            ? primary
+            : (effectiveDark ? GenZTokens.paperDark : GenZTokens.inkSoft),
         content: Text(
           ok
               ? 'payment.opened_copied'.tr()
@@ -138,14 +142,24 @@ class _PaymentSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveDark =
+        isDark || Theme.of(context).brightness == Brightness.dark;
+    final primary = effectiveDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final surface = effectiveDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final bg = effectiveDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final textPri = effectiveDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSec =
+        effectiveDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final hasPhone = recipientPhone.trim().isNotEmpty;
+
     return Container(
       decoration: BoxDecoration(
-        color: _bg,
+        color: bg,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border.all(
-          color: isDark
-              ? GenZTokens.inkDark.withValues(alpha: 0.12)
-              : GenZTokens.ink.withValues(alpha: 0.12),
+          color: effectiveDark
+              ? GenZTokens.lineDark
+              : GenZTokens.line,
         ),
       ),
       child: SafeArea(
@@ -161,7 +175,7 @@ class _PaymentSheet extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: _textSec.withValues(alpha: 0.35),
+                    color: textSec.withValues(alpha: 0.35),
                     borderRadius: BorderRadius.circular(99),
                   ),
                 ),
@@ -171,30 +185,32 @@ class _PaymentSheet extends StatelessWidget {
               // Amount + recipient
               Text(
                 'payment.transfer_to'.tr(),
-                style: AppFonts.body(fontSize: 13, color: _textSec),
+                style: AppFonts.body(fontSize: 13, color: textSec),
               ),
               const SizedBox(height: 4),
               Text(
                 recipientName,
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: _textPri,
+                  color: textPri,
                   letterSpacing: -0.4,
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                recipientPhone,
-                style: AppFonts.body(fontSize: 13, color: _textSec),
-              ),
+              if (hasPhone) ...[
+                const SizedBox(height: 2),
+                Text(
+                  recipientPhone.trim(),
+                  style: AppFonts.body(fontSize: 13, color: textSec),
+                ),
+              ],
               const SizedBox(height: 14),
               Text(
                 formatMoney(amount, locale: context.locale.languageCode),
-                style: GoogleFonts.plusJakartaSans(
+                style: AppFonts.heading(
                   fontSize: 34,
                   fontWeight: FontWeight.w900,
-                  color: _primary,
+                  color: primary,
                   letterSpacing: -1,
                 ),
               ),
@@ -206,11 +222,11 @@ class _PaymentSheet extends StatelessWidget {
                 label: 'Momo',
                 sublabel: 'payment.open_momo'.tr(),
                 bg: const Color(0xFFA50064),
-                surface: _surface,
-                textPri: _textPri,
-                textSec: _textSec,
-                isDark: isDark,
-                onTap: () => _handle(context, 'momo'),
+                surface: surface,
+                textPri: textPri,
+                textSec: textSec,
+                isDark: effectiveDark,
+                onTap: () => _handle(context, 'momo', effectiveDark),
               ),
               const SizedBox(height: 10),
               _PayOption(
@@ -218,39 +234,41 @@ class _PaymentSheet extends StatelessWidget {
                 label: 'ZaloPay',
                 sublabel: 'payment.open_zalopay'.tr(),
                 bg: const Color(0xFF0068FF),
-                surface: _surface,
-                textPri: _textPri,
-                textSec: _textSec,
-                isDark: isDark,
-                onTap: () => _handle(context, 'zalopay'),
+                surface: surface,
+                textPri: textPri,
+                textSec: textSec,
+                isDark: effectiveDark,
+                onTap: () => _handle(context, 'zalopay', effectiveDark),
               ),
-              const SizedBox(height: 10),
-              _PayOption(
-                icon: PhosphorIcons.copy(),
-                label: 'payment.copy_info'.tr(),
-                sublabel: 'payment.copy_info_sub'.tr(),
-                bg: _textSec,
-                surface: _surface,
-                textPri: _textPri,
-                textSec: _textSec,
-                isDark: isDark,
-                onTap: () async {
-                  await PaymentLauncher.copyTransferInfo(
-                    recipientPhone: recipientPhone,
-                    amount: amount,
-                    note: note,
-                  );
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: _primary,
-                      content: Text('payment.copied'.tr()),
-                    ),
-                  );
-                },
-              ),
+              if (hasPhone) ...[
+                const SizedBox(height: 10),
+                _PayOption(
+                  icon: PhosphorIcons.copy(),
+                  label: 'payment.copy_info'.tr(),
+                  sublabel: 'payment.copy_info_sub'.tr(),
+                  bg: textSec,
+                  surface: surface,
+                  textPri: textPri,
+                  textSec: textSec,
+                  isDark: effectiveDark,
+                  onTap: () async {
+                    await PaymentLauncher.copyTransferInfo(
+                      recipientPhone: recipientPhone,
+                      amount: amount,
+                      note: note,
+                    );
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: primary,
+                        content: Text('payment.copied'.tr()),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ],
           ),
         ),
@@ -296,8 +314,8 @@ class _PayOption extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isDark
-                ? GenZTokens.inkDark.withValues(alpha: 0.1)
-                : GenZTokens.ink.withValues(alpha: 0.1),
+                ? GenZTokens.lineDark
+                : GenZTokens.line,
           ),
         ),
         child: Row(
@@ -318,7 +336,7 @@ class _PayOption extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: GoogleFonts.plusJakartaSans(
+                    style: AppFonts.heading(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: textPri,

@@ -40,10 +40,8 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
   Color get _ink => widget.isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _sub =>
       widget.isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _fill =>
-      widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
-  Color get _line =>
-      widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
+  Color get _fill => widget.isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
+  Color get _line => widget.isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
   Color get _accent =>
       widget.isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
   Color get _onAccent =>
@@ -57,7 +55,9 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
       showGlobalSnack('auth.username_min'.tr(), isError: true);
       return;
     }
-    if (password.length < 6) {
+    // Tài khoản mới: tối thiểu 8 ký tự (khớp server). Đăng nhập chỉ chặn ô
+    // trống để tài khoản cũ có mật khẩu 6–7 ký tự vẫn vào được.
+    if (_isRegister ? password.length < 8 : password.isEmpty) {
       showGlobalSnack('auth.password_min'.tr(), isError: true);
       return;
     }
@@ -86,6 +86,8 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
     // Thành công → res là { user, token }. Lỗi → null (ApiService đã hiện snackbar).
     if (res is Map && res['token'] != null) {
       final user = (res['user'] as Map?)?.cast<String, dynamic>() ?? {};
+      // Báo hệ điều hành lưu username/mật khẩu vừa dùng.
+      TextInput.finishAutofillContext();
       await ref
           .read(authProvider.notifier)
           .setSession(res['token'].toString(), user);
@@ -105,119 +107,140 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _isRegister
-                    ? 'auth.register_title'.tr()
-                    : 'auth.login_title'.tr(),
-                style: AppFonts.heading(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: _ink,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                _isRegister
-                    ? 'auth.register_sub'.tr()
-                    : 'auth.login_sub'.tr(),
-                style: AppFonts.body(color: _sub, fontSize: 15),
-              ),
-              const SizedBox(height: 32),
-
-              _field(_username, 'auth.username'.tr(), PhosphorIcons.at()),
-              const SizedBox(height: 14),
-              _field(
-                _password,
-                'auth.password'.tr(),
-                PhosphorIcons.lock(),
-                obscure: _obscure,
-                trailing: IconButton(
-                  icon: Icon(
-                    _obscure ? PhosphorIcons.eyeSlash() : PhosphorIcons.eye(),
-                    color: _sub,
-                    size: 20,
+          child: AutofillGroup(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _isRegister
+                      ? 'auth.register_title'.tr()
+                      : 'auth.login_title'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: _ink,
+                    letterSpacing: -0.5,
                   ),
-                  onPressed: () => setState(() => _obscure = !_obscure),
                 ),
-              ),
-              if (_isRegister) ...[
+                const SizedBox(height: 6),
+                Text(
+                  _isRegister
+                      ? 'auth.register_sub'.tr()
+                      : 'auth.login_sub'.tr(),
+                  style: AppFonts.body(color: _sub, fontSize: 15),
+                ),
+                const SizedBox(height: 32),
+
+                _field(_username, 'auth.username'.tr(), PhosphorIcons.at()),
                 const SizedBox(height: 14),
                 _field(
-                  _confirm,
-                  'auth.confirm_password'.tr(),
+                  _password,
+                  'auth.password'.tr(),
                   PhosphorIcons.lock(),
                   obscure: _obscure,
-                ),
-              ],
-              const SizedBox(height: 28),
-
-              // Nút submit accent duy nhất
-              ElevatedButton(
-                onPressed: _loading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _accent,
-                  foregroundColor: _onAccent,
-                  elevation: 0,
-                  minimumSize: const Size(double.infinity, 52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      GenZTokens.radiusButton,
+                  trailing: IconButton(
+                    icon: Icon(
+                      _obscure ? PhosphorIcons.eyeSlash() : PhosphorIcons.eye(),
+                      color: _sub,
+                      size: 20,
                     ),
+                    onPressed: () => setState(() => _obscure = !_obscure),
                   ),
                 ),
-                child: _loading
-                    ? SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: _onAccent,
-                        ),
-                      )
-                    : Text(
-                        _isRegister
-                            ? 'auth.register_cta'.tr()
-                            : 'auth.sign_in'.tr(),
-                        style: AppFonts.heading(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: _onAccent,
+                if (_isRegister) ...[
+                  const SizedBox(height: 14),
+                  _field(
+                    _confirm,
+                    'auth.confirm_password'.tr(),
+                    PhosphorIcons.lock(),
+                    obscure: _obscure,
+                  ),
+                ],
+                if (!_isRegister)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _loading
+                          ? null
+                          : () => Navigator.pop(context, 'forgot'),
+                      child: Text(
+                        'auth.forgot_link'.tr(),
+                        style: AppFonts.body(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _sub,
+                          decoration: TextDecoration.underline,
+                          decorationColor: _sub,
                         ),
                       ),
-              ),
-              const SizedBox(height: 18),
+                    ),
+                  )
+                else
+                  const SizedBox(height: 28),
 
-              Center(
-                child: TextButton(
-                  onPressed: _loading
-                      ? null
-                      : () => setState(() => _isRegister = !_isRegister),
-                  child: Text.rich(
-                    TextSpan(
-                      text: _isRegister
-                          ? 'auth.have_account'.tr()
-                          : 'auth.no_account_prefix'.tr(),
-                      style: AppFonts.body(color: _sub, fontSize: 15),
-                      children: [
-                        TextSpan(
-                          text: _isRegister
-                              ? 'auth.sign_in'.tr()
-                              : 'auth.sign_up'.tr(),
+                // Nút submit accent duy nhất
+                ElevatedButton(
+                  onPressed: _loading ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _accent,
+                    foregroundColor: _onAccent,
+                    elevation: 0,
+                    minimumSize: const Size(double.infinity, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
+                    ),
+                  ),
+                  child: _loading
+                      ? SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: _onAccent,
+                          ),
+                        )
+                      : Text(
+                          _isRegister
+                              ? 'auth.register_cta'.tr()
+                              : 'auth.sign_in'.tr(),
                           style: AppFonts.heading(
-                            color: _accent,
+                            fontSize: 15,
                             fontWeight: FontWeight.w700,
+                            color: _onAccent,
                           ),
                         ),
-                      ],
+                ),
+                const SizedBox(height: 18),
+
+                Center(
+                  child: TextButton(
+                    onPressed: _loading
+                        ? null
+                        : () => setState(() => _isRegister = !_isRegister),
+                    child: Text.rich(
+                      TextSpan(
+                        // Chuỗi dịch không có dấu cách cuối → tự thêm.
+                        text: '${_isRegister ? 'auth.have_account'.tr() : 'auth.no_account_prefix'.tr()} ',
+                        style: AppFonts.body(color: _sub, fontSize: 15),
+                        children: [
+                          TextSpan(
+                            text: _isRegister
+                                ? 'auth.sign_in'.tr()
+                                : 'auth.sign_up'.tr(),
+                            style: AppFonts.heading(
+                              color: _accent,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -241,6 +264,13 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+        // Cho trình quản lý mật khẩu (iCloud Keychain / Google) gợi ý + lưu.
+        // Tài khoản username không có email thật nên không "Quên mật khẩu" được.
+        autofillHints: obscure
+            ? [_isRegister ? AutofillHints.newPassword : AutofillHints.password]
+            : const [AutofillHints.username],
+        autocorrect: false,
+        enableSuggestions: !obscure,
         style: AppFonts.body(
           color: _ink,
           fontWeight: FontWeight.w500,
@@ -254,7 +284,13 @@ class _PasswordAuthScreenState extends ConsumerState<PasswordAuthScreen> {
             fontWeight: FontWeight.w400,
             fontSize: 15,
           ),
+          // Khung ngoài đã vẽ nền + viền; tắt nền/viền của theme để không bị
+          // 2 khung lồng nhau (thấy rõ trên iPhone khi focus).
+          filled: false,
           border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
           suffixIcon: trailing,
         ),
       ),

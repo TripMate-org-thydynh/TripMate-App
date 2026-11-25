@@ -40,6 +40,11 @@ class ApiClient {
     // Nếu không, app sẽ trỏ localhost và chết hoàn toàn trên máy thật →
     // fail sớm, rõ ràng thay vì lỗi mạng mơ hồ ở mọi màn hình.
     if (kReleaseMode) {
+      // Ngoại lệ: IPA build qua `builder.exe ios build` (GitHub Actions)
+      // không truyền được dart-define → bản iOS trỏ thẳng BE production.
+      if (!kIsWeb && Platform.isIOS) {
+        return 'https://tripmate-api-p6un.onrender.com/api/v1';
+      }
       throw StateError(
         'API_BASE_URL chưa được cấu hình. Build release phải truyền '
         '--dart-define=API_BASE_URL=https://<domain>/api/v1',
@@ -50,6 +55,11 @@ class ApiClient {
     try {
       if (Platform.isAndroid) {
         return 'http://10.0.2.2:3000/api/v1';
+      }
+      if (Platform.isIOS) {
+        // iPhone thật không tới được localhost của máy dev; tunnel Cloudflare
+        // cũ đổi URL mỗi lần chạy nên đã chết. Trỏ thẳng BE production.
+        return 'https://tripmate-api-p6un.onrender.com/api/v1';
       }
     } catch (_) {
       // non-io / web
@@ -208,8 +218,8 @@ final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: ApiClient.baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 15),
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 25),
     ),
   );
 
@@ -217,6 +227,7 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) {
+        options.baseUrl = ApiClient.baseUrl;
         options.headers['Accept-Language'] = ApiClient.currentLanguage;
         // Server dua vao day de biet nen bay Play Billing hay VietQR.
         options.headers['X-Client-Channel'] = kDistributionChannel.wire;

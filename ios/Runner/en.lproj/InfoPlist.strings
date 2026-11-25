@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "TripMate needs camera access so you can snap photos and record short clips to share with your trip squad, and scan expense receipts.";
+"NSMicrophoneUsageDescription" = "TripMate needs microphone access to record audio when capturing short video moments for your squad.";
+"NSPhotoLibraryUsageDescription" = "TripMate needs photo library access so you can select photos to share with your trip squad and attach receipt images.";
+"NSPhotoLibraryAddUsageDescription" = "TripMate needs permission to save trip Polaroid moments, receipt snapshots, and QR payment codes to your photo library.";

@@ -1,7 +1,9 @@
+import '../../features/system_states/pages/status_screen.dart';
 import '../../features/moments/presentation/pages/moment_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../api_service.dart';
 import '../providers/auth_provider.dart';
 import '../theme/theme_provider.dart';
 import '../../features/splash/presentation/splash_screen.dart';
@@ -22,7 +24,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
   final themeNotifier = ref.read(themeProvider.notifier);
 
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/splash',
     routes: [
       GoRoute(
@@ -121,8 +123,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     errorBuilder: (context, state) {
       final isDark = ref.watch(themeProvider) == ThemeMode.dark;
       final uri = state.uri;
-      final code = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
+      final code = uri.pathSegments.length == 1 ? uri.pathSegments.single : null;
+      // Đường dẫn 1 đoạn (vd. tripmate.app/AB12CD) vẫn coi là mã mời; còn lại
+      // là 404 thật — trước đây mọi link sai đều đẩy thẳng về dashboard hoặc
+      // bị hiểu nhầm thành mã mời, người dùng không biết link đã hỏng.
       if (code != null &&
+          RegExp(r'^[A-Za-z0-9_-]{3,16}$').hasMatch(code) &&
           code.isNotEmpty &&
           code != 'dashboard' &&
           code != 'auth' &&
@@ -130,7 +136,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           code != 'onboarding') {
         return JoinTripScreen(isDarkMode: isDark, initialCode: code);
       }
-      return const DashboardScreen();
+      return NotFoundScreen(onHome: () => context.go('/dashboard'));
     },
     redirect: (context, state) {
       // If auth state is still loading from storage, stay on splash or wait
@@ -156,6 +162,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isAuthenticated = authState.isAuthenticated;
 
       if (isAuthenticated) {
+        // Splash tự điều hướng sau khi chạy xong animation + kiểm tra bảo trì/
+        // bắt buộc cập nhật. Nếu redirect ở đây, người đã đăng nhập bị đẩy khỏi
+        // splash ngay khi đọc xong phiên → không thấy splash và bỏ qua app gate.
+        if (isSplash) return null;
         // Đã đăng nhập nhưng chưa làm vibe quiz → vào onboarding
         if (!authState.onboardingDone) {
           return isOnboarding ? null : '/onboarding';
@@ -193,4 +203,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
   );
+  // Cho tầng gọi API (không có BuildContext) mở được sheet trên navigator
+  // hiện tại — ví dụ paywall khi server trả QUOTA_EXCEEDED.
+  ApiService.routerNavigatorKey = router.routerDelegate.navigatorKey;
+  return router;
 });

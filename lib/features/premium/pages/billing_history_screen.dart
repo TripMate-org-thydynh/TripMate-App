@@ -191,43 +191,7 @@ class _BillingHistoryScreenState extends State<BillingHistoryScreen> {
                         ),
                       ],
                     ),
-                    trailing: IconButton(
-                      icon: Icon(
-                        PhosphorIcons.downloadSimple(),
-                        color: inkSoft,
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'premium.downloading_invoice'.tr(
-                                namedArgs: {'id': '${inv['id']}'},
-                              ),
-                              style: AppFonts.body(
-                                fontSize: 13,
-                                color: isDark
-                                    ? GenZTokens.inkDark
-                                    : GenZTokens.cream,
-                              ),
-                            ),
-                            backgroundColor: isDark
-                                ? GenZTokens.paperDark
-                                : GenZTokens.ink,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                GenZTokens.radiusInput,
-                              ),
-                              side: BorderSide(
-                                color: line,
-                                width: GenZTokens.borderWidthThin,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                                      ),
                 );
               },
             ),

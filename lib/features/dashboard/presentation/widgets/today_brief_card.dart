@@ -161,7 +161,7 @@ class TodayBriefCard extends ConsumerWidget {
                             Text(
                               '${brief.weather!.rainProbability}%',
                               style: AppFonts.mono(
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: info,
                               ),
@@ -181,7 +181,7 @@ class TodayBriefCard extends ConsumerWidget {
                 Text(
                   'dashboard.today_stops'.tr(),
                   style: AppFonts.mono(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                     color: inkSoft,
@@ -232,7 +232,7 @@ class TodayBriefCard extends ConsumerWidget {
                               Text(
                                 '${stop.rainRisk}%',
                                 style: AppFonts.mono(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                   color: warning,
                                 ),
@@ -254,7 +254,7 @@ class TodayBriefCard extends ConsumerWidget {
                 Text(
                   'dashboard.today_todos'.tr(),
                   style: AppFonts.mono(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                     color: inkSoft,

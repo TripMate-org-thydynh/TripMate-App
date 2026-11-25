@@ -3,6 +3,8 @@ import 'dart:ui' show ImageFilter;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../services/media_uploader.dart';
+
 /// Ảnh tràn viền tan dần xuống màu nền, kèm vệt màu loang lấy từ chính ảnh.
 ///
 /// Ba lớp, từ dưới lên:
@@ -38,11 +40,13 @@ class FadedImage extends StatelessWidget {
   final bool topFade;
 
   Widget _image(String url) => url.startsWith('assets/')
-      ? Image.asset(url, fit: BoxFit.cover)
+      ? Image.asset(url, fit: BoxFit.cover, cacheWidth: 800)
       : CachedNetworkImage(
-          imageUrl: url,
+          imageUrl: cdnUrlForTier(url, CdnTier.background),
+          cacheKey: cdnCacheKey(url, tier: CdnTier.background),
           fit: BoxFit.cover,
-          fadeInDuration: const Duration(milliseconds: 250),
+          memCacheWidth: CdnTier.background.width,
+          fadeInDuration: const Duration(milliseconds: 220),
           placeholder: (_, _) => const SizedBox.shrink(),
           errorWidget: (_, _, _) => const SizedBox.shrink(),
         );
@@ -59,16 +63,18 @@ class FadedImage extends StatelessWidget {
       child: ExcludeSemantics(
         child: Stack(
           children: [
-            // 1. Vệt loang
+            // 1. Vệt loang (cached with RepaintBoundary to avoid re-blurring on scroll)
             Positioned.fill(
               child: ClipRect(
-                child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(
-                    sigmaX: 60,
-                    sigmaY: 60,
-                    tileMode: TileMode.mirror,
+                child: RepaintBoundary(
+                  child: ImageFiltered(
+                    imageFilter: ImageFilter.blur(
+                      sigmaX: 24,
+                      sigmaY: 24,
+                      tileMode: TileMode.mirror,
+                    ),
+                    child: SizedBox.expand(child: _image(url)),
                   ),
-                  child: SizedBox.expand(child: _image(url)),
                 ),
               ),
             ),

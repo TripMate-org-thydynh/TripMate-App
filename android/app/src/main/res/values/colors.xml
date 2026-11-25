@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Màu nhấn đất nung (token accent sáng) cho icon thông báo đẩy. -->
+    <color name="notification_accent">#B4543A</color>
+</resources>

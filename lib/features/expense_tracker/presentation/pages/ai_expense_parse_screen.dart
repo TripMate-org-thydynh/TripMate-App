@@ -512,7 +512,7 @@ class _AiExpenseParseScreenState extends ConsumerState<AiExpenseParseScreen> {
     isDense: true,
     filled: true,
     fillColor: _fill,
-    counterStyle: AppFonts.body(fontSize: 11, color: _textSec),
+    counterStyle: AppFonts.body(fontSize: 12, color: _textSec),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(color: _line),

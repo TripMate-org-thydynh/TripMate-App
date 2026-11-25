@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:path_provider/path_provider.dart';
@@ -378,12 +379,16 @@ Future<void> exportAndShareExpenses({
   final dir = await getTemporaryDirectory();
   final file = File('${dir.path}/${exportFileName(tripName, format)}');
   await file.writeAsBytes(bytes, flush: true);
-  await Share.shareXFiles([
-    XFile(
-      file.path,
-      mimeType: format == ExpenseExportFormat.csv
-          ? 'text/csv'
-          : 'application/pdf',
-    ),
-  ], subject: '${'expense.split_title'.tr()} · $tripName');
+  await Share.shareXFiles(
+    [
+      XFile(
+        file.path,
+        mimeType: format == ExpenseExportFormat.csv
+            ? 'text/csv'
+            : 'application/pdf',
+      ),
+    ],
+    subject: '${'expense.split_title'.tr()} · $tripName',
+    sharePositionOrigin: const Rect.fromLTWH(0, 0, 100, 100),
+  );
 }

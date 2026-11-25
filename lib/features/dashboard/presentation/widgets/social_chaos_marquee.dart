@@ -80,20 +80,21 @@ class _MarqueeStripState extends State<_MarqueeStrip> {
     final textPri = isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
     final accent = isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
 
-    return Container(
-      height: 42,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        // Bán trong suốt: dải này nằm đè lên ảnh bìa ở đầu Home.
-        color: fill.withValues(alpha: 0.55),
-        border: Border.symmetric(
-          horizontal: BorderSide(
-            color: line.withValues(alpha: 0.5),
-            width: GenZTokens.borderWidthThin,
+    return RepaintBoundary(
+      child: Container(
+        height: 42,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          // Bán trong suốt: dải này nằm đè lên ảnh bìa ở đầu Home.
+          color: fill.withValues(alpha: 0.55),
+          border: Border.symmetric(
+            horizontal: BorderSide(
+              color: line.withValues(alpha: 0.5),
+              width: GenZTokens.borderWidthThin,
+            ),
           ),
         ),
-      ),
-      child: Center(
+        child: Center(
         child: ListView.builder(
           controller: _scrollController,
           scrollDirection: Axis.horizontal,
@@ -126,6 +127,7 @@ class _MarqueeStripState extends State<_MarqueeStrip> {
           },
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -1,20 +1,24 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 import 'package:tripmate/core/theme/app_fonts.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/responsive.dart';
 import 'package:flutter/services.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../settings/presentation/account_privacy_screen.dart';
 import '../../../core/network/error_message.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/api_service.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import 'password_auth_screen.dart';
+import '../../../core/widgets/trip_illustration.dart';
 
 /// Chuẩn hoá SĐT về dạng quốc tế +84 (UI luôn hiển thị +84).
 /// Fix bug cũ: số không có '0'/'+' đứng đầu bị thiếu mã quốc gia 84.
@@ -47,87 +51,55 @@ const bool _phoneLoginEnabled = bool.fromEnvironment('PHONE_LOGIN');
 
 class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
   int _currentStep =
-      0; // 0: Vibe Onboarding, 1: Auth/Forgot, 2: Verification, 3: Profile, 4: Success
+      0; // 0: Màn chào + chọn cách đăng nhập, 1: Email/Quên MK, 2: Verification, 3: Profile, 4: Success
 
   // State variables for inputs
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _instaController = TextEditingController();
   final TextEditingController _tiktokController = TextEditingController();
 
-  final List<String> _selectedVibes = [];
   bool _isForgotPasswordMode = false;
   bool _isEmailInput = !_phoneLoginEnabled;
   bool _isSubmitting = false;
+  String? _emailError;
 
   // serverClientId KHÔNG được hỗ trợ trên Web (client ID lấy từ meta tag
   // google-signin-client_id trong web/index.html). Chỉ truyền trên mobile.
   final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: defaultTargetPlatform == TargetPlatform.iOS
+        ? '1072006483967-ivo08438p51d47131637v9359hkl9p56.apps.googleusercontent.com'
+        : null,
     serverClientId: kIsWeb
         ? null
         : '1072006483967-ivo0843uk7j8a557l18eevr4q2clargm.apps.googleusercontent.com',
     scopes: const ['email', 'profile'],
   );
   String? _tempSupabaseId;
+  // Vé đăng ký do server cấp sau khi xác minh OTP / Google; bắt buộc khi gọi
+  // /auth/register.
+  String? _tempRegistrationToken;
   String? _tempEmail;
   String? _tempAuthToken;
   Map<String, dynamic>? _tempUser;
   int _otpTimer = 30;
   Timer? _timer;
 
-  late PageController _pageController;
+  /// Cách đăng nhập đang chạy ('apple' | 'google'), để khoá các nút khác.
+  String? _busyMethod;
 
-  // Premium High-Fidelity Vibes — PhosphorIcons (no hardcoded emoji)
-  final List<Map<String, dynamic>> _vibeOptions = [
-    {
-      'name': 'Chill',
-      'desc': 'auth.vibe_chill',
-      'icon1': PhosphorIcons.leaf(PhosphorIconsStyle.fill),
-      'icon2': PhosphorIcons.coffee(PhosphorIconsStyle.fill),
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuASmUw0WNmnNpHadDogcZUgXrjs6I-bWPczGA7YXzboabdRCE4x2ucpr-rlcHtJOqMkRPHvQ7jfuNOOyvolEQ3g9sD1pN0AIeKq5HQW1oaHU8Q_D__1RhpGFMthOsgU-gQntyeBysmb9GDwUrZtACvinE9dawLVs8qvHa3KORAfaz4DCFJzvbIafzVn7qCJgmXw7WDt2M4ExXkcbFBl8VJZj_3op0Z14zMOYLvkFW0UO2oqIDQ3ucy3HgbdpM-EUlKBSLVraywz-XJw',
-    },
-    {
-      'name': 'Party',
-      'desc': 'auth.vibe_party',
-      'icon1': PhosphorIcons.confetti(PhosphorIconsStyle.fill),
-      'icon2': PhosphorIcons.martini(PhosphorIconsStyle.fill),
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuA71vJUK5sVuU14_UX3NCLQgDFwvVTrmg75CeIBMkP7BhRezGjIXjQXjU9gHbyiREBFTkjDpTnu7c4gbgJyl9aLkvR-eR1WmesWgvL7ojln3HmNiDD6nM__Yzk6nQauA3NJKkJDRBbSW5J2ONzxgV-IgTUZ4mQ5Re2DFm0O-tmLsZ8jp0Vgwos0fb6BvVUzbg1_xV70x9gCD6_XPIqALeLAkaKv5VTewB79LOwrAvVGv6Z-z0-6LUoCeYjjTkPoCi2E4YRUOzb89LGV',
-    },
-    {
-      'name': 'Foodie',
-      'desc': 'auth.vibe_foodie',
-      'icon1': PhosphorIcons.forkKnife(PhosphorIconsStyle.fill),
-      'icon2': PhosphorIcons.flame(PhosphorIconsStyle.fill),
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAKnOyCAdHjlxooUW1ElYcNPUVGBsy0hMJG6KlBH-wAxUhVgf5fWccFC2zSkU72m8F91eab7q1okYfePlzR7L9gXex_jd5bH41oNvwc8-NA-EXEBQvB_7LMv-1rmaFdjag8VpM_NxkzJMKCuT5kfVXKWb7hYz9-VbdwUKSvuf8ZBi9gI5k0ggMI1fBhUT61eP6gq1OWPueQFC1YcNm09zlVS37G3I-rWkPJ_VjBw0vg-cKC4iirGwz8-93d3DKJ7wQmjPfq8VE6eE_P',
-    },
-    {
-      'name': 'Nature',
-      'desc': 'auth.vibe_nature',
-      'icon1': PhosphorIcons.mountains(PhosphorIconsStyle.fill),
-      'icon2': PhosphorIcons.tree(PhosphorIconsStyle.fill),
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAOJAn865X2oV_wxI03YpNqwVLe_s1ihBcLfPDB9KjzKYiWHdsWGIW8RKNiRIU2cI5nNUSUKXtgwzeQlqrPqEUqrBJKDh9e59gtDBrNQiWG84213WKSkjd_z9xzuvo6pfYoGRhneGRC29s3gay2LT-BvYO6ZgTPjSAoHx4NxOJVVMpZu-zcBwwZuCoKKdN0wEpN_GQ4tkIHeCPrE0ysLb1iLu9IXovBwDNC8322GooBX-MdAW8pPsPPygxWWJsvv96UF8nSKdRRKxAI',
-    },
-    {
-      'name': 'Adventure',
-      'desc': 'auth.vibe_adventure',
-      'icon1': PhosphorIcons.compass(PhosphorIconsStyle.fill),
-      'icon2': PhosphorIcons.backpack(PhosphorIconsStyle.fill),
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAFHi6VoKpw5K_xKZ6YruS2o3QejCMoBXiYBdgIiq18216st17gBSU3zbjHf9RNCpby9b7bxqfKg2-W0htgSUF2V8BsxTpQ27yI2vLDmD3N6v072ExHY5ZHTW5DPDdQxSogk3MtuNHLf8MKGdePieA0GEXbWzjSt6m0mUTgc83WqGmK8Jbh331Ryz7ZKDxLL0xyLq3J0ssDe-qDi9tdWPI1gR7kL6IkqrCcU_nKr2EU3WrxlqB9uuUrfEH4CoNr3zZiJr8lW395lYYm',
-    },
-  ];
+  late final TapGestureRecognizer _termsTap = TapGestureRecognizer()
+    ..onTap = () => _openUrl(AccountPrivacyScreen.termsUrl);
+  late final TapGestureRecognizer _privacyTap = TapGestureRecognizer()
+    ..onTap = () => _openUrl(AccountPrivacyScreen.privacyUrl);
 
   @override
   void initState() {
     super.initState();
     _emailController.addListener(_onEmailInputChanged);
-    _pageController = PageController(viewportFraction: 0.78);
   }
 
   void _onEmailInputChanged() {
@@ -147,11 +119,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
     _emailController.removeListener(_onEmailInputChanged);
     _emailController.dispose();
     _otpController.dispose();
+    _newPasswordController.dispose();
     _nameController.dispose();
     _usernameController.dispose();
     _instaController.dispose();
     _tiktokController.dispose();
-    _pageController.dispose();
+    _termsTap.dispose();
+    _privacyTap.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -170,6 +144,34 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         });
       }
     });
+  }
+
+  Future<void> _resendOtp() async {
+    if (_isSubmitting) return;
+    final input = _emailController.text.trim();
+    if (input.isEmpty) return;
+    final target = _isEmailInput ? input : _formatVnPhone(input);
+    setState(() => _isSubmitting = true);
+    try {
+      final sendRes = await ApiService.post('/auth/send-otp', {
+        'phoneNumber': target,
+      });
+      if (!mounted) return;
+      if (sendRes != null && sendRes['success'] == true) {
+        _startOtpTimer();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _isEmailInput
+                  ? 'auth.otp_sent_email'.tr(namedArgs: {'email': target})
+                  : 'auth.otp_sent_phone'.tr(namedArgs: {'phone': target}),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   void _nextStep() {
@@ -196,104 +198,49 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
     final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
     final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
 
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+
+    if (_currentStep == 0) {
+      return Scaffold(
+        backgroundColor: bg,
+        body: _buildWelcome(accent, onAccent),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: isDark
-          ? GenZTokens.creamDark
-          : GenZTokens.cream,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: GenZTokens.paper.withValues(alpha: 0),
+        backgroundColor: bg,
+        surfaceTintColor: bg,
         elevation: 0,
-        leading: _currentStep > 0 && _currentStep < 4
+        leading: _currentStep < 4
             ? IconButton(
-                icon: Icon(
-                  PhosphorIcons.arrowLeft(),
-                  color: isDark
-                      ? GenZTokens.inkDark
-                      : GenZTokens.ink,
-                  size: 20,
-                ),
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                icon: Icon(PhosphorIcons.arrowLeft(), color: ink, size: 22),
                 onPressed: _prevStep,
               )
             : null,
-        title: _currentStep == 0
-            ? Text(
-                'trip.mate',
-                style: AppFonts.heading(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: isDark
-                      ? GenZTokens.inkDark
-                      : GenZTokens.ink,
-                  letterSpacing: -1,
-                ),
-              )
-            : null,
-        centerTitle: true,
-        actions: [
-          if (_currentStep < 4)
-            TextButton(
-              onPressed: () {
-                // Skip vibe selection only — still need to sign in
-                setState(() {
-                  _currentStep = 1;
-                });
-              },
-              child: Text(
-                'auth.skip'.tr(),
-                style: AppFonts.heading(
-                  color: isDark
-                      ? GenZTokens.inkSoftDark
-                      : GenZTokens.inkSoft,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-        ],
       ),
-      body: Stack(
-        children: [
-          // Nền khối màu phẳng cho Step 0 (không mesh gradient)
-          if (_currentStep == 0)
-            Positioned.fill(
-              child: Container(
-                color: isDark
-                    ? GenZTokens.creamDark
-                    : GenZTokens.cream,
-              ),
-            ),
-
-          // Cuon duoc khi ban phim bat len.
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: GenZTokens.durationBase),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: _currentStep == 0 ? 0 : 24,
-                  ),
-                  child: _buildActiveStepWidget(
-                    theme,
-                    accent,
-                    onAccent,
-                  ),
-                ),
-              ),
-            ),
+      // Cuộn được khi bàn phím bật lên.
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: GenZTokens.durationBase),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeOutCubic,
+            child: _buildActiveStepWidget(theme, accent, onAccent),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildActiveStepWidget(
-    ThemeData theme,
-    Color accent,
-    Color onAccent,
-  ) {
+  Widget _buildActiveStepWidget(ThemeData theme, Color accent, Color onAccent) {
     switch (_currentStep) {
       case 0:
-        return _buildVibeOnboarding(theme, accent, onAccent);
+        return _buildWelcome(accent, onAccent);
       case 1:
         return _buildAuthentication(theme, accent, onAccent);
       case 2:
@@ -307,294 +254,327 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
     }
   }
 
-  // --- STEP 0: CHOOSE YOUR VIBE ONBOARDING (SNAPPING CAROUSEL VIBE SELECTION) ---
-  Widget _buildVibeOnboarding(
-    ThemeData theme,
-    Color accent,
-    Color onAccent,
-  ) {
-    final hasSelection = _selectedVibes.isNotEmpty;
+  // --- STEP 0: MÀN CHÀO = CHỌN CÁCH ĐĂNG NHẬP ---
+  //
+  // Thay băng chuyền "chọn vibe" cũ (ảnh AI dựng sẵn, bắt chọn 3 vibe trước
+  // khi đăng nhập rồi sau đăng nhập lại hỏi vibe lần nữa ở /onboarding).
+  // Giờ: một câu nói rõ app làm gì, một bản xem trước dựng từ chính UI của app
+  // (thẻ chuyến + số dư chia tiền) thay cho ảnh minh hoạ, rồi các nút đăng nhập.
+  // Màn chào theo kiểu các app du lịch lớn: nửa trên là khối màu thương hiệu
+  // (đất nung, nối liền từ splash) chứa logo + một câu tiêu đề lớn; nửa dưới là
+  // tấm nền kem chứa các cách đăng nhập. Một font (Instrument Sans), không mono,
+  // không thẻ minh hoạ giả — bản trước bị chê "nhìn như AI làm".
+  Widget _buildWelcome(Color accent, Color onAccent) {
     final isDark = widget.isDarkMode;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
-    final paper = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final sheet = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final isIos = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
-    return Column(
-      key: const ValueKey('vibe_step'),
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+    Widget benefit(IconData icon, String key) => Expanded(
           child: Column(
             children: [
+              Icon(icon, size: 22, color: ink),
+              const SizedBox(height: 6),
               Text(
-                'onboarding.vibe_question'.tr(),
+                key.tr(),
                 textAlign: TextAlign.center,
-                style: AppFonts.heading(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: ink,
-                  letterSpacing: -0.5,
-                  height: 1.25,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'auth.pick_vibe_sub'.tr(),
-                textAlign: TextAlign.center,
-                style: AppFonts.body(
-                  color: inkSoft,
-                  fontSize: 15,
-                ),
+                style: AppFonts.body(fontSize: 12, color: inkSoft, height: 1.3),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 24),
+        );
 
-        SizedBox(
-          height: MediaQuery.sizeOf(context).height * 0.52,
-          child: PageView.builder(
-            controller: _pageController,
-            physics: const BouncingScrollPhysics(),
-            itemCount: _vibeOptions.length,
-            itemBuilder: (context, index) {
-              final item = _vibeOptions[index];
-              final vibeName = item['name'] as String;
-              final vibeDesc = (item['desc'] as String).tr();
-              final vibeIcon1 = item['icon1'] as IconData;
-              final vibeIcon2 = item['icon2'] as IconData;
-              final vibeImage = item['image'] as String;
-              final isSelected = _selectedVibes.contains(vibeName);
-
-              return AnimatedBuilder(
-                animation: _pageController,
-                builder: (context, child) {
-                  double value = 1.0;
-                  if (_pageController.position.haveDimensions) {
-                    value = _pageController.page! - index;
-                    value = (1 - (value.abs() * 0.12)).clamp(0.0, 1.0);
-                  } else {
-                    value = index == 0 ? 1.0 : 0.88;
-                  }
-
-                  return Transform.scale(
-                    scale: value,
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (isSelected) {
-                              _selectedVibes.remove(vibeName);
-                            } else {
-                              if (_selectedVibes.length < 3) {
-                                _selectedVibes.add(vibeName);
-                              }
-                            }
-                          });
-                        },
-                        child: Container(
-                          width: context.rs(280),
-                          height: context.rs(400),
-                          decoration: BoxDecoration(
-                            color: paper,
-                            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                            border: Border.all(
-                              color: isSelected ? accent : line,
-                              width: isSelected
-                                  ? GenZTokens.borderWidth
-                                  : GenZTokens.borderWidthThin,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      key: const ValueKey('welcome_step'),
+      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: ColoredBox(
+        color: sheet,
+        child: Column(
+          children: [
+            Expanded(
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(
+                        TextSpan(children: [
+                          const TextSpan(text: 'trip'),
+                          TextSpan(text: '.', style: TextStyle(color: accent)),
+                          const TextSpan(text: 'mate'),
+                        ]),
+                        style: AppFonts.heading(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.4,
+                          color: ink,
+                        ),
+                      ),
+                      const Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Center(
+                            child: ExcludeSemantics(
+                              child: TripIllustrationView(
+                                TripIllustration.squad,
+                              ),
                             ),
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: Stack(
-                            children: [
-                              Positioned.fill(
-                                child: Opacity(
-                                  opacity: isSelected ? 0.95 : 0.75,
-                                  child: CachedNetworkImage(
-                                    imageUrl: vibeImage,
-                                    fit: BoxFit.cover,
-                                    fadeInDuration: const Duration(
-                                      milliseconds: GenZTokens.durationFast,
-                                    ),
-                                    placeholder: (context, url) => Container(
-                                      color: fill,
-                                    ),
-                                    errorWidget: (context, url, error) => Container(
-                                      color: fill,
-                                      child: Center(
-                                        child: Icon(
-                                          vibeIcon1,
-                                          size: 64,
-                                          color: inkSoft,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              // Scrim 40% duoi de doc chu tren anh (spec muc 8)
-                              Positioned.fill(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      stops: const [0.6, 1.0],
-                                      colors: [
-                                        Colors.transparent,
-                                        Colors.black.withValues(alpha: 0.55),
-                                      ],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              if (isSelected)
-                                Positioned(
-                                  top: 16,
-                                  right: 16,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: accent,
-                                      border: Border.all(
-                                        color: onAccent,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.check(PhosphorIconsStyle.bold),
-                                      color: onAccent,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(24.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            vibeIcon1,
-                                            size: 24,
-                                            color: isSelected ? accent : Colors.white,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Icon(
-                                            vibeIcon2,
-                                            size: 20,
-                                            color: isSelected
-                                                ? accent
-                                                : Colors.white.withValues(alpha: 0.85),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        vibeName,
-                                        style: AppFonts.heading(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.bold,
-                                          color: isSelected ? accent : Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        vibeDesc,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppFonts.body(
-                                          fontSize: 12,
-                                          color: Colors.white.withValues(alpha: 0.85),
-                                          height: 1.3,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
-          child: SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: hasSelection ? _nextStep : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: accent,
-                foregroundColor: onAccent,
-                disabledBackgroundColor: accent.withValues(
-                  alpha: isDark ? 0.35 : 0.45,
-                ),
-                disabledForegroundColor: onAccent.withValues(alpha: 0.7),
-                elevation: 0,
-                side: BorderSide.none,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'auth.lets_go'.tr(),
-                    style: AppFonts.heading(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: hasSelection
-                          ? onAccent
-                          : onAccent.withValues(alpha: 0.7),
-                    ),
+                      Text(
+                        'auth.welcome_title'.tr(),
+                        style: AppFonts.heading(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          height: 1.12,
+                          letterSpacing: -0.8,
+                          color: ink,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          benefit(PhosphorIcons.calendarDots(),
+                              'auth.benefit_plan'),
+                          benefit(PhosphorIcons.receipt(), 'auth.benefit_split'),
+                          benefit(PhosphorIcons.images(), 'auth.benefit_photos'),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    PhosphorIcons.arrowRight(),
-                    color: hasSelection
-                        ? onAccent
-                        : onAccent.withValues(alpha: 0.7),
-                    size: 18,
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: sheet,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (isIos) ...[
+                        _AuthOptionButton(
+                          label: 'auth.continue_apple'.tr(),
+                          icon: PhosphorIcons.appleLogo(PhosphorIconsStyle.fill),
+                          // Theo HIG: nút Apple nền đen ở chế độ sáng, nền
+                          // trắng ở chế độ tối.
+                          background:
+                              isDark ? GenZTokens.inkDark : GenZTokens.ink,
+                          foreground:
+                              isDark ? GenZTokens.creamDark : GenZTokens.paper,
+                          busy: _busyMethod == 'apple',
+                          onTap: _handleAppleSignIn,
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                      _AuthOptionButton(
+                        label: 'auth.continue_google'.tr(),
+                        icon: PhosphorIcons.googleLogo(PhosphorIconsStyle.bold),
+                        background:
+                            isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                        foreground: ink,
+                        border: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                        busy: _busyMethod == 'google',
+                        onTap: () =>
+                            _handleRealGoogleSignIn(context, accent, onAccent),
+                      ),
+                      const SizedBox(height: 10),
+                      _AuthOptionButton(
+                        label: 'auth.continue_email'.tr(),
+                        icon: PhosphorIcons.envelopeSimple(
+                          PhosphorIconsStyle.bold,
+                        ),
+                        background:
+                            isDark ? GenZTokens.paperDark : GenZTokens.paper,
+                        foreground: ink,
+                        border: isDark ? GenZTokens.lineDark : GenZTokens.line,
+                        onTap: () => setState(() {
+                          _isForgotPasswordMode = false;
+                          _currentStep = 1;
+                        }),
+                      ),
+                      const SizedBox(height: 4),
+                      TextButton(
+                        onPressed: _openPasswordAuth,
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size.fromHeight(44),
+                        ),
+                        child: Text(
+                          'auth.password_login_link'.tr(),
+                          textAlign: TextAlign.center,
+                          style: AppFonts.body(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: ink,
+                            decoration: TextDecoration.underline,
+                            decorationColor: inkSoft,
+                          ),
+                        ),
+                      ),
+                      _buildLegalFooter(accent),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Future<void> _openPasswordAuth() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PasswordAuthScreen(isDarkMode: widget.isDarkMode),
+      ),
+    );
+    // "Quên mật khẩu?" trên màn mật khẩu → về bước email ở chế độ đặt lại
+    // (OTP gửi tới email đã gắn với tài khoản).
+    if (result == 'forgot' && mounted) {
+      setState(() {
+        _isForgotPasswordMode = true;
+        _emailError = null;
+        _currentStep = 1;
+      });
+    }
+  }
+
+  /// "Khi tiếp tục bạn đồng ý với điều khoản và chính sách bảo mật" — hai cụm
+  /// cuối mở được (trước đây chỉ tô màu, bấm không có gì xảy ra).
+  Widget _buildLegalFooter(Color accent) {
+    final isDark = widget.isDarkMode;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final link = TextStyle(
+      color: ink,
+      fontWeight: FontWeight.w600,
+      decoration: TextDecoration.underline,
+      decorationColor: inkSoft,
+    );
+    return Text.rich(
+      TextSpan(
+        text: '${'auth.agree_prefix'.tr()} ',
+        style: AppFonts.body(color: inkSoft, fontSize: 12, height: 1.5),
+        children: [
+          TextSpan(text: 'auth.terms'.tr(), style: link, recognizer: _termsTap),
+          TextSpan(text: ' ${'auth.and_sep'.tr()} '),
+          TextSpan(
+            text: 'auth.privacy'.tr(),
+            style: link,
+            recognizer: _privacyTap,
+          ),
+          const TextSpan(text: '.'),
+        ],
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Future<void> _openUrl(String url) async {
+    await launchUrl(Uri.parse(url), mode: LaunchMode.inAppBrowserView);
+  }
+
+  /// Người dùng đã có tài khoản: lưu phiên luôn, router tự chuyển sang
+  /// /onboarding hoặc /dashboard. Trước đây phải qua thêm màn "tên lửa" và bấm
+  /// "Vào app thôi!" dù chẳng có gì mới để xem.
+  Future<void> _finishSignIn(String token, Map<String, dynamic>? user) async {
+    await ref
+        .read(authProvider.notifier)
+        .setSession(token, user ?? {'email': _emailController.text.trim()});
+  }
+
+  Map<String, dynamic>? _unwrapData(dynamic res) {
+    if (res is Map && res['data'] is Map) {
+      return (res['data'] as Map).cast<String, dynamic>();
+    }
+    return res is Map ? res.cast<String, dynamic>() : null;
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    if (_busyMethod != null) return;
+    setState(() => _busyMethod = 'apple');
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final cred = await SignInWithApple.getAppleIDCredential(
+        scopes: const [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      final identityToken = cred.identityToken;
+      if (identityToken == null) {
+        throw StateError('Apple không trả về identity token');
+      }
+      // Apple chỉ gửi tên ở LẦN ĐẦU người dùng cho phép.
+      final name = [
+        cred.givenName,
+        cred.familyName,
+      ].whereType<String>().join(' ').trim();
+      final res = await ApiService.post('/auth/apple', {
+        'identityToken': identityToken,
+        'authorizationCode': cred.authorizationCode,
+        if (cred.email != null) 'email': cred.email,
+        if (name.isNotEmpty) 'name': name,
+      });
+      if (!mounted) return;
+      final data = _unwrapData(res);
+      final token = data?['token']?.toString();
+      if (token != null) {
+        await _finishSignIn(
+          token,
+          (data!['user'] as Map?)?.cast<String, dynamic>(),
+        );
+      }
+    } on SignInWithAppleAuthorizationException catch (e) {
+      // Người dùng tự huỷ bảng Apple → không báo lỗi.
+      if (e.code != AuthorizationErrorCode.canceled && mounted) {
+        // e.message là chuỗi hệ thống ("AuthorizationError 1000…"), không
+        // cho người dùng thấy; chi tiết chỉ ghi log.
+        debugPrint('Apple sign-in: ${e.code} ${e.message}');
+        _showAuthError(messenger, 'auth.apple_failed', 'auth.try_other'.tr());
+      }
+    } catch (e) {
+      if (mounted) {
+        _showAuthError(messenger, 'auth.apple_failed', friendlyError(e));
+      }
+    } finally {
+      if (mounted) setState(() => _busyMethod = null);
+    }
+  }
+
+  void _showAuthError(
+    ScaffoldMessengerState messenger,
+    String key,
+    String err,
+  ) {
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(key.tr(namedArgs: {'err': err})),
+        backgroundColor: widget.isDarkMode
+            ? GenZTokens.dangerDark
+            : GenZTokens.danger,
+      ),
     );
   }
 
   // --- STEP 1: AUTHENTICATION / JOIN THE SQUAD & FORGOT PASSWORD ---
-  Widget _buildAuthentication(
-    ThemeData theme,
-    Color accent,
-    Color onAccent,
-  ) {
+  Widget _buildAuthentication(ThemeData theme, Color accent, Color onAccent) {
     final isDark = widget.isDarkMode;
     final fInk = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final fSub = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -609,8 +589,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
           Text(
             'auth.forgot_title'.tr(),
             style: AppFonts.heading(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
               color: fInk,
               letterSpacing: -0.5,
             ),
@@ -629,7 +609,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: 50,
             child: ElevatedButton(
               onPressed: () async {
                 if (_isSubmitting) return;
@@ -649,12 +629,17 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
                     if (sendRes != null && sendRes['success'] == true) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('auth.otp_sent_email'.tr(namedArgs: {'email': email})),
+                          content: Text(
+                            'auth.otp_sent_email'.tr(
+                              namedArgs: {'email': email},
+                            ),
+                          ),
                         ),
                       );
                       setState(() {
-                        _isForgotPasswordMode = false;
-                        _nextStep(); // Goes to verification code screen
+                        _otpController.clear();
+                        _newPasswordController.clear();
+                        _nextStep(); // Goes to verification code + new password screen with _isForgotPasswordMode = true
                       });
                     }
                   } finally {
@@ -703,278 +688,185 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
       );
     }
 
-    final textColor = fInk;
-    final subTextColor = fSub;
-    final dividerColor = line;
-    final dividerTextColor = fSub;
-
+    final emailMode = _isEmailInput;
     return Column(
       key: const ValueKey('auth_step'),
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Official TripMate Logo Mark
-        Image.asset(
-          isDark
-              ? 'assets/images/symbol_dark.png'
-              : 'assets/images/symbol_light.png',
-          width: 64,
-          height: 54,
-          fit: BoxFit.contain,
-        ),
-        const SizedBox(height: 12),
-        // Display title
         Text(
-          'trip.mate',
+          'auth.email_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: textColor,
-            letterSpacing: -1.0,
-            height: 1.1,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.4,
+            color: fInk,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'auth.welcome'.tr(),
-          style: AppFonts.heading(
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
-            color: textColor,
-            letterSpacing: -0.2,
-          ),
+          'auth.email_sub'.tr(),
+          style: AppFonts.body(fontSize: 15, height: 1.45, color: fSub),
         ),
-        const SizedBox(height: 32),
-
-        // Phone/Email input row
-        Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: fill,
-            borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-            border: Border.all(
-              color: line,
-              width: GenZTokens.borderWidthThin,
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
-            children: [
-              Icon(
-                _isEmailInput
-                    ? PhosphorIcons.envelope()
-                    : PhosphorIcons.deviceMobile(),
-                size: 20,
-                color: subTextColor,
-              ),
-              if (!_isEmailInput) ...[
-                const SizedBox(width: 8),
-                Text(
-                  '+84',
-                  style: AppFonts.heading(
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                Container(
-                  width: 1,
-                  height: 18,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  color: line,
-                ),
-              ] else
-                const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: AppFonts.body(color: textColor, fontSize: 14),
-                  decoration: InputDecoration(
-                    hintText: _isEmailInput
-                        ? 'auth.your_email'.tr()
-                        : 'auth.phone_number'.tr(),
-                    hintStyle: AppFonts.body(
-                      color: subTextColor.withValues(alpha: 0.5),
-                      fontSize: 14,
-                    ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () async {
-                  if (_isSubmitting) return;
-                  if (_emailController.text.isNotEmpty) {
-                    setState(() => _isSubmitting = true);
-                    try {
-                      final input = _emailController.text.trim();
-                      final target = _isEmailInput
-                          ? input
-                          : _formatVnPhone(input);
-
-                      final sendRes = await ApiService.post('/auth/send-otp', {
-                        'phoneNumber': target,
-                      });
-
-                      if (!mounted) return;
-                      if (sendRes != null && sendRes['success'] == true) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              _isEmailInput
-                                  ? 'auth.otp_sent_email'.tr(namedArgs: {'email': target})
-                                  : 'auth.otp_sent_phone'.tr(namedArgs: {'phone': target}),
-                            ),
-                          ),
-                        );
-                        _nextStep();
-                      }
-                    } finally {
-                      if (mounted) {
-                        setState(() => _isSubmitting = false);
-                      }
-                    }
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: accent,
-                    borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                  ),
-                  child: Text(
-                    'auth.send_code'.tr(),
-                    style: AppFonts.heading(
-                      color: onAccent,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (_phoneLoginEnabled)
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _isEmailInput = !_isEmailInput;
-                    _emailController.clear();
-                  });
-                },
-                child: Text(
-                  _isEmailInput ? 'auth.use_phone'.tr() : 'auth.use_email'.tr(),
-                  style: AppFonts.heading(
-                    color: accent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
-                  ),
-                ),
-              )
-            else
-              const SizedBox.shrink(),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _isForgotPasswordMode = true;
-                });
-              },
-              child: Text(
-                'auth.forgot_link'.tr(),
-                style: AppFonts.heading(
-                  color: accent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        // Divider
-        Row(
-          children: [
-            Expanded(child: Divider(color: dividerColor)),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'auth.or_sign_in_with'.tr(),
-                style: AppFonts.body(color: dividerTextColor, fontSize: 12),
-              ),
-            ),
-            Expanded(child: Divider(color: dividerColor)),
-          ],
-        ),
-        const SizedBox(height: 20),
-
-        // Full-width Google button
-        _buildSocialBtn(
-          'auth.continue_google'.tr(),
-          PhosphorIcons.userCircle(),
-          () {
-            _handleRealGoogleSignIn(context, accent, onAccent);
-          },
-        ),
-        const SizedBox(height: 12),
-        // Đăng nhập / đăng ký bằng username + mật khẩu
-        _buildSocialBtn(
-          'auth.use_password'.tr(),
-          PhosphorIcons.password(),
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => PasswordAuthScreen(isDarkMode: widget.isDarkMode),
-            ),
-          ),
-        ),
-
         const SizedBox(height: 28),
-        // Footer
-        Text.rich(
-          TextSpan(
-            text: 'auth.agree_prefix'.tr(),
-            style: AppFonts.body(color: subTextColor, fontSize: 12),
-            children: [
-              TextSpan(
-                text: 'auth.terms'.tr(),
-                style: TextStyle(
-                  color: accent,
-                  fontWeight: FontWeight.w600,
-                ),
+        TextField(
+          controller: _emailController,
+          autofocus: true,
+          keyboardType: emailMode
+              ? TextInputType.emailAddress
+              : TextInputType.phone,
+          textInputAction: TextInputAction.send,
+          autofillHints: [
+            emailMode ? AutofillHints.email : AutofillHints.telephoneNumber,
+          ],
+          autocorrect: false,
+          onChanged: (_) {
+            if (_emailError != null) setState(() => _emailError = null);
+          },
+          onSubmitted: (_) => _sendLoginCode(),
+          style: AppFonts.body(fontSize: 15, color: fInk),
+          decoration: InputDecoration(
+            hintText: emailMode
+                ? 'auth.your_email'.tr()
+                : 'auth.phone_number'.tr(),
+            hintStyle: AppFonts.body(fontSize: 15, color: fSub),
+            errorText: _emailError,
+            prefixIcon: Icon(
+              emailMode
+                  ? PhosphorIcons.envelopeSimple()
+                  : PhosphorIcons.deviceMobile(),
+              size: 20,
+              color: fSub,
+            ),
+            prefixText: emailMode ? null : '+84  ',
+            prefixStyle: AppFonts.body(fontSize: 15, color: fInk),
+            filled: true,
+            fillColor: fill,
+            contentPadding: const EdgeInsets.symmetric(vertical: 15),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+              borderSide: BorderSide(color: line),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+              borderSide: BorderSide(
+                color: fInk,
+                width: GenZTokens.borderWidthFocus,
               ),
-              TextSpan(text: 'auth.and_sep'.tr()),
-              TextSpan(
-                text: 'auth.privacy'.tr(),
-                style: TextStyle(
-                  color: accent,
-                  fontWeight: FontWeight.w600,
-                ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+              borderSide: BorderSide(
+                color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
               ),
-            ],
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+              borderSide: BorderSide(
+                color: isDark ? GenZTokens.dangerDark : GenZTokens.danger,
+                width: GenZTokens.borderWidthFocus,
+              ),
+            ),
           ),
-          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 50,
+          child: FilledButton(
+            onPressed: _isSubmitting ? null : _sendLoginCode,
+            style: FilledButton.styleFrom(
+              backgroundColor: accent,
+              foregroundColor: onAccent,
+              disabledBackgroundColor: accent.withValues(alpha: 0.6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              ),
+            ),
+            child: _isSubmitting
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: onAccent,
+                    ),
+                  )
+                : Text(
+                    'auth.send_code_btn'.tr(),
+                    style: AppFonts.heading(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: onAccent,
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (_phoneLoginEnabled)
+          TextButton(
+            onPressed: () => setState(() {
+              _isEmailInput = !_isEmailInput;
+              _emailError = null;
+              _emailController.clear();
+            }),
+            child: Text(
+              _isEmailInput ? 'auth.use_phone'.tr() : 'auth.use_email'.tr(),
+              style: AppFonts.body(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: fInk,
+              ),
+            ),
+          ),
+        TextButton(
+          onPressed: () => setState(() {
+            _isForgotPasswordMode = true;
+            _emailError = null;
+          }),
+          child: Text(
+            'auth.forgot_link'.tr(),
+            style: AppFonts.body(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: fInk,
+              decoration: TextDecoration.underline,
+              decorationColor: fSub,
+            ),
+          ),
         ),
       ],
     );
   }
 
+  static final RegExp _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+  /// Gửi mã OTP đăng nhập tới email (hoặc SĐT khi bật PHONE_LOGIN).
+  Future<void> _sendLoginCode() async {
+    if (_isSubmitting) return;
+    final input = _emailController.text.trim();
+    if (_isEmailInput && !_emailPattern.hasMatch(input)) {
+      setState(() => _emailError = 'auth.email_invalid'.tr());
+      return;
+    }
+    if (input.isEmpty) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _isSubmitting = true);
+    try {
+      final target = _isEmailInput ? input : _formatVnPhone(input);
+      final sendRes = await ApiService.post('/auth/send-otp', {
+        'phoneNumber': target,
+      });
+      if (!mounted) return;
+      if (sendRes != null && sendRes['success'] == true) {
+        _otpController.clear();
+        _nextStep();
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
   // --- STEP 2: OTP / EMAIL VERIFICATION ---
-  Widget _buildOtpVerification(
-    ThemeData theme,
-    Color accent,
-    Color onAccent,
-  ) {
+  Widget _buildOtpVerification(ThemeData theme, Color accent, Color onAccent) {
     final isDark = widget.isDarkMode;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final sub = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -989,8 +881,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         Text(
           'auth.verify_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
             color: ink,
             letterSpacing: -0.5,
           ),
@@ -1016,7 +908,10 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
             decoration: BoxDecoration(
               color: isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft,
               borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-              border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+              border: Border.all(
+                color: line,
+                width: GenZTokens.borderWidthThin,
+              ),
             ),
             child: Icon(
               PhosphorIcons.chatTeardropDots(PhosphorIconsStyle.fill),
@@ -1026,25 +921,27 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
           ),
         ),
         const SizedBox(height: 32),
-        // Ô nhập OTP dạng 4 khối
+        // Ô nhập OTP dạng 6 khối (server gửi mã 6 số)
         Center(
           child: Stack(
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 250,
+                width: 304,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(4, (i) {
+                  children: List.generate(6, (i) {
                     final filled = i < code.length;
                     final active = i == code.length;
                     return Container(
-                      width: 52,
+                      width: 44,
                       height: 58,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: surface,
-                        borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusInput,
+                        ),
                         border: Border.all(
                           color: (active || filled) ? accent : line,
                           width: (active || filled)
@@ -1066,13 +963,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
               ),
               // TextField trong suốt phủ lên, bắt input + focus khi chạm.
               SizedBox(
-                width: 250,
+                width: 304,
                 height: 58,
                 child: TextField(
                   controller: _otpController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  maxLength: 4,
+                  maxLength: 6,
                   autofocus: true,
                   showCursor: false,
                   textAlign: TextAlign.center,
@@ -1095,6 +992,15 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
             ],
           ),
         ),
+        if (_isForgotPasswordMode) ...[
+          const SizedBox(height: 24),
+          _buildGlassField(
+            _newPasswordController,
+            'auth.new_password_hint'.tr(),
+            PhosphorIcons.lockKey(),
+            obscure: true,
+          ),
+        ],
         const SizedBox(height: 32),
         Center(
           child: Column(
@@ -1114,7 +1020,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
                       ),
                     )
                   : TextButton(
-                      onPressed: _startOtpTimer,
+                      onPressed: _resendOtp,
                       child: Text(
                         'auth.resend_otp'.tr(),
                         style: AppFonts.heading(
@@ -1130,11 +1036,68 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,
-          height: 48,
+          height: 50,
           child: ElevatedButton(
             onPressed: () async {
               if (_isSubmitting) return;
-              if (_otpController.text.length == 4) {
+              if (_otpController.text.length == 6) {
+                if (_isForgotPasswordMode) {
+                  final newPassword = _newPasswordController.text.trim();
+                  if (newPassword.length < 8) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('auth.password_min'.tr())),
+                    );
+                    return;
+                  }
+                  setState(() => _isSubmitting = true);
+                  try {
+                    final input = _emailController.text.trim();
+                    final target = _isEmailInput
+                        ? input
+                        : _formatVnPhone(input);
+                    final code = _otpController.text.trim();
+
+                    final resetRes = await ApiService.post(
+                      '/auth/reset-password',
+                      {
+                        'identifier': target,
+                        'code': code,
+                        'newPassword': newPassword,
+                      },
+                    );
+                    if (!mounted) return;
+                    if (resetRes != null) {
+                      // Đăng nhập bằng mật khẩu dùng USERNAME chứ không phải
+                      // email → nhắc lại username để người dùng không bị kẹt.
+                      final username = _unwrapData(resetRes)?['username'];
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: const Duration(seconds: 6),
+                          content: Text(
+                            username is String && username.isNotEmpty
+                                ? 'auth.reset_done_username'.tr(
+                                    namedArgs: {'username': username},
+                                  )
+                                : 'auth.reset_done'.tr(),
+                          ),
+                        ),
+                      );
+                      setState(() {
+                        _isForgotPasswordMode = false;
+                        _otpController.clear();
+                        _newPasswordController.clear();
+                        _currentStep = 0;
+                      });
+                      _openPasswordAuth();
+                    }
+                  } finally {
+                    if (mounted) {
+                      setState(() => _isSubmitting = false);
+                    }
+                  }
+                  return;
+                }
+
                 setState(() => _isSubmitting = true);
                 try {
                   final input = _emailController.text.trim();
@@ -1156,7 +1119,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
                   if (data != null) {
                     if (data['exists'] == true) {
                       _tempAuthToken = data['token']?.toString();
-                      _tempUser = (data['user'] as Map?)?.cast<String, dynamic>();
+                      _tempUser = (data['user'] as Map?)
+                          ?.cast<String, dynamic>();
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1169,13 +1133,13 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
                             ),
                           ),
                         );
-                        setState(() {
-                          _currentStep = 4;
-                        });
+                        await _finishSignIn(_tempAuthToken!, _tempUser);
                       }
                     } else {
                       _tempSupabaseId = data['supabaseId']?.toString();
                       _tempEmail = data['email']?.toString();
+                      _tempRegistrationToken = data['registrationToken']
+                          ?.toString();
                       if (mounted) {
                         _nextStep();
                       }
@@ -1197,7 +1161,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
               ),
             ),
             child: Text(
-              'auth.verify_continue'.tr(),
+              _isForgotPasswordMode
+                  ? 'auth.reset_password'.tr()
+                  : 'auth.verify_continue'.tr(),
               style: AppFonts.heading(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -1211,11 +1177,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
   }
 
   // --- STEP 3: USERNAME / PROFILE SETUP (EDIT IDENTITY) ---
-  Widget _buildProfileSetup(
-    ThemeData theme,
-    Color accent,
-    Color onAccent,
-  ) {
+  Widget _buildProfileSetup(ThemeData theme, Color accent, Color onAccent) {
     final isDark = widget.isDarkMode;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final sub = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -1228,8 +1190,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
           Text(
             'auth.main_character'.tr(),
             style: AppFonts.heading(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
               color: ink,
               letterSpacing: -0.5,
             ),
@@ -1276,7 +1238,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
           const SizedBox(height: 40),
           SizedBox(
             width: double.infinity,
-            height: 48,
+            height: 50,
             child: ElevatedButton(
               onPressed: () async {
                 if (_isSubmitting) return;
@@ -1311,6 +1273,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
 
                     // Call Register API on the NestJS backend
                     final regRes = await ApiService.post('/auth/register', {
+                      'registrationToken': _tempRegistrationToken ?? '',
                       'email': email,
                       'name': _nameController.text.trim(),
                       'username': _usernameController.text.trim(),
@@ -1323,11 +1286,14 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
 
                     final regData = (regRes is Map && regRes['data'] is Map)
                         ? (regRes['data'] as Map).cast<String, dynamic>()
-                        : (regRes is Map ? regRes.cast<String, dynamic>() : null);
+                        : (regRes is Map
+                              ? regRes.cast<String, dynamic>()
+                              : null);
                     if (regData != null && regData['token'] != null) {
                       _tempAuthToken = regData['token'].toString();
                       _tempUser = (regData['user'] as Map?)
                           ?.cast<String, dynamic>();
+                      ApiService.authToken = _tempAuthToken;
 
                       if (_instaController.text.isNotEmpty ||
                           _tiktokController.text.isNotEmpty) {
@@ -1375,11 +1341,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
   }
 
   // --- STEP 4: WELCOME SUCCESS SCREEN ---
-  Widget _buildWelcomeSuccess(
-    ThemeData theme,
-    Color accent,
-    Color onAccent,
-  ) {
+  Widget _buildWelcomeSuccess(ThemeData theme, Color accent, Color onAccent) {
     final isDark = widget.isDarkMode;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final sub = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -1399,7 +1361,7 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
             border: Border.all(color: line, width: GenZTokens.borderWidthThin),
           ),
           child: Icon(
-            PhosphorIcons.rocketLaunch(PhosphorIconsStyle.fill),
+            PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
             size: 40,
             color: accent,
           ),
@@ -1408,8 +1370,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         Text(
           'auth.done_title'.tr(),
           style: AppFonts.heading(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
             color: ink,
             letterSpacing: -0.5,
           ),
@@ -1424,9 +1386,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         const SizedBox(height: 48),
         SizedBox(
           width: double.infinity,
-          height: 48,
+          height: 50,
           child: ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (_tempAuthToken == null) {
                 setState(() => _currentStep = 1);
                 return;
@@ -1442,7 +1404,10 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
                         ? 'traveller'
                         : _usernameController.text.trim(),
                   };
-              ref.read(authProvider.notifier).setSession(_tempAuthToken!, user);
+              await ref
+                  .read(authProvider.notifier)
+                  .setSession(_tempAuthToken!, user);
+              // Vibe giờ chỉ hỏi một lần ở /onboarding (VibeQuiz) sau bước này.
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: accent,
@@ -1470,8 +1435,9 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
   Widget _buildGlassField(
     TextEditingController controller,
     String placeholder,
-    IconData icon,
-  ) {
+    IconData icon, {
+    bool obscure = false,
+  }) {
     final isDark = widget.isDarkMode;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -1487,6 +1453,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: TextField(
         controller: controller,
+        obscureText: obscure,
+        autofillHints: obscure ? const [AutofillHints.newPassword] : null,
         style: AppFonts.body(
           color: ink,
           fontWeight: FontWeight.w500,
@@ -1495,44 +1463,8 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
         decoration: InputDecoration(
           icon: Icon(icon, color: inkSoft, size: 20),
           hintText: placeholder,
-          hintStyle: AppFonts.body(
-            color: inkSoft.withValues(alpha: 0.5),
-            fontSize: 14,
-          ),
+          hintStyle: AppFonts.body(color: inkSoft, fontSize: 14),
           border: InputBorder.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialBtn(String label, IconData icon, VoidCallback onTap) {
-    final isDark = widget.isDarkMode;
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        height: 48,
-        decoration: BoxDecoration(
-          color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: ink, size: 20),
-            const SizedBox(width: 10),
-            Text(
-              label,
-              style: AppFonts.heading(
-                color: ink,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -1543,8 +1475,15 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
     Color accent,
     Color onAccent,
   ) async {
+    if (_busyMethod != null) return;
+    setState(() => _busyMethod = 'google');
     final messenger = ScaffoldMessenger.of(context);
     try {
+      // Thoát phiên Google cũ trước: không thì sau khi đăng xuất TripMate,
+      // bấm Google sẽ tự vào lại đúng tài khoản cũ, không chọn được tài khoản khác.
+      try {
+        await _googleSignIn.signOut();
+      } catch (_) {}
       final account = await _googleSignIn.signIn();
       if (account == null || !mounted) return;
 
@@ -1589,10 +1528,11 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
               ),
             ),
           );
-          if (mounted) setState(() => _currentStep = 4);
+          await _finishSignIn(_tempAuthToken!, _tempUser);
         } else {
           _tempSupabaseId = data['supabaseId']?.toString();
           _tempEmail = data['email']?.toString() ?? account.email;
+          _tempRegistrationToken = data['registrationToken']?.toString();
           _nameController.text =
               data['name']?.toString() ?? account.displayName ?? '';
           if (mounted) setState(() => _currentStep = 3);
@@ -1602,13 +1542,92 @@ class _AuthFlowScreenState extends ConsumerState<AuthFlowScreen> {
       if (mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('auth.google_signin_failed'.tr(namedArgs: {'err': friendlyError(e)})),
+            content: Text(
+              'auth.google_signin_failed'.tr(
+                namedArgs: {'err': friendlyError(e)},
+              ),
+            ),
             backgroundColor: widget.isDarkMode
                 ? GenZTokens.dangerDark
                 : GenZTokens.danger,
           ),
         );
       }
+    } finally {
+      if (mounted) setState(() => _busyMethod = null);
     }
   }
 }
+
+/// Nút chọn cách đăng nhập: cao 50, chữ + icon căn giữa, có trạng thái đang
+/// chạy để người dùng không bấm hai lần khi bảng Apple/Google đang mở.
+class _AuthOptionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color background;
+  final Color foreground;
+  final Color? border;
+  final bool busy;
+  final VoidCallback onTap;
+
+  const _AuthOptionButton({
+    required this.label,
+    required this.icon,
+    required this.background,
+    required this.foreground,
+    required this.onTap,
+    this.border,
+    this.busy = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(GenZTokens.radiusButton);
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: background,
+        shape: RoundedRectangleBorder(
+          borderRadius: radius,
+          side: border == null
+              ? BorderSide.none
+              : BorderSide(color: border!, width: GenZTokens.borderWidthThin),
+        ),
+        child: InkWell(
+          borderRadius: radius,
+          onTap: busy ? null : onTap,
+          child: SizedBox(
+            height: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: busy
+                      ? CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: foreground,
+                        )
+                      : Icon(icon, size: 20, color: foreground),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  label,
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: foreground,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -66,23 +67,32 @@ class RideHailSheet extends StatelessWidget {
       if (item.hasCoords) 'dropOffLongitude': '${item.longitude}',
     };
     final deep = Uri(scheme: 'grab', host: 'open', queryParameters: q);
+    final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
     final ok =
         await _open(deep.toString()) ||
-        await _open('market://details?id=com.grabtaxi.passenger') ||
-        await _open(
-          'https://play.google.com/store/apps/details?id=com.grabtaxi.passenger',
-        );
+        (isIOS
+            ? await _open(
+                'https://apps.apple.com/vn/app/grab-taxi-food-delivery/id647268330',
+              )
+            : (await _open('market://details?id=com.grabtaxi.passenger') ||
+                await _open(
+                  'https://play.google.com/store/apps/details?id=com.grabtaxi.passenger',
+                )));
     _done(nav, ok);
   }
 
   Future<void> _be(BuildContext context) async {
     final nav = Navigator.of(context);
     await _copy();
-    final ok =
-        await _open('market://details?id=xyz.be.customer') ||
-        await _open(
-          'https://play.google.com/store/apps/details?id=xyz.be.customer',
-        );
+    final isIOS = defaultTargetPlatform == TargetPlatform.iOS;
+    final ok = isIOS
+        ? await _open(
+            'https://apps.apple.com/vn/app/be-multi-service-platform/id1440565902',
+          )
+        : (await _open('market://details?id=xyz.be.customer') ||
+            await _open(
+              'https://play.google.com/store/apps/details?id=xyz.be.customer',
+            ));
     _done(nav, ok);
   }
 

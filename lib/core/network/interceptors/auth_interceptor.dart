@@ -6,6 +6,7 @@ import '../../app_messenger.dart';
 
 class AuthInterceptor extends Interceptor {
   final Ref _ref;
+  bool _handling401 = false;
 
   AuthInterceptor(this._ref);
 
@@ -24,13 +25,16 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (err.response?.statusCode == 401) {
+    if (err.response?.statusCode == 401 && !_handling401) {
+      _handling401 = true;
       // Token hết hạn/không hợp lệ — báo người dùng rồi logout (router đưa về /auth).
       final wasAuthed = _ref.read(authProvider).isAuthenticated;
       if (wasAuthed) {
         showGlobalSnack('errors.session_expired_long'.tr(), isError: true);
       }
-      _ref.read(authProvider.notifier).logout();
+      _ref.read(authProvider.notifier).logout().whenComplete(() {
+        _handling401 = false;
+      });
     }
     return super.onError(err, handler);
   }

@@ -153,7 +153,16 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   }
 
   int _index = 0;
-  Offset _drag = Offset.zero;
+  /// Vị trí kéo thẻ. Dùng ValueNotifier thay vì setState: kéo 60 khung/giây
+  /// chỉ dựng lại phần transform, không dựng lại ảnh + nội dung thẻ.
+  final ValueNotifier<Offset> _dragN = ValueNotifier(Offset.zero);
+  Offset get _drag => _dragN.value;
+
+  @override
+  void dispose() {
+    _dragN.dispose();
+    super.dispose();
+  }
   final List<_Place> _liked = [];
 
   Color get _bg => widget.isDarkMode ? GenZTokens.creamDark : GenZTokens.cream;
@@ -184,7 +193,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
     }
     setState(() {
       _index++;
-      _drag = Offset.zero;
+      _dragN.value = Offset.zero;
     });
   }
 
@@ -278,61 +287,58 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
   }
 
   Widget _buildDraggableCard(_Place place) {
-    final rotation = _drag.dx / 360;
-    final likeOpacity = (_drag.dx / 120).clamp(0.0, 1.0);
-    final nopeOpacity = (-_drag.dx / 120).clamp(0.0, 1.0);
+    // Dựng thẻ MỘT lần; ValueListenableBuilder chỉ đổi transform + độ mờ dấu.
+    final card = _card(place);
+    final likeStamp = _stamp(
+      'vibe_deck.like'.tr(),
+      widget.isDarkMode ? GenZTokens.successDark : GenZTokens.success,
+      -0.3,
+    );
+    final nopeStamp = _stamp(
+      'common.skip_caps'.tr(),
+      widget.isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger,
+      0.3,
+    );
 
     return GestureDetector(
-      onPanUpdate: (d) => setState(() => _drag += d.delta),
+      onPanUpdate: (d) => _dragN.value += d.delta,
       onPanEnd: (_) {
         if (_drag.dx > 110) {
           _swipe(true);
         } else if (_drag.dx < -110) {
           _swipe(false);
         } else {
-          setState(() => _drag = Offset.zero);
+          _dragN.value = Offset.zero;
         }
       },
-      child: Transform.translate(
-        offset: _drag,
-        child: Transform.rotate(
-          angle: rotation,
-          child: Stack(
-            children: [
-              _card(place),
-              // LIKE stamp
-              Positioned(
-                top: 32,
-                left: 28,
-                child: Opacity(
-                  opacity: likeOpacity,
-                  child: _stamp(
-                    'vibe_deck.like'.tr(),
-                    widget.isDarkMode
-                        ? GenZTokens.successDark
-                        : GenZTokens.success,
-                    -0.3,
+      child: ValueListenableBuilder<Offset>(
+        valueListenable: _dragN,
+        child: card,
+        builder: (context, drag, child) {
+          final likeOpacity = (drag.dx / 120).clamp(0.0, 1.0);
+          final nopeOpacity = (-drag.dx / 120).clamp(0.0, 1.0);
+          return Transform.translate(
+            offset: drag,
+            child: Transform.rotate(
+              angle: drag.dx / 360,
+              child: Stack(
+                children: [
+                  child!,
+                  Positioned(
+                    top: 32,
+                    left: 28,
+                    child: Opacity(opacity: likeOpacity, child: likeStamp),
                   ),
-                ),
-              ),
-              // NOPE stamp
-              Positioned(
-                top: 32,
-                right: 28,
-                child: Opacity(
-                  opacity: nopeOpacity,
-                  child: _stamp(
-                    'common.skip_caps'.tr(),
-                    widget.isDarkMode
-                        ? GenZTokens.dangerDark
-                        : GenZTokens.danger,
-                    0.3,
+                  Positioned(
+                    top: 32,
+                    right: 28,
+                    child: Opacity(opacity: nopeOpacity, child: nopeStamp),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -384,16 +390,17 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                 ),
               ),
             ),
-            ExcludeSemantics(
-              child: Image.network(
-                place.image,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) =>
-                    const SizedBox.shrink(),
-                loadingBuilder: (context, child, progress) =>
-                    progress == null ? child : const SizedBox.shrink(),
+            if (place.image.trim().isNotEmpty)
+              ExcludeSemantics(
+                child: Image.network(
+                  place.image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stack) =>
+                      const SizedBox.shrink(),
+                  loadingBuilder: (context, child, progress) =>
+                      progress == null ? child : const SizedBox.shrink(),
+                ),
               ),
-            ),
             // Scrim
             Container(
               decoration: const BoxDecoration(
@@ -684,7 +691,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                         _index = 0;
                         _liked.clear();
                         _saved = false;
-                        _drag = Offset.zero;
+                        _dragN.value = Offset.zero;
                       });
                     },
                     style: OutlinedButton.styleFrom(
@@ -716,7 +723,7 @@ class _VibeSwipeDeckScreenState extends ConsumerState<VibeSwipeDeckScreen> {
                         _index = 0;
                         _liked.clear();
                         _saved = false;
-                        _drag = Offset.zero;
+                        _dragN.value = Offset.zero;
                       });
                     },
                     style: ElevatedButton.styleFrom(

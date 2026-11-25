@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "TripMate cần quyền truy cập camera để bạn chụp ảnh, quay clip ngắn gửi cho nhóm du lịch và quét hóa đơn chi tiêu.";
+"NSMicrophoneUsageDescription" = "TripMate cần quyền truy cập micro để ghi lại âm thanh khi bạn quay clip khoảnh khắc cho nhóm.";
+"NSPhotoLibraryUsageDescription" = "TripMate cần quyền truy cập thư viện ảnh để bạn chọn ảnh đăng lên bảng kỷ niệm nhóm và đính kèm ảnh hóa đơn.";
+"NSPhotoLibraryAddUsageDescription" = "TripMate cần quyền lưu ảnh Polaroid kỷ niệm chuyến đi, ảnh hóa đơn và mã QR thanh toán vào thư viện ảnh của bạn.";

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,7 +49,7 @@ class _ItineraryTabState extends ConsumerState<ItineraryTab> {
         isDark: isDark,
         icon: PhosphorIcons.wifiSlash(),
         title: 'errors.load_failed'.tr(),
-        body: '',
+        body: kDebugMode ? '$e' : '',
         actionLabel: 'general.retry'.tr(),
         onAction: () => ref.invalidate(tripsProvider),
       ),

@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
 
 import '../network/api_client.dart';
+import 'widget_pin.dart';
 
 /// Một mục hiển thị trên widget màn hình chính.
 class WidgetMoment {
@@ -35,7 +37,7 @@ class WidgetMoment {
   factory WidgetMoment.fromJson(Map<String, dynamic> j) => WidgetMoment(
     id: j['id'] as String? ?? '',
     tripId: j['tripId'] as String? ?? '',
-    imageUrl: j['imageUrl'] as String? ?? '',
+    imageUrl: (j['imageUrl'] ?? j['mediaUrl']) as String? ?? '',
     authorName: j['authorName'] as String? ?? '',
     tripName: j['tripName'] as String? ?? '',
     caption: j['caption'] as String?,
@@ -55,12 +57,13 @@ class WidgetMoment {
   };
 }
 
-/// Đẩy khoảnh khắc mới nhất của squad ra widget màn hình chính.
+/// Đẩy khoảnh khắc mới nhất của squad ra widget màn hình chính (Flutter -> Native).
 ///
 /// Đây là mảnh làm nên Locket: ảnh bạn gửi hiện ngay giữa các icon trên máy bạn
 /// bè, **không cần mở app**. Vòng lặp trở thành: gửi → thấy trên home → gửi lại.
 ///
-/// Flutter chỉ ghi dữ liệu vào vùng nhớ chung; phần vẽ do từng nền tảng lo:
+/// Flutter ghi dữ liệu vào vùng nhớ chung qua `home_widget` và `WidgetPin`;
+/// phần vẽ ngoài màn hình khóa/chính do từng hệ điều hành đảm nhận:
 ///   * Android — `AppWidgetProvider` đọc SharedPreferences
 ///   * iOS — WidgetKit đọc UserDefaults của App Group
 class WidgetSync {
@@ -71,7 +74,7 @@ class WidgetSync {
   static const String androidWidgetName = 'TripMateWidgetProvider';
   static const String iOSWidgetName = 'TripMateWidget';
 
-  /// App Group của iOS — widget và app dùng chung vùng lưu này.
+  /// App Group mặc định của iOS — widget và app dùng chung vùng lưu này.
   static const String appGroupId = 'group.com.tripmate.app';
 
   /// Khoá dữ liệu, dùng chung cho cả hai nền tảng.
@@ -80,47 +83,102 @@ class WidgetSync {
   static const String keyUpdatedAt = 'tm_updated_at';
 
   bool _configured = false;
+  String? _inMemoryFeedJson;
+
+  static bool get _isFlutterTest =>
+      !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
 
   Future<void> _ensureConfigured() async {
-    if (_configured) return;
-    await HomeWidget.setAppGroupId(appGroupId);
-    _configured = true;
+    if (_configured || _isFlutterTest) {
+      _configured = true;
+      return;
+    }
+    try {
+      final groups = await WidgetPin.getIosAppGroups();
+      final primaryGroup = groups.isNotEmpty ? groups.first : appGroupId;
+      await HomeWidget.setAppGroupId(primaryGroup).timeout(
+        const Duration(milliseconds: 600),
+        onTimeout: () => false,
+      );
+      _configured = true;
+    } catch (_) {
+      // Safe fallback in widget tests where MethodChannel is mocked/absent.
+      _configured = true;
+    }
   }
 
-  /// Tải feed mới nhất rồi ghi sang widget.
-  ///
-  /// Nuốt lỗi có chủ đích: widget là thứ phụ trợ, hỏng thì không được làm hỏng
-  /// hành động chính (vừa gửi ảnh xong chẳng hạn).
-  Future<void> refresh() async {
+  /// Tải feed mới nhất từ API rồi ghi sang widget (có hỗ trợ `fallbackItems`
+  /// từ chuyến đi hiện tại nếu `/users/me/widget-feed` chưa có dữ liệu).
+  Future<List<WidgetMoment>> refresh({
+    List<WidgetMoment>? fallbackItems,
+  }) async {
     try {
       await _ensureConfigured();
-      final data = await _client.getData('/users/me/widget-feed');
-      final items =
-          ((data as Map?)?['items'] as List?)
-              ?.whereType<Map>()
-              .map((e) => WidgetMoment.fromJson(e.cast<String, dynamic>()))
-              .toList() ??
-          const <WidgetMoment>[];
+      List<WidgetMoment> items = const <WidgetMoment>[];
+      try {
+        final data = await _client.getData('/users/me/widget-feed');
+        items =
+            ((data as Map?)?['items'] as List?)
+                ?.whereType<Map>()
+                .map((e) => WidgetMoment.fromJson(e.cast<String, dynamic>()))
+                .toList() ??
+            const <WidgetMoment>[];
+      } catch (e) {
+        debugPrint('Widget feed API fallback: $e');
+      }
 
-      await HomeWidget.saveWidgetData<String>(
-        keyLatestJson,
-        items.isEmpty ? '' : jsonEncode(items.first.toJson()),
-      );
-      await HomeWidget.saveWidgetData<String>(
-        keyFeedJson,
-        jsonEncode(items.map((e) => e.toJson()).toList()),
-      );
-      await HomeWidget.saveWidgetData<String>(
-        keyUpdatedAt,
-        DateTime.now().toIso8601String(),
-      );
+      if (items.isEmpty && fallbackItems != null && fallbackItems.isNotEmpty) {
+        items = fallbackItems;
+      }
+
+      await syncItems(items);
+      return items;
+    } catch (e) {
+      debugPrint('Cập nhật widget thất bại: $e');
+      return fallbackItems ?? const <WidgetMoment>[];
+    }
+  }
+
+  /// Ghi trực tiếp danh sách [WidgetMoment] từ Flutter xuống Widget của cả
+  /// Android (`HomeWidget`) và iOS (`HomeWidget` + multi-AppGroup `WidgetPin`).
+  Future<void> syncItems(List<WidgetMoment> items) async {
+    try {
+      await _ensureConfigured();
+      final latestJson = items.isEmpty ? '' : jsonEncode(items.first.toJson());
+      final feedJson = jsonEncode(items.map((e) => e.toJson()).toList());
+      final updatedAt = DateTime.now().toIso8601String();
+      _inMemoryFeedJson = feedJson;
+      if (_isFlutterTest) return;
+
+      final imageUrls = items
+          .take(3)
+          .map((e) => e.imageUrl.trim())
+          .where((u) => u.isNotEmpty)
+          .toList();
+
+      const timeout = Duration(milliseconds: 600);
+      await HomeWidget.saveWidgetData<String>(keyLatestJson, latestJson)
+          .timeout(timeout, onTimeout: () => false);
+      await HomeWidget.saveWidgetData<String>(keyFeedJson, feedJson)
+          .timeout(timeout, onTimeout: () => false);
+      await HomeWidget.saveWidgetData<String>(keyUpdatedAt, updatedAt)
+          .timeout(timeout, onTimeout: () => false);
 
       await HomeWidget.updateWidget(
         androidName: androidWidgetName,
         iOSName: iOSWidgetName,
+      ).timeout(timeout, onTimeout: () => false);
+
+      // Đồng bộ thêm qua cầu nối iOS để ghi vào mọi App Group (bao gồm cả
+      // ALTAppGroups khi cài qua iloader-cli) và tải trước ảnh thumbnail.
+      await WidgetPin.syncNativeIosWidget(
+        latestJson: latestJson,
+        feedJson: feedJson,
+        updatedAt: updatedAt,
+        imageUrls: imageUrls,
       );
     } catch (e) {
-      debugPrint('Cập nhật widget thất bại: $e');
+      debugPrint('Widget syncItems failed: $e');
     }
   }
 
@@ -131,12 +189,19 @@ class WidgetSync {
   /// tấm đó. Rỗng thì mới lấy từ server.
   Future<List<WidgetMoment>> loadFeed() async {
     await _ensureConfigured();
-    final raw = await HomeWidget.getWidgetData<String>(keyFeedJson);
-    final parsed = _decodeFeed(raw);
-    if (parsed.isNotEmpty) return parsed;
+    if (_inMemoryFeedJson != null) {
+      final parsed = _decodeFeed(_inMemoryFeedJson);
+      if (parsed.isNotEmpty) return parsed;
+    }
+    if (!_isFlutterTest) {
+      try {
+        final raw = await HomeWidget.getWidgetData<String>(keyFeedJson);
+        final parsed = _decodeFeed(raw);
+        if (parsed.isNotEmpty) return parsed;
+      } catch (_) {}
+    }
 
-    await refresh();
-    return _decodeFeed(await HomeWidget.getWidgetData<String>(keyFeedJson));
+    return refresh();
   }
 
   List<WidgetMoment> _decodeFeed(String? raw) {
@@ -160,6 +225,7 @@ class WidgetSync {
         androidName: androidWidgetName,
         iOSName: iOSWidgetName,
       );
+      await WidgetPin.clearNativeIosWidget();
     } catch (e) {
       debugPrint('Widget clear failed: $e');
     }

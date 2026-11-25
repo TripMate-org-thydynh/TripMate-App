@@ -136,11 +136,19 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
+    final now = DateTime.now();
+    final minDate = isStart
+        ? now.subtract(const Duration(days: 365))
+        : (_startDate ?? now);
+    final rawInitial = isStart
+        ? (_startDate ?? now)
+        : (_endDate ?? _startDate ?? now);
+    final initialDate = rawInitial.isBefore(minDate) ? minDate : rawInitial;
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+      initialDate: initialDate,
+      firstDate: minDate,
+      lastDate: now.add(const Duration(days: 365 * 5)),
       builder: (context, child) {
         return Theme(data: Theme.of(context), child: child!);
       },
@@ -149,6 +157,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
       setState(() {
         if (isStart) {
           _startDate = picked;
+          if (_endDate != null && _startDate!.isAfter(_endDate!)) {
+            _endDate = _startDate;
+          }
         } else {
           _endDate = picked;
         }
@@ -739,6 +750,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
+                                                    // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                                                    memCacheWidth: 1080,
                                                     imageUrl: cover['image']!,
                                                     fit: BoxFit.cover,
                                                     placeholder:
@@ -1024,8 +1037,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                   ? Image.asset(
                                                       'assets/images/avatar_minh_nhat.webp',
                                                       fit: BoxFit.cover,
+                                                      cacheWidth: 120,
                                                     )
                                                   : CachedNetworkImage(
+                                                      // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                                                      memCacheWidth: 1080,
                                                       imageUrl:
                                                           'https://lh3.googleusercontent.com/aida-public/AB6AXuAvvXCbKfRu2mzCCcj60yFk9h01zv9Y9WCkOQodi1hFQWMDsFvlCdf6jjjGOJkkl8FtzL01xY7osHpDkE0cA4vAEJYAKtdufhxCA2V2Ezx3UxPouPfHiBWB9v8tBozIG4GJGcSYsBIre_8YrIPmbWDS42Vxclf6sWOOS4PnEmVECcbLfzVGsnFdNZ5w06zWYpaDAVxS8TEJNwVCIVCAhsfKriZh6Xnp_NuTNkK5Z1_Be50boL73EHsRRxcCJDOK7t5yH1MbugEcUzBo',
                                                       fit: BoxFit.cover,
@@ -1093,8 +1109,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                                   ? Image.asset(
                                                       'assets/images/avatar_thao_ly.webp',
                                                       fit: BoxFit.cover,
+                                                      cacheWidth: 120,
                                                     )
                                                   : CachedNetworkImage(
+                                                      // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                                                      memCacheWidth: 1080,
                                                       imageUrl:
                                                           'https://lh3.googleusercontent.com/aida-public/AB6AXuAUx6IWymkdIblIS-PiUXn_mSj3uaQEevZF_NDNmvxyQC_lqIFJV6bEkhsaomN1IGAWDiV8r-WgtyFEellRP6Pp6INrq2wUdr89T0QFCJfhrJgE-QWeK3c9XJYUq4ig9xKwtBV33Y90QnVSQB1LRcpgjjd-PrgIir8pBrgu0QqwZh7gn8dhEKS81oVf2yzui-bPxwJBT1Foj69OGa6FipK7ET-Ss-NVPCk1xxqAXeCcJwff74QgE7lTc_idtIGq-AmuznOK7n3hAVJK',
                                                       fit: BoxFit.cover,
@@ -1155,6 +1174,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
                                             child: Image.asset(
                                               'assets/images/avatar_user.webp',
                                               fit: BoxFit.cover,
+                                              cacheWidth: 120,
                                               semanticLabel: 'trips.avatar_user'
                                                   .tr(),
                                               errorBuilder:
@@ -1280,6 +1300,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen>
               child: Image.asset(
                 'assets/images/avatar_user.webp',
                 fit: BoxFit.cover,
+                cacheWidth: 120,
                 semanticLabel: 'trips.avatar_user'.tr(),
                 errorBuilder: (context, error, stackTrace) => Icon(
                   PhosphorIcons.circleDashed(),

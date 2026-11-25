@@ -126,6 +126,7 @@ class _PhotoLocationScreenState extends ConsumerState<PhotoLocationScreen> {
         });
       }
     } catch (e) {
+      debugPrint('photo-location failed: $e');
       if (!mounted) return;
       setState(() {
         _loading = false;

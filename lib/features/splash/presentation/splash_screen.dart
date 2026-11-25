@@ -1,15 +1,29 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
-import 'package:tripmate/core/theme/app_fonts.dart';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:tripmate/core/theme/app_fonts.dart';
 
+import '../../../core/app_gate.dart';
+import '../../../core/providers/auth_provider.dart';
+import '../../system_states/pages/status_screen.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
+import '../../../core/widgets/trip_illustration.dart';
 
-/// Splash Neo-Brutalist: khối màu accent full-bleed, logo trong khối paper
-/// viền ink + hard shadow, tagline pill mono, sticker sparkle lắc nhẹ.
+/// Splash = phần nối tiếp của launch screen gốc (iOS LaunchScreen.storyboard
+/// cùng nền kem `GenZTokens.cream`), nên lúc Flutter vẽ khung đầu không bị
+/// nháy màu.
+///
+/// Câu chuyện 1 giây: một nét đường đi tự vẽ từ điểm xuất phát tới ghim đích
+/// (= "đi trip"), ghim màu nhấn hiện ra, rồi wordmark `trip.mate` và 3 vế
+/// khẩu hiệu lần lượt hiện. Chạy MỘT lần (không lặp trang trí), easeOutCubic,
+/// không nảy — đúng spec chuyển động.
+///
+/// Bản trước (thẻ viền + bóng đặc, 3 pill tag, nút đổi sáng/tối) đã bỏ: bóng
+/// đặc trái spec hiện tại, còn nút đổi theme trên màn chỉ sống 1 giây thì
+/// không ai kịp bấm.
 class SplashScreen extends ConsumerStatefulWidget {
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
@@ -26,169 +40,172 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _popController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-  Timer? _splashTimer;
+  static const _total = Duration(milliseconds: 1000);
+
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: _total,
+  )..forward();
+
+  Animation<double> _seg(double from, double to) => CurvedAnimation(
+        parent: _c,
+        curve: Interval(from, to, curve: Curves.easeOutCubic),
+      );
+
+  // Logo hiện trước, khẩu hiệu sau, minh hoạ con đường trượt lên cuối.
+  late final _logo = _seg(0.0, 0.35);
+  late final _art = _seg(0.25, 0.75);
+  late final _slogan = _seg(0.35, 0.7);
 
   @override
   void initState() {
     super.initState();
+    unawaited(_leaveWhenReady());
+  }
 
-    _popController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _popController,
-      curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
-    );
-    _scaleAnimation = Tween<double>(begin: 0.96, end: 1.0).animate(
-      CurvedAnimation(parent: _popController, curve: Curves.easeOutCubic),
-    );
+  /// Chờ animation chạy hết (1.3s) rồi đi ngay khi phiên đã đọc xong —
+  /// người đã đăng nhập vào thẳng app, không ghé màn đăng nhập.
+  AppGateResult? _gate;
 
-    _popController.forward();
-
-    // Navigate to Onboarding Auth Flow after 1.2 seconds
-    _splashTimer = Timer(const Duration(milliseconds: 1200), () {
-      if (mounted) {
-        context.go('/auth');
-      }
-    });
+  Future<void> _leaveWhenReady() async {
+    final reduce = WidgetsBinding
+        .instance.platformDispatcher.accessibilityFeatures.disableAnimations;
+    if (reduce) _c.value = 1;
+    // Kiểm tra bảo trì / phiên bản chạy song song với animation (timeout 4s,
+    // lỗi thì cho qua) nên không làm splash dài thêm.
+    final gateFuture = checkAppGate();
+    await Future<void>.delayed(
+      reduce ? const Duration(milliseconds: 400) : _total + const Duration(milliseconds: 250),
+    );
+    final gate = await gateFuture;
+    if (!mounted) return;
+    if (gate.status == GateStatus.maintenance ||
+        gate.status == GateStatus.forceUpdate) {
+      setState(() => _gate = gate); // chặn tại đây, không vào app
+      return;
+    }
+    while (mounted && ref.read(authProvider).isLoading) {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+    if (!mounted) return;
+    if (gate.status == GateStatus.softUpdate) {
+      await showSoftUpdateDialog(
+        context,
+        storeUrl: gate.storeUrl,
+        latestVersion: gate.latestVersion,
+      );
+      if (!mounted) return;
+    }
+    final signedIn = ref.read(authProvider).isAuthenticated;
+    context.go(signedIn ? '/dashboard' : '/auth');
   }
 
   @override
   void dispose() {
-    _splashTimer?.cancel();
-    _popController.dispose();
+    _c.dispose();
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final gate = _gate;
+    if (gate?.status == GateStatus.maintenance) {
+      return MaintenanceScreen(
+        message: gate!.message,
+        onRetry: () {
+          setState(() => _gate = null);
+          unawaited(_leaveWhenReady());
+        },
+      );
+    }
+    if (gate?.status == GateStatus.forceUpdate) {
+      return ForceUpdateScreen(
+        storeUrl: gate!.storeUrl,
+        currentVersion: gate.currentVersion,
+      );
+    }
     final isDark = widget.isDarkMode;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
-    final cardColor = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
-    final textColor = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+
+    final slogan = [
+      'splash.slogan_plan'.tr(),
+      'splash.slogan_split'.tr(),
+      'splash.slogan_moment'.tr(),
+    ].join('  ·  ');
+
+    Widget fade(Animation<double> a, Widget child) => AnimatedBuilder(
+          animation: a,
+          builder: (_, c) => Opacity(
+            opacity: a.value,
+            child: Transform.translate(
+              offset: Offset(0, (1 - a.value) * 8),
+              child: c,
+            ),
+          ),
+          child: child,
+        );
 
     return Scaffold(
       backgroundColor: bg,
-      body: Stack(
-        children: [
-          // Logo card ở giữa
-          Center(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: HardShadowBox(
-                  color: cardColor,
-                  borderColor: line,
-                  shadowColor: textColor,
-                  radius: GenZTokens.radiusCard,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 36,
-                    vertical: 28,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Official TripMate Logo Mark
-                      Image.asset(
-                        isDark
-                            ? 'assets/images/symbol_dark.png'
-                            : 'assets/images/symbol_light.png',
-                        width: screenWidth > 360 ? 84 : 70,
-                        height: screenWidth > 360 ? 72 : 60,
-                        fit: BoxFit.contain,
-                        excludeFromSemantics: true,
-                      ),
-                      const SizedBox(height: GenZTokens.space2),
-                      Text(
-                        'trip.mate',
-                        style: AppFonts.heading(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -1.0,
-                          height: 1.1,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: GenZTokens.space2),
-                      // Gạch chân accent đơn sắc
-                      Container(
-                        width: 44,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: accent,
-                          borderRadius: BorderRadius.circular(
-                            GenZTokens.radiusPill,
-                          ),
-                        ),
-                      ),
-                    ],
+      body: Semantics(
+        label: 'TripMate — $slogan',
+        child: SafeArea(
+          child: Column(
+            children: [
+              const Spacer(flex: 3),
+              fade(
+                _logo,
+                Text.rich(
+                  TextSpan(children: [
+                    const TextSpan(text: 'trip'),
+                    TextSpan(text: '.', style: TextStyle(color: accent)),
+                    const TextSpan(text: 'mate'),
+                  ]),
+                  style: AppFonts.heading(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w700,
+                    color: ink,
+                    letterSpacing: -1,
                   ),
                 ),
               ),
-            ),
-          ),
-
-          // Tagline pill dưới cùng
-          Positioned(
-            bottom: 48,
-            left: 0,
-            right: 0,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Center(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: GenZTokens.space2,
-                  runSpacing: GenZTokens.space2,
-                  children: [
-                    PillTag(text: 'splash.tag_plan'.tr(), color: fill),
-                    PillTag(text: 'splash.tag_split'.tr(), color: fill),
-                    PillTag(text: 'splash.tag_moments'.tr(), color: fill),
-                  ],
+              const SizedBox(height: 10),
+              fade(
+                _slogan,
+                Text(
+                  slogan,
+                  textAlign: TextAlign.center,
+                  style: AppFonts.body(fontSize: 15, color: inkSoft),
                 ),
               ),
-            ),
-          ),
-
-          // Nút đổi sáng/tối
-          Positioned(
-            top: 54,
-            right: 20,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: line,
-                    width: GenZTokens.borderWidthThin,
+              const Spacer(flex: 2),
+              ExcludeSemantics(
+                child: AnimatedBuilder(
+                  animation: _art,
+                  builder: (_, c) => Opacity(
+                    opacity: _art.value,
+                    child: Transform.translate(
+                      offset: Offset(0, (1 - _art.value) * 40),
+                      child: c,
+                    ),
                   ),
-                  boxShadow: GenZTokens.hardShadow(textColor, isDark),
-                ),
-                child: IconButton(
-                  tooltip: 'theme.toggle'.tr(),
-                  icon: Icon(
-                    widget.isDarkMode
-                        ? PhosphorIcons.sun(PhosphorIconsStyle.fill)
-                        : PhosphorIcons.moon(PhosphorIconsStyle.fill),
-                    color: textColor,
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: TripIllustrationView(
+                      TripIllustration.road,
+                      height: 260,
+                    ),
                   ),
-                  onPressed: widget.onThemeToggle,
                 ),
               ),
-            ),
+              const SizedBox(height: 24),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

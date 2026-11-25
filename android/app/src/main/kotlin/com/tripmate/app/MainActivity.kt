@@ -2,6 +2,11 @@ package com.tripmate.app
 
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.provider.Settings
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
+import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
+import java.security.MessageDigest
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -32,6 +37,56 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, trustChannel)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "androidId" -> result.success(androidId())
+                    "integrityToken" -> {
+                        val project = call.argument<Number>("cloudProjectNumber")?.toLong()
+                        val deviceId = call.argument<String>("deviceId")
+                        if (project == null || deviceId == null) {
+                            result.error("BAD_ARGS", "thiếu tham số", null)
+                        } else {
+                            integrityToken(project, deviceId, result)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    /**
+     * Mã thiết bị và token Play Integrity cho việc xin dùng thử.
+     *
+     * Android ID (SSAID) riêng cho từng app ký bằng một khoá và từng người
+     * dùng trên máy: gỡ cài đặt lại hay xoá dữ liệu vẫn giữ nguyên, nhưng app
+     * khác không đọc ra cùng giá trị — đủ để server biết "máy này đã thử chưa"
+     * mà không lần ra được con người. Server chỉ lưu băm có salt.
+     *
+     * Token Integrity gắn với mã đó qua `requestHash = sha256("trial:" + id)`,
+     * nên không ghép được token máy này với mã máy khác.
+     */
+    private val trustChannel = "tripmate/device_trust"
+
+    private fun androidId(): String? =
+        runCatching {
+            Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        }.getOrNull()
+
+    private fun integrityToken(project: Long, deviceId: String, result: MethodChannel.Result) {
+        val hash = MessageDigest.getInstance("SHA-256")
+            .digest("trial:$deviceId".toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
+        val manager = IntegrityManagerFactory.createStandard(applicationContext)
+        manager.prepareIntegrityToken(
+            PrepareIntegrityTokenRequest.builder().setCloudProjectNumber(project).build()
+        ).addOnSuccessListener { provider ->
+            provider.request(
+                StandardIntegrityTokenRequest.builder().setRequestHash(hash).build()
+            ).addOnSuccessListener { response -> result.success(response.token()) }
+                .addOnFailureListener { e -> result.error("INTEGRITY", e.message, null) }
+        }.addOnFailureListener { e -> result.error("INTEGRITY", e.message, null) }
     }
 
     private fun isPinSupported(): Boolean {

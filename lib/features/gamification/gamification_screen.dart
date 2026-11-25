@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../core/theme/gen_z_tokens.dart';
+import 'o_an_quan/o_an_quan_screen.dart';
 import 'pages/achievement_unlock_screen.dart';
 import 'pages/chaos_challenges_screen.dart';
 import 'pages/daily_squad_missions_screen.dart';
@@ -159,6 +160,14 @@ class GamificationScreen extends StatelessWidget {
                       'gamification.crazy_challenges'.tr(),
                       PhosphorIcons.fire(PhosphorIconsStyle.fill),
                       const ChaosChallengesScreen(),
+                      isDark,
+                    ),
+                    _buildGameCard(
+                      context,
+                      'oaq.title'.tr(),
+                      'oaq.hub_sub'.tr(),
+                      PhosphorIcons.circlesFour(PhosphorIconsStyle.fill),
+                      const OAnQuanScreen(),
                       isDark,
                     ),
                   ],

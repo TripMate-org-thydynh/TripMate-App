@@ -161,7 +161,7 @@ class TripPdfExporter {
                           '${item.startTime}  ',
                           style: const pw.TextStyle(
                             color: PdfColor.fromInt(0xFF888888),
-                            fontSize: 11,
+                            fontSize: 12,
                           ),
                         ),
                         pw.Text(
@@ -176,7 +176,7 @@ class TripPdfExporter {
                             '  [${item.category}]',
                             style: const pw.TextStyle(
                               color: PdfColor.fromInt(0xFF888888),
-                              fontSize: 11,
+                              fontSize: 12,
                             ),
                           ),
                       ],
@@ -300,14 +300,14 @@ class TripPdfExporter {
                     if (r.location != null)
                       pw.Text(
                         r.location!,
-                        style: const pw.TextStyle(fontSize: 11),
+                        style: const pw.TextStyle(fontSize: 12),
                       ),
                     if (r.confirmationNumber != null)
                       pw.Text(
                         'trips.code_label'.tr(
                           namedArgs: {'code': r.confirmationNumber ?? ''},
                         ),
-                        style: const pw.TextStyle(fontSize: 11),
+                        style: const pw.TextStyle(fontSize: 12),
                       ),
                   ],
                 ),
@@ -322,6 +322,7 @@ class TripPdfExporter {
     await Printing.sharePdf(
       bytes: await pdf.save(),
       filename: 'tripmate_${trip.name.replaceAll(' ', '_')}.pdf',
+      bounds: const Rect.fromLTWH(0, 0, 100, 100),
     );
   }
 

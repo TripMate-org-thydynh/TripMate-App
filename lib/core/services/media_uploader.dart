@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -61,6 +62,34 @@ class MediaUploader {
     );
   }
 
+  /// Chọn ảnh đại diện từ thư viện/camera và tải lên.
+  Future<String?> pickAndUploadAvatar({
+    required ImageSource source,
+    String? tripId,
+  }) async {
+    final file = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 80,
+    );
+    if (file == null) return null;
+    final ioFile = File(file.path);
+    final contentType = _guessType(file.path, file.mimeType);
+    if (tripId != null && tripId.isNotEmpty) {
+      try {
+        final uploaded = await uploadFile(
+          tripId: tripId,
+          file: ioFile,
+          contentType: contentType,
+        );
+        return uploaded.url;
+      } catch (_) {}
+    }
+    final bytes = await ioFile.readAsBytes();
+    return 'data:$contentType;base64,${base64Encode(bytes)}';
+  }
+
   /// Tải một file đã có sẵn trên máy.
   Future<UploadedMedia> uploadFile({
     required String tripId,
@@ -119,7 +148,39 @@ class MediaUploader {
       // Bỏ qua có chủ đích.
     }
 
+    // 4. Pre-warm Edge CDN cho các kích thước chuẩn (boardThumb & background)
+    //    để các thành viên tiếp theo mở bảng/chuyến đi nhận thẳng từ Edge Cache.
+    // ignore: unawaited_futures
+    warmUpCdnCache(url);
+
     return UploadedMedia(url: url, contentType: contentType, sizeBytes: bytes);
+  }
+
+  /// Chủ động gọi ngầm lên Edge CDN ngay sau khi 1 thành viên upload ảnh để
+  /// CDN tạo sẵn và lưu cache các biến thể chuẩn (`avatar`, `boardThumb`, `background`).
+  /// Khi các thành viên khác mở màn hình, CDN trả về ngay lập tức (< 25ms).
+  Future<void> warmUpCdnCache(
+    String url, {
+    List<CdnTier> tiers = const [
+      CdnTier.avatar,
+      CdnTier.boardThumb,
+      CdnTier.background,
+    ],
+  }) async {
+    if (!url.contains('/upload/')) return;
+    if (Platform.environment.containsKey('FLUTTER_TEST')) return;
+    for (final tier in tiers) {
+      final derivedUrl = cdnUrlForTier(url, tier);
+      try {
+        await _plainDio.head<void>(
+          derivedUrl,
+          options: Options(
+            sendTimeout: const Duration(seconds: 4),
+            receiveTimeout: const Duration(seconds: 4),
+          ),
+        );
+      } catch (_) {}
+    }
   }
 
   static String _guessType(String path, String? mime) {
@@ -132,31 +193,81 @@ class MediaUploader {
     if (p.endsWith('.pdf')) return 'application/pdf';
     return 'image/jpeg';
   }
+
+  static String cdnUrlForTier(String url, CdnTier tier) =>
+      optimizedMedia(url, width: tier.width);
+
+  static String cdnCacheKey(String url, {CdnTier? tier}) {
+    final clean = url.split('?').first;
+    if (tier == null) return clean;
+    return '${clean}__w${tier.width}';
+  }
 }
 
 final mediaUploaderProvider = Provider<MediaUploader>(
   (ref) => MediaUploader(ref.watch(apiClientProvider)),
 );
 
+/// 4 nấc kích thước CDN chuẩn hóa toàn dự án để mọi thiết bị đều dùng chung
+/// đúng 1 khóa cache trên Edge CDN và trên ổ đĩa:
+/// - [avatar]: 200px (ảnh đại diện Profile, chip thành viên, bong bóng chat)
+/// - [boardThumb]: 480px (ảnh Polaroid trên Bảng Kỷ Niệm 2D, lưới ảnh, bản đồ)
+/// - [background]: 960px (ảnh bìa chuyến đi, background màn hình, thẻ khám phá)
+/// - [full]: 1600px (xem ảnh phóng to chi tiết 1x/2x/3x)
+enum CdnTier {
+  avatar(200),
+  boardThumb(480),
+  background(960),
+  full(1600);
+
+  final int width;
+  const CdnTier(this.width);
+}
+
+/// Chuẩn hóa chiều rộng bất kỳ về 1 trong 4 nấc CDN cố định để tránh việc mỗi
+/// kích thước màn hình tạo ra một URL khác nhau làm trượt cache CDN.
+int canonicalCdnWidth(int requestedWidth) {
+  if (requestedWidth <= 240) return CdnTier.avatar.width;
+  if (requestedWidth <= 560) return CdnTier.boardThumb.width;
+  if (requestedWidth <= 1080) return CdnTier.background.width;
+  return CdnTier.full.width;
+}
+
+/// Tạo URL Cloudinary CDN đã tối ưu hóa (`f_auto,q_auto`) theo nấc [tier].
+String cdnUrlForTier(String url, CdnTier tier) {
+  return optimizedMedia(url, width: tier.width);
+}
+
+/// Tạo khóa cache ổn định cho `CachedNetworkImage` theo nấc [tier].
+String cdnCacheKey(String url, {CdnTier? tier}) {
+  final clean = url.split('?').first;
+  if (tier == null) return clean;
+  return '${clean}__w${tier.width}';
+}
+
 /// Biến URL Cloudinary thành URL đã tối ưu cho đúng kích thước cần hiển thị.
 ///
 /// Lý do quan trọng: app đang dùng CÙNG một ảnh gốc cho marker 50×50 trên bản
 /// đồ lẫn ảnh xem toàn màn hình — một tấm 400 KB bị tải nguyên vẹn để vẽ một
-/// chấm bé xíu. `f_auto` trả WebP/AVIF khi máy hỗ trợ, `q_auto` chọn mức nén.
+/// chấm bé xíu. `f_auto` trả WebP/AVIF khi máy hỗ trợ, `q_auto` chọn mức nén,
+/// và `canonicalCdnWidth` gộp mọi request về đúng 4 nấc chuẩn trên Edge CDN.
 String optimizedMedia(String url, {int? width}) {
   if (!url.contains('/upload/')) return url;
+  // Nếu URL đã có sẵn chuỗi biến đổi f_auto,q_auto thì tránh chèn trùng.
+  if (url.contains('/upload/f_auto,q_auto')) return url;
   final t = <String>['f_auto', 'q_auto'];
   if (width != null) {
+    final canonicalW = canonicalCdnWidth(width);
     t
-      ..add('w_$width')
+      ..add('w_$canonicalW')
       ..add('c_limit');
   }
   return url.replaceFirst('/upload/', '/upload/${t.join(',')}/');
 }
 
-/// Anh bia cho mot moment: voi VIDEO thi doi duoi sang .jpg de Cloudinary tra
-/// frame dau. Cung quy tac ma backend dung o `StorageService.posterFor`, de
-/// cho nao ve bang widget anh cung khong ra o "khong tai duoc anh".
+/// Ảnh bìa cho một moment: với VIDEO thì đổi đuôi sang .jpg để Cloudinary trả
+/// frame đầu. Cùng quy tắc mà backend dùng ở `StorageService.posterFor`, để
+/// chỗ nào vẽ bằng widget ảnh cũng không ra ô "không tải được ảnh".
 String posterMedia(String url, String type, {int? width}) {
   if (type != 'VIDEO') return optimizedMedia(url, width: width);
   final dot = url.lastIndexOf('.');

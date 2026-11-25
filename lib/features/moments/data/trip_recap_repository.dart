@@ -1,6 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../trips/application/trips_providers.dart';
+import '../application/moments_providers.dart';
+import '../domain/moment.dart';
 
 /// Số liệu tổng kết một chuyến (Trip Wrapped).
 ///
@@ -138,8 +142,53 @@ final tripRecapProvider = FutureProvider.family<TripRecap, String>((
   ref,
   tripId,
 ) async {
-  final data = await ref
-      .watch(apiClientProvider)
-      .getData('/trips/$tripId/recap');
-  return TripRecap.fromJson((data as Map).cast<String, dynamic>());
+  try {
+    final data = await ref
+        .watch(apiClientProvider)
+        .getData('/trips/$tripId/recap')
+        .timeout(const Duration(seconds: 4));
+    if (data is Map) {
+      final recap = TripRecap.fromJson(data.cast<String, dynamic>());
+      if (recap.hasData) return recap;
+    }
+  } catch (_) {
+    // Fall back to local trip data below
+  }
+
+  // Local fallback from moments & trips state
+  final moments = ref.watch(momentsProvider(tripId)).valueOrNull ?? <Moment>[];
+  final trips = ref.watch(tripsProvider).valueOrNull ?? const [];
+  final trip = trips.where((t) => t.id == tripId).firstOrNull;
+
+  final recapMoments = moments.map((m) => TripRecapMoment(
+    id: m.id,
+    mediaUrl: m.mediaUrl,
+    posterUrl: m.mediaUrl,
+    type: m.type,
+    caption: m.caption,
+    authorName: m.authorName,
+    reactionCount: m.reactionCount,
+    commentCount: m.commentCount,
+  )).toList();
+
+  final days = trip != null
+      ? (trip.endDate.difference(trip.startDate).inDays + 1).clamp(1, 365)
+      : 1;
+
+  return TripRecap(
+    tripName: trip?.name.trim().isNotEmpty == true
+        ? trip!.name.trim()
+        : 'recap.default_trip_name'.tr(),
+    destination: trip?.destination,
+    coverImage: trip?.coverImage,
+    days: days,
+    memberCount: trip?.memberCount ?? 1,
+    placeCount: 0,
+    momentCount: recapMoments.length,
+    expenseCount: 0,
+    totalSpent: 0,
+    currency: 'VND',
+    hasData: recapMoments.isNotEmpty,
+    moments: recapMoments,
+  );
 });

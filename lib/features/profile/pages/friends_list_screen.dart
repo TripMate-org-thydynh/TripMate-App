@@ -109,6 +109,8 @@ class FriendsListScreen extends ConsumerWidget {
             ),
             child: avatar != null && avatar.startsWith('http')
                 ? CachedNetworkImage(
+                    // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                    memCacheWidth: 160,
                     imageUrl: avatar,
                     fit: BoxFit.cover,
                     errorWidget: (_, _, _) => _initial(b.name, ink),

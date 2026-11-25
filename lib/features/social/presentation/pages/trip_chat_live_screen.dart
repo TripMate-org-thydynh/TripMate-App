@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -5,17 +6,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../core/api_service.dart';
 import '../../../../core/network/error_message.dart';
 
 import '../../../../core/network/chat_socket.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/app_messenger.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/widgets/report_sheet.dart';
 import '../../../profile/data/xp_repository.dart';
-import '../../../profile/pages/sticker_store_screen.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_message.dart';
+import '../widgets/sticker_picker_sheet.dart';
 
 /// Chat nhóm realtime — history qua REST, live qua socket.io (`/chat`).
 class TripChatLiveScreen extends ConsumerStatefulWidget {
@@ -241,98 +244,13 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
         });
   }
 
-  /// Mở bảng chọn sticker — chỉ hiện sticker THẬT SỰ đã sở hữu.
+  /// Mở bảng chọn sticker: sticker cá nhân + sticker đã đổi bằng XP.
   void _openStickerPicker() {
     HapticFeedback.selectionClick();
-    final dark = _isDark(context);
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: _surfaceOf(context),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
-      ),
-      builder: (sheetCtx) => Consumer(
-        builder: (context, ref, _) => ref
-            .watch(myStickersProvider)
-            .when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(40),
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-              ),
-              error: (_, _) => Padding(
-                padding: const EdgeInsets.all(28),
-                child: Text(
-                  'errors.load_failed'.tr(),
-                  style: AppFonts.body(color: _textSecOf(context)),
-                ),
-              ),
-              data: (stickers) {
-                if (stickers.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.all(28),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'xp.inventory_empty'.tr(),
-                          textAlign: TextAlign.center,
-                          style: AppFonts.body(
-                            color: _textSecOf(context),
-                            height: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _primaryOf(context),
-                            foregroundColor: _onAccentOf(context),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(sheetCtx);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    StickerStoreScreen(isDarkMode: dark),
-                              ),
-                            );
-                          },
-                          child: Text('xp.open_store'.tr()),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return GridView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                  ),
-                  itemCount: stickers.length,
-                  itemBuilder: (_, i) => GestureDetector(
-                    onTap: () {
-                      Navigator.pop(sheetCtx);
-                      _sendSticker(stickers[i].id);
-                    },
-                    child: Center(
-                      child: stickers[i].emoji != null
-                          ? Text(
-                              stickers[i].emoji!,
-                              style: const TextStyle(fontSize: 36),
-                            )
-                          : Icon(PhosphorIcons.sticker(), size: 32),
-                    ),
-                  ),
-                );
-              },
-            ),
-      ),
+    StickerPickerSheet.show(
+      context,
+      tripId: widget.tripId,
+      onPick: _sendSticker,
     );
   }
 
@@ -504,6 +422,110 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
     );
   }
 
+  Future<void> _showMessageModerationSheet(
+    BuildContext context,
+    ChatMessage m,
+  ) async {
+    HapticFeedback.mediumImpact();
+    final dark = _isDark(context);
+    final surface = _surfaceOf(context);
+    final line = _lineOf(context);
+    final textPri = _textPriOf(context);
+    final danger = dark ? GenZTokens.dangerDark : GenZTokens.danger;
+
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) => Container(
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(GenZTokens.radiusCard),
+          ),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: line,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                leading: Icon(PhosphorIcons.flag(), color: textPri),
+                title: Text(
+                  'chat.report_message'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: textPri,
+                  ),
+                ),
+                onTap: () => Navigator.pop(sheetCtx, 'report'),
+              ),
+              ListTile(
+                leading: Icon(PhosphorIcons.prohibit(), color: danger),
+                title: Text(
+                  'chat.block_sender'.tr(
+                    namedArgs: {
+                      'name': m.senderName.isNotEmpty
+                          ? m.senderName
+                          : 'chat.sender_fallback'.tr(),
+                    },
+                  ),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: danger,
+                  ),
+                ),
+                onTap: () => Navigator.pop(sheetCtx, 'block'),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (!context.mounted || action == null) return;
+    if (action == 'report') {
+      await ReportSheet.show(
+        context,
+        target: ReportTarget.chat,
+        targetId: m.id,
+      );
+    } else if (action == 'block') {
+      if (m.senderId.isEmpty) return;
+      // Chỉ báo "Đã chặn" khi server xác nhận — trước đây route chưa tồn tại
+      // mà app vẫn báo thành công.
+      final res = await ApiService.post('/users/me/blocks', {
+        'blockedId': m.senderId,
+      });
+      if (!mounted || res == null) return;
+      setState(() {
+        _messages.removeWhere((msg) => msg.senderId == m.senderId);
+      });
+      showGlobalSnack(
+        'chat.blocked_name'.tr(
+          namedArgs: {
+            'name': m.senderName.isNotEmpty
+                ? m.senderName
+                : 'chat.user_fallback'.tr(),
+          },
+        ),
+      );
+    }
+  }
+
   Widget _bubble(BuildContext context, ChatMessage m) {
     final isMe = m.senderId == _myId;
     final primary = _primaryOf(context);
@@ -532,44 +554,63 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
                 ),
               ),
             ),
-          Opacity(
-            opacity: m.pending ? 0.6 : 1,
-            child: Container(
-              margin: EdgeInsets.only(bottom: m.failed ? 2 : 10),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.72,
-              ),
-              decoration: BoxDecoration(
-                color: isMe ? primary : surface,
-                borderRadius: BorderRadius.circular(14).copyWith(
-                  bottomRight: isMe ? const Radius.circular(4) : null,
-                  bottomLeft: isMe ? null : const Radius.circular(4),
+          GestureDetector(
+            onLongPress: isMe
+                ? null
+                : () => _showMessageModerationSheet(context, m),
+            child: Opacity(
+              opacity: m.pending ? 0.6 : 1,
+              child: Container(
+                margin: EdgeInsets.only(bottom: m.failed ? 2 : 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
                 ),
-                border: isMe ? null : Border.all(color: line, width: 1),
-              ),
-              // Tin nhắn sticker: `content` là MÃ sticker (stk-fire), không phải
-              // chữ để đọc. Đổi sang emoji cỡ lớn, nếu không người nhận sẽ thấy
-              // đúng chuỗi "stk-fire".
-              child: m.type == 'STICKER'
-                  ? _stickerEmoji(m.content) != null
-                        ? Text(
-                            _stickerEmoji(m.content)!,
-                            style: const TextStyle(fontSize: 44),
-                          )
-                        : Icon(
-                            PhosphorIcons.sticker(),
-                            size: 40,
-                            color: isMe ? onAccent : textSec,
-                          )
-                  : Text(
-                      m.content ?? '',
-                      style: AppFonts.body(
-                        fontSize: 15,
-                        color: isMe ? onAccent : textPri,
-                        height: 1.3,
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.72,
+                ),
+                decoration: BoxDecoration(
+                  color: isMe ? primary : surface,
+                  borderRadius: BorderRadius.circular(14).copyWith(
+                    bottomRight: isMe ? const Radius.circular(4) : null,
+                    bottomLeft: isMe ? null : const Radius.circular(4),
+                  ),
+                  border: isMe ? null : Border.all(color: line, width: 1),
+                ),
+                child: m.type == 'STICKER' && (m.mediaUrl?.isNotEmpty ?? false)
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          GenZTokens.radiusButton,
+                        ),
+                        child: CachedNetworkImage(
+                          // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                          memCacheWidth: 360,
+                          imageUrl: m.mediaUrl!,
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : m.type == 'STICKER'
+                    ? _stickerEmoji(m.content) != null
+                          ? Text(
+                              _stickerEmoji(m.content)!,
+                              style: const TextStyle(fontSize: 44),
+                            )
+                          : Icon(
+                              PhosphorIcons.sticker(),
+                              size: 40,
+                              color: isMe ? onAccent : textSec,
+                            )
+                    : Text(
+                        m.content ?? '',
+                        style: AppFonts.body(
+                          fontSize: 15,
+                          color: isMe ? onAccent : textPri,
+                          height: 1.3,
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
           if (m.failed)

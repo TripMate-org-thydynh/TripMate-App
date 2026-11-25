@@ -1,21 +1,114 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../core/api_service.dart';
+import '../../../core/services/media_uploader.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/widgets/report_sheet.dart';
 
 class PublicProfileScreen extends StatelessWidget {
   final String userName;
   final String avatarUrl;
   final String? userId;
+  final String? username;
 
   const PublicProfileScreen({
     super.key,
     required this.userName,
     required this.avatarUrl,
     this.userId,
+    this.username,
   });
+
+  String get _handle {
+    if (username != null && username!.trim().isNotEmpty) {
+      final raw = username!.trim();
+      return raw.startsWith('@') ? raw : '@$raw';
+    }
+    final slug = userName
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'\s+'), '_')
+        .replaceAll(RegExp(r'[^a-z0-9_.]'), '');
+    if (slug.isNotEmpty) return '@$slug';
+    if (userId != null && userId!.isNotEmpty) {
+      final shortId = userId!.length > 8 ? userId!.substring(0, 8) : userId!;
+      return '@user_$shortId';
+    }
+    return '@user';
+  }
+
+  Future<void> _blockUser(BuildContext context, bool isDark) async {
+    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        ),
+        title: Text(
+          'profile.block_user_title'.tr(),
+          style: AppFonts.heading(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: ink,
+          ),
+        ),
+        content: Text(
+          'profile.block_user_body'.tr(namedArgs: {'name': userName}),
+          style: AppFonts.body(fontSize: 13, color: inkSoft),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.heading(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: inkSoft,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'profile.block_action'.tr(),
+              style: AppFonts.heading(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: danger,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !context.mounted) return;
+    if (userId == null || userId!.isEmpty) return;
+    // Chỉ báo "Đã chặn" khi server xác nhận (ApiService tự hiện lỗi nếu hỏng).
+    final res = await ApiService.post('/users/me/blocks', {
+      'blockedId': userId,
+    });
+    if (!context.mounted || res == null) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'profile.blocked_name'.tr(namedArgs: {'name': userName}),
+        ),
+      ),
+    );
+    Navigator.pop(context, true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +119,8 @@ class PublicProfileScreen extends StatelessWidget {
     final inkSoft = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
 
     return Scaffold(
       backgroundColor: bg,
@@ -45,6 +140,53 @@ class PublicProfileScreen extends StatelessWidget {
             color: ink,
           ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: Icon(PhosphorIcons.dotsThreeVertical(), color: ink),
+            color: surface,
+            onSelected: (val) {
+              if (val == 'report') {
+                ReportSheet.show(
+                  context,
+                  target: ReportTarget.user,
+                  targetId: (userId != null && userId!.isNotEmpty)
+                      ? userId!
+                      : userName,
+                );
+              } else if (val == 'block') {
+                _blockUser(context, isDark);
+              }
+            },
+            itemBuilder: (_) => [
+              PopupMenuItem<String>(
+                value: 'report',
+                child: Row(
+                  children: [
+                    Icon(PhosphorIcons.flag(), size: 18, color: ink),
+                    const SizedBox(width: 8),
+                    Text(
+                      'profile.report_user'.tr(),
+                      style: AppFonts.body(fontSize: 14, color: ink),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'block',
+                child: Row(
+                  children: [
+                    Icon(PhosphorIcons.prohibit(), size: 18, color: danger),
+                    const SizedBox(width: 8),
+                    Text(
+                      'profile.block_user'.tr(),
+                      style: AppFonts.body(fontSize: 14, color: danger),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -60,8 +202,17 @@ class PublicProfileScreen extends StatelessWidget {
               child: CircleAvatar(
                 radius: 54,
                 backgroundColor: fill,
-                backgroundImage:
-                    avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+                backgroundImage: avatarUrl.isNotEmpty
+                    ? CachedNetworkImageProvider(
+                        MediaUploader.cdnUrlForTier(avatarUrl, CdnTier.avatar),
+                        cacheKey: MediaUploader.cdnCacheKey(
+                          avatarUrl,
+                          tier: CdnTier.avatar,
+                        ),
+                        maxWidth: CdnTier.avatar.width,
+                        maxHeight: CdnTier.avatar.width,
+                      )
+                    : null,
               ),
             ),
             const SizedBox(height: GenZTokens.space4),
@@ -75,7 +226,7 @@ class PublicProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '@tripmate_buddy',
+              _handle,
               style: AppFonts.body(
                 color: inkSoft,
                 fontSize: 13,

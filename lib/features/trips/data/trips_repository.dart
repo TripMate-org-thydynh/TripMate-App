@@ -112,7 +112,13 @@ class TripsRepository {
     return Trip.fromJson((data as Map).cast<String, dynamic>());
   }
 
-  Future<void> leaveTrip(String id) => _client.deleteData('/trips/$id/leave');
+  Future<void> leaveTrip(String id) async {
+    // BE chỉ có DELETE /trips/:id/leave; nhánh dự phòng POST cũ luôn 404.
+    await _client.deleteData('/trips/$id/leave');
+  }
+
+  Future<void> removeMember(String id, String userId) =>
+      _client.deleteData('/trips/$id/members/$userId');
 
   Future<void> deleteTrip(String id) => _client.deleteData('/trips/$id');
 

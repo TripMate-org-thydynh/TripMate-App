@@ -10,6 +10,7 @@ import '../../../core/theme/gen_z_tokens.dart';
 import '../../gamification/data/games_repository.dart';
 import '../../premium/presentation/paywall_sheet.dart';
 import '../data/ai_repository.dart';
+import '../widgets/matey_message_body.dart';
 
 class MateyAiEmotionalChaosScreen extends ConsumerStatefulWidget {
   final bool? isDarkMode;
@@ -534,14 +535,11 @@ class _MateyAiEmotionalChaosScreenState
                   width: GenZTokens.borderWidthThin,
                 ),
               ),
-              child: Text(
-                msg['text'],
-                style: AppFonts.body(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                  height: 1.5,
-                  color: textPrimary,
-                ),
+              // Hiểu ảnh/link/đậm trong câu trả lời (ảnh địa điểm từ kho tri thức).
+              child: MateyMessageBody(
+                text: msg['text'] as String,
+                textColor: textPrimary,
+                linkColor: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 6),

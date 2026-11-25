@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../features/premium/presentation/paywall_sheet.dart';
 import '../features/system_states/pages/no_internet_screen.dart';
 import 'app_messenger.dart';
 import 'network/api_client.dart';
+import 'network/api_exception.dart';
 import 'network/envelope.dart';
 import 'distribution_channel.dart';
 
@@ -16,6 +18,9 @@ class ApiService {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
   static bool _isOfflineScreenShowing = false;
+
+  /// Navigator của GoRouter đang chạy, gán ở `appRouterProvider`.
+  static GlobalKey<NavigatorState>? routerNavigatorKey;
 
   /// Điều hướng sang NoInternetScreen khi mất kết nối.
   /// Ghi chú: Hàm này hiện không chạy vì thiếu navigatorKey gắn trong MaterialApp.router.
@@ -73,13 +78,14 @@ class ApiService {
       Dio(
           BaseOptions(
             baseUrl: baseUrl,
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 15),
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 25),
           ),
         )
         ..interceptors.add(
           InterceptorsWrapper(
             onRequest: (options, handler) {
+              options.baseUrl = baseUrl;
               // Chỉ gắn token thật; không dùng dummy-token fallback.
               if (authToken != null) {
                 options.headers['authorization'] = 'Bearer $authToken';
@@ -135,12 +141,26 @@ class ApiService {
     // (BUG-001). Phải để lỗi này đi tiếp xuống snackbar.
     if (e.response?.statusCode == 401 && authToken != null) return;
 
+    // Hết hạn mức của gói Free: không phải lỗi, mà là một chỗ bị khoá. Mở
+    // paywall nói đúng giới hạn vừa chạm, thay cho snackbar "có lỗi xảy ra"
+    // (thân lỗi này không có `message`, nên trước đây chỉ ra câu chung chung).
+    final body = e.response?.data;
+    if (body is Map && body['code'] == 'QUOTA_EXCEEDED') {
+      final ctx = routerNavigatorKey?.currentState?.overlay?.context;
+      if (ctx != null) {
+        PaywallSheet.maybeShow(ctx, ApiException.fromDio(e));
+        return;
+      }
+    }
+
     // 429: Rate Limited
     if (e.response?.statusCode == 429) {
       final retryAfter = e.response?.headers.value('retry-after');
       if (retryAfter != null && retryAfter.trim().isNotEmpty) {
         showGlobalSnack(
-          'errors.rate_limited_retry_after'.tr(namedArgs: {'seconds': retryAfter.trim()}),
+          'errors.rate_limited_retry_after'.tr(
+            namedArgs: {'seconds': retryAfter.trim()},
+          ),
           isError: true,
         );
       } else {
@@ -154,6 +174,11 @@ class ApiService {
     if (data is Map && data['message'] != null) {
       final m = data['message'];
       msg = m is List ? m.join(', ') : m.toString();
+    }
+    // Lỗi route của NestJS ("Cannot POST /api/v1/...") là chi tiết kỹ thuật,
+    // không cho người dùng thấy (gặp trên iPhone khi server chưa có route).
+    if (msg != null && RegExp(r'^Cannot (GET|POST|PUT|PATCH|DELETE) /').hasMatch(msg)) {
+      msg = null;
     }
     showGlobalSnack(msg ?? 'errors.generic'.tr(), isError: true);
   }
@@ -185,6 +210,16 @@ class ApiService {
       return _unwrap(response.data);
     } catch (e) {
       _surfaceError(e, 'PATCH', path);
+      return null;
+    }
+  }
+
+  static Future<dynamic> delete(String path, [Map<String, dynamic>? body]) async {
+    try {
+      final response = await _dio.delete(path, data: body);
+      return _unwrap(response.data);
+    } catch (e) {
+      _surfaceError(e, 'DELETE', path);
       return null;
     }
   }

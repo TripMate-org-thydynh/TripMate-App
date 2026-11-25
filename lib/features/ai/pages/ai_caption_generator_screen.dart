@@ -462,6 +462,8 @@ class _AICaptionGeneratorScreenState
                     );
                   }
                   return CachedNetworkImage(
+                    // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                    memCacheWidth: 1080,
                     imageUrl: url,
                     fit: BoxFit.cover,
                     errorWidget: (_, _, _) => Container(color: fill),

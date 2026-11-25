@@ -33,6 +33,17 @@ class TripRecapReelScreen extends ConsumerWidget {
             backgroundColor: isDarkMode
                 ? GenZTokens.creamDark
                 : GenZTokens.cream,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  PhosphorIcons.x(),
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
             body: const Center(
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
@@ -256,6 +267,10 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
 
   Future<void> _share() async {
     HapticFeedback.mediumImpact();
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box != null && box.hasSize
+        ? box.localToGlobal(Offset.zero) & box.size
+        : const Rect.fromLTWH(0, 0, 100, 100);
     await Share.share(
       'recap.share_text'.tr(
         args: [
@@ -266,6 +281,7 @@ class _RecapReelState extends State<_RecapReel> with TickerProviderStateMixin {
         ],
       ),
       subject: 'TripMate - ${recap.tripName} Wrapped',
+      sharePositionOrigin: origin,
     );
   }
 
@@ -1347,12 +1363,12 @@ class _MomentStrip extends StatelessWidget {
         child: Row(
           children: const [
             Expanded(
-              child: _AssetTile('assets/images/cover_theme_dalat_mist.webp'),
+              child: _AssetTile('assets/images/cover_dalat.webp'),
             ),
             SizedBox(width: 10),
-            Expanded(child: _AssetTile('assets/images/cover_island_time.webp')),
+            Expanded(child: _AssetTile('assets/images/cover_phuquoc.webp')),
             SizedBox(width: 10),
-            Expanded(child: _AssetTile('assets/images/cover_tokyo_drift.webp')),
+            Expanded(child: _AssetTile('assets/images/cover_hanoi.webp')),
           ],
         ),
       );
@@ -1975,7 +1991,7 @@ class _NetworkOrAssetImage extends StatelessWidget {
 
   Widget _buildImage(BuildContext context) {
     if (url.startsWith('assets/')) {
-      return Image.asset(url, fit: fit);
+      return Image.asset(url, fit: fit, cacheWidth: 600);
     }
     if (!url.startsWith('http')) {
       return Container(color: Colors.black.withValues(alpha: 0.14));
@@ -1983,6 +1999,7 @@ class _NetworkOrAssetImage extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: url,
       fit: fit,
+      memCacheWidth: 600,
       placeholder: (context, _) => ExcludeSemantics(
         child: Container(color: Colors.black.withValues(alpha: 0.14)),
       ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -49,8 +50,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _loadSession();
   }
 
-  Future<bool> _onboardingFlag() async {
+  Future<bool> _onboardingFlag([
+    String? userId,
+    Map<String, dynamic>? user,
+  ]) async {
     final prefs = await SharedPreferences.getInstance();
+    final serverVibes = user?['vibeTags'];
+    if (serverVibes is List && serverVibes.isNotEmpty) {
+      if (userId != null && userId.isNotEmpty) {
+        await prefs.setBool('${_onboardingKey}_$userId', true);
+      }
+      return true;
+    }
+    if (userId != null && userId.isNotEmpty) {
+      final userFlag = prefs.getBool('${_onboardingKey}_$userId');
+      if (userFlag != null) return userFlag;
+    }
     return prefs.getBool(_onboardingKey) ?? false;
   }
 
@@ -58,10 +73,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final token = await _secure.read(key: _tokenKey);
       final userStr = await _secure.read(key: _userKey);
-      final onboardingDone = await _onboardingFlag();
 
       if (token != null && userStr != null) {
         final user = jsonDecode(userStr) as Map<String, dynamic>;
+        final userId = user['id']?.toString();
+        final onboardingDone = await _onboardingFlag(userId, user);
         ApiService.authToken = token; // Synchronize with ApiService
         state = AuthState(
           token: token,
@@ -70,6 +86,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           onboardingDone: onboardingDone,
         );
       } else {
+        final onboardingDone = await _onboardingFlag();
         state = AuthState(isLoading: false, onboardingDone: onboardingDone);
       }
     } catch (_) {
@@ -78,32 +95,45 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> setSession(String token, Map<String, dynamic> user) async {
+    // Lưu bền là phụ: trước đây lỗi ghi keychain/secure storage bị nuốt TRƯỚC
+    // khi cập nhật state → đăng nhập đúng mà app đứng im, không báo gì.
+    // Giờ phiên luôn có hiệu lực trong bộ nhớ; chỉ mất khi tắt app.
     try {
       await _secure.write(key: _tokenKey, value: token);
       await _secure.write(key: _userKey, value: jsonEncode(user));
-      final onboardingDone = await _onboardingFlag();
-
-      ApiService.authToken = token; // Synchronize with ApiService
-      state = AuthState(
-        token: token,
-        user: user,
-        isLoading: false,
-        onboardingDone: onboardingDone,
-      );
-    } catch (_) {
-      // Handle fallback
+    } catch (e) {
+      debugPrint('AuthNotifier.setSession: không lưu được phiên: $e');
     }
+    final userId = user['id']?.toString();
+    var onboardingDone = false;
+    try {
+      onboardingDone = await _onboardingFlag(userId, user);
+    } catch (_) {}
+
+    ApiService.authToken = token; // Synchronize with ApiService
+    state = AuthState(
+      token: token,
+      user: user,
+      isLoading: false,
+      onboardingDone: onboardingDone,
+    );
   }
 
   Future<void> completeOnboarding() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_onboardingKey, true);
+      final userId = state.user?['id']?.toString();
+      if (userId != null && userId.isNotEmpty) {
+        await prefs.setBool('${_onboardingKey}_$userId', true);
+      }
     } catch (_) {
       // ignore persistence failure, vẫn cập nhật state
     }
     state = state.copyWith(onboardingDone: true);
   }
+
+  Future<void> markOnboardingComplete() => completeOnboarding();
 
   Future<void> logout() async {
     try {
@@ -111,7 +141,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _secure.delete(key: _userKey);
 
       ApiService.authToken = null; // Synchronize with ApiService
-      state = AuthState(isLoading: false);
+      state = AuthState(isLoading: false, onboardingDone: false);
+
+      // Bản sao offline lịch trình/chi tiêu của từng chuyến (`cache_*`) là dữ
+      // liệu cá nhân: đăng xuất mà để lại thì người dùng sau trên cùng máy
+      // vẫn đọc được. Dọn sau khi đã đăng xuất để lỗi ở đây không chặn logout.
+      final prefs = await SharedPreferences.getInstance();
+      // Chỉ xoá cờ chung. Cờ theo từng userId GIỮ LẠI: trước đây xoá luôn nên
+      // người đã làm/bỏ qua vibe quiz đăng nhập lại bị hỏi lại từ đầu (thấy
+      // trên iPhone thật 2026-11-24). Cờ này không phải dữ liệu nhạy cảm.
+      await prefs.remove(_onboardingKey);
+      for (final k in prefs.getKeys().where((k) => k.startsWith('cache_'))) {
+        await prefs.remove(k);
+      }
     } catch (_) {
       // Handle fallback
     }

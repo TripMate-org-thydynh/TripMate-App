@@ -127,15 +127,32 @@ class TripWishlistScreen extends ConsumerWidget {
         ],
       ),
     );
-    if (ok == true && nameCtrl.text.trim().isNotEmpty) {
-      await ref
-          .read(wishlistRepositoryProvider)
-          .add(
-            tripId,
-            name: nameCtrl.text.trim(),
-            address: addrCtrl.text.trim().isEmpty ? null : addrCtrl.text.trim(),
+    final nameText = nameCtrl.text.trim();
+    final addrText = addrCtrl.text.trim();
+    nameCtrl.dispose();
+    addrCtrl.dispose();
+
+    if (ok == true && nameText.isNotEmpty) {
+      try {
+        await ref
+            .read(wishlistRepositoryProvider)
+            .add(
+              tripId,
+              name: nameText,
+              address: addrText.isEmpty ? null : addrText,
+            );
+        ref.invalidate(wishlistProvider(tripId));
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('common.save_failed'.tr()),
+              backgroundColor: _dangerOf(context),
+              behavior: SnackBarBehavior.floating,
+            ),
           );
-      ref.invalidate(wishlistProvider(tripId));
+        }
+      }
     }
   }
 
