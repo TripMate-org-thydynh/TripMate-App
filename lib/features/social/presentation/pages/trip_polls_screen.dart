@@ -51,7 +51,8 @@ class TripPollsScreen extends ConsumerWidget {
 
   Future<void> _createPoll(BuildContext context, WidgetRef ref) async {
     final qCtrl = TextEditingController();
-    final optsCtrl = TextEditingController();
+    // Mỗi lựa chọn một ô riêng (kiểu bình chọn Zalo); bấm + để thêm ô.
+    final optCtrls = [TextEditingController(), TextEditingController()];
     final dark = _isDark(context);
     final textPri = _textPriOf(context);
     final textSec = _textSecOf(context);
@@ -61,105 +62,131 @@ class TripPollsScreen extends ConsumerWidget {
 
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: _surfaceOf(context),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: BorderSide(color: line, width: 1),
-        ),
-        title: Text(
-          'polls.create'.tr(),
-          style: AppFonts.heading(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: textPri,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          backgroundColor: _surfaceOf(context),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(color: line, width: 1),
           ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: qCtrl,
-              autofocus: true,
-              style: AppFonts.body(color: textPri),
-              decoration: InputDecoration(
-                hintText: 'polls.question_hint'.tr(),
-                hintStyle: AppFonts.body(color: textSec),
-                filled: true,
-                fillColor: _fillOf(context),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: line, width: 1),
+          title: Text(
+            'polls.create'.tr(),
+            style: AppFonts.heading(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: textPri,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: qCtrl,
+                autofocus: true,
+                style: AppFonts.body(color: textPri),
+                decoration: InputDecoration(
+                  hintText: 'polls.question_hint'.tr(),
+                  hintStyle: AppFonts.body(color: textSec),
+                  filled: true,
+                  fillColor: _fillOf(context),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: line, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: line, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: primary, width: 1.5),
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: line, width: 1),
+              ),
+              const SizedBox(height: 12),
+              for (var i = 0; i < optCtrls.length; i++) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: optCtrls[i],
+                        style: AppFonts.body(color: textPri),
+                        decoration: InputDecoration(
+                          hintText: 'polls.option_n'.tr(args: ['${i + 1}']),
+                          hintStyle: AppFonts.body(color: textSec),
+                          filled: true,
+                          fillColor: _fillOf(context),
+                          isDense: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: line, width: 1),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: primary, width: 1.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (optCtrls.length > 2)
+                      IconButton(
+                        tooltip: 'polls.remove_option'.tr(),
+                        icon: Icon(PhosphorIcons.x(), size: 18, color: textSec),
+                        onPressed: () =>
+                            setLocal(() => optCtrls.removeAt(i).dispose()),
+                      ),
+                  ],
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: primary, width: 1.5),
+                const SizedBox(height: 8),
+              ],
+              if (optCtrls.length < 10)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () =>
+                        setLocal(() => optCtrls.add(TextEditingController())),
+                    icon: Icon(PhosphorIcons.plus(), size: 18, color: primary),
+                    label: Text(
+                      'polls.add_option'.tr(),
+                      style: AppFonts.body(color: primary),
+                    ),
+                  ),
                 ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(
+                'general.cancel'.tr(),
+                style: AppFonts.body(color: textSec),
               ),
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: optsCtrl,
-              minLines: 2,
-              maxLines: 5,
-              style: AppFonts.body(color: textPri),
-              decoration: InputDecoration(
-                hintText: 'polls.options_hint'.tr(),
-                hintStyle: AppFonts.body(color: textSec),
-                filled: true,
-                fillColor: _fillOf(context),
-                border: OutlineInputBorder(
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: primary,
+                foregroundColor: onAccent,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: line, width: 1),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: line, width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: primary, width: 1.5),
                 ),
               ),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text('polls.create'.tr()),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              'general.cancel'.tr(),
-              style: AppFonts.body(color: textSec),
-            ),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: primary,
-              foregroundColor: onAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text('polls.create'.tr()),
-          ),
-        ],
       ),
     );
     final question = qCtrl.text.trim();
-    final rawOpts = optsCtrl.text;
+    final rawOpts = optCtrls.map((c) => c.text).toList();
     qCtrl.dispose();
-    optsCtrl.dispose();
+    for (final c in optCtrls) {
+      c.dispose();
+    }
     if (ok != true) return;
     final options = rawOpts
-        .split('\n')
         .map((e) => e.trim())
         .where((e) => e.isNotEmpty)
-        .map((e) => {'text': e})
         .toList();
     if (question.isEmpty || options.length < 2) {
       if (context.mounted) {

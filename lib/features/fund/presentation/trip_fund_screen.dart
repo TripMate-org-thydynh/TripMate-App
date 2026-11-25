@@ -41,8 +41,7 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
       _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper;
   Color _fill(BuildContext context) =>
       _isDark(context) ? GenZTokens.fillDark : GenZTokens.fill;
-  Color _primary(BuildContext context) =>
-      Theme.of(context).colorScheme.primary;
+  Color _primary(BuildContext context) => Theme.of(context).colorScheme.primary;
   Color _onAccent(BuildContext context) =>
       Theme.of(context).colorScheme.onPrimary;
   Color _accentSoft(BuildContext context) =>
@@ -62,15 +61,12 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: _CreateFundSheet(
-          tripId: widget.tripId,
-          isDarkMode: _isDark(context),
-          primaryColor: _primary(context),
-        ),
+      // Sheet tự cộng viewInsets bên trong; cộng thêm ở đây sẽ đẩy gấp đôi
+      // chiều cao bàn phím → nội dung tràn, nút không nhận được chạm.
+      builder: (_) => _CreateFundSheet(
+        tripId: widget.tripId,
+        isDarkMode: _isDark(context),
+        primaryColor: _primary(context),
       ),
     );
   }
@@ -81,15 +77,12 @@ class _TripFundScreenState extends ConsumerState<TripFundScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: _ContributeSheet(
-          tripId: widget.tripId,
-          isDarkMode: _isDark(context),
-          primaryColor: _primary(context),
-        ),
+      // Sheet tự cộng viewInsets bên trong; cộng thêm ở đây sẽ đẩy gấp đôi
+      // chiều cao bàn phím → nội dung tràn, nút không nhận được chạm.
+      builder: (_) => _ContributeSheet(
+        tripId: widget.tripId,
+        isDarkMode: _isDark(context),
+        primaryColor: _primary(context),
       ),
     );
   }
@@ -843,6 +836,8 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
   final _noteCtrl = TextEditingController();
   DateTime? _deadline;
   bool _isSubmitting = false;
+  // Lỗi hiện ngay trong sheet: snackbar toàn cục nằm DƯỚI sheet nên bị che.
+  String? _error;
 
   bool _isDark(BuildContext context) =>
       widget.isDarkMode || Theme.of(context).brightness == Brightness.dark;
@@ -877,22 +872,14 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
         .replaceAll(',', '');
     final target = double.tryParse(rawText);
     if (target == null || target <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'fund.target_amount_invalid'.tr(),
-            style: TextStyle(
-              color: _isDark(context) ? GenZTokens.paperDark : GenZTokens.paper,
-            ),
-          ),
-          backgroundColor: _danger(context),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      setState(() => _error = 'fund.target_amount_invalid'.tr());
       return;
     }
 
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      _error = null;
+    });
     try {
       HapticFeedback.mediumImpact();
       await ref
@@ -907,9 +894,9 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
       }
       showGlobalSnack('fund.create_success'.tr());
     } on ApiException catch (e) {
-      showGlobalSnack(e.message, isError: true);
+      if (mounted) setState(() => _error = e.message);
     } catch (e) {
-      showGlobalSnack(e.toString(), isError: true);
+      if (mounted) setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -1146,6 +1133,13 @@ class _CreateFundSheetState extends ConsumerState<_CreateFundSheet> {
           ),
           const SizedBox(height: 24),
 
+          if (_error != null) ...[
+            Text(
+              _error!,
+              style: AppFonts.body(fontSize: 13, color: _danger(context)),
+            ),
+            const SizedBox(height: 12),
+          ],
           // Nút tạo quỹ
           SizedBox(
             width: double.infinity,
