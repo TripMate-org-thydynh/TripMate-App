@@ -534,48 +534,60 @@ class _AiExpenseParseScreenState extends ConsumerState<AiExpenseParseScreen> {
     required bool filled,
   }) {
     final fg = filled ? _onAccent : _primary;
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: filled
-          ? FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: _primary,
-                foregroundColor: fg,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+    final enabled = !_busy && onTap != null;
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: label,
+      onTap: enabled ? onTap : null,
+      excludeSemantics: true,
+      child: SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: filled
+            ? FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: _primary,
+                  foregroundColor: fg,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
+                  ),
+                ),
+                onPressed: _busy ? null : onTap,
+                icon: Icon(icon, size: 18),
+                label: Text(
+                  label,
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: fg,
+                  ),
+                ),
+              )
+            : OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: fg,
+                  side: BorderSide(color: _primary),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      GenZTokens.radiusButton,
+                    ),
+                  ),
+                ),
+                onPressed: _busy ? null : onTap,
+                icon: Icon(icon, size: 18),
+                label: Text(
+                  label,
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: fg,
+                  ),
                 ),
               ),
-              onPressed: _busy ? null : onTap,
-              icon: Icon(icon, size: 18),
-              label: Text(
-                label,
-                style: AppFonts.heading(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: fg,
-                ),
-              ),
-            )
-          : OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: fg,
-                side: BorderSide(color: _primary),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                ),
-              ),
-              onPressed: _busy ? null : onTap,
-              icon: Icon(icon, size: 18),
-              label: Text(
-                label,
-                style: AppFonts.heading(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: fg,
-                ),
-              ),
-            ),
+      ),
     );
   }
 }

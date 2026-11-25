@@ -21,7 +21,7 @@ class _FakePollsRepo implements PollsRepository {
   @override
   Future<Poll> create(String tripId,
       {required String question,
-      required List<Map<String, String?>> options,
+      required List<String> options,
       bool isMultiple = false}) async {
     return Poll(id: 'new', question: question, options: const []);
   }

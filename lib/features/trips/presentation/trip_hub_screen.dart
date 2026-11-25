@@ -90,8 +90,7 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
   Future<void> _showMembersSheet() async {
     await _refreshTripDetail();
     if (!mounted) return;
-    final currentUserId =
-        ref.read(authProvider).user?['id']?.toString() ?? '';
+    final currentUserId = ref.read(authProvider).user?['id']?.toString() ?? '';
 
     await showModalBottomSheet<void>(
       context: context,
@@ -154,10 +153,7 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Text(
                             'trips.no_member_details'.tr(),
-                            style: AppFonts.body(
-                              fontSize: 14,
-                              color: _textSec,
-                            ),
+                            style: AppFonts.body(fontSize: 14, color: _textSec),
                           ),
                         )
                       else
@@ -188,7 +184,9 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                                 ),
                                 title: Text(
                                   isMe
-                                      ? 'trips.member_you'.tr(namedArgs: {'name': m.name})
+                                      ? 'trips.member_you'.tr(
+                                          namedArgs: {'name': m.name},
+                                        )
                                       : m.name,
                                   style: AppFonts.heading(
                                     fontSize: 15,
@@ -515,6 +513,7 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                       final textScaler = MediaQuery.textScalerOf(context);
                       final tileExtent = max(136.0, textScaler.scale(50) + 86);
                       return GridView(
+                        padding: EdgeInsets.zero,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -567,7 +566,9 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                           ),
                           _tile(
                             context,
-                            PhosphorIcons.calendarBlank(PhosphorIconsStyle.fill),
+                            PhosphorIcons.calendarBlank(
+                              PhosphorIconsStyle.fill,
+                            ),
                             'itinerary.title'.tr(),
                             'hub.itinerary_sub'.tr(),
                             () => TripItineraryScreen(
@@ -739,30 +740,34 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
       ),
       child: Column(
         children: [
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: mono
-                ? AppFonts.mono(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: _accent,
-                  )
-                : AppFonts.heading(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: _textPri,
-                  ),
+          // Cao cố định để 3 thẻ (số to / mã mời chữ nhỏ) cao bằng nhau.
+          SizedBox(
+            height: 30,
+            child: Center(
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: mono
+                    ? AppFonts.mono(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: _accent,
+                      )
+                    : AppFonts.heading(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: _textPri,
+                      ),
+              ),
+            ),
           ),
           Text(label, style: AppFonts.body(fontSize: 12, color: _textSec)),
         ],
       ),
     );
     return Expanded(
-      child: onTap == null
-          ? card
-          : GestureDetector(onTap: onTap, child: card),
+      child: onTap == null ? card : GestureDetector(onTap: onTap, child: card),
     );
   }
 

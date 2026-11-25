@@ -1,10 +1,8 @@
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/material.dart';
 
-import '../dashboard/data/home_feed_repository.dart';
 
 import 'data/xp_repository.dart';
-import '../moments/data/moments_repository.dart';
 import '../moments/presentation/pages/memory_wall_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,9 +14,6 @@ import '../../core/providers/auth_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'data/profile_provider.dart';
 
-import '../../core/services/media_uploader.dart';
-import '../../core/widgets/faded_image.dart';
-import '../trips/application/trips_providers.dart';
 import 'pages/badge_collection_screen.dart';
 import 'pages/edit_profile_screen.dart';
 import 'pages/friends_list_screen.dart';
@@ -80,558 +75,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     super.dispose();
   }
 
-  Widget _buildGlassCard({
-    required Widget child,
-    required bool isDark,
-    required Color primaryColor,
-    required Color surfaceColor,
-  }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-      child: Container(
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(
-            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-            width: GenZTokens.borderWidthThin,
-          ),
-        ),
-        child: child,
-      ),
-    );
-  }
-
-  Widget _buildLevelBox({
-    required BuildContext context,
-    required bool isDark,
-    required Color primaryColor,
-    required Color secondaryColor,
-    required Color tertiaryColor,
-    required Color textPrimaryColor,
-    required Color textSecondaryColor,
-    required int level,
-    required int xp,
-    required int xpPerLevel,
-    required String reputation,
-  }) {
-    final int fillFlex = ((xp % xpPerLevel) / xpPerLevel * 100)
-        .clamp(1, 100)
-        .toInt();
-    final int emptyFlex = 100 - fillFlex;
-
-    return Container(
-      padding: const EdgeInsets.all(GenZTokens.space4),
-      decoration: BoxDecoration(
-        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(
-          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-          width: GenZTokens.borderWidthThin,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(PhosphorIcons.medal(), color: textPrimaryColor, size: 20),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Lvl $level',
-                    style: AppFonts.heading(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textPrimaryColor,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'profile.nomad_tag'.tr(),
-                    style: AppFonts.body(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: textSecondaryColor,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                '${xp % xpPerLevel} / $xpPerLevel XP',
-                style: AppFonts.body(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: textSecondaryColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          // Progress Bar
-          Container(
-            height: 8,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? GenZTokens.fillDark
-                  : GenZTokens.fill,
-              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: fillFlex,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-                    ),
-                  ),
-                ),
-                Expanded(flex: emptyFlex, child: const SizedBox()),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          // Clickable Squad Reputation line
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  // Trỏ sang bảng xếp hạng THẬT. Màn "Squad Reputation" cũ là
-                  // một báo cáo tính cách bịa hoàn toàn (MVP mang tên người
-                  // không có trong nhóm, "Over-Caffeination Risk 85%"...) và
-                  // không có nguồn dữ liệu nào ở backend.
-                  builder: (context) => const SquadLeaderboardScreen(),
-                ),
-              );
-            },
-            child: Row(
-              children: [
-                Icon(PhosphorIcons.users(), color: primaryColor, size: 16),
-                const SizedBox(width: 6),
-                RichText(
-                  text: TextSpan(
-                    style: AppFonts.body(
-                      fontSize: 12,
-                      color: textSecondaryColor,
-                    ),
-                    children: [
-                      TextSpan(text: '${'profile.squad_rep'.tr()}: '),
-                      TextSpan(
-                        text: reputation,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(PhosphorIcons.sealCheck(PhosphorIconsStyle.fill), color: primaryColor, size: 12),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActiveBadgeChip(
-    String label,
-    Color accent,
-    bool isDark,
-    Color surface,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-        borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-        border: Border.all(color: accent, width: 1.5),
-      ),
-      child: Text(
-        label,
-        style: AppFonts.body(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: accent,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatItem(
-    String val,
-    String label,
-    bool isDark,
-    Color textPrimaryColor,
-    Color primaryColor,
-  ) {
-    return Column(
-      children: [
-        Text(
-          val,
-          style: AppFonts.heading(
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            color: textPrimaryColor,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label.toUpperCase(),
-          style: AppFonts.body(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-            color: textPrimaryColor.withValues(alpha: 0.6),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBadgeCard({
-    IconData? icon,
-    String? emoji,
-    required String title,
-    required String tier,
-    required bool isRare,
-    bool isLocked = false,
-    required VoidCallback onTap,
-    required Color primaryColor,
-  }) {
-    // Theme-aware để không bị chìm trên nền kem (trước đây chỉ hợp nền tối).
-    final isDark = widget.isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
-    final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final sub = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 140,
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(
-          color: surface,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(
-            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-            width: GenZTokens.borderWidthThin,
-          ),
-        ),
-        child: Opacity(
-          opacity: isLocked ? 0.55 : 1.0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              isLocked
-                  ? Icon(PhosphorIcons.lockKey(), color: sub, size: 30)
-                  : (icon != null
-                      ? Icon(icon, color: primaryColor, size: 28)
-                      : (emoji != null
-                          ? Text(emoji, style: const TextStyle(fontSize: 28))
-                          : Icon(PhosphorIcons.trophy(), color: primaryColor, size: 28))),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppFonts.heading(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: ink,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                tier,
-                style: AppFonts.body(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: sub,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPolaroidCard({
-    required String imageUrl,
-    required String caption,
-    required VoidCallback onTap,
-    required Color surfaceColor,
-    required Color textPrimary,
-  }) {
-    final isDark = widget.isDarkMode ?? (Theme.of(context).brightness == Brightness.dark);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(
-            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-            width: GenZTokens.borderWidthThin,
-          ),
-        ),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: AspectRatio(
-                aspectRatio: 1.0,
-                child: ExcludeSemantics(
-                  child: imageUrl.startsWith('assets/')
-                      ? Image.asset(imageUrl, fit: BoxFit.cover, cacheWidth: 400)
-                      : CachedNetworkImage(
-                          imageUrl: MediaUploader.cdnUrlForTier(
-                            imageUrl,
-                            CdnTier.boardThumb,
-                          ),
-                          cacheKey: MediaUploader.cdnCacheKey(
-                            imageUrl,
-                            tier: CdnTier.boardThumb,
-                          ),
-                          memCacheWidth: CdnTier.boardThumb.width,
-                          maxWidthDiskCache: CdnTier.boardThumb.width,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-                            child: const Center(
-                              child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              Icon(PhosphorIcons.imageBroken()),
-                        ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: Text(
-                caption,
-                textAlign: TextAlign.center,
-                style: AppFonts.heading(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Đổi một hoạt động của squad thành câu mô tả theo ngôn ngữ đang chọn.
-  String _activityText(SquadActivity a) {
-    final key = switch (a.type) {
-      'MOMENT' => 'activity.posted_moment',
-      'EXPENSE' => 'activity.added_expense',
-      'ITINERARY' => 'activity.added_place',
-      'JOIN' => 'activity.joined_trip',
-      _ => 'activity.generic',
-    };
-    return key.tr(namedArgs: {'name': a.actorName, 'trip': a.tripName});
-  }
-
-  Widget _buildChaosFeedCard({
-    required IconData icon,
-    required Color accentColor,
-    required String description,
-    required String time,
-    required bool isDark,
-    required Color primaryColor,
-    required Color textPrimaryColor,
-    required List<String> friendAvatars,
-    required int extraFriends,
-    required Color surfaceColor,
-  }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(
-            color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-            width: GenZTokens.borderWidthThin,
-          ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isDark
-                    ? GenZTokens.fillDark
-                    : GenZTokens.fill,
-                border: Border.all(
-                  color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-                  width: GenZTokens.borderWidthThin,
-                ),
-              ),
-              child: Icon(icon, color: accentColor, size: 20),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Ham nay nhan `description` nhung truoc day **bo qua no**
-                  // va tu ve cung chuoi "Booked a chaotic weekend trip to
-                  // Taipei with 4 others." — nen du goi voi du lieu that thi
-                  // man hinh van hien cau bia.
-                  Text(
-                    description,
-                    style: AppFonts.body(
-                      fontSize: 13,
-                      color: textPrimaryColor,
-                      height: 1.4,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    time.toUpperCase(),
-                    style: AppFonts.body(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: primaryColor.withValues(alpha: 0.6),
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Overlapping Avatar Stack of Friends
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FriendsListScreen(),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 32,
-                          width:
-                              32.0 * friendAvatars.length -
-                              12.0 * (friendAvatars.length - 1),
-                          child: Stack(
-                            children: List.generate(friendAvatars.length, (
-                              idx,
-                            ) {
-                              return Positioned(
-                                left: idx * 20.0,
-                                child: Container(
-                                  width: 32,
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: isDark ? GenZTokens.paperDark : GenZTokens.paper,
-                                      width: GenZTokens.borderWidth,
-                                    ),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(99),
-                                    child: ExcludeSemantics(
-                                      child:
-                                          friendAvatars[idx].startsWith('assets/')
-                                          ? Image.asset(
-                                              friendAvatars[idx],
-                                              fit: BoxFit.cover,
-                                            )
-                                          : CachedNetworkImage(
-                                              imageUrl: friendAvatars[idx],
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                    color: isDark
-                                                        ? GenZTokens.paperDark
-                                                        : GenZTokens.paper,
-                                                  ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(
-                                                        PhosphorIcons.user(),
-                                                        size: 16,
-                                                      ),
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }),
-                          ),
-                        ),
-                        // Khong co ai thi khong hien huy hieu "+0".
-                        if (extraFriends > 0) const SizedBox(width: 8),
-                        if (extraFriends > 0)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? GenZTokens.fillDark
-                                  : GenZTokens.fill,
-                              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-                              border: Border.all(
-                                color: isDark ? GenZTokens.successDark : GenZTokens.success,
-                                width: GenZTokens.borderWidthThin,
-                              ),
-                            ),
-                            child: Text(
-                              '+$extraFriends',
-                              style: AppFonts.body(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? GenZTokens.successDark : GenZTokens.success,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(profileDataProvider);
@@ -642,1935 +85,430 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
     final theme = Theme.of(context);
     final isDark = widget.isDarkMode ?? (theme.brightness == Brightness.dark);
-    final currentAccent = ref.watch(accentProvider);
     final currentMode = ref.watch(themeProvider);
 
-    // standard design tokens
-    final primaryColor = isDark ? GenZTokens.accentDark : GenZTokens.accent;
-    final secondaryColor = isDark
-        ? GenZTokens.accentDark.withValues(alpha: 0.15)
-        : GenZTokens.accentSoft;
-    final tertiaryColor = primaryColor;
-    final backgroundColor = isDark
-        ? GenZTokens.creamDark
-        : GenZTokens.cream;
-    final surfaceColor = isDark
-        ? GenZTokens.paperDark
-        : GenZTokens.paper;
-    final textPrimaryColor = isDark
-        ? GenZTokens.inkDark
-        : GenZTokens.ink;
-    final textSecondaryColor = isDark
-        ? GenZTokens.inkSoftDark
-        : GenZTokens.inkSoft;
+    final primary = isDark ? GenZTokens.accentDark : GenZTokens.accent;
+    final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
+    final surface = isDark ? GenZTokens.paperDark : GenZTokens.paper;
+    final textPri = isDark ? GenZTokens.inkDark : GenZTokens.ink;
+    final textSec = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
+    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
+    final danger = isDark ? GenZTokens.dangerDark : GenZTokens.danger;
 
-    // dynamic variables
-    final name = _userProfile?['name'] ?? 'Traveller';
-    final username = _userProfile?['username'] ?? 'traveller';
-    // Cấp và XP lấy từ ví THẬT.
-    //
-    // Trước đây tính từ `travelScore` — một cột trong bảng users mà KHÔNG dòng
-    // nào trong backend cộng vào, nên luôn hiện "Lvl 1 · 0 / 10,000 XP" dù
-    // người dùng đã kiếm được bao nhiêu.
+    final name = (_userProfile?['name'] ?? 'Traveller') as String;
+    final username = (_userProfile?['username'] ?? 'traveller') as String;
     final wallet = ref.watch(xpWalletProvider).valueOrNull;
     final level = wallet?.level ?? 1;
     final xp = wallet?.earned ?? 0;
-    final xpPerLevel = wallet?.xpPerLevel ?? 500;
 
     final rawAvatar = _userProfile?['avatarUrl'] as String?;
-    // Không có avatar thật → sinh avatar chữ-cái-đầu theo tên (màu brand),
-    // mỗi user 1 avatar riêng thay vì cùng 1 ảnh stock giả.
+    // Không có avatar thật → avatar chữ-cái-đầu theo tên.
     final avatarUrl = (rawAvatar != null && rawAvatar.isNotEmpty)
         ? rawAvatar
         : 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}'
               '&background=FFD84D&color=141210&bold=true&size=256';
-    final bio = _userProfile?['bio'] ?? 'profile.default_bio'.tr();
+    final bio = (_userProfile?['bio'] ?? 'profile.default_bio'.tr()) as String;
 
-    // Hiển thị số liệu THẬT (mặc định 0 khi backend chưa có), không dùng số giả.
+    // Số liệu THẬT (mặc định 0), không dùng số giả.
     final totalTrips = _userStats?['totalTrips']?.toString() ?? '0';
     final distanceKm = (_userStats?['totalDistanceKm'] as num?)?.toInt() ?? 0;
-    final totalDistance = '$distanceKm km';
-    final repScore = _userStats?['squadReputationScore'] as num?;
-    final reputationScore = repScore == null || repScore < 30
-        ? 'New'
-        : (repScore >= 90 ? 'Legendary' : 'Reliable');
-    // Ô thứ ba từng lấy `chaosScore` rồi gắn nhãn "Countries" — nhãn không hề
-    // khớp dữ liệu (BUG-005): backend chưa bao giờ trả số quốc gia. Nay dùng
-    // `totalPlaces` thật (số điểm lịch trình có toạ độ) và đổi nhãn cho đúng.
     final placesCount = (_userStats?['totalPlaces'] as num?)?.toInt() ?? 0;
 
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Stack(
-        children: [
+    void push(Widget page) =>
+        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
 
-          // Ảnh bìa chuyến gần nhất tràn đầu trang, tan dần xuống màu nền.
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: FadedImage(
-              imageUrl: ref.watch(tripsProvider).maybeWhen(
-                data: (trips) => trips
-                    .map((t) => t.coverImage)
-                    .firstWhere(
-                      (c) => c != null && c.startsWith('http'),
-                      orElse: () => null,
-                    ),
-                orElse: () => null,
-              ),
-              topFade: true,
-              fadeTo: backgroundColor,
-              height: 460,
-              glowExtent: 360,
+    Widget stat(String value, String label) => Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: GoogleFonts.spaceMono(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: textPri,
             ),
           ),
-
-          // 3. Scrollable Content
-          _isLoading
-              ? Center(child: CircularProgressIndicator(color: primaryColor))
-              : CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    // Top Custom App Bar
-                    SliverAppBar(
-                      expandedHeight: 88.0,
-                      floating: false,
-                      // Trong suốt, cuộn đi cùng nội dung — để ảnh đầu trang
-                      // tràn lên tận mép trên thay vì bị thanh này che.
-                      pinned: false,
-                      backgroundColor: Colors.transparent,
-                      surfaceTintColor: Colors.transparent,
-                      elevation: 0,
-                      centerTitle: false,
-                      titleSpacing: 4,
-                      flexibleSpace: const FlexibleSpaceBar(
-                        background: SizedBox(),
-                      ),
-                      leading: Padding(
-                        padding: const EdgeInsets.only(left: 16.0, top: 12.0),
-                        child: Center(
-                          // Nếu màn được push (có thể pop) → nút Back để quay lại;
-                          // nếu là tab (không pop được) → avatar như cũ.
-                          child: Navigator.canPop(context)
-                              ? Semantics(
-                                  button: true,
-                                  label: 'common.back'.tr(),
-                                  child: GestureDetector(
-                                    onTap: () => Navigator.pop(context),
-                                    child: Container(
-                                      width: 40,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: surfaceColor,
-                                        border: Border.all(
-                                          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-                                          width: GenZTokens.borderWidthThin,
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        PhosphorIcons.arrowLeft(),
-                                        color: textPrimaryColor,
-                                        size: 22,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-                                      width: GenZTokens.borderWidthThin,
-                                    ),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(99),
-                                    child: ExcludeSemantics(
-                                      child: CachedNetworkImage(
-                                        imageUrl: avatarUrl,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) => Container(
-                                          color: isDark
-                                              ? GenZTokens.paperDark
-                                              : GenZTokens.paper,
-                                        ),
-                                        errorWidget: (context, url, error) =>
-                                            Icon(PhosphorIcons.user()),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                        ),
-                      ),
-                      title: Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'trip.mate',
-                            style: AppFonts.heading(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 20,
-                              letterSpacing: -1.0,
-                              color: textPrimaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                      actions: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              final newLocale =
-                                  context.locale.languageCode == 'vi'
-                                  ? const Locale('en')
-                                  : const Locale('vi');
-                              context.setLocale(newLocale);
-                            },
-                            child: Container(
-                              width: 34,
-                              height: 34,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: surfaceColor,
-                                border: Border.all(
-                                  color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-                                  width: GenZTokens.borderWidthThin,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  context.locale.languageCode.toUpperCase(),
-                                  style: AppFonts.body(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w900,
-                                    color: textPrimaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        if (widget.onThemeToggleWithPosition != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12.0),
-                            child: Semantics(
-                              button: true,
-                              label: isDark
-                                  ? 'profile.theme_light_short'.tr()
-                                  : 'profile.theme_dark_short'.tr(),
-                              child: GestureDetector(
-                                onTapDown: (details) {
-                                  widget.onThemeToggleWithPosition!(
-                                    details.globalPosition,
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: Icon(
-                                    isDark
-                                        ? PhosphorIcons.sun()
-                                        : PhosphorIcons.moon(),
-                                    color: textPrimaryColor,
-                                    size: 22,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            right: 12.0,
-                            top: 12.0,
-                          ),
-                          child: Center(
-                            child: IconButton(
-                              tooltip: 'xp.my_stickers'.tr(),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(
-                                minWidth: 34,
-                                minHeight: 34,
-                              ),
-                              icon: Icon(
-                                PhosphorIcons.smiley(),
-                                color: textPrimaryColor,
-                                size: 22,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        StickerInventoryScreen(
-                                          isDarkMode: isDark,
-                                        ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Main Canvas body list
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 16.0,
-                      ),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate([
-                          const SizedBox(height: 24),
-
-                          // Gamer Profile Hero Section
-                          Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              // Glassmorphic main panel card
-                              Padding(
-                                padding: const EdgeInsets.only(top: 64.0),
-                                child: _buildGlassCard(
-                                  isDark: isDark,
-                                  primaryColor: primaryColor,
-                                  surfaceColor: surfaceColor,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 72.0,
-                                      left: 16,
-                                      right: 16,
-                                      bottom: 24,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        // User name text
-                                        Text(
-                                          name,
-                                          style: AppFonts.heading(
-                                            fontSize: 32,
-                                            fontWeight: FontWeight.w800,
-                                            color: textPrimaryColor,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const SocialLinksManagerScreen(),
-                                                  ),
-                                                );
-                                              },
-                                              child: Icon(
-                                                PhosphorIcons.link(),
-                                                color: primaryColor.withValues(
-                                                  alpha: 0.6,
-                                                ),
-                                                size: 20,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              '@$username',
-                                              style: AppFonts.body(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                                color: textSecondaryColor,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 20),
-
-                                        // Chạm vào thanh cấp để mở ví XP
-                                        // (số dư + sổ cái từng lần cộng/trừ).
-                                        GestureDetector(
-                                          onTap: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => XpWalletScreen(
-                                                isDarkMode: isDark,
-                                              ),
-                                            ),
-                                          ),
-                                          child: _buildLevelBox(
-                                            context: context,
-                                            isDark: isDark,
-                                            primaryColor: primaryColor,
-                                            secondaryColor: secondaryColor,
-                                            tertiaryColor: tertiaryColor,
-                                            textPrimaryColor: textPrimaryColor,
-                                            textSecondaryColor:
-                                                textSecondaryColor,
-                                            level: level,
-                                            xp: xp,
-                                            xpPerLevel: xpPerLevel,
-                                            reputation: reputationScore,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 20),
-
-                                        // Badges row
-                                        Wrap(
-                                          spacing: 8,
-                                          runSpacing: 8,
-                                          alignment: WrapAlignment.center,
-                                          children: [
-                                            _buildActiveBadgeChip(
-                                              totalTrips == '0'
-                                                  ? 'profile.badge_rookie'.tr()
-                                                  : 'profile.badge_planner'
-                                                        .tr(),
-                                              primaryColor,
-                                              isDark,
-                                              surfaceColor,
-                                            ),
-                                            _buildActiveBadgeChip(
-                                              reputationScore == 'Legendary'
-                                                  ? 'profile.badge_mvp_payer'
-                                                        .tr()
-                                                  : (reputationScore ==
-                                                            'Reliable'
-                                                        ? 'profile.badge_reliable'
-                                                              .tr()
-                                                        : 'profile.badge_new_member'
-                                                              .tr()),
-                                              textSecondaryColor,
-                                              isDark,
-                                              surfaceColor,
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 24),
-                                        Divider(
-                                          color: isDark ? GenZTokens.lineDark : GenZTokens.line,
-                                          height: 1,
-                                        ),
-                                        const SizedBox(height: 20),
-
-                                        // Travel Atlas Button
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    TravelAtlasScreen(
-                                                      isDarkMode: isDark,
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                          child: Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 12,
-                                              horizontal: 16,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? GenZTokens.fillDark
-                                                  : GenZTokens.fill,
-                                              borderRadius:
-                                                  BorderRadius.circular(GenZTokens.radiusCard),
-                                              border: Border.all(
-                                                color: isDark
-                                                    ? GenZTokens.lineDark
-                                                    : GenZTokens.line,
-                                                width: GenZTokens.borderWidthThin,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                  PhosphorIcons.compass(),
-                                                  color: textPrimaryColor,
-                                                  size: 18,
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  'profile.open_travel_atlas'
-                                                      .tr(),
-                                                  style: AppFonts.body(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: textPrimaryColor,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 20),
-
-                                        // Core Stats Row
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const ProfileStatisticsScreen(),
-                                              ),
-                                            );
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              _buildStatItem(
-                                                totalTrips,
-                                                'profile.stat_trips'.tr(),
-                                                isDark,
-                                                textPrimaryColor,
-                                                primaryColor,
-                                              ),
-                                              _buildStatItem(
-                                                totalDistance,
-                                                'profile.stat_distance'.tr(),
-                                                isDark,
-                                                textPrimaryColor,
-                                                primaryColor,
-                                              ),
-                                              _buildStatItem(
-                                                '$placesCount',
-                                                'profile.stat_places'.tr(),
-                                                isDark,
-                                                textPrimaryColor,
-                                                primaryColor,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                              // Floating Avatar situated overlapping top edge
-                              Positioned(
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                child: Center(
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      // Clean avatar container
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PublicProfileScreen(
-                                                    userName: name,
-                                                    avatarUrl: avatarUrl,
-                                                  ),
-                                            ),
-                                          );
-                                        },
-                                        child: AnimatedBuilder(
-                                          animation: _pulseController,
-                                          builder: (context, child) {
-                                            return Container(
-                                              width: 128,
-                                              height: 128,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: surfaceColor,
-                                                border: Border.all(
-                                                  color: primaryColor,
-                                                  width: GenZTokens.borderWidth,
-                                                ),
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(99),
-                                                child: Semantics(
-                                                  label: 'recap.avatar_of'.tr(namedArgs: {'name': name}),
-                                                  image: true,
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: MediaUploader.cdnUrlForTier(
-                                                      avatarUrl,
-                                                      CdnTier.avatar,
-                                                    ),
-                                                    cacheKey: MediaUploader.cdnCacheKey(
-                                                      avatarUrl,
-                                                      tier: CdnTier.avatar,
-                                                    ),
-                                                    memCacheWidth: CdnTier.avatar.width,
-                                                    maxWidthDiskCache: CdnTier.avatar.width,
-                                                    fit: BoxFit.cover,
-                                                    placeholder: (
-                                                      context,
-                                                      url,
-                                                    ) => Container(
-                                                      color: isDark
-                                                          ? GenZTokens.paperDark
-                                                          : GenZTokens.paper,
-                                                    ),
-                                                    errorWidget: (
-                                                      context,
-                                                      url,
-                                                      error,
-                                                    ) => Icon(
-                                                      PhosphorIcons.user(),
-                                                      size: 40,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-
-                                      // Status Planning Seoul Capsule
-                                      Positioned(
-                                        bottom: -8,
-                                        left: -100,
-                                        right: -100,
-                                        child: Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: surfaceColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(GenZTokens.radiusPill),
-                                              border: Border.all(
-                                                color: isDark
-                                                    ? GenZTokens.lineDark
-                                                    : GenZTokens.line,
-                                                width: GenZTokens.borderWidthThin,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  PhosphorIcons.airplaneTilt(),
-                                                  size: 14,
-                                                  color: textPrimaryColor,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Flexible(
-                                                  child: Text(
-                                                    bio,
-                                                    style: AppFonts.body(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: textPrimaryColor,
-                                                    ),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-                              // Edit Button on Top Right (Mobile-friendly layout)
-                              Positioned(
-                                top: 80,
-                                right: 16,
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const EditProfileScreen(),
-                                      ),
-                                    );
-                                    if (mounted) {
-                                      ref.invalidate(profileDataProvider);
-                                      ref
-                                          .read(profileDataProvider.notifier)
-                                          .loadProfile(forceRefresh: true);
-                                    }
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: surfaceColor,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.lineDark
-                                            : GenZTokens.line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.pencilSimple(),
-                                      color: primaryColor,
-                                      size: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 36),
-
-                          // Achievements Showcase Section
-                          Row(
-                            children: [
-                              Icon(
-                                PhosphorIcons.crown(),
-                                color: tertiaryColor,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'profile.achievements'.tr(),
-                                style: AppFonts.heading(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Horizontal Scrolling Achievement Badges list
-                          _userBadges.isEmpty
-                              ? GestureDetector(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const BadgeCollectionScreen(),
-                                    ),
-                                  ),
-                                  child: Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: surfaceColor,
-                                      borderRadius: BorderRadius.circular(
-                                        GenZTokens.radiusCard,
-                                      ),
-                                      border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.lineDark
-                                            : GenZTokens.line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          PhosphorIcons.medal(),
-                                          color: textSecondaryColor,
-                                          size: 24,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Text(
-                                            'profile.no_badges_hint'.tr(),
-                                            style: AppFonts.body(
-                                              fontSize: 13,
-                                              color: textSecondaryColor,
-                                              height: 1.4,
-                                            ),
-                                          ),
-                                        ),
-                                        Icon(
-                                          PhosphorIcons.caretRight(),
-                                          size: 16,
-                                          color: textSecondaryColor,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              : SizedBox(
-                                  height: 136,
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    physics: const BouncingScrollPhysics(),
-                                    children: _userBadges.map<Widget>((badge) {
-                                      final isLocked =
-                                          badge['unlockedAt'] == null;
-                                      final title =
-                                          badge['title'] ??
-                                          'profile.titles'.tr();
-
-                                      String? emoji;
-                                      IconData? icon;
-                                      String cleanTitle = title;
-
-                                      final RegExp emojiRegExp = RegExp(
-                                        r'[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]',
-                                        unicode: true,
-                                      );
-                                      final match = emojiRegExp.firstMatch(
-                                        title,
-                                      );
-                                      if (match != null) {
-                                        emoji = match.group(0);
-                                        if (emoji != null) {
-                                          cleanTitle = title
-                                              .replaceAll(emoji, '')
-                                              .trim();
-                                        }
-                                      } else {
-                                        icon = PhosphorIcons.trophy();
-                                      }
-
-                                      return _buildBadgeCard(
-                                        icon: icon,
-                                        emoji: emoji,
-                                        title: cleanTitle,
-                                        tier: isLocked
-                                            ? 'profile.badge_locked'.tr()
-                                            : (badge['id'] == 'b1'
-                                                  ? 'profile.gold_tier'.tr()
-                                                  : 'profile.silver_tier'.tr()),
-                                        isRare:
-                                            badge['id'] == 'b1' ||
-                                            badge['id'] == 'b3',
-                                        isLocked: isLocked,
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const BadgeCollectionScreen(),
-                                            ),
-                                          );
-                                        },
-                                        primaryColor: primaryColor,
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-
-                          const SizedBox(height: 36),
-
-                          // Chaotic Memories (Tilted Polaroid Grid)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      PhosphorIcons.sparkle(),
-                                      color: primaryColor,
-                                      size: 24,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        'profile.memories'.tr(),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppFonts.heading(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: textPrimaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SharedTripsHistoryScreen(),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  'profile.view_gallery'.tr(),
-                                  style: AppFonts.body(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: secondaryColor,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Kỷ niệm THẬT của user.
-                          //
-                          // Trước đây đây là 2 tấm polaroid cứng ("BKK Night
-                          // out 🇹🇭", "Seoul Searching 🇰🇷") kèm ảnh asset —
-                          // ai mở profile cũng thấy mình từng đi Bangkok và
-                          // Seoul — và chạm vào chỉ hiện "đang hoàn thiện".
-                          Consumer(
-                            builder: (context, ref, _) {
-                              final moments = ref
-                                  .watch(recentMomentsProvider)
-                                  .maybeWhen(
-                                    data: (m) => m.take(2).toList(),
-                                    orElse: () => const <RecentMoment>[],
-                                  );
-                              if (moments.isEmpty) {
-                                return Text(
-                                  'profile.memories_empty'.tr(),
-                                  style: AppFonts.body(
-                                    fontSize: 13,
-                                    color: textSecondaryColor,
-                                  ),
-                                );
-                              }
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  for (var i = 0; i < moments.length; i++) ...[
-                                    if (i > 0) const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Transform.rotate(
-                                        angle: i.isEven ? -0.04 : 0.05,
-                                        child: _buildPolaroidCard(
-                                          imageUrl: moments[i].mediaUrl,
-                                          caption: moments[i].title,
-                                          onTap: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => MemoryWallScreen(
-                                                isDarkMode: isDark,
-                                              ),
-                                            ),
-                                          ),
-                                          surfaceColor: surfaceColor,
-                                          textPrimary: textPrimaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              );
-                            },
-                          ),
-
-                          const SizedBox(height: 36),
-
-                          // Recent Activity Quest Log (Recent Chaos Log)
-                          Row(
-                            children: [
-                              Icon(
-                                PhosphorIcons.clockCounterClockwise(),
-                                color: secondaryColor,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'profile.recent_log'.tr(),
-                                style: AppFonts.heading(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Hoạt động THẬT của squad.
-                          //
-                          // Trước đây đây là hai thẻ bịa cứng: "Booked a chaotic
-                          // weekend trip to Taipei with 4 others · 2 hours ago"
-                          // và "Settled up $420 for the Tokyo bender" — tiếng Anh,
-                          // số liệu tự nghĩ ra, giống hệt nhau với mọi tài khoản.
-                          // Nay đọc `squadActivitiesProvider`, cùng nguồn mà tab
-                          // Live đang dùng.
-                          Consumer(
-                            builder: (context, ref, _) {
-                              final async = ref.watch(squadActivitiesProvider);
-                              return async.when(
-                                loading: () => const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                                error: (_, _) => Text(
-                                  'profile.recent_log_failed'.tr(),
-                                  style: AppFonts.body(
-                                    fontSize: 13,
-                                    color: textSecondaryColor,
-                                  ),
-                                ),
-                                data: (items) {
-                                  if (items.isEmpty) {
-                                    return Text(
-                                      'profile.recent_log_empty'.tr(),
-                                      style: AppFonts.body(
-                                        fontSize: 13,
-                                        color: textSecondaryColor,
-                                      ),
-                                    );
-                                  }
-                                  return Column(
-                                    children: [
-                                      for (final a in items.take(3)) ...[
-                                        _buildChaosFeedCard(
-                                          icon: PhosphorIcons.lightning(),
-                                          accentColor: primaryColor,
-                                          description: _activityText(a),
-                                          time: a.tripName,
-                                          isDark: isDark,
-                                          primaryColor: primaryColor,
-                                          textPrimaryColor: textPrimaryColor,
-                                          friendAvatars: const [],
-                                          extraFriends: 0,
-                                          surfaceColor: surfaceColor,
-                                        ),
-                                        const SizedBox(height: 12),
-                                      ],
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          ),
-
-                          const SizedBox(height: 36),
-
-                          // ── Giao diện app ─────────────────────────────────
-                          _buildThemePicker(
-                            isDark: isDark,
-                            primaryColor: primaryColor,
-                            surfaceColor: surfaceColor,
-                            textPrimaryColor: textPrimaryColor,
-                            textSecondaryColor: textSecondaryColor,
-                            currentAccent: currentAccent,
-                            currentMode: currentMode,
-                          ),
-
-                          const SizedBox(height: 36),
-                          Row(
-                            children: [
-                              Icon(
-                                PhosphorIcons.gear(),
-                                color: primaryColor,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'general.settings'.tr(),
-                                style: AppFonts.heading(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: textPrimaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                            child: Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: surfaceColor,
-                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                                border: Border.all(
-                                  color: isDark
-                                      ? GenZTokens.lineDark
-                                      : GenZTokens.line,
-                                  width: GenZTokens.borderWidthThin,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isDark
-                                          ? GenZTokens.fillDark
-                                          : GenZTokens.fill,
-                                      border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.lineDark
-                                            : GenZTokens.line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.globe(),
-                                      color: primaryColor,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'profile.lang_label'.tr(),
-                                          style: AppFonts.heading(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: textPrimaryColor,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'profile.lang_sub'.tr(),
-                                          style: AppFonts.body(
-                                            fontSize: 12,
-                                            color: textSecondaryColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  // Toggle option buttons
-                                  Row(
-                                    children: [
-                                      _buildLangOption(
-                                        label: 'Tiếng Việt',
-                                        isSelected:
-                                            context.locale.languageCode == 'vi',
-                                        onTap: () => context.setLocale(
-                                          const Locale('vi'),
-                                        ),
-                                        isDark: isDark,
-                                        primaryColor: primaryColor,
-                                        surfaceColor: surfaceColor,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      _buildLangOption(
-                                        label: 'English',
-                                        isSelected:
-                                            context.locale.languageCode == 'en',
-                                        onTap: () => context.setLocale(
-                                          const Locale('en'),
-                                        ),
-                                        isDark: isDark,
-                                        primaryColor: primaryColor,
-                                        surfaceColor: surfaceColor,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-                          // Quyền riêng tư & Tài khoản (PDPD)
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    AccountPrivacyScreen(isDarkMode: isDark),
-                              ),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: surfaceColor,
-                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                                border: Border.all(
-                                  color: isDark
-                                      ? GenZTokens.lineDark
-                                      : GenZTokens.line,
-                                  width: GenZTokens.borderWidthThin,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isDark
-                                          ? GenZTokens.fillDark
-                                          : GenZTokens.fill,
-                                      border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.lineDark
-                                            : GenZTokens.line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.shieldCheck(),
-                                      color: primaryColor,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'profile.privacy_and_account'.tr(),
-                                          style: AppFonts.heading(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: textPrimaryColor,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'profile.privacy_sub'.tr(),
-                                          style: AppFonts.body(
-                                            fontSize: 12,
-                                            color: textSecondaryColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Icon(
-                                    PhosphorIcons.arrowRight(),
-                                    size: 14,
-                                    color: textSecondaryColor,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-                          // Sao lưu & Khôi phục Offline
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    BackupRestoreScreen(isDarkMode: isDark),
-                              ),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: surfaceColor,
-                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                                border: Border.all(
-                                  color: isDark
-                                      ? GenZTokens.lineDark
-                                      : GenZTokens.line,
-                                  width: GenZTokens.borderWidthThin,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isDark
-                                          ? GenZTokens.fillDark
-                                          : GenZTokens.fill,
-                                      border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.lineDark
-                                            : GenZTokens.line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.cloudArrowUp(),
-                                      color: primaryColor,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'system_phases.backup_title'.tr(),
-                                          style: AppFonts.heading(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: textPrimaryColor,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'profile.backup_title'.tr(),
-                                          style: AppFonts.body(
-                                            fontSize: 12,
-                                            color: textSecondaryColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Icon(
-                                    PhosphorIcons.arrowRight(),
-                                    size: 14,
-                                    color: textSecondaryColor,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-                          // MCP AI Connection Setting
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    TripmateMcpScreen(isDarkMode: isDark),
-                              ),
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: surfaceColor,
-                                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                                border: Border.all(
-                                  color: isDark
-                                      ? GenZTokens.lineDark
-                                      : GenZTokens.line,
-                                  width: GenZTokens.borderWidthThin,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isDark
-                                          ? GenZTokens.fillDark
-                                          : GenZTokens.fill,
-                                      border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.lineDark
-                                            : GenZTokens.line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.robot(),
-                                      color: primaryColor,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'system_phases.mcp_title'.tr(),
-                                          style: AppFonts.heading(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: textPrimaryColor,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'profile.mcp_title'.tr(),
-                                          style: AppFonts.body(
-                                            fontSize: 12,
-                                            color: textSecondaryColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Icon(
-                                    PhosphorIcons.arrowRight(),
-                                    size: 14,
-                                    color: textSecondaryColor,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-                          // Đăng xuất (Log out)
-                          GestureDetector(
-                            onTap: () async {
-                              final dangerColor = isDark
-                                  ? GenZTokens.dangerDark
-                                  : GenZTokens.danger;
-                              final ok = await showDialog<bool>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  backgroundColor: surfaceColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      GenZTokens.radiusCard,
-                                    ),
-                                    side: BorderSide(
-                                      color: isDark
-                                          ? GenZTokens.lineDark
-                                          : GenZTokens.line,
-                                      width: GenZTokens.borderWidthThin,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    'profile.logout_title'.tr(),
-                                    style: AppFonts.heading(
-                                      fontWeight: FontWeight.bold,
-                                      color: textPrimaryColor,
-                                    ),
-                                  ),
-                                  content: Text(
-                                    'profile.logout_confirm'.tr(),
-                                    style: AppFonts.body(
-                                      color: textSecondaryColor,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(ctx, false),
-                                      child: Text(
-                                        'general.cancel'.tr(),
-                                        style: AppFonts.body(
-                                          color: textSecondaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                    FilledButton(
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor: dangerColor,
-                                        foregroundColor: isDark
-                                            ? GenZTokens.onAccentDark
-                                            : GenZTokens.onAccent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            GenZTokens.radiusButton,
-                                          ),
-                                        ),
-                                      ),
-                                      onPressed: () => Navigator.pop(ctx, true),
-                                      child: Text(
-                                        'profile.logout'.tr(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              if (ok == true) {
-                                await ref.read(authProvider.notifier).logout();
-                              }
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                color: surfaceColor,
-                                borderRadius: BorderRadius.circular(
-                                  GenZTokens.radiusCard,
-                                ),
-                                border: Border.all(
-                                  color: (isDark
-                                          ? GenZTokens.dangerDark
-                                          : GenZTokens.danger)
-                                      .withValues(alpha: 0.35),
-                                  width: GenZTokens.borderWidthThin,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isDark
-                                          ? GenZTokens.fillDark
-                                          : GenZTokens.fill,
-                                      border: Border.all(
-                                        color: isDark
-                                            ? GenZTokens.lineDark
-                                            : GenZTokens.line,
-                                        width: GenZTokens.borderWidthThin,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.signOut(),
-                                      color: isDark
-                                          ? GenZTokens.dangerDark
-                                          : GenZTokens.danger,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'profile.logout'.tr(),
-                                          style: AppFonts.heading(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDark
-                                                ? GenZTokens.dangerDark
-                                                : GenZTokens.danger,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'profile.logout_subtitle'.tr(),
-                                          style: AppFonts.body(
-                                            fontSize: 12,
-                                            color: textSecondaryColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Icon(
-                                    PhosphorIcons.arrowRight(),
-                                    size: 14,
-                                    color: textSecondaryColor,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 48),
-                        ]),
-                      ),
-                    ),
-                  ],
-                ),
+          const SizedBox(height: 2),
+          Text(label, style: AppFonts.body(fontSize: 12, color: textSec)),
         ],
       ),
     );
-  }
 
-  Widget _buildThemePicker({
-    required bool isDark,
-    required Color primaryColor,
-    required Color surfaceColor,
-    required Color textPrimaryColor,
-    required Color textSecondaryColor,
-    required AppAccent currentAccent,
-    required ThemeMode currentMode,
-  }) {
-    final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
-    final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
-    final currentFont = ref.watch(fontProvider);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+    Widget tile({
+      required IconData icon,
+      required String title,
+      String? trailingText,
+      Widget? trailing,
+      VoidCallback? onTap,
+      Color? color,
+    }) {
+      return Semantics(
+        button: onTap != null,
+        label: title,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: color ?? primary),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppFonts.body(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: color ?? textPri,
+                    ),
+                  ),
+                ),
+                if (trailingText != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Text(
+                      trailingText,
+                      style: AppFonts.body(fontSize: 13, color: textSec),
+                    ),
+                  ),
+                trailing ??
+                    (onTap != null
+                        ? Icon(
+                            PhosphorIcons.caretRight(),
+                            size: 16,
+                            color: textSec,
+                          )
+                        : const SizedBox.shrink()),
+              ],
+            ),
+          ),
         ),
+      );
+    }
+
+    Widget group(String title, List<Widget> tiles) {
+      final children = <Widget>[];
+      for (var i = 0; i < tiles.length; i++) {
+        if (i > 0) {
+          children.add(
+            Divider(height: 1, thickness: 1, indent: 50, color: line),
+          );
+        }
+        children.add(tiles[i]);
+      }
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header row
-            Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isDark
-                        ? GenZTokens.fillDark
-                        : GenZTokens.fill,
-                    border: Border.all(color: line, width: GenZTokens.borderWidthThin),
-                  ),
-                  child: Icon(
-                    PhosphorIcons.palette(),
-                    color: primaryColor,
-                    size: 20,
-                  ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 8),
+              child: Text(
+                title.toUpperCase(),
+                style: AppFonts.body(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: textSec,
+                  letterSpacing: 0.8,
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'profile.app_interface'.tr(),
-                        style: AppFonts.heading(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'profile.theme_and_color'.tr(),
-                        style: AppFonts.body(
-                          fontSize: 12,
-                          color: textSecondaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Sáng / Tối toggle
-                Container(
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? GenZTokens.fillDark
-                        : GenZTokens.fill,
-                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-                    border: Border.all(
-                      color: line,
-                      width: GenZTokens.borderWidthThin,
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(2),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildModeBtn(
-                        icon: PhosphorIcons.sun(),
-                        label: 'profile.theme_light_short'.tr(),
-                        selected: currentMode == ThemeMode.light,
-                        primaryColor: primaryColor,
-                        isDark: isDark,
-                        textPrimaryColor: textPrimaryColor,
-                        onTap: (position) {
-                          if (currentMode != ThemeMode.light) {
-                            if (widget.onThemeToggleWithPosition != null) {
-                              widget.onThemeToggleWithPosition!(position);
-                            } else {
-                              ref
-                                  .read(themeProvider.notifier)
-                                  .setThemeMode(ThemeMode.light);
-                            }
-                          }
-                        },
-                      ),
-                      _buildModeBtn(
-                        icon: PhosphorIcons.moon(),
-                        label: 'profile.theme_dark_short'.tr(),
-                        selected: currentMode == ThemeMode.dark,
-                        primaryColor: primaryColor,
-                        isDark: isDark,
-                        textPrimaryColor: textPrimaryColor,
-                        onTap: (position) {
-                          if (currentMode != ThemeMode.dark) {
-                            if (widget.onThemeToggleWithPosition != null) {
-                              widget.onThemeToggleWithPosition!(position);
-                            } else {
-                              ref
-                                  .read(themeProvider.notifier)
-                                  .setThemeMode(ThemeMode.dark);
-                            }
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-            Divider(color: line, thickness: 1.0),
-            const SizedBox(height: 16),
-
-            Text(
-              'profile.font_style'.tr(),
-              style: AppFonts.heading(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: textPrimaryColor,
               ),
             ),
-            const SizedBox(height: 12),
+            Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: surface,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                border: Border.all(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              child: Column(children: children),
+            ),
+          ],
+        ),
+      );
+    }
 
-            Column(
-              children: AppFontOption.values.map((fontOpt) {
-                final isSelected = fontOpt == currentFont;
+    final isVi = context.locale.languageCode == 'vi';
 
-                final textColor = isSelected
-                    ? onAccent
-                    : textPrimaryColor;
-                final textSecColor = isSelected
-                    ? onAccent.withValues(alpha: 0.75)
-                    : textSecondaryColor;
-
-                // Preview styles for each font option
-                TextStyle previewHeading;
-                TextStyle previewBody;
-
-                switch (fontOpt) {
-                  case AppFontOption.playful:
-                    previewHeading = GoogleFonts.baloo2(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: textColor,
-                    );
-                    previewBody = GoogleFonts.nunito(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: textSecColor,
-                    );
-                    break;
-                  case AppFontOption.curly:
-                    previewHeading = GoogleFonts.grandstander(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: textColor,
-                    );
-                    previewBody = GoogleFonts.comfortaa(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: textSecColor,
-                    );
-                    break;
-                  case AppFontOption.handwriting:
-                    previewHeading = GoogleFonts.sriracha(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: textColor,
-                    );
-                    previewBody = GoogleFonts.patrickHand(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: textSecColor,
-                    );
-                    break;
-                  case AppFontOption.modern:
-                    previewHeading = GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: textColor,
-                    );
-                    previewBody = GoogleFonts.dmSans(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: textSecColor,
-                    );
-                    break;
-                  case AppFontOption.brutalist:
-                    previewHeading = GoogleFonts.spaceGrotesk(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: textColor,
-                    );
-                    previewBody = GoogleFonts.outfit(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: textSecColor,
-                    );
-                    break;
-                  case AppFontOption.clean:
-                    previewHeading = GoogleFonts.quicksand(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                      color: textColor,
-                    );
-                    previewBody = GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: textSecColor,
-                    );
-                    break;
-                }
-
-                return GestureDetector(
-                  onTap: () =>
-                      ref.read(fontProvider.notifier).setFontOption(fontOpt),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? primaryColor
-                          : surfaceColor,
-                      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-                      border: Border.all(
-                        color: isSelected
-                            ? primaryColor
-                            : line,
-                        width: isSelected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
-                      ),
-                    ),
-                    child: Row(
+    return Scaffold(
+      backgroundColor: bg,
+      body: SafeArea(
+        bottom: false,
+        child: RefreshIndicator(
+          color: primary,
+          onRefresh: () => ref
+              .read(profileDataProvider.notifier)
+              .loadProfile(forceRefresh: true),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 120),
+            children: [
+              if (Navigator.canPop(context))
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    tooltip: 'common.back'.tr(),
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(PhosphorIcons.arrowLeft(), color: textPri),
+                  ),
+                ),
+              // ── Đầu trang: avatar + tên + chỉ số ─────────────────────
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: surface,
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  border: Border.all(
+                    color: line,
+                    width: GenZTokens.borderWidthThin,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
                       children: [
+                        ClipOval(
+                          child: SizedBox(
+                            width: 64,
+                            height: 64,
+                            child: avatarUrl.startsWith('assets/')
+                                ? Image.asset(avatarUrl, fit: BoxFit.cover)
+                                : CachedNetworkImage(
+                                    imageUrl: avatarUrl,
+                                    fit: BoxFit.cover,
+                                    errorWidget: (_, _, _) => Icon(
+                                      PhosphorIcons.user(),
+                                      color: textSec,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(fontOpt.label, style: previewHeading),
-                              const SizedBox(height: 2),
-                              Text(fontOpt.description, style: previewBody),
+                              Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppFonts.heading(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: textPri,
+                                ),
+                              ),
+                              Text(
+                                '@$username · Lv $level',
+                                style: AppFonts.body(
+                                  fontSize: 13,
+                                  color: textSec,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        if (isSelected)
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: onAccent,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              PhosphorIcons.check(),
-                              color: primaryColor,
-                              size: 14,
-                            ),
+                        IconButton(
+                          tooltip: 'profile.edit_title'.tr(),
+                          onPressed: () => push(const EditProfileScreen()),
+                          icon: Icon(
+                            PhosphorIcons.pencilSimple(),
+                            color: primary,
                           ),
+                        ),
                       ],
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildModeBtn({
-    required IconData icon,
-    required String label,
-    required bool selected,
-    required Color primaryColor,
-    required bool isDark,
-    required Color textPrimaryColor,
-    required ValueChanged<Offset> onTap,
-  }) {
-    Offset tapPosition = Offset.zero;
-    return GestureDetector(
-      onTapDown: (details) {
-        tapPosition = details.globalPosition;
-      },
-      onTap: () => onTap(tapPosition),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected
-              ? (isDark ? GenZTokens.paperDark : GenZTokens.paper)
-              : (isDark ? GenZTokens.fillDark : GenZTokens.fill),
-          borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 14,
-              color: selected
-                  ? primaryColor
-                  : textPrimaryColor.withValues(alpha: 0.5),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: AppFonts.body(
-                fontSize: 12,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected
-                    ? primaryColor
-                    : textPrimaryColor.withValues(alpha: 0.5),
+                    if (bio.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          bio,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppFonts.body(
+                            fontSize: 14,
+                            color: textSec,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    Divider(height: 1, color: line),
+                    const SizedBox(height: 14),
+                    if (_isLoading && _userStats == null)
+                      LinearProgressIndicator(color: primary, minHeight: 2)
+                    else
+                      Row(
+                        children: [
+                          stat(totalTrips, 'profile.stat_trips'.tr()),
+                          stat('$distanceKm km', 'profile.stat_distance'.tr()),
+                          stat('$placesCount', 'profile.stat_places'.tr()),
+                          stat('$xp', 'XP'),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+              const SizedBox(height: 24),
 
-  Widget _buildLangOption({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-    required bool isDark,
-    required Color primaryColor,
-    required Color surfaceColor,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark ? GenZTokens.accentDark.withValues(alpha: 0.15) : GenZTokens.accentSoft)
-              : (isDark ? GenZTokens.fillDark : GenZTokens.fill),
-          borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-          border: Border.all(
-            color: isSelected
-                ? primaryColor
-                : (isDark ? GenZTokens.lineDark : GenZTokens.line),
-            width: isSelected ? GenZTokens.borderWidth : GenZTokens.borderWidthThin,
-          ),
-        ),
-        child: Text(
-          label,
-          style: AppFonts.body(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: isSelected
-                ? primaryColor
-                : (isDark
-                    ? GenZTokens.inkSoftDark
-                    : GenZTokens.inkSoft),
+              group('profile.menu_account'.tr(), [
+                tile(
+                  icon: PhosphorIcons.userCircle(),
+                  title: 'profile.edit_title'.tr(),
+                  onTap: () => push(const EditProfileScreen()),
+                ),
+                tile(
+                  icon: PhosphorIcons.eye(),
+                  title: 'profile.view_public'.tr(),
+                  onTap: () => push(
+                    PublicProfileScreen(userName: name, avatarUrl: avatarUrl),
+                  ),
+                ),
+                tile(
+                  icon: PhosphorIcons.link(),
+                  title: 'profile.social_title'.tr(),
+                  onTap: () => push(const SocialLinksManagerScreen()),
+                ),
+                tile(
+                  icon: PhosphorIcons.usersThree(),
+                  title: 'profile.friends'.tr(),
+                  onTap: () => push(const FriendsListScreen()),
+                ),
+              ]),
+
+              group('profile.menu_journey'.tr(), [
+                tile(
+                  icon: PhosphorIcons.clockCounterClockwise(),
+                  title: 'profile.trip_history_title'.tr(),
+                  onTap: () => push(const SharedTripsHistoryScreen()),
+                ),
+                tile(
+                  icon: PhosphorIcons.globeHemisphereEast(),
+                  title: 'profile.travel_atlas_title'.tr(),
+                  onTap: () => push(TravelAtlasScreen(isDarkMode: isDark)),
+                ),
+                tile(
+                  icon: PhosphorIcons.chartBar(),
+                  title: 'profile.stats_title'.tr(),
+                  onTap: () => push(const ProfileStatisticsScreen()),
+                ),
+                tile(
+                  icon: PhosphorIcons.images(),
+                  title: 'profile.memories'.tr(),
+                  onTap: () => push(MemoryWallScreen(isDarkMode: isDark)),
+                ),
+              ]),
+
+              group('profile.menu_collection'.tr(), [
+                tile(
+                  icon: PhosphorIcons.medal(),
+                  title: 'profile.achievements'.tr(),
+                  trailingText: '${_userBadges.length}',
+                  onTap: () => push(const BadgeCollectionScreen()),
+                ),
+                tile(
+                  icon: PhosphorIcons.sticker(),
+                  title: 'profile.stickers'.tr(),
+                  onTap: () => push(StickerInventoryScreen(isDarkMode: isDark)),
+                ),
+                tile(
+                  icon: PhosphorIcons.coins(),
+                  title: 'profile.xp_wallet'.tr(),
+                  trailingText: '$xp XP',
+                  onTap: () => push(XpWalletScreen(isDarkMode: isDark)),
+                ),
+                tile(
+                  icon: PhosphorIcons.trophy(),
+                  title: 'profile.leaderboard'.tr(),
+                  onTap: () => push(const SquadLeaderboardScreen()),
+                ),
+              ]),
+
+              group('profile.menu_app'.tr(), [
+                tile(
+                  icon: PhosphorIcons.moon(),
+                  title: 'profile.dark_mode'.tr(),
+                  trailing: Switch.adaptive(
+                    value: isDark,
+                    activeTrackColor: primary,
+                    onChanged: (v) => ref
+                        .read(themeProvider.notifier)
+                        .setThemeMode(v ? ThemeMode.dark : ThemeMode.light),
+                  ),
+                ),
+                tile(
+                  icon: PhosphorIcons.translate(),
+                  title: 'profile.language'.tr(),
+                  trailingText: isVi ? 'Tiếng Việt' : 'English',
+                  onTap: () => context.setLocale(
+                    isVi ? const Locale('en') : const Locale('vi'),
+                  ),
+                ),
+                tile(
+                  icon: PhosphorIcons.shieldCheck(),
+                  title: 'profile.privacy_and_account'.tr(),
+                  onTap: () => push(AccountPrivacyScreen(isDarkMode: isDark)),
+                ),
+                tile(
+                  icon: PhosphorIcons.cloudArrowDown(),
+                  title: 'profile.backup_title'.tr(),
+                  onTap: () => push(BackupRestoreScreen(isDarkMode: isDark)),
+                ),
+                tile(
+                  icon: PhosphorIcons.plugs(),
+                  title: 'system_phases.mcp_title'.tr(),
+                  onTap: () => push(TripmateMcpScreen(isDarkMode: isDark)),
+                ),
+              ]),
+
+              group('', [
+                tile(
+                  icon: PhosphorIcons.signOut(),
+                  title: 'profile.logout'.tr(),
+                  color: danger,
+                  onTap: () async {
+                    final ok = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: surface,
+                        title: Text(
+                          'profile.logout_title'.tr(),
+                          style: AppFonts.heading(
+                            fontWeight: FontWeight.bold,
+                            color: textPri,
+                          ),
+                        ),
+                        content: Text(
+                          'profile.logout_confirm'.tr(),
+                          style: AppFonts.body(color: textSec, height: 1.4),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text('general.cancel'.tr()),
+                          ),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: danger,
+                            ),
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text('profile.logout'.tr()),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (ok == true) {
+                      await ref.read(authProvider.notifier).logout();
+                    }
+                  },
+                ),
+              ]),
+              // Giữ biến currentMode để rebuild khi đổi theme.
+              if (currentMode == ThemeMode.system) const SizedBox.shrink(),
+            ],
           ),
         ),
       ),
