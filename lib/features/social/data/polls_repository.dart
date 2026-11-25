@@ -24,7 +24,7 @@ class PollsRepository {
   Future<Poll> create(
     String tripId, {
     required String question,
-    required List<Map<String, String?>> options,
+    required List<String> options, // BE nhận string[] (CreatePollDto), không phải object
     bool isMultiple = false,
   }) async {
     final data = await _client.postData(_base(tripId), {

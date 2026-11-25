@@ -120,6 +120,7 @@ class TripItineraryScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: placeCtrl,
                   style: AppFonts.body(fontSize: 15, color: textPri),
@@ -128,6 +129,7 @@ class TripItineraryScreen extends ConsumerWidget {
                     hintStyle: AppFonts.body(fontSize: 15, color: textSec),
                   ),
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: addrCtrl,
                   style: AppFonts.body(fontSize: 15, color: textPri),

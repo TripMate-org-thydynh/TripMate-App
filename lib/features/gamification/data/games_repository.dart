@@ -327,8 +327,18 @@ class SquadDare {
   }
 
   factory SquadDare.fromJson(Map<String, dynamic> j) => SquadDare(
-    dareText: j['dareText'] as String? ?? '',
+    dareText: _stripEmoji(j['dareText'] as String? ?? ''),
     xpReward: (j['xpReward'] as num?)?.toInt() ?? 0,
-    chaosLabel: j['chaosFactor']?.toString() ?? '',
+    chaosLabel: _stripEmoji(j['chaosFactor']?.toString() ?? ''),
   );
 }
+
+/// BE (và dữ liệu cũ) còn chèn emoji vào câu thử thách; spec cấm emoji làm
+/// icon nên lọc ở đây — mức độ đã có màu + icon Phosphor riêng.
+final _emojiRe = RegExp(
+  r'[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]',
+  unicode: true,
+);
+
+String _stripEmoji(String s) =>
+    s.replaceAll(_emojiRe, '').replaceAll(RegExp(r' {2,}'), ' ').trim();
