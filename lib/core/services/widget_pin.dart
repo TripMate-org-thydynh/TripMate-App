@@ -1,44 +1,121 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// Xin ghim widget TripMate lên màn hình chính.
-///
-/// Không có lối tắt này thì người dùng phải tự mò: nhấn giữ màn hình chính →
-/// khay tiện ích → cuộn tìm TripMate → kéo thả. Phần lớn sẽ không làm, và
-/// widget dù đã cài vẫn không ai thấy — mà widget chính là thứ khiến vòng lặp
-/// "gửi ảnh → bạn bè thấy ngay" hoạt động.
-///
-/// Chỉ Android hỗ trợ. iOS không cho app tự thêm widget: ở đó bắt buộc phải
-/// hướng dẫn thủ công.
+/// Cầu nối điều khiển Widget Màn hình chính cho cả Android (`AppWidgetManager`)
+/// và iOS (`WidgetKit` + multi-AppGroup bridge trong `AppDelegate.swift`).
 class WidgetPin {
   const WidgetPin._();
 
   static const _channel = MethodChannel('tripmate/widget_pin');
 
-  /// Máy này có cho phép app tự ghim widget không.
+  static bool get _isFlutterTest =>
+      !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
+
+  /// Máy này có cho phép app tự mở hộp thoại ghim widget tự động không.
   ///
-  /// Trả `false` trên iOS, trên Android < 8, và trên các launcher không hỗ trợ
-  /// (một số ROM tuỳ biến). Gọi trước khi hiện nút, để không mời người dùng
-  /// bấm một thứ không chạy.
+  /// Trả `true` trên Android 8+ (launcher hỗ trợ). Trên iOS trả `false` vì Apple
+  /// yêu cầu người dùng thêm tiện ích từ khay WidgetKit — app sẽ hiển thị bảng
+  /// Xem trước Widget trực tiếp (Live Preview) kèm hướng dẫn 3 bước chuẩn iOS.
   static Future<bool> isSupported() async {
-    if (!Platform.isAndroid) return false;
+    if (kIsWeb ||
+        _isFlutterTest ||
+        defaultTargetPlatform != TargetPlatform.android) {
+      return false;
+    }
     try {
       return await _channel.invokeMethod<bool>('isSupported') ?? false;
-    } on PlatformException {
+    } on Object {
       return false;
     }
   }
 
-  /// Mở hộp thoại ghim của hệ thống. Trả `true` nếu hộp thoại đã hiện ra.
-  ///
-  /// Người dùng vẫn có thể bấm huỷ — không có cách nào biết được kết quả cuối,
-  /// đó là giới hạn của API.
+  /// Mở hộp thoại ghim của hệ thống Android. Trả `true` nếu hộp thoại đã hiện ra.
   static Future<bool> request() async {
-    if (!Platform.isAndroid) return false;
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
     try {
       return await _channel.invokeMethod<bool>('requestPin') ?? false;
-    } on PlatformException {
+    } on Object {
+      return false;
+    }
+  }
+
+  /// Lấy danh sách App Group ID khả dụng trên iOS (bao gồm cả `ALTAppGroups` khi
+  /// sideload qua `iloader-cli` lẫn `group.com.tripmate.app` trên App Store).
+  static Future<List<String>> getIosAppGroups() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
+      return const ['group.com.tripmate.app'];
+    }
+    try {
+      final raw = await _channel
+          .invokeListMethod<String>('getAppGroups')
+          .timeout(
+            const Duration(milliseconds: 600),
+            onTimeout: () => const <String>[],
+          );
+      if (raw != null && raw.isNotEmpty) return raw;
+    } on Object {
+      // Fallback safely in tests or if channel is not attached yet.
+    }
+    return const ['group.com.tripmate.app'];
+  }
+
+  /// Đếm số lượng tiện ích TripMate đang được gắn ngoài Màn hình chính iOS.
+  static Future<int> getInstalledIosWidgetsCount() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return 0;
+    try {
+      return await _channel
+              .invokeMethod<int>('getInstalledWidgetsCount')
+              .timeout(
+                const Duration(milliseconds: 600),
+                onTimeout: () => 0,
+              ) ??
+          0;
+    } on Object {
+      return 0;
+    }
+  }
+
+  /// Đồng bộ dữ liệu JSON + tải trước tối đa 3 ảnh thumbnail nén (ImageIO 600px)
+  /// vào mọi App Group container trên iOS và gọi `WidgetCenter.shared.reloadAllTimelines()`.
+  static Future<bool> syncNativeIosWidget({
+    required String latestJson,
+    required String feedJson,
+    required String updatedAt,
+    required List<String> imageUrls,
+  }) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return false;
+    try {
+      return await _channel
+              .invokeMethod<bool>('syncWidgetData', {
+                'latestJson': latestJson,
+                'feedJson': feedJson,
+                'updatedAt': updatedAt,
+                'imageUrls': imageUrls,
+              })
+              .timeout(
+                const Duration(milliseconds: 800),
+                onTimeout: () => false,
+              ) ??
+          false;
+    } on Object {
+      return false;
+    }
+  }
+
+  /// Xoá sạch dữ liệu và ảnh đệm trong App Group iOS khi đăng xuất.
+  static Future<bool> clearNativeIosWidget() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return false;
+    try {
+      return await _channel
+              .invokeMethod<bool>('clearWidgetData')
+              .timeout(
+                const Duration(milliseconds: 600),
+                onTimeout: () => false,
+              ) ??
+          false;
+    } on Object {
       return false;
     }
   }

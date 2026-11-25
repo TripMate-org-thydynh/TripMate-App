@@ -130,6 +130,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                             ),
                             child: ClipOval(
                               child: CachedNetworkImage(
+                                // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                                memCacheWidth: 480,
                                 imageUrl: optimizedMedia(
                                   m.mediaUrl,
                                   width: 160,
@@ -252,6 +254,8 @@ class _PhotoMapScreenState extends ConsumerState<PhotoMapScreen> {
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
                             child: CachedNetworkImage(
+                              // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                              memCacheWidth: 1080,
                               imageUrl: optimizedMedia(
                                 _selectedMoment!.mediaUrl,
                                 width: 800,

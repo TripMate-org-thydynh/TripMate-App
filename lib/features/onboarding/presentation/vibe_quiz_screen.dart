@@ -9,9 +9,11 @@ import '../../../core/api_service.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
 
-/// Onboarding vibe quiz — 5 câu swipe nhanh để cá nhân hoá gu du lịch.
-/// Phong cách Gen Z Neo-Brutalist: mỗi bước 1 khối màu accent full-bleed,
-/// progress segment rời, heading khổng lồ, card viền ink + hard shadow.
+/// Onboarding vibe quiz — 5 câu chọn nhanh để cá nhân hoá gu du lịch.
+/// Đây là NƠI DUY NHẤT hỏi vibe (màn đăng nhập không còn băng chuyền vibe).
+/// Thẻ trả lời cao vừa nội dung (trước đây mỗi thẻ chiếm nửa màn, chữ lọt thỏm
+/// giữa khoảng trống), có trạng thái đã chọn 150ms trước khi sang câu mới, và
+/// nút quay lại câu trước.
 /// Khi xong gọi authProvider.completeOnboarding() để router chuyển sang dashboard.
 class VibeQuizScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
@@ -25,6 +27,7 @@ class VibeQuizScreen extends ConsumerStatefulWidget {
 class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
   int _step = 0;
   final Map<int, int> _answers = {};
+  int? _selected;
 
   List<_Question> get _questions => [
     _Question('onboarding.q_trip'.tr(), [
@@ -79,14 +82,32 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
     ]),
   ];
 
-  void _pick(int choice) {
-    HapticFeedback.mediumImpact();
+  Future<void> _pick(int choice) async {
+    if (_selected != null) return;
+    HapticFeedback.selectionClick();
     _answers[_step] = choice;
+    setState(() => _selected = choice);
+    // Cho thấy lựa chọn đã ăn rồi mới sang câu mới.
+    await Future<void>.delayed(
+      const Duration(milliseconds: GenZTokens.durationFast + 30),
+    );
+    if (!mounted) return;
     if (_step < _questions.length - 1) {
-      setState(() => _step++);
+      setState(() {
+        _step++;
+        _selected = null;
+      });
     } else {
-      _finish();
+      await _finish();
     }
+  }
+
+  void _back() {
+    if (_step == 0) return;
+    setState(() {
+      _step--;
+      _selected = null;
+    });
   }
 
   Future<void> _finish() async {
@@ -139,9 +160,20 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top: progress segment rời + skip
+              // Top: quay lại + progress segment rời + bỏ qua
               Row(
                 children: [
+                  if (_step > 0) ...[
+                    IconButton(
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).backButtonTooltip,
+                      onPressed: _back,
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
+                    ),
+                    const SizedBox(width: GenZTokens.space2),
+                  ],
                   Expanded(
                     child: SegmentedProgress(
                       total: _questions.length,
@@ -150,8 +182,8 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
                     ),
                   ),
                   const SizedBox(width: GenZTokens.space4),
-                  GestureDetector(
-                    onTap: _finish,
+                  TextButton(
+                    onPressed: _finish,
                     child: Text(
                       'common.skip_caps'.tr(),
                       style: AppFonts.mono(
@@ -194,35 +226,23 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
               ),
               const SizedBox(height: 32),
 
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: _choiceCard(
-                        choice: q.choices[0],
-                        idx: 0,
-                        paper: paper,
-                        line: line,
-                        fill: fill,
-                        ink: ink,
-                        inkSoft: inkSoft,
-                      ),
-                    ),
-                    const SizedBox(height: GenZTokens.space4),
-                    Expanded(
-                      child: _choiceCard(
-                        choice: q.choices[1],
-                        idx: 1,
-                        paper: paper,
-                        line: line,
-                        fill: fill,
-                        ink: ink,
-                        inkSoft: inkSoft,
-                      ),
-                    ),
-                  ],
+              for (var i = 0; i < q.choices.length; i++) ...[
+                if (i > 0) const SizedBox(height: GenZTokens.space3),
+                _choiceCard(
+                  choice: q.choices[i],
+                  idx: i,
+                  paper: paper,
+                  line: line,
+                  fill: fill,
+                  ink: ink,
+                  inkSoft: inkSoft,
+                  accent: accent,
+                  accentSoft: isDark
+                      ? GenZTokens.accentSoftDark
+                      : GenZTokens.accentSoft,
                 ),
-              ),
+              ],
+              const Spacer(),
             ],
           ),
         ),
@@ -238,44 +258,72 @@ class _VibeQuizScreenState extends ConsumerState<VibeQuizScreen> {
     required Color fill,
     required Color ink,
     required Color inkSoft,
+    required Color accent,
+    required Color accentSoft,
   }) {
-    return GestureDetector(
-      onTap: () => _pick(idx),
-      child: Container(
-        padding: const EdgeInsets.all(20),
+    final selected =
+        _selected == idx || (_selected == null && _answers[_step] == idx);
+    final radius = BorderRadius.circular(GenZTokens.radiusCard);
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: GenZTokens.durationFast),
+        curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
-          color: paper,
-          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+          color: selected ? accentSoft : paper,
+          borderRadius: radius,
+          border: Border.all(
+            color: selected ? accent : line,
+            width: selected ? 1.5 : GenZTokens.borderWidthThin,
+          ),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: fill,
-                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-                border: Border.all(
-                  color: line,
-                  width: GenZTokens.borderWidthThin,
-                ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            borderRadius: radius,
+            onTap: () => _pick(idx),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: selected ? paper : fill,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
+                    ),
+                    child: Icon(
+                      choice.icon,
+                      color: selected ? accent : ink,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      choice.label,
+                      style: AppFonts.heading(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: ink,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    selected
+                        ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+                        : PhosphorIcons.caretRight(),
+                    size: 20,
+                    color: selected ? accent : inkSoft,
+                  ),
+                ],
               ),
-              child: Icon(choice.icon, color: ink, size: 26),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                choice.label,
-                style: AppFonts.heading(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: ink,
-                ),
-              ),
-            ),
-            Icon(PhosphorIcons.arrowRight(), size: 20, color: inkSoft),
-          ],
+          ),
         ),
       ),
     );

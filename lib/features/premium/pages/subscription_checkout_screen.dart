@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -40,7 +41,9 @@ import '../presentation/vietqr_payment_sheet.dart';
 /// Giá và kỳ hạn **không** hardcode ở đây: chép số ra client là lúc nào đó UI
 /// nói một giá còn server thu một giá khác.
 class SubscriptionCheckoutScreen extends ConsumerStatefulWidget {
-  const SubscriptionCheckoutScreen({super.key});
+  final String initialPlan;
+
+  const SubscriptionCheckoutScreen({super.key, this.initialPlan = 'PLUS'});
 
   @override
   ConsumerState<SubscriptionCheckoutScreen> createState() =>
@@ -53,7 +56,7 @@ class _SubscriptionCheckoutScreenState
   bool _loading = true;
   bool _failed = false;
 
-  String _plan = 'PLUS';
+  late String _plan;
   int _months = 1;
   String? _gateway;
 
@@ -81,6 +84,7 @@ class _SubscriptionCheckoutScreenState
   @override
   void initState() {
     super.initState();
+    _plan = widget.initialPlan;
     _fetch();
   }
 
@@ -764,7 +768,10 @@ class _SubscriptionCheckoutScreenState
             'SEPAY' => 'VietQR',
             'MOMO' => 'MoMo',
             'ZALOPAY' => 'ZaloPay',
-            'GOOGLE_PLAY' => 'Google Play',
+            'GOOGLE_PLAY' =>
+              defaultTargetPlatform == TargetPlatform.iOS
+                  ? 'Apple App Store'
+                  : 'Google Play',
             _ => gateway,
           },
           style: AppFonts.heading(

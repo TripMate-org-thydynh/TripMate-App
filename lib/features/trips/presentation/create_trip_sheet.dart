@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../../premium/data/entitlement_provider.dart';
 import '../../premium/presentation/paywall_sheet.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -6,28 +8,62 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/utils/app_share.dart';
 import '../application/trips_providers.dart';
 
 /// Bottom sheet: Tạo chuyến mới hoặc Tham gia bằng mã mời — wired vào BE thật.
 class CreateTripSheet extends ConsumerStatefulWidget {
   final bool isDarkMode;
-  const CreateTripSheet({super.key, required this.isDarkMode});
 
-  static Future<void> show(BuildContext context, bool isDarkMode) {
+  /// Điểm đến điền sẵn (từ ô tìm kiếm / trang điểm đến ở home).
+  final String? initialDestination;
+  const CreateTripSheet({
+    super.key,
+    required this.isDarkMode,
+    this.initialDestination,
+  });
+
+  static Future<void> show(
+    BuildContext context,
+    bool isDarkMode, {
+    String? initialDestination,
+  }) {
+    // Sheet nhảy/lệch khi chạm ô nhập vì 3 thứ cộng dồn: padding đáy đổi
+    // đột ngột theo viewInsets (không animate), sheet không giới hạn chiều
+    // cao nên bị đẩy sát lên mép trên, và SafeArea bên trong cộng thêm inset
+    // đáy lần nữa. Giờ: dùng useSafeArea, AnimatedPadding easeOutCubic theo
+    // bàn phím, giới hạn chiều cao, SafeArea trong sheet bỏ cạnh dưới.
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: CreateTripSheet(isDarkMode: isDarkMode),
-      ),
+      builder: (sheetCtx) {
+        final mq = MediaQuery.of(sheetCtx);
+        final keyboard = mq.viewInsets.bottom;
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.only(
+            bottom: math.max(keyboard, mq.padding.bottom) + 16,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: math.max(
+                240.0,
+                (mq.size.height - keyboard - mq.padding.top) * 0.92,
+              ),
+            ),
+            child: CreateTripSheet(
+              isDarkMode: isDarkMode,
+              initialDestination: initialDestination,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -96,6 +132,13 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
   Color get _danger => _dark ? GenZTokens.dangerDark : GenZTokens.danger;
 
   @override
+  void initState() {
+    super.initState();
+    final dest = widget.initialDestination?.trim();
+    if (dest != null && dest.isNotEmpty) _destination.text = dest;
+  }
+
+  @override
   void dispose() {
     _name.dispose();
     _code.dispose();
@@ -149,9 +192,11 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
               vibe: _vibe,
               isPublic: _isPublic,
             );
-        if (mounted) Navigator.pop(context);
+        if (!mounted) return;
+        Navigator.pop(context);
         // Mời squad ngay: chia sẻ mã mời chuyến vừa tạo.
-        await Share.share(
+        await AppShare.shareText(
+          context,
           'trips.share_body'.tr(
             namedArgs: {'name': trip.name, 'code': trip.inviteCode},
           ),
@@ -229,6 +274,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
         boxShadow: GenZTokens.hardShadow(_ink, _dark),
       ),
       child: SafeArea(
+        bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           child: Column(
@@ -259,6 +305,8 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
 
               Flexible(
                 child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   child: _tab == 0 ? _buildCreateForm() : _buildJoinForm(),
                 ),
               ),

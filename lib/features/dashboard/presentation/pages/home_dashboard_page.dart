@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/trip_illustration.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/services/media_uploader.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -7,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../moments/data/moments_repository.dart';
 import '../../data/home_feed_repository.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/widgets/faded_image.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
@@ -18,6 +20,7 @@ import '../../../social/presentation/pages/notifications_screen.dart';
 
 import '../widgets/social_chaos_marquee.dart';
 import '../widgets/weather_forecast_sheet.dart';
+import '../widgets/home_search_section.dart';
 import '../widgets/upcoming_reservations_widget.dart';
 import '../widgets/friend_presence_panel.dart';
 import '../widgets/daily_recap_widget.dart';
@@ -30,6 +33,19 @@ import '../../../trips/domain/trip_vibe.dart';
 import '../../../trips/presentation/trip_hub_screen.dart';
 import '../../../trips/presentation/create_trip_sheet.dart';
 import '../../../premium/presentation/trial_banner.dart';
+
+/// Chuyến nổi bật ở home: đang đi → chuyến đó; không thì chuyến sắp đi gần
+/// nhất; không có cả hai thì chuyến đầu danh sách. `null` khi chưa có chuyến.
+Trip? featuredTrip(List<Trip> trips) {
+  if (trips.isEmpty) return null;
+  final now = DateTime.now();
+  for (final t in trips) {
+    if (!t.startDate.isAfter(now) && !t.endDate.isBefore(now)) return t;
+  }
+  final upcoming = trips.where((t) => t.startDate.isAfter(now)).toList()
+    ..sort((a, b) => a.startDate.compareTo(b.startDate));
+  return upcoming.isNotEmpty ? upcoming.first : trips.first;
+}
 
 class HomeDashboardPage extends ConsumerStatefulWidget {
   final VoidCallback onNavigateToLiveMode;
@@ -66,32 +82,82 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     });
   }
 
+  (double, double) _coordsForTrip(Trip? trip) {
+    final text = '${trip?.destination ?? ''} ${trip?.name ?? ''}'.toLowerCase();
+    if (text.contains('hà nội') || text.contains('ha noi') || text.contains('hanoi')) {
+      return (21.0285, 105.8542);
+    }
+    if (text.contains('đà nẵng') || text.contains('da nang') || text.contains('danang')) {
+      return (16.0470, 108.2060);
+    }
+    if (text.contains('sài gòn') ||
+        text.contains('sai gon') ||
+        text.contains('hồ chí minh') ||
+        text.contains('ho chi minh') ||
+        text.contains('hcm') ||
+        text.contains('tp.hcm')) {
+      return (10.7769, 106.7009);
+    }
+    if (text.contains('phú quốc') || text.contains('phu quoc')) {
+      return (10.2899, 103.9840);
+    }
+    if (text.contains('nha trang')) {
+      return (12.2388, 109.1967);
+    }
+    if (text.contains('đà lạt') || text.contains('da lat') || text.contains('dalat')) {
+      return (11.9406, 108.4452);
+    }
+    if (text.contains('sa pa') || text.contains('sapa')) {
+      return (22.3364, 103.8438);
+    }
+    if (text.contains('hạ long') || text.contains('ha long') || text.contains('halong')) {
+      return (20.9599, 107.0425);
+    }
+    if (text.contains('ninh bình') || text.contains('ninh binh')) {
+      return (20.2506, 105.9745);
+    }
+    if (text.contains('hội an') || text.contains('hoi an')) {
+      return (15.8801, 108.3380);
+    }
+    if (text.contains('huế') || text.contains('hue')) {
+      return (16.4637, 107.5909);
+    }
+    if (text.contains('vũng tàu') || text.contains('vung tau')) {
+      return (10.3460, 107.0843);
+    }
+    if (text.contains('quy nhơn') || text.contains('quy nhon')) {
+      return (13.7830, 109.2197);
+    }
+    if (text.contains('cần thơ') || text.contains('can tho')) {
+      return (10.0452, 105.7469);
+    }
+    if (text.contains('bangkok')) {
+      return (13.7563, 100.5018);
+    }
+    if (text.contains('tokyo')) {
+      return (35.6762, 139.6503);
+    }
+    if (text.contains('seoul')) {
+      return (37.5665, 126.9780);
+    }
+    if (text.contains('singapore')) {
+      return (1.3521, 103.8198);
+    }
+    return (11.9406, 108.4452);
+  }
+
   Future<void> _fetchWeather() async {
     try {
       final tripsAsync = ref.read(tripsProvider);
-      double lat = 11.9406;
-      double lng = 108.4452;
-      String tripName = '';
+      Trip? activeTrip;
 
       tripsAsync.whenData((trips) {
         if (trips.isNotEmpty) {
-          tripName = trips.first.name;
+          activeTrip = featuredTrip(trips);
         }
       });
 
-      final name = tripName.toLowerCase();
-      if (name.contains('hà nội') || name.contains('ha noi')) {
-        lat = 21.0285;
-        lng = 105.8542;
-      } else if (name.contains('đà nẵng') || name.contains('da nang')) {
-        lat = 16.0470;
-        lng = 108.2060;
-      } else if (name.contains('sài gòn') ||
-          name.contains('hồ chí minh') ||
-          name.contains('hcm')) {
-        lat = 10.7769;
-        lng = 106.7009;
-      }
+      final (lat, lng) = _coordsForTrip(activeTrip);
 
       final weather = await ref
           .read(weatherServiceProvider)
@@ -109,6 +175,64 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         });
       }
     }
+  }
+
+  /// Nhãn đếm ngược: chưa đi → "còn N ngày nữa đi"; đang đi → số ngày còn lại.
+  (String, int) _countdown(Trip t) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = DateTime(t.startDate.year, t.startDate.month, t.startDate.day);
+    if (start.isAfter(today)) {
+      final n = start.difference(today).inDays;
+      return ('dashboard.days_until'.tr(namedArgs: {'days': '$n'}), n);
+    }
+    final daysLeft = t.endDate.difference(now).inDays;
+    final label = daysLeft > 0
+        ? 'dashboard.days_left'.tr(namedArgs: {'days': '$daysLeft'})
+        : (daysLeft == 0
+              ? 'dashboard.days_today'.tr()
+              : 'dashboard.days_ended'.tr());
+    return (label, daysLeft);
+  }
+
+  void _openTrip(Trip t) => Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
+    ),
+  );
+
+  /// Ô tìm kiếm + chip, rồi dải "Chuyến đi của bạn" (khi có chuyến).
+  Widget _buildSearchAndTrips() {
+    final trips = ref
+        .watch(tripsProvider)
+        .maybeWhen(data: (t) => t, orElse: () => const <Trip>[]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HomeSearchSection(
+          trips: trips,
+          isDarkMode: isDarkMode,
+          onOpenTrip: _openTrip,
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildTripsStrip() {
+    final trips = ref
+        .watch(tripsProvider)
+        .maybeWhen(data: (t) => t, orElse: () => const <Trip>[]);
+    if (trips.length < 2) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: HomeTripsStrip(
+        trips: trips,
+        isDarkMode: isDarkMode,
+        onOpenTrip: _openTrip,
+      ),
+    );
   }
 
   // ─── Color helpers ───────────────────────────────────────────────────────────
@@ -148,7 +272,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     final cover = ref
         .watch(tripsProvider)
         .maybeWhen(
-          data: (trips) => trips.isEmpty ? null : trips.first.coverImage,
+          data: (trips) => featuredTrip(trips)?.coverImage,
           orElse: () => null,
         );
     final topInset = MediaQuery.paddingOf(context).top;
@@ -171,12 +295,14 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 offset: Offset(0, -(_scroll.hasClients ? _scroll.offset : 0.0)),
                 child: child,
               ),
-              child: FadedImage(
-                imageUrl: cover,
-                fadeTo: _bg,
-                height: topInset + _heroImageHeight,
-                glowExtent: 420,
-                topFade: true,
+              child: RepaintBoundary(
+                child: FadedImage(
+                  imageUrl: cover,
+                  fadeTo: _bg,
+                  height: topInset + _heroImageHeight,
+                  glowExtent: 420,
+                  topFade: true,
+                ),
               ),
             ),
           _buildScroll(context),
@@ -234,7 +360,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         Consumer(
           builder: (context, ref, _) {
             final tripId = ref.watch(tripsProvider).maybeWhen(
-              data: (trips) => trips.isEmpty ? null : trips.first.id,
+              data: (trips) => featuredTrip(trips)?.id,
               orElse: () => null,
             );
             if (tripId == null) {
@@ -629,7 +755,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         final trip = ref
             .watch(tripsProvider)
             .maybeWhen(
-              data: (trips) => trips.isEmpty ? null : trips.first,
+              data: (trips) => featuredTrip(trips),
               orElse: () => null,
             );
         final hasCover = trip?.coverImage?.isNotEmpty ?? false;
@@ -638,9 +764,11 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             children: [
               SizedBox(height: topInset),
               _buildHeader(context),
+              _buildSearchAndTrips(),
               const TrialBanner(),
               PopIn(index: 0, child: _buildTripCoverCard(context)),
               const SizedBox(height: 24),
+              _buildTripsStrip(),
             ],
           );
         }
@@ -653,10 +781,12 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
               children: [
                 SizedBox(height: topInset),
                 _buildHeader(context),
+                _buildSearchAndTrips(),
                 // Dải tin squad chạy ngang, nằm đè lên ảnh ngay dưới header.
                 const SocialChaosMarquee(),
                 const TrialBanner(),
-                SizedBox(height: imageHeight - 150 - 42),
+                // Trừ chỗ ô tìm kiếm + chip (~126) để tên chuyến vẫn nằm ở mép ảnh.
+                SizedBox(height: math.max(24.0, imageHeight - 150 - 42 - 126)),
                 PopIn(
                   index: 0,
                   child: Padding(
@@ -665,6 +795,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
+                _buildTripsStrip(),
               ],
             ),
           ],
@@ -797,7 +928,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
         final members = ref
             .watch(tripsProvider)
             .maybeWhen(
-              data: (trips) => trips.isEmpty ? const [] : trips.first.members,
+              data: (trips) => featuredTrip(trips)?.members ?? const [],
               orElse: () => const [],
             );
         if (members.isEmpty) return const SizedBox.shrink();
@@ -841,6 +972,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               ),
                             )
                           : CachedNetworkImage(
+                              // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                              memCacheWidth: 1080,
                               imageUrl: shown[i].avatarUrl!,
                               fit: BoxFit.cover,
                               placeholder: (c, url) => Container(color: _bg),
@@ -906,7 +1039,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             error: (e, _) => _tripCoverError(context, ref),
             data: (trips) => trips.isEmpty
                 ? _tripCoverEmpty(context)
-                : _tripCoverReal(context, trips.first),
+                : _tripCoverReal(context, featuredTrip(trips)!),
           );
         },
       ),
@@ -932,12 +1065,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   }
 
   Widget _tripCoverReal(BuildContext context, Trip t) {
-    final daysLeft = t.endDate.difference(DateTime.now()).inDays;
-    final daysLabel = daysLeft > 0
-        ? 'dashboard.days_left'.tr(namedArgs: {'days': '$daysLeft'})
-        : (daysLeft == 0
-              ? 'dashboard.days_today'.tr()
-              : 'dashboard.days_ended'.tr());
+    final (daysLabel, daysLeft) = _countdown(t);
     final vibe = TripVibe.of(t.vibe);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -1032,6 +1160,12 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 icon: PhosphorIcons.clock(),
                 selected: daysLeft >= 0,
               ),
+              if (_weatherData != null)
+                PillTag(
+                  text:
+                      '${_weatherData!.temp.toStringAsFixed(0)}°C · ${_weatherData!.description}',
+                  icon: _weatherData!.icon,
+                ),
               PillTag(text: t.inviteCode, icon: PhosphorIcons.hash()),
               if (vibe != null)
                 PillTag(text: vibe.label, icon: vibe.icon, color: vibe.color),
@@ -1044,12 +1178,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
 
   /// Tên, điểm đến và các nhãn của chuyến — nằm dưới ảnh đã tan.
   Widget _tripInfo(BuildContext context, Trip t) {
-    final daysLeft = t.endDate.difference(DateTime.now()).inDays;
-    final daysLabel = daysLeft > 0
-        ? 'dashboard.days_left'.tr(namedArgs: {'days': '$daysLeft'})
-        : (daysLeft == 0
-              ? 'dashboard.days_today'.tr()
-              : 'dashboard.days_ended'.tr());
+    final (daysLabel, daysLeft) = _countdown(t);
     final vibe = TripVibe.of(t.vibe);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -1112,6 +1241,12 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 icon: PhosphorIcons.clock(),
                 selected: daysLeft >= 0,
               ),
+              if (_weatherData != null)
+                PillTag(
+                  text:
+                      '${_weatherData!.temp.toStringAsFixed(0)}°C · ${_weatherData!.description}',
+                  icon: _weatherData!.icon,
+                ),
               PillTag(text: t.inviteCode, icon: PhosphorIcons.hash()),
               if (vibe != null)
                 PillTag(text: vibe.label, icon: vibe.icon, color: vibe.color),
@@ -1197,49 +1332,74 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     );
   }
 
-  // Chưa có chuyến → CTA tạo chuyến đầu tiên.
+  // Chưa có chuyến → "vé lên máy bay còn trống": FROM bạn → TO ???, đường
+  // xé răng cưa, các ô GATE/SEAT/SQUAD bỏ trống và mã vạch ở cuống. Tối giản:
+  // nền giấy, chữ mono, một nút màu nhấn duy nhất (thay bản minh hoạ + list
+  // 3 bước trông như template).
   Widget _tripCoverEmpty(BuildContext context) {
+    void create() => CreateTripSheet.show(context, isDarkMode);
     return _tripCoverShell(
-      onTap: () => CreateTripSheet.show(context, isDarkMode),
-      child: Container(
-        color: _accent,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      onTap: create,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(PhosphorIcons.ticket(), size: 36, color: _onAccent),
-            const SizedBox(height: 8),
+            const Center(
+              child: ExcludeSemantics(
+                child: TripIllustrationView(
+                  TripIllustration.travelers,
+                  height: 150,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
             Text(
               'dashboard.no_trips_title'.tr(),
               style: AppFonts.heading(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                color: _onAccent,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
                 letterSpacing: -0.5,
+                color: _ink,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               'dashboard.no_trips_subtitle'.tr(),
-              style: AppFonts.body(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: _onAccent,
-              ),
+              style: AppFonts.body(fontSize: 15, height: 1.4, color: _inkSoft),
             ),
-            const SizedBox(height: 14),
-            PillTag(
-              text: 'dashboard.create_trip'.tr(),
-              icon: PhosphorIcons.plus(),
-              color: GenZTokens.paper,
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton.icon(
+                onPressed: create,
+                icon: Icon(PhosphorIcons.plus(), size: 18),
+                label: Text(
+                  'dashboard.create_trip'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _onAccent,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _accent,
+                  foregroundColor: _onAccent,
+                  elevation: 0,
+                  minimumSize: const Size(0, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
 
   // ─── ROAST PANEL ─────────────────────────────────────────────────────────────
 
@@ -1421,7 +1581,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                               MaterialPageRoute(
                                 builder: (_) => MemoryWallScreen(
                                   isDarkMode: isDarkMode,
-                                  onThemeToggle: onThemeToggle,
                                 ),
                               ),
                             ),
@@ -1505,6 +1664,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: CachedNetworkImage(
+              // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+              memCacheWidth: 1080,
               imageUrl: imageUrl,
               height: 130,
               width: double.infinity,
@@ -1539,7 +1700,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           const SizedBox(height: 12),
           Text(
             title,
-            style: GoogleFonts.patrickHand(
+            style: AppFonts.body(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: _ink,
@@ -1548,7 +1709,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
           const SizedBox(height: 2),
           Text(
             author,
-            style: GoogleFonts.patrickHand(fontSize: 14, color: _inkSoft),
+            style: AppFonts.body(fontSize: 14, color: _inkSoft),
           ),
           const SizedBox(height: 4),
           Row(
@@ -1609,3 +1770,5 @@ class _InkCircleButton extends StatelessWidget {
     );
   }
 }
+
+

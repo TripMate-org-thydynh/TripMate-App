@@ -73,7 +73,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: _isDark ? 'Chế độ sáng' : 'Chế độ tối',
+            tooltip: _isDark ? 'theme.preview_light_mode'.tr() : 'theme.preview_dark_mode'.tr(),
             icon: Icon(
               _isDark ? PhosphorIcons.sun() : PhosphorIcons.moon(),
               color: ink,
@@ -119,8 +119,8 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
                         children: [
                           Text(
                             _isDark
-                                ? 'B — Tối graphite (Graphite & Xanh mòng két)'
-                                : 'A — Sáng kem (Kem dịu & Đất nung)',
+                                ? 'theme.preview_dark_title'.tr()
+                                : 'theme.preview_light_title'.tr(),
                             style: AppFonts.heading(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
@@ -130,8 +130,8 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
                           const SizedBox(height: 2),
                           Text(
                             _isDark
-                                ? 'Nền #141617 · Nhấn #5C9A90'
-                                : 'Nền #F7F3EC · Nhấn #B4543A',
+                                ? 'theme.preview_dark_colors'.tr()
+                                : 'theme.preview_light_colors'.tr(),
                             style: AppFonts.body(
                               fontSize: 12,
                               color: inkSoft,
@@ -144,7 +144,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
                 ),
                 const SizedBox(height: GenZTokens.space4),
                 Text(
-                  'Bảng màu tối giản, chuyên nghiệp theo đặc tả mới. Mỗi màn hình chỉ có duy nhất một điểm nhấn chính và các trạng thái ngữ nghĩa rõ ràng.',
+                  'theme.preview_desc'.tr(),
                   style: AppFonts.body(
                     fontSize: 13,
                     color: inkSoft,
@@ -169,7 +169,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Xem trước thành phần UI',
+                  'theme.preview_components'.tr(),
                   style: AppFonts.heading(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -208,7 +208,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Đà Lạt Săn Mây',
+                              'theme.preview_sample_trip'.tr(),
                               style: AppFonts.heading(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -217,7 +217,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '3 ngày 2 đêm · 4 thành viên',
+                              'theme.preview_sample_meta'.tr(),
                               style: AppFonts.body(
                                 fontSize: 12,
                                 color: inkSoft,
@@ -250,7 +250,7 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
 
                 // Linear progress
                 Text(
-                  'Tiến độ chuẩn bị: 75%',
+                  'theme.preview_progress'.tr(),
                   style: AppFonts.body(
                     fontSize: 13,
                     color: inkSoft,
@@ -272,11 +272,11 @@ class _ThemePreviewScreenState extends State<ThemePreviewScreen> {
                 // Semantic tags
                 Row(
                   children: [
-                    _tag(success, 'Đã xác nhận', isDark: _isDark),
+                    _tag(success, 'theme.preview_tag_confirmed'.tr(), isDark: _isDark),
                     const SizedBox(width: GenZTokens.space2),
-                    _tag(warning, 'Đang chờ duyệt', isDark: _isDark),
+                    _tag(warning, 'theme.preview_tag_pending'.tr(), isDark: _isDark),
                     const SizedBox(width: GenZTokens.space2),
-                    _tag(info, 'Thông tin', isDark: _isDark),
+                    _tag(info, 'theme.preview_tag_info'.tr(), isDark: _isDark),
                   ],
                 ),
               ],

@@ -150,9 +150,12 @@ class TripPollsScreen extends ConsumerWidget {
         ],
       ),
     );
-    if (ok != true) return;
     final question = qCtrl.text.trim();
-    final options = optsCtrl.text
+    final rawOpts = optsCtrl.text;
+    qCtrl.dispose();
+    optsCtrl.dispose();
+    if (ok != true) return;
+    final options = rawOpts
         .split('\n')
         .map((e) => e.trim())
         .where((e) => e.isNotEmpty)
@@ -170,10 +173,21 @@ class TripPollsScreen extends ConsumerWidget {
       return;
     }
     HapticFeedback.mediumImpact();
-    await ref
-        .read(pollsRepositoryProvider)
-        .create(tripId, question: question, options: options);
-    ref.invalidate(pollsProvider(tripId));
+    try {
+      await ref
+          .read(pollsRepositoryProvider)
+          .create(tripId, question: question, options: options);
+      ref.invalidate(pollsProvider(tripId));
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('common.save_failed'.tr()),
+            backgroundColor: dark ? GenZTokens.dangerDark : GenZTokens.danger,
+          ),
+        );
+      }
+    }
   }
 
   @override

@@ -41,6 +41,51 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
   Color get _textPri => _ink;
   Color get _textSec => _isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
+  Future<void> _confirmLogout() async {
+    HapticFeedback.selectionClick();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: _surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+          side: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+        ),
+        title: Text(
+          'settings.logout_title'.tr(),
+          style: AppFonts.heading(fontWeight: FontWeight.w700, color: _textPri),
+        ),
+        content: Text(
+          'settings.logout_confirm_body'.tr(),
+          style: AppFonts.body(color: _textSec, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'general.cancel'.tr(),
+              style: AppFonts.body(color: _textSec),
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: _danger,
+              foregroundColor:
+                  _isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+              ),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('settings.logout_btn'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await ref.read(authProvider.notifier).logout();
+  }
+
   Future<void> _confirmDelete() async {
     HapticFeedback.heavyImpact();
     final ok = await showDialog<bool>(
@@ -154,6 +199,40 @@ class _AccountPrivacyScreenState extends ConsumerState<AccountPrivacyScreen> {
             AccountPrivacyScreen.privacyUrl,
           ),
           const SizedBox(height: GenZTokens.space5),
+
+          // Đăng xuất
+          Container(
+            padding: const EdgeInsets.all(GenZTokens.space4),
+            margin: const EdgeInsets.only(bottom: GenZTokens.space5),
+            decoration: BoxDecoration(
+              color: _surface,
+              borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+              border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: _textPri,
+                  side: BorderSide(color: _line, width: GenZTokens.borderWidthThin),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
+                  ),
+                ),
+                onPressed: _deleting ? null : _confirmLogout,
+                icon: Icon(PhosphorIcons.signOut(), size: 18, color: _textPri),
+                label: Text(
+                  'settings.logout_btn'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _textPri,
+                  ),
+                ),
+              ),
+            ),
+          ),
 
           // Danger zone
           Text(

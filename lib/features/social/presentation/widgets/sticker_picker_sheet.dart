@@ -189,6 +189,8 @@ class _StickerPickerSheetState extends ConsumerState<StickerPickerSheet> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
         child: CachedNetworkImage(
+          // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+          memCacheWidth: 256,
           imageUrl: s.mediaUrl,
           fit: BoxFit.cover,
           placeholder: (_, _) => ColoredBox(color: _fill),

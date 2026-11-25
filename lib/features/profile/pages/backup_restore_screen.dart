@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/utils/app_share.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../trips/application/trips_providers.dart';
 import '../data/profile_provider.dart';
@@ -71,7 +71,8 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     setState(() => _busy = true);
     try {
       final json = _buildExport();
-      await Share.share(
+      await AppShare.shareText(
+        context,
         json,
         subject: 'TripMate — ${'profile.export_title'.tr()}',
       );

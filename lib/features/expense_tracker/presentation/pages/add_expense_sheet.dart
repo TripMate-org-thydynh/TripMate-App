@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../dashboard/data/home_feed_repository.dart';
@@ -5,6 +7,7 @@ import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/network/error_message.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -32,9 +35,13 @@ class AddExpenseSheet extends ConsumerStatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
+      builder: (sheetCtx) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          bottom: math.max(
+                MediaQuery.viewInsetsOf(sheetCtx).bottom,
+                MediaQuery.paddingOf(sheetCtx).bottom,
+              ) +
+              16,
         ),
         child: AddExpenseSheet(tripId: tripId, isDarkMode: isDarkMode),
       ),
@@ -90,6 +97,21 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
       _snack('expense.invalid_amount'.tr(), error: true);
       return;
     }
+    final people = ref
+            .read(tripBalancesProvider(widget.tripId))
+            .valueOrNull
+            ?.balances ??
+        const [];
+    final effectiveParticipants =
+        _participants ?? people.map((p) => p.user.id).toSet();
+    if ((_participants != null && _participants!.isEmpty) ||
+        (people.length >= 2 && effectiveParticipants.isEmpty)) {
+      _snack(
+        'expense.pick_participant_warn'.tr(),
+        error: true,
+      );
+      return;
+    }
     final paidById = ref.read(authProvider).user?['id'] as String?;
     setState(() => _busy = true);
     HapticFeedback.mediumImpact();
@@ -125,7 +147,10 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
       }
     } on ApiException catch (e) {
       _snack(e.message, error: true);
-      setState(() => _busy = false);
+    } catch (e) {
+      _snack(friendlyError(e), error: true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 

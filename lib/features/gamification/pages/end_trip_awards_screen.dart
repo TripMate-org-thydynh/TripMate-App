@@ -2,11 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../../core/app_messenger.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../../core/utils/app_share.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../trips/application/trips_providers.dart';
 import '../data/games_repository.dart';
@@ -44,7 +44,8 @@ class _EndTripAwardsScreenState extends ConsumerState<EndTripAwardsScreen>
     final lines = awards
         .map((a) => '${a['label']}: ${a['winner']}')
         .join('\n');
-    await Share.share(
+    await AppShare.shareText(
+      context,
       '${tr('games.awards_title')}\n$lines',
       subject: 'TripMate — ${tr('games.awards_title')}',
     );

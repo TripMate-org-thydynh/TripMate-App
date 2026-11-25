@@ -8,6 +8,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../core/services/widget_sync.dart';
 import '../../../../core/theme/app_fonts.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
+import '../../../../core/widgets/report_sheet.dart';
 import '../../data/moments_repository.dart';
 
 /// Màn xem khoảnh khắc mở từ widget màn hình chính.
@@ -31,6 +32,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
   late final PageController _pager = PageController(
     initialPage: widget.initialIndex,
   );
+  late int _currentIndex = widget.initialIndex;
 
   List<WidgetMoment>? _items;
   String? _error;
@@ -115,26 +117,47 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
     );
   }
 
-  Widget _header(BuildContext context, Color ink) => Padding(
-    padding: const EdgeInsets.fromLTRB(8, 4, 16, 4),
-    child: Row(
-      children: [
-        IconButton(
-          tooltip: 'common.back'.tr(),
-          icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
-        Text(
-          'moments.viewer_title'.tr(),
-          style: AppFonts.heading(
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-            color: ink,
+  Widget _header(BuildContext context, Color ink) {
+    final items = _items;
+    final current = (items != null &&
+            items.isNotEmpty &&
+            _currentIndex >= 0 &&
+            _currentIndex < items.length)
+        ? items[_currentIndex]
+        : null;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+      child: Row(
+        children: [
+          IconButton(
+            tooltip: 'common.back'.tr(),
+            icon: Icon(PhosphorIcons.arrowLeft(), color: ink),
+            onPressed: () => Navigator.of(context).maybePop(),
           ),
-        ),
-      ],
-    ),
-  );
+          Expanded(
+            child: Text(
+              'moments.viewer_title'.tr(),
+              style: AppFonts.heading(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: ink,
+              ),
+            ),
+          ),
+          if (current != null && current.id.isNotEmpty)
+            IconButton(
+              tooltip: 'report.title'.tr(),
+              icon: Icon(PhosphorIcons.flag(), color: ink, size: 20),
+              onPressed: () => ReportSheet.show(
+                context,
+                target: ReportTarget.moment,
+                targetId: current.id,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
   Widget _body(BuildContext context, bool isDark, Color ink) {
     if (_error != null) {
@@ -163,6 +186,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
       controller: _pager,
       // Vuốt dọc: cùng cử chỉ với Locket, và không giành scroll với ảnh.
       scrollDirection: Axis.vertical,
+      onPageChanged: (idx) => setState(() => _currentIndex = idx),
       itemCount: items.length,
       itemBuilder: (_, i) => _slide(items[i], isDark, ink),
     );
@@ -230,9 +254,17 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
                     borderRadius: BorderRadius.circular(10),
                     child: m.imageUrl.isEmpty
                         ? Container(color: fill)
+                        : m.imageUrl.startsWith('assets/')
+                        ? Image.asset(
+                            m.imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          )
                         : CachedNetworkImage(
                             imageUrl: m.imageUrl,
                             fit: BoxFit.cover,
+                            memCacheWidth: 900,
                             width: double.infinity,
                             height: double.infinity,
                             placeholder: (_, _) => Container(color: fill),

@@ -11,6 +11,8 @@ import '../../trip_planner/presentation/itinerary_tab.dart';
 import '../../trip_planner/presentation/create_trip_screen.dart';
 import '../../profile/profile_screen.dart';
 import '../../profile/data/profile_provider.dart';
+import '../data/home_feed_repository.dart';
+import '../../trips/application/trips_providers.dart';
 import 'pages/home_dashboard_page.dart';
 import 'pages/live_trip_page.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
@@ -39,6 +41,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
   @override
   void dispose() {
+    _capturedImage?.dispose();
+    _capturedImage = null;
     _rippleController.dispose();
     super.dispose();
   }
@@ -50,8 +54,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               as RenderRepaintBoundary?;
       if (boundary != null) {
         final img = await boundary.toImage(
-          pixelRatio: MediaQuery.of(context).devicePixelRatio,
+          pixelRatio: MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0),
         );
+        _capturedImage?.dispose();
         setState(() {
           _capturedImage = img;
           _rippleCenter = position;
@@ -64,6 +69,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     ref.read(themeProvider.notifier).toggleTheme();
 
     _rippleController.forward(from: 0.0).then((_) {
+      if (!mounted) return;
+      _capturedImage?.dispose();
       setState(() {
         _capturedImage = null;
       });
@@ -191,6 +198,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         onTap: (index) {
           HapticFeedback.selectionClick();
           setState(() => _selectedIndex = index);
+          // Mở lại tab mà dữ liệu từng tải lỗi (mạng chập lúc mở app) thì
+          // tự tải lại, không bắt người dùng tắt app.
+          if (index == 1 && ref.read(tripsProvider).hasError) {
+            ref.invalidate(tripsProvider);
+          }
+          if (index == 3 && ref.read(squadActivitiesProvider).hasError) {
+            ref.invalidate(squadActivitiesProvider);
+          }
           if (index == 4) {
             ref.read(profileDataProvider.notifier).loadProfile();
           }

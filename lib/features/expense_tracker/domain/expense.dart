@@ -18,13 +18,21 @@ class ExpenseUser {
 class ExpenseShare {
   final ExpenseUser user;
   final double shareAmount;
-  const ExpenseShare({required this.user, required this.shareAmount});
+  final bool isPaid;
+  const ExpenseShare({
+    required this.user,
+    required this.shareAmount,
+    this.isPaid = false,
+  });
+
+  String get userId => user.id;
 
   factory ExpenseShare.fromJson(Map<String, dynamic> j) => ExpenseShare(
     user: ExpenseUser.fromJson(
-      (j['user'] as Map? ?? {}).cast<String, dynamic>(),
+      (j['user'] as Map? ?? {'id': j['userId']}).cast<String, dynamic>(),
     ),
     shareAmount: _num(j['shareAmount']),
+    isPaid: (j['isPaid'] as bool?) ?? (j['paid'] as bool?) ?? false,
   );
 }
 

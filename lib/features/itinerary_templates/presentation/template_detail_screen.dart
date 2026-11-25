@@ -197,7 +197,7 @@ class TemplateDetailScreen extends ConsumerWidget {
                       child: Text(
                         'templates.tag_$tag'.tr(),
                         style: AppFonts.body(
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: inkSoft,
                         ),

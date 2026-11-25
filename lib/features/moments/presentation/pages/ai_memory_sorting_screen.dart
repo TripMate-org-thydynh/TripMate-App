@@ -213,6 +213,8 @@ class _AIMemorySortingScreenState extends ConsumerState<AIMemorySortingScreen> {
             aspectRatio: 16 / 9,
             child: m.mediaUrl.startsWith('http')
                 ? CachedNetworkImage(
+                    // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                    memCacheWidth: 640,
                     imageUrl: posterMedia(m.mediaUrl, m.type, width: 640),
                     fit: BoxFit.cover,
                     placeholder: (_, _) => ColoredBox(color: fill),

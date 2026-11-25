@@ -408,6 +408,8 @@ class _FeaturedCard extends StatelessWidget {
                   children: [
                     if (cover != null && cover.startsWith('http'))
                       CachedNetworkImage(
+                        // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                        memCacheWidth: 1080,
                         imageUrl: cover,
                         fit: BoxFit.cover,
                         errorWidget: (_, _, _) => ColoredBox(color: fill),
@@ -464,7 +466,7 @@ class _FeaturedCard extends StatelessWidget {
                           Text(
                             t.ratingAvg.toStringAsFixed(1),
                             style: AppFonts.mono(
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: ink,
                             ),
@@ -474,7 +476,7 @@ class _FeaturedCard extends StatelessWidget {
                     else
                       Text(
                         'templates.days'.tr(namedArgs: {'n': '${t.dayCount}'}),
-                        style: AppFonts.body(fontSize: 11, color: inkSoft),
+                        style: AppFonts.body(fontSize: 12, color: inkSoft),
                       ),
                   ],
                 ),
@@ -544,6 +546,8 @@ class TemplateCard extends StatelessWidget {
                   children: [
                     if (cover != null && cover.startsWith('http'))
                       CachedNetworkImage(
+                        // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                        memCacheWidth: 1080,
                         imageUrl: cover,
                         fit: BoxFit.cover,
                         errorWidget: (_, _, _) => ColoredBox(color: fill),
@@ -597,7 +601,7 @@ class TemplateCard extends StatelessWidget {
                               Text(
                                 'templates.featured_badge'.tr(),
                                 style: AppFonts.body(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                   color: ink,
                                 ),
@@ -722,7 +726,7 @@ class TemplateCard extends StatelessWidget {
                               child: Text(
                                 'templates.tag_$tag'.tr(),
                                 style: AppFonts.body(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: inkSoft,
                                 ),

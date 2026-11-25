@@ -1,28 +1,83 @@
+import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/api_service.dart';
+import '../../../core/services/media_uploader.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
+import '../../trips/application/trips_providers.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _bioController = TextEditingController();
   String _avatarUrl = '';
   bool _isLoading = true;
+  bool _isUploadingAvatar = false;
 
   // Avatar sinh theo tên (PNG — NetworkImage render được, khác dicebear SVG).
   String _genAvatar(String name) =>
       'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name.isEmpty ? "TripMate" : name)}'
       '&background=FFD84D&color=141210&bold=true&size=256';
+
+  ImageProvider? _avatarImageProvider() {
+    if (_avatarUrl.isEmpty) return null;
+    if (_avatarUrl.startsWith('data:image/')) {
+      final commaIdx = _avatarUrl.indexOf(',');
+      if (commaIdx != -1) {
+        try {
+          return MemoryImage(base64Decode(_avatarUrl.substring(commaIdx + 1)));
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+    return CachedNetworkImageProvider(
+      MediaUploader.cdnUrlForTier(_avatarUrl, CdnTier.avatar),
+      cacheKey: MediaUploader.cdnCacheKey(_avatarUrl, tier: CdnTier.avatar),
+      maxWidth: CdnTier.avatar.width,
+      maxHeight: CdnTier.avatar.width,
+    );
+  }
+
+  Future<void> _pickAvatarFromGallery() async {
+    if (_isUploadingAvatar) return;
+    setState(() => _isUploadingAvatar = true);
+    try {
+      final tripId = ref.read(tripsProvider).valueOrNull?.firstOrNull?.id;
+      final url = await ref
+          .read(mediaUploaderProvider)
+          .pickAndUploadAvatar(source: ImageSource.gallery, tripId: tripId);
+      if (url != null && mounted) {
+        setState(() => _avatarUrl = url);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('profile.avatar_changed'.tr()),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('profile.update_failed'.tr())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingAvatar = false);
+    }
+  }
 
   @override
   void initState() {
@@ -89,7 +144,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('profile.updated'.tr()),
-            backgroundColor: isDark ? GenZTokens.successDark : GenZTokens.success,
+            backgroundColor: isDark
+                ? GenZTokens.successDark
+                : GenZTokens.success,
           ),
         );
         Navigator.pop(
@@ -163,20 +220,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Center(
                     child: Stack(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: line,
-                              width: GenZTokens.borderWidth,
+                        GestureDetector(
+                          onTap: _pickAvatarFromGallery,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: line,
+                                width: GenZTokens.borderWidth,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 54,
+                              backgroundColor: fill,
+                              backgroundImage: _avatarImageProvider(),
+                              child: _isUploadingAvatar
+                                  ? CircularProgressIndicator(
+                                      color: accent,
+                                      strokeWidth: 2,
+                                    )
+                                  : null,
                             ),
                           ),
-                          child: CircleAvatar(
-                            radius: 54,
-                            backgroundColor: fill,
-                            backgroundImage: _avatarUrl.isEmpty
-                                ? null
-                                : NetworkImage(_avatarUrl),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          child: GestureDetector(
+                            onTap: _pickAvatarFromGallery,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: accent,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: line,
+                                  width: GenZTokens.borderWidthThin,
+                                ),
+                              ),
+                              child: Icon(
+                                PhosphorIcons.camera(),
+                                color: onAccent,
+                                size: 18,
+                              ),
+                            ),
                           ),
                         ),
                         Positioned(
@@ -229,7 +316,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     elevation: 0,
                     color: surface,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusCard,
+                      ),
                       side: BorderSide(
                         color: line,
                         width: GenZTokens.borderWidthThin,
@@ -244,7 +333,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: AppFonts.body(fontSize: 15, color: ink),
                             decoration: InputDecoration(
                               labelText: 'profile.full_name'.tr(),
-                              labelStyle: AppFonts.body(fontSize: 13, color: inkSoft),
+                              labelStyle: AppFonts.body(
+                                fontSize: 13,
+                                color: inkSoft,
+                              ),
                               prefixIcon: Icon(
                                 PhosphorIcons.user(),
                                 color: inkSoft,
@@ -269,7 +361,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             style: AppFonts.body(fontSize: 15, color: ink),
                             decoration: InputDecoration(
                               labelText: 'profile.username'.tr(),
-                              labelStyle: AppFonts.body(fontSize: 13, color: inkSoft),
+                              labelStyle: AppFonts.body(
+                                fontSize: 13,
+                                color: inkSoft,
+                              ),
                               prefixIcon: Icon(
                                 PhosphorIcons.at(),
                                 color: inkSoft,
@@ -295,7 +390,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             maxLines: 3,
                             decoration: InputDecoration(
                               labelText: 'profile.bio'.tr(),
-                              labelStyle: AppFonts.body(fontSize: 13, color: inkSoft),
+                              labelStyle: AppFonts.body(
+                                fontSize: 13,
+                                color: inkSoft,
+                              ),
                               prefixIcon: Icon(
                                 PhosphorIcons.article(),
                                 color: inkSoft,

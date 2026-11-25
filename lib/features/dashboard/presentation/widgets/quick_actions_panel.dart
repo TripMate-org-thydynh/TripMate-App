@@ -124,7 +124,6 @@ class QuickActionsPanel extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => MemoryWallScreen(
               isDarkMode: isDarkMode,
-              onThemeToggle: onThemeToggle,
             ),
           ),
         );

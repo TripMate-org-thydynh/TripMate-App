@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -25,9 +26,14 @@ class EditTripSheet extends ConsumerStatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Padding(
+      builder: (sheetCtx) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          bottom:
+              math.max(
+                MediaQuery.viewInsetsOf(sheetCtx).bottom,
+                MediaQuery.paddingOf(sheetCtx).bottom,
+              ) +
+              16,
         ),
         child: EditTripSheet(trip: trip, isDarkMode: isDarkMode),
       ),

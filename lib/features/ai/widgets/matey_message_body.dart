@@ -161,6 +161,8 @@ class MateyMessageBody extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio: 16 / 10,
                 child: CachedNetworkImage(
+                  // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
+                  memCacheWidth: 720,
                   imageUrl: url,
                   fit: BoxFit.cover,
                   placeholder: (_, _) => ColoredBox(color: fill),

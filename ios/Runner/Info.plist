@@ -5,15 +5,20 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tripmate</string>
+	<string>TripMate</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>vi</string>
+	</array>
 	<key>CFBundleName</key>
-	<string>tripmate</string>
+	<string>TripMate</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -22,6 +27,40 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>GIDClientID</key>
+	<string>1072006483967-ivo08438p51d47131637v9359hkl9p56.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.tripmate.tripmate</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>tripmate</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>google-signin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1072006483967-ivo08438p51d47131637v9359hkl9p56</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>momo</string>
+		<string>zalopay</string>
+		<string>grab</string>
+		<string>googlechromes</string>
+		<string>comgooglemaps</string>
+		<string>iosamap</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -31,8 +70,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -41,6 +78,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+		<string>fetch</string>
+	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -48,10 +92,12 @@
 	<!-- Squad Cam: khung ngắm trực tiếp, chụp ảnh và quay clip ngắn có tiếng.
 	     iOS bắt buộc phải giải thích lý do, nếu không app bị từ chối duyệt. -->
 	<key>NSCameraUsageDescription</key>
-	<string>TripMate cần camera để bạn chụp ảnh và quay clip ngắn gửi cho squad.</string>
+	<string>TripMate cần quyền truy cập camera để bạn chụp ảnh, quay clip ngắn gửi cho nhóm du lịch và quét hóa đơn chi tiêu.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>TripMate cần micro để clip ngắn bạn quay có âm thanh.</string>
+	<string>TripMate cần quyền truy cập micro để ghi lại âm thanh khi bạn quay clip khoảnh khắc cho nhóm.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>TripMate cần truy cập thư viện để bạn chọn ảnh đăng cho squad.</string>
+	<string>TripMate cần quyền truy cập thư viện ảnh để bạn chọn ảnh đăng lên bảng kỷ niệm nhóm và đính kèm ảnh hóa đơn.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>TripMate cần quyền lưu ảnh Polaroid kỷ niệm chuyến đi, ảnh hóa đơn và mã QR thanh toán vào thư viện ảnh của bạn.</string>
 </dict>
 </plist>

@@ -645,8 +645,9 @@ class TripMapScreen extends ConsumerWidget {
     final onAccent = _onAccentOf(context);
     final success = _successOf(context);
     final danger = _dangerOf(context);
+    bool isImporting = false;
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: cardBgCol,
@@ -655,153 +656,172 @@ class TripMapScreen extends ConsumerWidget {
           top: Radius.circular(GenZTokens.radiusCard),
         ),
       ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          top: 20,
-          left: 20,
-          right: 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'system_phases.import_link_title'.tr(),
-              style: AppFonts.heading(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: textPri,
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: textController,
-              decoration: InputDecoration(
-                hintText: 'system_phases.import_link_placeholder'.tr(),
-                hintStyle: AppFonts.body(color: textSec, fontSize: 15),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-                  borderSide: BorderSide(
-                    color: line,
-                    width: GenZTokens.borderWidthThin,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-                  borderSide: BorderSide(
-                    color: line,
-                    width: GenZTokens.borderWidthThin,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
-                  borderSide: BorderSide(
-                    color: accent,
-                    width: GenZTokens.borderWidth,
-                  ),
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (ctx, setModalState) => Padding(
+          padding: EdgeInsets.only(
+            bottom:
+                math.max(
+                  MediaQuery.viewInsetsOf(sheetCtx).bottom,
+                  MediaQuery.paddingOf(sheetCtx).bottom,
+                ) +
+                20,
+            top: 20,
+            left: 20,
+            right: 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'system_phases.import_link_title'.tr(),
+                style: AppFonts.heading(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: textPri,
                 ),
               ),
-              style: AppFonts.body(color: textPri, fontSize: 15),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accent,
-                  foregroundColor: onAccent,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      GenZTokens.radiusButton,
+              const SizedBox(height: 12),
+              TextField(
+                controller: textController,
+                decoration: InputDecoration(
+                  hintText: 'system_phases.import_link_placeholder'.tr(),
+                  hintStyle: AppFonts.body(color: textSec, fontSize: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                    borderSide: BorderSide(
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                    borderSide: BorderSide(
+                      color: line,
+                      width: GenZTokens.borderWidthThin,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusInput),
+                    borderSide: BorderSide(
+                      color: accent,
+                      width: GenZTokens.borderWidth,
                     ),
                   ),
                 ),
-                onPressed: () async {
-                  final url = textController.text.trim();
-                  if (url.isEmpty) return;
-
-                  final place = PlaceImportService.parseExternalLink(url);
-                  if (place != null) {
-                    try {
-                      // Save to backend database via repository
-                      await ref
-                          .read(itineraryRepositoryProvider)
-                          .create(
-                            tripId,
-                            day: 1,
-                            startTime: '10:00',
-                            placeName: place.name,
-                            placeAddress: place.address,
-                            notes: 'itinerary.imported_from_link'.tr(),
-                            category: place.category,
-                            // Toa do doc duoc tu chinh URL — nho no diem moi
-                            // ghim duoc len ban do.
-                            latitude: place.latitude,
-                            longitude: place.longitude,
-                          );
-
-                      // Refresh provider to fetch updated database items
-                      ref.invalidate(tripItineraryProvider(tripId));
-
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'system_phases.import_success'.tr(
-                                namedArgs: {'name': place.name},
-                              ),
-                              style: AppFonts.heading(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: onAccent,
-                              ),
-                            ),
-                            backgroundColor: success,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'itinerary.save_place_failed'.tr(
-                                namedArgs: {'err': friendlyError(e)},
-                              ),
-                            ),
-                            backgroundColor: danger,
-                          ),
-                        );
-                      }
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        // Noi ro phai lam gi, thay vi mot cau bao loi chung.
-                        content: Text('itinerary.import_no_coords'.tr()),
-                        duration: const Duration(seconds: 6),
-                        backgroundColor: danger,
+                style: AppFonts.body(color: textPri, fontSize: 15),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: accent,
+                    foregroundColor: onAccent,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
                       ),
-                    );
-                  }
-                },
-                child: Text(
-                  'system_phases.import_button'.tr(),
-                  style: AppFonts.heading(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    color: onAccent,
+                    ),
                   ),
+                  onPressed: isImporting
+                      ? null
+                      : () async {
+                          final url = textController.text.trim();
+                          if (url.isEmpty || isImporting) return;
+
+                          final place = PlaceImportService.parseExternalLink(
+                            url,
+                          );
+                          if (place != null) {
+                            setModalState(() => isImporting = true);
+                            try {
+                              await ref
+                                  .read(itineraryRepositoryProvider)
+                                  .create(
+                                    tripId,
+                                    day: 1,
+                                    startTime: '10:00',
+                                    placeName: place.name,
+                                    placeAddress: place.address,
+                                    notes: 'itinerary.imported_from_link'.tr(),
+                                    category: place.category,
+                                    latitude: place.latitude,
+                                    longitude: place.longitude,
+                                  );
+
+                              ref.invalidate(tripItineraryProvider(tripId));
+
+                              if (context.mounted) {
+                                Navigator.pop(sheetCtx);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'system_phases.import_success'.tr(
+                                        namedArgs: {'name': place.name},
+                                      ),
+                                      style: AppFonts.heading(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        color: onAccent,
+                                      ),
+                                    ),
+                                    backgroundColor: success,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              setModalState(() => isImporting = false);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'itinerary.save_place_failed'.tr(
+                                        namedArgs: {'err': friendlyError(e)},
+                                      ),
+                                    ),
+                                    backgroundColor: danger,
+                                  ),
+                                );
+                              }
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'itinerary.import_no_coords'.tr(),
+                                ),
+                                duration: const Duration(seconds: 6),
+                                backgroundColor: danger,
+                              ),
+                            );
+                          }
+                        },
+                  child: isImporting
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: onAccent,
+                          ),
+                        )
+                      : Text(
+                          'system_phases.import_button'.tr(),
+                          style: AppFonts.heading(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: onAccent,
+                          ),
+                        ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
+    ).whenComplete(textController.dispose);
   }
 }
