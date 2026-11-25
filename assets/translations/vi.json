@@ -1072,7 +1072,8 @@
     "offline_progress": "Đang tải… {p}%",
     "offline_done": "Đã tải bản đồ offline cho chuyến",
     "offline_partial": "Đã tải, còn {n} ô lỗi — mở lại khi có mạng để bù",
-    "offline_no_points": "Chuyến chưa có điểm nào có vị trí trên bản đồ"
+    "offline_no_points": "Chuyến chưa có điểm nào có vị trí trên bản đồ",
+    "add_to_day": "Ngày {n} chưa có điểm nào — chạm để thêm"
   },
   "journal": {
     "body_hint": "Hôm nay bạn trải qua điều gì? Kể cho squad nghe...",
@@ -1680,7 +1681,18 @@
     "block_action": "Chặn",
     "blocked_name": "Đã chặn {name}",
     "report_user": "Báo cáo người dùng",
-    "block_user": "Chặn người dùng"
+    "block_user": "Chặn người dùng",
+    "menu_account": "Tài khoản",
+    "menu_journey": "Hành trình",
+    "menu_collection": "Bộ sưu tập",
+    "menu_app": "Ứng dụng",
+    "friends": "Bạn bè",
+    "stickers": "Sticker của tôi",
+    "xp_wallet": "Ví XP",
+    "leaderboard": "Bảng xếp hạng squad",
+    "language": "Ngôn ngữ",
+    "dark_mode": "Chế độ tối",
+    "view_public": "Xem hồ sơ công khai"
   },
   "recap": {
     "cap_days": "Bằng đó ngày, {} người, không ai bỏ cuộc.",

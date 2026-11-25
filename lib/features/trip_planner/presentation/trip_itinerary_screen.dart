@@ -50,8 +50,12 @@ class TripItineraryScreen extends ConsumerWidget {
   Color _dangerOf(BuildContext context) =>
       _isDark(context) ? GenZTokens.dangerDark : GenZTokens.danger;
 
-  Future<void> _addItem(BuildContext context, WidgetRef ref) async {
-    final dayCtrl = TextEditingController(text: '1');
+  Future<void> _addItem(
+    BuildContext context,
+    WidgetRef ref, {
+    int day = 1,
+  }) async {
+    final dayCtrl = TextEditingController(text: '$day');
     final timeCtrl = TextEditingController(text: '09:00');
     final placeCtrl = TextEditingController();
     final addrCtrl = TextEditingController();
@@ -420,8 +424,21 @@ class TripItineraryScreen extends ConsumerWidget {
                 loading: () => _skeleton(context),
                 error: (e, _) => _error(context, ref, e),
                 data: (grouped) {
-                  if (grouped.isEmpty) return _empty(context);
-                  final days = grouped.keys.toList()..sort();
+                  final trip = ref
+                      .watch(tripsProvider)
+                      .valueOrNull
+                      ?.where((t) => t.id == tripId)
+                      .firstOrNull;
+                  // Hiện đủ mọi ngày của chuyến (kể cả ngày chưa có điểm),
+                  // không chỉ những ngày đã có dữ liệu.
+                  final tripDays = trip == null
+                      ? 0
+                      : trip.endDate.difference(trip.startDate).inDays + 1;
+                  if (grouped.isEmpty && tripDays <= 0) return _empty(context);
+                  final days = {
+                    ...grouped.keys,
+                    for (var d = 1; d <= tripDays.clamp(0, 60); d++) d,
+                  }.toList()..sort();
                   final weather =
                       ref.watch(itineraryWeatherProvider(tripId)).valueOrNull ??
                       ItineraryWeather.empty;
@@ -430,11 +447,13 @@ class TripItineraryScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(16).copyWith(bottom: 96),
                     children: [
                       for (final day in days) ...[
-                        _dayHeader(context, day, grouped[day]!),
+                        _dayHeader(context, day, grouped[day] ?? const []),
                         if (weather.days[day] case final w? when w.available)
                           _dayWeather(context, w),
                         const SizedBox(height: 12),
-                        ...grouped[day]!.map(
+                        if ((grouped[day] ?? const []).isEmpty)
+                          _emptyDay(context, ref, day),
+                        ...(grouped[day] ?? const <ItineraryItem>[]).map(
                           (it) => _itemCard(
                             context,
                             ref,
@@ -483,48 +502,49 @@ class TripItineraryScreen extends ConsumerWidget {
         const Spacer(),
         // Mở bản đồ lộ trình trong app: mọi điểm của ngày này, đánh số và nối
         // đường theo giờ. Nút Google Maps nằm trong màn đó.
-        GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DayRouteMapScreen(
-                tripId: tripId,
-                initialDay: day,
-                isDarkMode: isDarkMode,
-              ),
-            ),
-          ),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: surface,
-              borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
-              border: Border.all(
-                color: line,
-                width: GenZTokens.borderWidthThin,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  PhosphorIcons.navigationArrow(PhosphorIconsStyle.fill),
-                  size: 13,
-                  color: textSec,
+        if (items.isNotEmpty)
+          GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DayRouteMapScreen(
+                  tripId: tripId,
+                  initialDay: day,
+                  isDarkMode: isDarkMode,
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  'itinerary.directions'.tr(),
-                  style: AppFonts.heading(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: textPri,
+              ),
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: surface,
+                borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
+                border: Border.all(
+                  color: line,
+                  width: GenZTokens.borderWidthThin,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    PhosphorIcons.navigationArrow(PhosphorIconsStyle.fill),
+                    size: 13,
+                    color: textSec,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 6),
+                  Text(
+                    'itinerary.directions'.tr(),
+                    style: AppFonts.heading(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: textPri,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -785,6 +805,40 @@ class TripItineraryScreen extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _emptyDay(BuildContext context, WidgetRef ref, int day) {
+    final line = _lineOf(context);
+    final textSec = _textSecOf(context);
+    final accent = _accentOf(context);
+    return Semantics(
+      button: true,
+      label: 'itinerary.add_to_day'.tr(namedArgs: {'n': '$day'}),
+      excludeSemantics: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+        onTap: () => _addItem(context, ref, day: day),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+            border: Border.all(color: line, width: GenZTokens.borderWidthThin),
+          ),
+          child: Row(
+            children: [
+              Icon(PhosphorIcons.plusCircle(), color: accent, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'itinerary.add_to_day'.tr(namedArgs: {'n': '$day'}),
+                  style: AppFonts.body(fontSize: 14, color: textSec),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

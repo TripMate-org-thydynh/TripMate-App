@@ -728,19 +728,25 @@ class _TripChatLiveScreenState extends ConsumerState<TripChatLiveScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            GestureDetector(
+            Semantics(
+              button: true,
+              label: 'ai.send'.tr(),
               onTap: _send,
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: primary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  PhosphorIcons.paperPlaneRight(PhosphorIconsStyle.fill),
-                  color: onAccent,
-                  size: 20,
+              excludeSemantics: true,
+              child: GestureDetector(
+                onTap: _send,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    PhosphorIcons.paperPlaneRight(PhosphorIconsStyle.fill),
+                    color: onAccent,
+                    size: 20,
+                  ),
                 ),
               ),
             ),

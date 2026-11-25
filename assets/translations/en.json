@@ -1072,7 +1072,8 @@
     "offline_progress": "Downloading… {p}%",
     "offline_done": "Offline map downloaded for this trip",
     "offline_partial": "Downloaded, {n} tiles failed — open again when online to fill in",
-    "offline_no_points": "This trip has no stops with a map location yet"
+    "offline_no_points": "This trip has no stops with a map location yet",
+    "add_to_day": "Nothing planned for day {n} yet — tap to add"
   },
   "journal": {
     "body_hint": "What happened today? Tell the squad...",
@@ -1680,7 +1681,18 @@
     "block_action": "Block",
     "blocked_name": "Blocked {name}",
     "report_user": "Report User",
-    "block_user": "Block User"
+    "block_user": "Block User",
+    "menu_account": "Account",
+    "menu_journey": "Journey",
+    "menu_collection": "Collection",
+    "menu_app": "App",
+    "friends": "Friends",
+    "stickers": "My stickers",
+    "xp_wallet": "XP wallet",
+    "leaderboard": "Squad leaderboard",
+    "language": "Language",
+    "dark_mode": "Dark mode",
+    "view_public": "View public profile"
   },
   "recap": {
     "cap_days": "That many days, {} people, nobody bailed.",

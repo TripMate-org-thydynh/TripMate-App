@@ -782,11 +782,9 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                 SizedBox(height: topInset),
                 _buildHeader(context),
                 _buildSearchAndTrips(),
-                // Dải tin squad chạy ngang, nằm đè lên ảnh ngay dưới header.
-                const SocialChaosMarquee(),
                 const TrialBanner(),
                 // Trừ chỗ ô tìm kiếm + chip (~126) để tên chuyến vẫn nằm ở mép ảnh.
-                SizedBox(height: math.max(24.0, imageHeight - 150 - 42 - 126)),
+                SizedBox(height: math.max(24.0, imageHeight - 150 - 126)),
                 PopIn(
                   index: 0,
                   child: Padding(
@@ -794,7 +792,11 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                     child: _tripInfo(context, trip),
                   ),
                 ),
-                const SizedBox(height: 24),
+                // Dải tin squad chạy ngang: đặt dưới thông tin chuyến, không
+                // đè lên giữa ảnh banner.
+                const SizedBox(height: 12),
+                const SocialChaosMarquee(),
+                const SizedBox(height: 12),
                 _buildTripsStrip(),
               ],
             ),
