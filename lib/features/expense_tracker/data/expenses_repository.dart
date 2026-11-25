@@ -109,7 +109,7 @@ class ExpensesRepository {
     final data = await _client.postData('${_base(tripId)}/ai-parse', {
       'text': text,
       'answers': answers,
-    });
+    }, const Duration(seconds: 120));
     return (data as Map).cast<String, dynamic>();
   }
 

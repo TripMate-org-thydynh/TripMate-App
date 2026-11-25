@@ -190,7 +190,7 @@ class MateyChatService {
       'type': 'ITINERARY_PLAN',
       'prompt': prompt,
       'tripId': ?tripId,
-    });
+    }, const Duration(seconds: 120));
     final res = (data is Map) ? data['response'] : null;
     return _planText(res) ?? _textOf(res) ?? prompt;
   }
@@ -272,7 +272,7 @@ class MateyChatService {
       'type': 'CAPTION_GEN',
       'prompt': prompt,
       'tripId': ?tripId,
-    });
+    }, const Duration(seconds: 120));
     final res = (data is Map) ? data['response'] : null;
     // Schema BE: { "captions": string[] }.
     if (res is Map) {
@@ -296,7 +296,7 @@ class MateyChatService {
       'type': 'EXPENSE_ROAST',
       'prompt': 'Roast cách tiêu tiền của nhóm trong chuyến này.',
       'tripId': tripId,
-    });
+    }, const Duration(seconds: 120));
     final res = (data is Map) ? data['response'] : null;
     if (res is! Map) return null;
     final text = res['roastText'] as String?;
@@ -317,7 +317,7 @@ class MateyChatService {
       'type': 'ITINERARY_PLAN',
       'prompt': prompt,
       'tripId': ?tripId,
-    });
+    }, const Duration(seconds: 120));
     final res = (data is Map) ? data['response'] : null;
     final days = (res is Map) ? res['days'] : null;
     if (days is! List) return const [];
@@ -425,7 +425,7 @@ class VibeMatchService {
       'type': 'VIBE_MATCH',
       'prompt': prompt,
       'tripId': ?tripId,
-    });
+    }, const Duration(seconds: 120));
     final res = (data is Map) ? data['response'] : null;
     if (res is! Map) {
       throw ApiException('errors.load_failed'.tr());
