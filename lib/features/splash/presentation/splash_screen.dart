@@ -6,9 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 
-import '../../../core/app_gate.dart';
 import '../../../core/providers/auth_provider.dart';
-import '../../system_states/pages/status_screen.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
 import '../../../core/widgets/trip_illustration.dart';
 
@@ -65,37 +63,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   /// Chờ animation chạy hết (1.3s) rồi đi ngay khi phiên đã đọc xong —
   /// người đã đăng nhập vào thẳng app, không ghé màn đăng nhập.
-  AppGateResult? _gate;
-
   Future<void> _leaveWhenReady() async {
     final reduce = WidgetsBinding
         .instance.platformDispatcher.accessibilityFeatures.disableAnimations;
     if (reduce) _c.value = 1;
-    // Kiểm tra bảo trì / phiên bản chạy song song với animation (timeout 4s,
-    // lỗi thì cho qua) nên không làm splash dài thêm.
-    final gateFuture = checkAppGate();
     await Future<void>.delayed(
       reduce ? const Duration(milliseconds: 400) : _total + const Duration(milliseconds: 250),
     );
-    final gate = await gateFuture;
-    if (!mounted) return;
-    if (gate.status == GateStatus.maintenance ||
-        gate.status == GateStatus.forceUpdate) {
-      setState(() => _gate = gate); // chặn tại đây, không vào app
-      return;
-    }
     while (mounted && ref.read(authProvider).isLoading) {
       await Future<void>.delayed(const Duration(milliseconds: 50));
     }
     if (!mounted) return;
-    if (gate.status == GateStatus.softUpdate) {
-      await showSoftUpdateDialog(
-        context,
-        storeUrl: gate.storeUrl,
-        latestVersion: gate.latestVersion,
-      );
-      if (!mounted) return;
-    }
     final signedIn = ref.read(authProvider).isAuthenticated;
     context.go(signedIn ? '/dashboard' : '/auth');
   }
@@ -106,25 +84,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final gate = _gate;
-    if (gate?.status == GateStatus.maintenance) {
-      return MaintenanceScreen(
-        message: gate!.message,
-        onRetry: () {
-          setState(() => _gate = null);
-          unawaited(_leaveWhenReady());
-        },
-      );
-    }
-    if (gate?.status == GateStatus.forceUpdate) {
-      return ForceUpdateScreen(
-        storeUrl: gate!.storeUrl,
-        currentVersion: gate.currentVersion,
-      );
-    }
     final isDark = widget.isDarkMode;
     final bg = isDark ? GenZTokens.creamDark : GenZTokens.cream;
     final ink = isDark ? GenZTokens.inkDark : GenZTokens.ink;

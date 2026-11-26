@@ -162,9 +162,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isAuthenticated = authState.isAuthenticated;
 
       if (isAuthenticated) {
-        // Splash tự điều hướng sau khi chạy xong animation + kiểm tra bảo trì/
-        // bắt buộc cập nhật. Nếu redirect ở đây, người đã đăng nhập bị đẩy khỏi
-        // splash ngay khi đọc xong phiên → không thấy splash và bỏ qua app gate.
+        // Splash owns the transition after its animation and session loading.
         if (isSplash) return null;
         // Đã đăng nhập nhưng chưa làm vibe quiz → vào onboarding
         if (!authState.onboardingDone) {
@@ -179,8 +177,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
           return '/join/$pending';
         }
-        // Đã xong onboarding → không cho quay lại splash/auth/onboarding
-        if (isLoggingIn || isSplash || isOnboarding) {
+        // Completed onboarding users skip authentication and onboarding.
+        if (isLoggingIn || isOnboarding) {
           return '/dashboard';
         }
       } else {
