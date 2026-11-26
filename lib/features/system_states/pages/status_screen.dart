@@ -170,10 +170,12 @@ class MaintenanceScreen extends StatelessWidget {
 class ForceUpdateScreen extends StatelessWidget {
   final String? storeUrl;
   final String currentVersion;
+  final VoidCallback? onRetry;
   const ForceUpdateScreen({
     super.key,
     this.storeUrl,
     required this.currentVersion,
+    this.onRetry,
   });
 
   @override
@@ -181,7 +183,7 @@ class ForceUpdateScreen extends StatelessWidget {
     icon: PhosphorIcons.arrowCircleUp(),
     title: 'system.update_title'.tr(),
     body: 'system.update_force_body'.tr(),
-    primaryLabel: 'system.update_cta'.tr(),
+    primaryLabel: storeUrl == null ? null : 'system.update_cta'.tr(),
     onPrimary: storeUrl == null
         ? null
         : () => launchUrl(
@@ -189,41 +191,7 @@ class ForceUpdateScreen extends StatelessWidget {
             mode: LaunchMode.externalApplication,
           ),
     footnote: 'v$currentVersion',
-  );
-}
-
-/// Popup cập nhật bỏ qua được (bản mới có nhưng chưa bắt buộc).
-Future<void> showSoftUpdateDialog(
-  BuildContext context, {
-  String? storeUrl,
-  String? latestVersion,
-}) {
-  return showDialog<void>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text('system.update_soft_title'.tr()),
-      content: Text(
-        'system.update_soft_body'.tr(
-          namedArgs: {'version': latestVersion ?? ''},
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: Text('system.later'.tr()),
-        ),
-        if (storeUrl != null)
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              launchUrl(
-                Uri.parse(storeUrl),
-                mode: LaunchMode.externalApplication,
-              );
-            },
-            child: Text('system.update_cta'.tr()),
-          ),
-      ],
-    ),
+    secondaryLabel: onRetry == null ? null : 'common.retry'.tr(),
+    onSecondary: onRetry,
   );
 }

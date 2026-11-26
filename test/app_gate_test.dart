@@ -1,7 +1,20 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tripmate/core/app_gate.dart';
+import 'package:tripmate/core/distribution_channel.dart';
+import 'package:tripmate/core/widgets/app_gate_boundary.dart';
+import 'package:tripmate/features/system_states/pages/status_screen.dart';
+
+import 'helpers/localized.dart';
 
 void main() {
+  setUpAll(() async {
+    GoogleFonts.config.allowRuntimeFetching = false;
+    await initLocalization();
+  });
   test('so sánh phiên bản theo số, không theo chuỗi', () {
     expect(compareVersions('1.2.10', '1.2.9'), 1);
     expect(compareVersions('1.0.0+5', '1.0.0'), 0);
@@ -33,4 +46,75 @@ void main() {
     final r = decideGate({...cfg, 'maintenance': true}, '9.9.9', false);
     expect(r.status, GateStatus.maintenance);
   });
+
+  test('reads the NestJS envelope and honors the channel download link', () {
+    final result = parseAppGateResponse(
+      {
+        'success': true,
+        'data': {
+          ...cfg,
+          'updateUrl': 'https://downloads.example.com/tripmate.apk',
+        },
+      },
+      '1.0.0',
+      DistributionChannel.direct,
+    );
+    expect(result?.status, GateStatus.forceUpdate);
+    expect(result?.storeUrl, 'https://downloads.example.com/tripmate.apk');
+  });
+
+  test(
+    'does not use the Google Play link for a directly distributed build',
+    () {
+      final result = parseAppGateResponse(
+        cfg,
+        '1.2.0',
+        DistributionChannel.direct,
+      );
+      expect(result?.status, GateStatus.softUpdate);
+      expect(result?.storeUrl, isNull);
+    },
+  );
+
+  test('keeps an older build usable when its channel has no download link', () {
+    final result = parseAppGateResponse(
+      cfg,
+      '1.0.0',
+      DistributionChannel.direct,
+    );
+    expect(result?.status, GateStatus.softUpdate);
+    expect(result?.storeUrl, isNull);
+  });
+
+  testWidgets(
+    'blocks routed content at startup and reapplies policy on resume',
+    (tester) async {
+      final initial = Completer<AppGateResult>();
+      var calls = 0;
+      AppGateResult next = const AppGateResult(GateStatus.maintenance);
+      await tester.pumpWidget(
+        localized(
+          AppGateBoundary(
+            load: () async => calls++ == 0 ? initial.future : next,
+            child: const Text('Routed content'),
+          ),
+        ),
+      );
+      expect(find.text('Routed content'), findsNothing);
+      initial.complete(AppGateResult.ok);
+      await tester.pumpAndSettle();
+      expect(find.text('Routed content'), findsOneWidget);
+
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(find.byType(MaintenanceScreen), findsOneWidget);
+      expect(find.text('Routed content'), findsNothing);
+
+      next = AppGateResult.ok;
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+      expect(find.text('Routed content'), findsOneWidget);
+    },
+  );
 }

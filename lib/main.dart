@@ -21,6 +21,7 @@ import 'features/trips/application/trips_providers.dart';
 import 'features/dashboard/data/home_feed_repository.dart';
 import 'features/profile/data/profile_provider.dart';
 import 'core/locale_detect.dart';
+import 'core/widgets/app_gate_boundary.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -143,7 +144,7 @@ class MyApp extends ConsumerWidget {
               media.textScaler.scale(1).clamp(1.0, 1.3) * scale,
             ),
           ),
-          child: child ?? const SizedBox.shrink(),
+          child: AppGateBoundary(child: child ?? const SizedBox.shrink()),
         );
       },
     );

@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'api_service.dart';
+import 'distribution_channel.dart';
+import 'network/envelope.dart';
 
 /// Kết quả kiểm tra lúc mở app (đọc `GET /app-config`).
 enum GateStatus { ok, softUpdate, forceUpdate, maintenance }
@@ -44,8 +46,19 @@ int compareVersions(String a, String b) {
 
 /// Quyết định trạng thái từ cấu hình server + phiên bản đang chạy.
 @visibleForTesting
-AppGateResult decideGate(Map<String, dynamic> cfg, String version, bool ios) {
-  final store = (cfg['storeUrl'] as Map?)?[ios ? 'ios' : 'android'] as String?;
+AppGateResult decideGate(
+  Map<String, dynamic> cfg,
+  String version,
+  bool ios, {
+  bool legacyStoreFallback = true,
+}) {
+  final legacyUrl = (cfg['storeUrl'] as Map?)?[ios ? 'ios' : 'android'];
+  final candidate =
+      cfg['updateUrl'] ?? (legacyStoreFallback ? legacyUrl : null);
+  final uri = candidate is String ? Uri.tryParse(candidate) : null;
+  final store = uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
+      ? uri.toString()
+      : null;
   if (cfg['maintenance'] == true) {
     return AppGateResult(
       GateStatus.maintenance,
@@ -57,7 +70,7 @@ AppGateResult decideGate(Map<String, dynamic> cfg, String version, bool ios) {
   final latest = cfg['latestVersion']?.toString() ?? min;
   if (compareVersions(version, min) < 0) {
     return AppGateResult(
-      GateStatus.forceUpdate,
+      store == null ? GateStatus.softUpdate : GateStatus.forceUpdate,
       storeUrl: store,
       currentVersion: version,
       latestVersion: latest,
@@ -77,7 +90,25 @@ AppGateResult decideGate(Map<String, dynamic> cfg, String version, bool ios) {
 /// Đọc cấu hình. "Fail-open": server chậm/lỗi/mất mạng thì cho vào app bình
 /// thường (đã có màn mất kết nối riêng) — không bao giờ khoá người dùng chỉ vì
 /// không đọc được cấu hình.
-Future<AppGateResult> checkAppGate() async {
+AppGateResult? parseAppGateResponse(
+  Object? response,
+  String version,
+  DistributionChannel channel,
+) {
+  final data = unwrapEnvelope(response);
+  if (data is! Map<String, dynamic>) return null;
+  return decideGate(
+    data,
+    version,
+    channel == DistributionChannel.appstore,
+    legacyStoreFallback:
+        !data.containsKey('updateUrl') &&
+        (channel == DistributionChannel.play ||
+            channel == DistributionChannel.appstore),
+  );
+}
+
+Future<AppGateResult?> checkAppGate() async {
   try {
     final info = await PackageInfo.fromPlatform();
     final res = await Dio(
@@ -85,22 +116,17 @@ Future<AppGateResult> checkAppGate() async {
         baseUrl: ApiService.baseUrl,
         connectTimeout: const Duration(seconds: 4),
         receiveTimeout: const Duration(seconds: 4),
+        headers: {'X-Client-Channel': kDistributionChannel.wire},
       ),
     ).get<Map<String, dynamic>>('/app-config');
-    final data = res.data;
-    if (data == null) return AppGateResult.ok;
-    return decideGate(
-      data,
-      info.version,
-      defaultTargetPlatform == TargetPlatform.iOS,
-    );
+    return parseAppGateResponse(res.data, info.version, kDistributionChannel);
   } on DioException catch (e) {
     // Server trả 503 = đang bảo trì / deploy.
     if (e.response?.statusCode == 503) {
       return const AppGateResult(GateStatus.maintenance);
     }
-    return AppGateResult.ok;
+    return null;
   } catch (_) {
-    return AppGateResult.ok;
+    return null;
   }
 }
