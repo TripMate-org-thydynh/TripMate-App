@@ -112,8 +112,15 @@ class ApiClient {
   }
 
   // ── Typed methods cho repository: unwrap {success,data}, ném ApiException ────
-  Future<dynamic> getData(String path, {Map<String, dynamic>? query}) =>
-      _send(() => dio.get(path, queryParameters: query), 'GET', path);
+  Future<dynamic> getData(
+    String path, {
+    Map<String, dynamic>? query,
+    CancelToken? cancelToken,
+  }) => _send(
+    () => dio.get(path, queryParameters: query, cancelToken: cancelToken),
+    'GET',
+    path,
+  );
 
   /// Mở một luồng SSE và trả về từng sự kiện `(event, data)`.
   ///

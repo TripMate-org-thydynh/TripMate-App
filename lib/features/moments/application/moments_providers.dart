@@ -1,4 +1,11 @@
+import 'dart:async';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/app_messenger.dart';
+import '../../../core/network/api_exception.dart';
+import '../../../core/providers/offline_provider.dart';
 
 import '../data/moments_repository.dart';
 import '../domain/moment.dart';
@@ -6,8 +13,19 @@ import '../domain/moment.dart';
 /// Moments của 1 trip với **optimistic reaction**, **optimistic board layout**,
 /// **favorite**, và **comments**.
 class MomentsNotifier extends FamilyAsyncNotifier<List<Moment>, String> {
+  final _favoriteIntents = <String, bool>{};
+  final _confirmedFavorites = <String, bool>{};
+  final _favoriteWrites = <String>{};
+
   @override
   Future<List<Moment>> build(String tripId) {
+    ref.listen(offlineProvider, (wasOffline, offline) {
+      if (wasOffline == true && !offline) {
+        for (final id in _favoriteIntents.keys.toList()) {
+          unawaited(_flushFavorite(id));
+        }
+      }
+    });
     return ref.watch(momentsRepositoryProvider).fetch(tripId);
   }
 
@@ -96,19 +114,21 @@ class MomentsNotifier extends FamilyAsyncNotifier<List<Moment>, String> {
     );
 
     try {
-      await ref.read(momentsRepositoryProvider).updateBoardLayout(
-        arg,
-        momentId,
-        boardX: boardX,
-        boardY: boardY,
-        boardRotation: boardRotation,
-        boardScale: boardScale,
-        boardFilter: boardFilter,
-        noteColor: noteColor,
-        isPinned: isPinned,
-        isFavorite: isFavorite,
-        caption: caption,
-      );
+      await ref
+          .read(momentsRepositoryProvider)
+          .updateBoardLayout(
+            arg,
+            momentId,
+            boardX: boardX,
+            boardY: boardY,
+            boardRotation: boardRotation,
+            boardScale: boardScale,
+            boardFilter: boardFilter,
+            noteColor: noteColor,
+            isPinned: isPinned,
+            isFavorite: isFavorite,
+            caption: caption,
+          );
       ref.invalidate(tripMomentsProvider(arg));
     } catch (_) {
       state = AsyncData(prev);
@@ -117,24 +137,56 @@ class MomentsNotifier extends FamilyAsyncNotifier<List<Moment>, String> {
   }
 
   Future<void> toggleFavorite(String momentId) async {
+    final target = state.valueOrNull
+        ?.where((m) => m.id == momentId)
+        .firstOrNull;
+    if (target == null) return;
+    final nextFav = !target.isFavorite;
+    _confirmedFavorites.putIfAbsent(momentId, () => target.isFavorite);
+    _favoriteIntents[momentId] = nextFav;
+    _setFavorite(momentId, nextFav);
+    await _flushFavorite(momentId);
+  }
+
+  void _setFavorite(String momentId, bool favorite) {
     final current = state.valueOrNull;
     if (current == null) return;
-    final target = current.where((m) => m.id == momentId).firstOrNull;
-    if (target == null) return;
-
-    final nextFav = !target.isFavorite;
-    final prev = current;
     state = AsyncData(
       current
-          .map((m) => m.id == momentId ? m.copyWith(isFavorite: nextFav) : m)
+          .map(
+            (moment) => moment.id == momentId
+                ? moment.copyWith(isFavorite: favorite)
+                : moment,
+          )
           .toList(),
     );
+  }
 
+  Future<void> _flushFavorite(String id) async {
+    if (ref.read(offlineProvider) || !_favoriteWrites.add(id)) return;
     try {
-      await ref.read(momentsRepositoryProvider).toggleFavorite(arg, momentId);
+      final repo = ref.read(momentsRepositoryProvider);
+      while (_favoriteIntents.containsKey(id)) {
+        final desired = _favoriteIntents[id]!;
+        await repo.setFavorite(arg, id, desired);
+        _confirmedFavorites[id] = desired;
+        if (_favoriteIntents[id] == desired) {
+          _favoriteIntents.remove(id);
+          _confirmedFavorites.remove(id);
+        }
+      }
       ref.invalidate(tripMomentsProvider(arg));
-    } catch (_) {
-      state = AsyncData(prev);
+    } catch (error) {
+      if (error is ApiException && error.isNetwork) {
+        showGlobalSnack('errors.connection_lost'.tr(), isError: true);
+        return;
+      }
+      _favoriteIntents.remove(id);
+      final previous = _confirmedFavorites.remove(id);
+      if (previous != null) _setFavorite(id, previous);
+      showGlobalSnack('errors.generic_soft'.tr(), isError: true);
+    } finally {
+      _favoriteWrites.remove(id);
     }
   }
 

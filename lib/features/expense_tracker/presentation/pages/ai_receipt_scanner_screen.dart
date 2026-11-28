@@ -36,6 +36,10 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
   bool _isSelecting = true;
   bool _isScanning = false;
   String? _selectedReceiptName;
+  num? _printedTotal;
+  num? _tax;
+  num? _fee;
+  num? _discount;
   String? _merchantName;
 
   final List<Map<String, dynamic>> _detectedItems = [];
@@ -59,7 +63,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
     super.dispose();
   }
 
-  void _startScanning(String receiptName, String mockUrl) async {
+  Future<void> _startScanning(String receiptName, String receiptData) async {
     setState(() {
       _isSelecting = false;
       _isScanning = true;
@@ -72,15 +76,16 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
       // Gọi BE NestJS thật endpoint: /trips/:tripId/expenses/ocr
       final result = await ref
           .read(expensesRepositoryProvider)
-          .scanReceipt(widget.tripId, mockUrl);
-
-      // Cho chạy hiệu ứng quét tối thiểu 1.5 giây cho "vibe" công nghệ.
-      await Future.delayed(const Duration(milliseconds: 1500));
+          .scanReceipt(widget.tripId, receiptData);
 
       if (mounted) {
         setState(() {
           _isScanning = false;
           _merchantName = result['merchant'] ?? 'expense.receipt'.tr();
+          _printedTotal = result['total'] as num?;
+          _tax = result['tax'] as num?;
+          _fee = result['fee'] as num?;
+          _discount = result['discount'] as num?;
           _detectedItems.clear();
           final items = result['items'] as List?;
           if (items != null) {
@@ -88,6 +93,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
               _detectedItems.add({
                 'name': item['name'] ?? 'expense.dish'.tr(),
                 'price': (item['price'] as num?)?.toDouble() ?? 0.0,
+                'quantity': (item['quantity'] as num?)?.toInt() ?? 1,
                 'checked': item['selected'] ?? true,
               });
             }
@@ -117,7 +123,7 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         );
       }
     } finally {
-      _scannerController.stop();
+      if (mounted) _scannerController.stop();
     }
   }
 
@@ -585,6 +591,11 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
               final total = _calculateTotalSelected();
               Navigator.pop(context, {
                 'amount': total,
+                'printedTotal': _printedTotal,
+                'tax': _tax,
+                'fee': _fee,
+                'discount': _discount,
+                'lines': _lineItems(),
                 'description': 'expense.scan_description'.tr(
                   namedArgs: {
                     'merchant': _merchantName ?? 'common.unnamed'.tr(),
@@ -625,6 +636,28 @@ class _AiReceiptScannerScreenState extends ConsumerState<AiReceiptScannerScreen>
         ],
       ),
     );
+  }
+
+  List<Map<String, dynamic>> _lineItems() {
+    final lines = <Map<String, dynamic>>[];
+    for (final item in _detectedItems) {
+      final amount = (item['price'] as num).round();
+      if (item['checked'] != true || amount <= 0) continue;
+      final quantity = (item['quantity'] as int? ?? 1).clamp(1, amount).toInt();
+      if (quantity > 100 || lines.length + quantity > 100) {
+        lines.add({'name': item['name'], 'amount': amount});
+        continue;
+      }
+      for (var index = 0; index < quantity; index++) {
+        lines.add({
+          'name': quantity == 1
+              ? item['name']
+              : '${item['name']} (${index + 1}/$quantity)',
+          'amount': amount ~/ quantity + (index < amount % quantity ? 1 : 0),
+        });
+      }
+    }
+    return lines;
   }
 
   double _calculateTotalSelected() {

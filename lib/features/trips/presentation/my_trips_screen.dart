@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/network/error_message.dart';
@@ -11,8 +12,8 @@ import '../../../core/widgets/gen_z_widgets.dart';
 import '../application/trips_providers.dart';
 import '../domain/trip.dart';
 import '../domain/trip_vibe.dart';
-import 'trip_hub_screen.dart';
 import 'create_trip_sheet.dart';
+import '../../itinerary_templates/presentation/template_explore_screen.dart';
 import '../../social/presentation/widgets/notification_bell.dart';
 
 /// Vibe đang lọc ở màn "Chuyến của tôi" (null = tất cả).
@@ -31,8 +32,7 @@ class MyTripsScreen extends ConsumerWidget {
   Color get _textPri => _ink;
   Color get _textSec =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
-  Color get _surface =>
-      isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
+  Color get _surface => isDarkMode ? GenZTokens.paperDark : GenZTokens.paper;
   Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
   Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
@@ -40,8 +40,7 @@ class MyTripsScreen extends ConsumerWidget {
       isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color get _accentSoft =>
       isDarkMode ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
-  Color get _danger =>
-      isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
+  Color get _danger => isDarkMode ? GenZTokens.dangerDark : GenZTokens.danger;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,6 +82,24 @@ class MyTripsScreen extends ConsumerWidget {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'beta.useTemplate'.tr(),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => TemplateExploreScreen(isDarkMode: isDarkMode),
+              ),
+            ),
+            icon: Icon(PhosphorIcons.mapTrifold()),
+          ),
+          IconButton(
+            tooltip: 'beta.enterInvite'.tr(),
+            onPressed: () => CreateTripSheet.show(
+              context,
+              isDarkMode,
+              startWithInvite: true,
+            ),
+            icon: Icon(PhosphorIcons.link()),
+          ),
           NotificationBell(isDarkMode: isDarkMode, color: _textPri),
           const SizedBox(width: 4),
         ],
@@ -93,8 +110,9 @@ class MyTripsScreen extends ConsumerWidget {
         child: tripsAsync.when(
           loading: () => _buildSkeleton(),
           error: (e, _) => _buildError(context, ref, e),
-          data: (trips) =>
-              trips.isEmpty ? _buildEmpty(context) : _buildData(context, ref, trips),
+          data: (trips) => trips.isEmpty
+              ? _buildEmpty(context)
+              : _buildData(context, ref, trips),
         ),
       ),
     );
@@ -320,11 +338,7 @@ class MyTripsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Icon(
-                  icon,
-                  size: 14,
-                  color: selected ? _accent : _textSec,
-                ),
+                Icon(icon, size: 14, color: selected ? _accent : _textSec),
                 const SizedBox(width: 6),
               ],
               Text(
@@ -371,12 +385,7 @@ class MyTripsScreen extends ConsumerWidget {
       child: PressableCard(
         onTap: () {
           HapticFeedback.selectionClick();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
-            ),
-          );
+          context.push('/dashboard/trip/${t.id}', extra: t);
         },
         color: _surface,
         radius: GenZTokens.radiusCard,
@@ -487,9 +496,7 @@ class MyTripsScreen extends ConsumerWidget {
                   ),
                   decoration: BoxDecoration(
                     color: _fill,
-                    borderRadius: BorderRadius.circular(
-                      GenZTokens.radiusPill,
-                    ),
+                    borderRadius: BorderRadius.circular(GenZTokens.radiusPill),
                     border: Border.all(
                       color: _line,
                       width: GenZTokens.borderWidthThin,

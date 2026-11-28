@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../expense_tracker/presentation/pages/receipt_drafts_screen.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -153,10 +154,27 @@ class NotificationsScreen extends ConsumerWidget {
     final unreadBg = isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (!n.isRead) {
-          ref.read(notificationsRepositoryProvider).markRead(n.id);
-          ref.invalidate(notificationsProvider);
+          try {
+            await ref.read(notificationsRepositoryProvider).markRead(n.id);
+            if (context.mounted) ref.invalidate(notificationsProvider);
+          } catch (_) {
+            // An unread badge can refresh on the next visit.
+          }
+        }
+        final tripId = n.tripId;
+        final draftId = n.receiptDraftId;
+        if (context.mounted && tripId != null && draftId != null) {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ReceiptDraftsScreen(
+                tripId: tripId,
+                isDarkMode: isDark,
+                initialDraftId: draftId,
+              ),
+            ),
+          );
         }
       },
       child: Container(

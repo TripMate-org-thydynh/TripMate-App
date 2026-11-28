@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 
 import '../../../core/network/api_client.dart';
 import '../domain/itinerary_template.dart';
@@ -12,13 +13,19 @@ class ItineraryTemplatesRepository {
     String? query,
     String? tag,
     String sort = 'popular',
+    int? days,
+    int? budgetTo,
+    CancelToken? cancelToken,
   }) async {
     final data = await _client.getData(
       '/itinerary-templates',
+      cancelToken: cancelToken,
       query: {
         if (query != null && query.trim().isNotEmpty) 'q': query.trim(),
         if (tag != null && tag.isNotEmpty) 'tag': tag,
         'sort': sort,
+        'days': ?days,
+        'budgetTo': ?budgetTo,
         'limit': 50,
       },
     );
@@ -40,9 +47,9 @@ class ItineraryTemplatesRepository {
     final data = await _client.getData('/itinerary-templates/$id/ratings');
     return data is List
         ? data
-            .whereType<Map>()
-            .map((e) => TemplateRating.fromJson(e.cast<String, dynamic>()))
-            .toList()
+              .whereType<Map>()
+              .map((e) => TemplateRating.fromJson(e.cast<String, dynamic>()))
+              .toList()
         : const [];
   }
 
@@ -122,29 +129,44 @@ final itineraryTemplatesRepositoryProvider =
     );
 
 /// Khoá tìm kiếm cho danh sách công khai: (từ khoá, thẻ, cách sắp).
-typedef TemplateQuery = ({String query, String? tag, String sort});
+typedef TemplateQuery = ({
+  String query,
+  String? tag,
+  String sort,
+  int? days,
+  int? budgetTo,
+});
 
 final publicTemplatesProvider = FutureProvider.autoDispose
-    .family<List<ItineraryTemplate>, TemplateQuery>(
-      (ref, q) => ref
+    .family<List<ItineraryTemplate>, TemplateQuery>((ref, q) {
+      final cancellation = CancelToken();
+      ref.onDispose(cancellation.cancel);
+      return ref
           .watch(itineraryTemplatesRepositoryProvider)
-          .listPublic(query: q.query, tag: q.tag, sort: q.sort),
-    );
+          .listPublic(
+            query: q.query,
+            tag: q.tag,
+            sort: q.sort,
+            days: q.days,
+            budgetTo: q.budgetTo,
+            cancelToken: cancellation,
+          );
+    });
 
 final featuredTemplatesProvider =
     FutureProvider.autoDispose<List<ItineraryTemplate>>(
-  (ref) => ref.watch(itineraryTemplatesRepositoryProvider).featured(),
-);
+      (ref) => ref.watch(itineraryTemplatesRepositoryProvider).featured(),
+    );
 
 final templateMyStateProvider = FutureProvider.autoDispose
     .family<TemplateMyState, String>(
-  (ref, id) => ref.watch(itineraryTemplatesRepositoryProvider).myState(id),
-);
+      (ref, id) => ref.watch(itineraryTemplatesRepositoryProvider).myState(id),
+    );
 
 final templateRatingsProvider = FutureProvider.autoDispose
     .family<List<TemplateRating>, String>(
-  (ref, id) => ref.watch(itineraryTemplatesRepositoryProvider).ratings(id),
-);
+      (ref, id) => ref.watch(itineraryTemplatesRepositoryProvider).ratings(id),
+    );
 
 final myTemplatesProvider = FutureProvider.autoDispose<List<ItineraryTemplate>>(
   (ref) => ref.watch(itineraryTemplatesRepositoryProvider).listMine(),

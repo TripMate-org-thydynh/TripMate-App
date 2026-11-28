@@ -5,6 +5,7 @@ import '../../dashboard/data/home_feed_repository.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/capabilities_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/gen_z_tokens.dart';
@@ -344,6 +345,7 @@ class TripItineraryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final publishPolicy = ref.watch(capabilityProvider('publishTemplate'));
     final async = ref.watch(tripItineraryProvider(tripId));
     final bg = _bgOf(context);
     final accent = _accentOf(context);
@@ -392,23 +394,28 @@ class TripItineraryScreen extends ConsumerWidget {
               ),
             ),
           ),
-          IconButton(
-            tooltip: 'templates.publish_action'.tr(),
-            icon: Icon(PhosphorIcons.shareNetwork(), color: textPri),
-            onPressed: () => PublishTemplateSheet.show(
-              context,
-              tripId: tripId,
-              defaultTitle:
-                  ref
-                      .read(tripsProvider)
-                      .valueOrNull
-                      ?.where((t) => t.id == tripId)
-                      .firstOrNull
-                      ?.name ??
-                  '',
-              isDarkMode: isDarkMode,
+          if (!publishPolicy.hidden)
+            IconButton(
+              tooltip: 'templates.publish_action'.tr(),
+              icon: Icon(PhosphorIcons.shareNetwork(), color: textPri),
+              onPressed: !publishPolicy.canWrite
+                  ? () => ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(publishPolicy.label(context))),
+                    )
+                  : () => PublishTemplateSheet.show(
+                      context,
+                      tripId: tripId,
+                      defaultTitle:
+                          ref
+                              .read(tripsProvider)
+                              .valueOrNull
+                              ?.where((t) => t.id == tripId)
+                              .firstOrNull
+                              ?.name ??
+                          '',
+                      isDarkMode: isDarkMode,
+                    ),
             ),
-          ),
           const SizedBox(width: 4),
         ],
       ),

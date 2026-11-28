@@ -12,7 +12,7 @@ class FakeApiClient extends ApiClient {
   FakeApiClient() : super(Dio());
 
   @override
-  Future<dynamic> getData(String path, {Map<String, dynamic>? query}) async {
+  Future<dynamic> getData(String path, {Map<String, dynamic>? query, CancelToken? cancelToken}) async {
     lastGetPath = path;
     return getResult;
   }

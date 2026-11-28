@@ -6,6 +6,7 @@ import '../../../dashboard/data/home_feed_repository.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/capabilities_provider.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/network/error_message.dart';
 import '../../../../core/providers/auth_provider.dart';
@@ -37,7 +38,8 @@ class AddExpenseSheet extends ConsumerStatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (sheetCtx) => Padding(
         padding: EdgeInsets.only(
-          bottom: math.max(
+          bottom:
+              math.max(
                 MediaQuery.viewInsetsOf(sheetCtx).bottom,
                 MediaQuery.paddingOf(sheetCtx).bottom,
               ) +
@@ -97,19 +99,14 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
       _snack('expense.invalid_amount'.tr(), error: true);
       return;
     }
-    final people = ref
-            .read(tripBalancesProvider(widget.tripId))
-            .valueOrNull
-            ?.balances ??
+    final people =
+        ref.read(tripBalancesProvider(widget.tripId)).valueOrNull?.balances ??
         const [];
     final effectiveParticipants =
         _participants ?? people.map((p) => p.user.id).toSet();
     if ((_participants != null && _participants!.isEmpty) ||
         (people.length >= 2 && effectiveParticipants.isEmpty)) {
-      _snack(
-        'expense.pick_participant_warn'.tr(),
-        error: true,
-      );
+      _snack('expense.pick_participant_warn'.tr(), error: true);
       return;
     }
     final paidById = ref.read(authProvider).user?['id'] as String?;
@@ -200,9 +197,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
         Text(
           all
               ? 'expense.split_whole_group'.tr()
-              : 'expense.split_subset'.tr(
-                  namedArgs: {'n': '${chosen.length}'},
-                ),
+              : 'expense.split_subset'.tr(namedArgs: {'n': '${chosen.length}'}),
           style: AppFonts.body(fontSize: 12, color: _textSec),
         ),
         const SizedBox(height: 8),
@@ -283,6 +278,7 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final ocr = ref.watch(capabilityProvider('receiptOcr'));
     return Container(
       decoration: BoxDecoration(
         color: _surface,
@@ -320,62 +316,69 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
               const SizedBox(height: 18),
 
               // AI Scan Button (nút phụ, không tranh chấp điểm nhấn)
-              GestureDetector(
-                onTap: () async {
-                  HapticFeedback.selectionClick();
-                  final result = await Navigator.push<Map<String, dynamic>>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AiReceiptScannerScreen(
-                        tripId: widget.tripId,
-                        isDarkMode: widget.isDarkMode,
-                      ),
-                    ),
-                  );
-                  if (result != null && mounted) {
-                    setState(() {
-                      final double amount = result['amount'] as double;
-                      final String description =
-                          result['description'] as String;
-                      _amount.text = amount.toStringAsFixed(0);
-                      _desc.text = description;
-                      _category = 'FOOD';
-                    });
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _fill,
-                    borderRadius: BorderRadius.circular(
-                      GenZTokens.radiusButton,
-                    ),
-                    border: Border.all(
-                      color: _line,
-                      width: GenZTokens.borderWidthThin,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(PhosphorIcons.qrCode(), color: _primary, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'expense.scan_receipt_ai'.tr(),
-                        style: AppFonts.body(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: _textPri,
+              if (!ocr.hidden)
+                GestureDetector(
+                  onTap: () async {
+                    if (!ocr.canWrite) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(ocr.label(context))),
+                      );
+                      return;
+                    }
+                    HapticFeedback.selectionClick();
+                    final result = await Navigator.push<Map<String, dynamic>>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AiReceiptScannerScreen(
+                          tripId: widget.tripId,
+                          isDarkMode: widget.isDarkMode,
                         ),
                       ),
-                    ],
+                    );
+                    if (result != null && mounted) {
+                      setState(() {
+                        final double amount = result['amount'] as double;
+                        final String description =
+                            result['description'] as String;
+                        _amount.text = amount.toStringAsFixed(0);
+                        _desc.text = description;
+                        _category = 'FOOD';
+                      });
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _fill,
+                      borderRadius: BorderRadius.circular(
+                        GenZTokens.radiusButton,
+                      ),
+                      border: Border.all(
+                        color: _line,
+                        width: GenZTokens.borderWidthThin,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(PhosphorIcons.qrCode(), color: _primary, size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'expense.scan_receipt_ai'.tr(),
+                          style: AppFonts.body(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: _textPri,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
               const SizedBox(height: 20),
 
               // Số tiền

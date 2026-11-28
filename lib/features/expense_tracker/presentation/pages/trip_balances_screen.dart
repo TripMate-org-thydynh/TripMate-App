@@ -7,17 +7,20 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../core/format/money.dart';
 import '../../../../core/network/error_message.dart';
+import '../../../../core/providers/capabilities_provider.dart';
 import '../../../../core/theme/gen_z_tokens.dart';
 
 import '../../../../core/services/payment_launcher.dart';
 import '../../../dashboard/data/home_feed_repository.dart';
 import '../../../social/presentation/pages/trip_polls_screen.dart';
+import '../../../trips/application/trips_providers.dart';
 import '../../application/expense_export.dart';
 import '../../application/expenses_providers.dart';
 import '../../data/expenses_repository.dart';
 import '../../domain/expense.dart';
 import 'add_expense_sheet.dart';
 import 'ai_expense_parse_screen.dart';
+import 'receipt_drafts_screen.dart';
 import '../../../../core/widgets/offline_banner.dart';
 
 /// Số dư & quyết toán của 1 chuyến — wired thật vào BE (`/expenses/balances`).
@@ -64,6 +67,8 @@ class TripBalancesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(tripBalancesProvider(tripId));
     final expensesAsync = ref.watch(tripExpensesProvider(tripId));
+    final trip = ref.watch(tripDetailProvider(tripId)).valueOrNull;
+    final drafts = ref.watch(capabilityProvider('receiptDrafts'));
 
     return Scaffold(
       backgroundColor: _bg,
@@ -105,6 +110,19 @@ class TripBalancesScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          if (trip?.currency == 'VND' && !drafts.hidden)
+            IconButton(
+              tooltip: 'beta.billDrafts'.tr(),
+              icon: Icon(PhosphorIcons.receipt()),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ReceiptDraftsScreen(
+                    tripId: tripId,
+                    isDarkMode: isDarkMode,
+                  ),
+                ),
+              ),
+            ),
           IconButton(
             tooltip: 'expense.ai_title'.tr(),
             icon: Icon(
@@ -535,10 +553,7 @@ class TripBalancesScreen extends ConsumerWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(friendlyError(e)),
-          backgroundColor: _danger,
-        ),
+        SnackBar(content: Text(friendlyError(e)), backgroundColor: _danger),
       );
     }
   }
@@ -576,8 +591,9 @@ class TripBalancesScreen extends ConsumerWidget {
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: _danger,
-              foregroundColor:
-                  isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent,
+              foregroundColor: isDarkMode
+                  ? GenZTokens.onAccentDark
+                  : GenZTokens.onAccent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
               ),
@@ -599,18 +615,16 @@ class TripBalancesScreen extends ConsumerWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(friendlyError(e)),
-          backgroundColor: _danger,
-        ),
+        SnackBar(content: Text(friendlyError(e)), backgroundColor: _danger),
       );
     }
   }
 
   Widget _expenseCard(BuildContext context, WidgetRef ref, Expense expense) {
-    final catLabel = (_categoryKeys[expense.category] ?? 'expense.cat_other').tr();
-    final title = (expense.description != null &&
-            expense.description!.trim().isNotEmpty)
+    final catLabel = (_categoryKeys[expense.category] ?? 'expense.cat_other')
+        .tr();
+    final title =
+        (expense.description != null && expense.description!.trim().isNotEmpty)
         ? expense.description!.trim()
         : catLabel;
     final payerName = expense.paidBy?.name ?? 'common.anonymous'.tr();
@@ -690,10 +704,7 @@ class TripBalancesScreen extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         '${split.user.name} · ${formatMoney(split.shareAmount, locale: context.locale.languageCode)}',
-                        style: AppFonts.body(
-                          fontSize: 13,
-                          color: _textPri,
-                        ),
+                        style: AppFonts.body(fontSize: 13, color: _textPri),
                       ),
                     ),
                     if (split.isPaid)

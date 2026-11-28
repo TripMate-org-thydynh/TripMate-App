@@ -119,9 +119,72 @@ class ExpensesRepository {
   ) async {
     final data = await _client.postData('${_base(tripId)}/ocr', {
       'receiptUrl': receiptUrl,
-    });
+    }, const Duration(seconds: 120));
     return (data as Map).cast<String, dynamic>();
   }
+
+  String _receiptPath(String tripId) => '/trips/$tripId/receipt-drafts';
+
+  Future<List<Map<String, dynamic>>> receiptDrafts(String tripId) async {
+    final data = await _client.getData(_receiptPath(tripId)) as List;
+    return data.map((entry) => (entry as Map).cast<String, dynamic>()).toList();
+  }
+
+  Future<Map<String, dynamic>> receiptDraft(String tripId, String id) async =>
+      (await _client.getData('${_receiptPath(tripId)}/$id') as Map)
+          .cast<String, dynamic>();
+
+  Future<Map<String, dynamic>> updateReceiptDraft(
+    String tripId,
+    String id,
+    Map<String, dynamic> body,
+  ) async =>
+      (await _client.patchData('${_receiptPath(tripId)}/$id', body) as Map)
+          .cast<String, dynamic>();
+
+  Future<Map<String, dynamic>> createReceiptDraft(
+    String tripId,
+    Map<String, dynamic> body,
+  ) async => (await _client.postData(_receiptPath(tripId), body) as Map)
+      .cast<String, dynamic>();
+
+  Future<Map<String, dynamic>> assignReceiptLine(
+    String tripId,
+    String id,
+    String lineId,
+    int version,
+    List<String> assigneeIds,
+  ) async =>
+      (await _client.putData(
+                '${_receiptPath(tripId)}/$id/lines/$lineId/assignment',
+                {'version': version, 'assigneeIds': assigneeIds},
+              )
+              as Map)
+          .cast<String, dynamic>();
+
+  Future<Map<String, dynamic>> saveReceiptLine(
+    String tripId,
+    String id,
+    Map<String, dynamic> body, {
+    String? lineId,
+  }) async {
+    final path = '${_receiptPath(tripId)}/$id/lines';
+    final saved = lineId == null
+        ? await _client.postData(path, body)
+        : await _client.patchData('$path/$lineId', body);
+    return (saved as Map).cast<String, dynamic>();
+  }
+
+  Future<Map<String, dynamic>> finalizeReceiptDraft(
+    String tripId,
+    String id,
+    int version,
+  ) async =>
+      (await _client.postData('${_receiptPath(tripId)}/$id/finalize', {
+                'version': version,
+              })
+              as Map)
+          .cast<String, dynamic>();
 }
 
 final expensesRepositoryProvider = Provider<ExpensesRepository>((ref) {

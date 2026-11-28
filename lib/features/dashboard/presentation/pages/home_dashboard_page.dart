@@ -1,7 +1,7 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-import '../../../../core/widgets/trip_illustration.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/trip_cover_image.dart';
+import '../../../itinerary_templates/presentation/template_explore_screen.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/services/media_uploader.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
@@ -11,14 +11,11 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../moments/data/moments_repository.dart';
 import '../../data/home_feed_repository.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../../core/widgets/faded_image.dart';
 import '../../../../core/widgets/gen_z_widgets.dart';
-import '../../../../core/widgets/trip_cover_image.dart';
 import '../../../../core/services/weather_service.dart';
 import '../../../social/data/notifications_repository.dart';
 import '../../../social/presentation/pages/notifications_screen.dart';
 
-import '../widgets/social_chaos_marquee.dart';
 import '../widgets/weather_forecast_sheet.dart';
 import '../widgets/home_search_section.dart';
 import '../widgets/upcoming_reservations_widget.dart';
@@ -29,8 +26,6 @@ import '../widgets/quick_actions_panel.dart';
 import '../../../moments/presentation/pages/memory_wall_screen.dart';
 import '../../../trips/application/trips_providers.dart';
 import '../../../trips/domain/trip.dart';
-import '../../../trips/domain/trip_vibe.dart';
-import '../../../trips/presentation/trip_hub_screen.dart';
 import '../../../trips/presentation/create_trip_sheet.dart';
 import '../../../premium/presentation/trial_banner.dart';
 
@@ -48,15 +43,11 @@ Trip? featuredTrip(List<Trip> trips) {
 }
 
 class HomeDashboardPage extends ConsumerStatefulWidget {
-  final VoidCallback onNavigateToLiveMode;
-  final VoidCallback onNavigateToActivityHub;
   final VoidCallback onThemeToggle;
   final bool isDarkMode;
 
   const HomeDashboardPage({
     super.key,
-    required this.onNavigateToLiveMode,
-    required this.onNavigateToActivityHub,
     required this.onThemeToggle,
     required this.isDarkMode,
   });
@@ -68,26 +59,35 @@ class HomeDashboardPage extends ConsumerStatefulWidget {
 class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   bool get isDarkMode => widget.isDarkMode;
   VoidCallback get onThemeToggle => widget.onThemeToggle;
-  VoidCallback get onNavigateToLiveMode => widget.onNavigateToLiveMode;
-  VoidCallback get onNavigateToActivityHub => widget.onNavigateToActivityHub;
 
   WeatherData? _weatherData;
   bool _isLoadingWeather = true;
+  bool _requestedWeather = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchWeather();
-    });
+    _scroll.addListener(_loadWeatherOnScroll);
+  }
+
+  void _loadWeatherOnScroll() {
+    if (_requestedWeather || !_scroll.hasClients || _scroll.offset < 180) {
+      return;
+    }
+    _requestedWeather = true;
+    _fetchWeather();
   }
 
   (double, double) _coordsForTrip(Trip? trip) {
     final text = '${trip?.destination ?? ''} ${trip?.name ?? ''}'.toLowerCase();
-    if (text.contains('hà nội') || text.contains('ha noi') || text.contains('hanoi')) {
+    if (text.contains('hà nội') ||
+        text.contains('ha noi') ||
+        text.contains('hanoi')) {
       return (21.0285, 105.8542);
     }
-    if (text.contains('đà nẵng') || text.contains('da nang') || text.contains('danang')) {
+    if (text.contains('đà nẵng') ||
+        text.contains('da nang') ||
+        text.contains('danang')) {
       return (16.0470, 108.2060);
     }
     if (text.contains('sài gòn') ||
@@ -104,13 +104,17 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     if (text.contains('nha trang')) {
       return (12.2388, 109.1967);
     }
-    if (text.contains('đà lạt') || text.contains('da lat') || text.contains('dalat')) {
+    if (text.contains('đà lạt') ||
+        text.contains('da lat') ||
+        text.contains('dalat')) {
       return (11.9406, 108.4452);
     }
     if (text.contains('sa pa') || text.contains('sapa')) {
       return (22.3364, 103.8438);
     }
-    if (text.contains('hạ long') || text.contains('ha long') || text.contains('halong')) {
+    if (text.contains('hạ long') ||
+        text.contains('ha long') ||
+        text.contains('halong')) {
       return (20.9599, 107.0425);
     }
     if (text.contains('ninh bình') || text.contains('ninh binh')) {
@@ -178,29 +182,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   }
 
   /// Nhãn đếm ngược: chưa đi → "còn N ngày nữa đi"; đang đi → số ngày còn lại.
-  (String, int) _countdown(Trip t) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final start = DateTime(t.startDate.year, t.startDate.month, t.startDate.day);
-    if (start.isAfter(today)) {
-      final n = start.difference(today).inDays;
-      return ('dashboard.days_until'.tr(namedArgs: {'days': '$n'}), n);
-    }
-    final daysLeft = t.endDate.difference(now).inDays;
-    final label = daysLeft > 0
-        ? 'dashboard.days_left'.tr(namedArgs: {'days': '$daysLeft'})
-        : (daysLeft == 0
-              ? 'dashboard.days_today'.tr()
-              : 'dashboard.days_ended'.tr());
-    return (label, daysLeft);
-  }
-
-  void _openTrip(Trip t) => Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
-    ),
-  );
+  void _openTrip(Trip trip) =>
+      context.push('/dashboard/trip/${trip.id}', extra: trip);
 
   /// Ô tìm kiếm + chip, rồi dải "Chuyến đi của bạn" (khi có chuyến).
   Widget _buildSearchAndTrips() {
@@ -220,23 +203,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     );
   }
 
-  Widget _buildTripsStrip() {
-    final trips = ref
-        .watch(tripsProvider)
-        .maybeWhen(data: (t) => t, orElse: () => const <Trip>[]);
-    if (trips.length < 2) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: HomeTripsStrip(
-        trips: trips,
-        isDarkMode: isDarkMode,
-        onOpenTrip: _openTrip,
-      ),
-    );
-  }
-
-  // ─── Color helpers ───────────────────────────────────────────────────────────
-
   Color get _ink => isDarkMode ? GenZTokens.inkDark : GenZTokens.ink;
   Color get _inkSoft =>
       isDarkMode ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
@@ -244,8 +210,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   Color get _fill => isDarkMode ? GenZTokens.fillDark : GenZTokens.fill;
   Color get _line => isDarkMode ? GenZTokens.lineDark : GenZTokens.line;
   Color get _accent => isDarkMode ? GenZTokens.accentDark : GenZTokens.accent;
-  Color get _onAccent =>
-      isDarkMode ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color get _accentSoft =>
       isDarkMode ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color get _success =>
@@ -265,78 +229,13 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
     super.dispose();
   }
 
-  static const double _heroImageHeight = 360;
-
   @override
   Widget build(BuildContext context) {
-    final cover = ref
-        .watch(tripsProvider)
-        .maybeWhen(
-          data: (trips) => featuredTrip(trips)?.coverImage,
-          orElse: () => null,
-        );
-    final topInset = MediaQuery.paddingOf(context).top;
-
-    // Ảnh bìa + vệt loang là LỚP NỀN nằm sau cả danh sách, dịch theo độ cuộn.
-    //
-    // Không đặt trong sliver hero: viewport vẽ sliver đầu SAU CÙNG, nên phần
-    // vệt loang tràn ra khỏi hero sẽ đè lên các mục bên dưới.
-    // Ảnh tràn lên sau thanh trạng thái → tự chọn màu icon giờ/pin theo chế độ.
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDarkMode
           ? SystemUiOverlayStyle.light
           : SystemUiOverlayStyle.dark,
-      child: Stack(
-        children: [
-          if (cover != null && cover.isNotEmpty)
-            AnimatedBuilder(
-              animation: _scroll,
-              builder: (context, child) => Transform.translate(
-                offset: Offset(0, -(_scroll.hasClients ? _scroll.offset : 0.0)),
-                child: child,
-              ),
-              child: RepaintBoundary(
-                child: FadedImage(
-                  imageUrl: cover,
-                  fadeTo: _bg,
-                  height: topInset + _heroImageHeight,
-                  glowExtent: 420,
-                  topFade: true,
-                ),
-              ),
-            ),
-          _buildScroll(context),
-          // Nền mờ dưới thanh trạng thái: nội dung cuộn lên không đè vào giờ/pin.
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: topInset + 20,
-            child: IgnorePointer(
-              child: AnimatedBuilder(
-                animation: _scroll,
-                // Chỉ hiện khi đã cuộn — ở đầu trang để ảnh tràn trọn lên mép trên.
-                builder: (context, child) => Opacity(
-                  opacity: _scroll.hasClients
-                      ? (_scroll.offset / 80).clamp(0.0, 1.0)
-                      : 0,
-                  child: child,
-                ),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: [0, topInset / (topInset + 20), 1],
-                      colors: [_bg, _bg, _bg.withValues(alpha: 0)],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: _buildScroll(context),
     );
   }
 
@@ -345,34 +244,26 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
       controller: _scroll,
       physics: const BouncingScrollPhysics(),
       slivers: [
-        // ── 1. HERO: ảnh bìa tràn viền + header nằm đè lên ──
         SliverToBoxAdapter(child: _buildHero(context)),
 
-        // ── 2. TRIP COVER CARD (PRIMARY FOCUS) ──
-        // Đồng hồ đếm ngược dùng thử, ngay đầu màn chính.
-        //
-        // Đặt ở đây chứ không giấu trong mục cài đặt: người dùng phải thấy
-        // mình còn bao nhiêu ngày mà không cần đi tìm. Tự ẩn khi không có lần
-        // dùng thử nào đang chạy.
         const SliverToBoxAdapter(child: TrialBanner()),
 
         // ── BẢN TIN HÔM NAY ──
         Consumer(
           builder: (context, ref, _) {
-            final tripId = ref.watch(tripsProvider).maybeWhen(
-              data: (trips) => featuredTrip(trips)?.id,
-              orElse: () => null,
-            );
+            final tripId = ref
+                .watch(tripsProvider)
+                .maybeWhen(
+                  data: (trips) => featuredTrip(trips)?.id,
+                  orElse: () => null,
+                );
             if (tripId == null) {
               return const SliverToBoxAdapter(child: SizedBox.shrink());
             }
             return SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: TodayBriefCard(
-                  tripId: tripId,
-                  isDarkMode: isDarkMode,
-                ),
+                child: TodayBriefCard(tripId: tripId, isDarkMode: isDarkMode),
               ),
             );
           },
@@ -745,64 +636,124 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
 
   // ─── HEADER ─────────────────────────────────────────────────────────────────
 
-  /// Phần đầu Home theo concept: ảnh bìa chuyến tràn hết bề ngang, lên tận
-  /// mép trên (sau thanh trạng thái), tan dần xuống màu nền; header và thông
-  /// tin chuyến nằm trên nền đã tan. Không có chuyến/ảnh → header thường.
   Widget _buildHero(BuildContext context) {
-    final topInset = MediaQuery.paddingOf(context).top;
-    return Consumer(
-      builder: (context, ref, _) {
-        final trip = ref
-            .watch(tripsProvider)
-            .maybeWhen(
-              data: (trips) => featuredTrip(trips),
-              orElse: () => null,
-            );
-        final hasCover = trip?.coverImage?.isNotEmpty ?? false;
-        if (trip == null || !hasCover) {
-          return Column(
-            children: [
-              SizedBox(height: topInset),
-              _buildHeader(context),
-              _buildSearchAndTrips(),
-              const TrialBanner(),
-              PopIn(index: 0, child: _buildTripCoverCard(context)),
-              const SizedBox(height: 24),
-              _buildTripsStrip(),
-            ],
-          );
-        }
+    final trips = ref.watch(tripsProvider);
+    final snapshot = trips.hasValue
+        ? const <Trip>[]
+        : ref.watch(homeTripsSnapshotProvider).valueOrNull;
+    final trip = featuredTrip(trips.valueOrNull ?? snapshot ?? const []);
+    void openTemplates() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => TemplateExploreScreen(isDarkMode: isDarkMode),
+        ),
+      );
+    }
 
-        // Ảnh nằm ở lớp nền (xem build); đây chỉ chừa chỗ cho nó.
-        const imageHeight = _heroImageHeight;
-        return Stack(
-          children: [
-            Column(
-              children: [
-                SizedBox(height: topInset),
-                _buildHeader(context),
-                _buildSearchAndTrips(),
-                const TrialBanner(),
-                // Trừ chỗ ô tìm kiếm + chip (~126) để tên chuyến vẫn nằm ở mép ảnh.
-                SizedBox(height: math.max(24.0, imageHeight - 150 - 126)),
-                PopIn(
-                  index: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: _tripInfo(context, trip),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: MediaQuery.paddingOf(context).top),
+        _buildHeader(context),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (trip != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                  child: AspectRatio(
+                    aspectRatio: 1.68,
+                    child: TripCoverImage(
+                      source: trip.coverImage,
+                      fallbackColor: _accent,
+                    ),
                   ),
                 ),
-                // Dải tin squad chạy ngang: đặt dưới thông tin chuyến, không
-                // đè lên giữa ảnh banner.
+                const SizedBox(height: 18),
+                Text(
+                  trip.name,
+                  style: AppFonts.heading(
+                    fontSize: 30,
+                    color: _ink,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (trip.destination?.isNotEmpty == true)
+                  Text(
+                    trip.destination!,
+                    style: AppFonts.body(fontSize: 15, color: _inkSoft),
+                  ),
                 const SizedBox(height: 12),
-                const SocialChaosMarquee(),
-                const SizedBox(height: 12),
-                _buildTripsStrip(),
+                FilledButton.icon(
+                  onPressed: () => trips.hasValue
+                      ? _openTrip(trip)
+                      : context.push('/dashboard/trip/${trip.id}'),
+                  icon: Icon(PhosphorIcons.arrowRight()),
+                  label: Text('beta.openTrip'.tr()),
+                ),
+              ] else ...[
+                Text(
+                  'beta.welcome'.tr(),
+                  style: AppFonts.heading(
+                    fontSize: 31,
+                    color: _ink,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'beta.welcomeBody'.tr(),
+                  style: AppFonts.body(fontSize: 16, color: _inkSoft),
+                ),
+                const SizedBox(height: 18),
+                if (trips.isLoading) const LinearProgressIndicator(),
+                if (trips.hasError)
+                  TextButton.icon(
+                    onPressed: () => ref.read(tripsProvider.notifier).refresh(),
+                    icon: Icon(PhosphorIcons.arrowClockwise()),
+                    label: Text('beta.retryTrips'.tr()),
+                  ),
               ],
-            ),
-          ],
-        );
-      },
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  if (trip == null)
+                    FilledButton.tonalIcon(
+                      onPressed: openTemplates,
+                      icon: Icon(PhosphorIcons.mapTrifold()),
+                      label: Text('beta.useTemplate'.tr()),
+                    )
+                  else
+                    OutlinedButton.icon(
+                      onPressed: openTemplates,
+                      icon: Icon(PhosphorIcons.mapTrifold()),
+                      label: Text('beta.useTemplate'.tr()),
+                    ),
+                  OutlinedButton.icon(
+                    onPressed: () => CreateTripSheet.show(context, isDarkMode),
+                    icon: Icon(PhosphorIcons.plus()),
+                    label: Text('trips.create'.tr()),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => CreateTripSheet.show(
+                      context,
+                      isDarkMode,
+                      startWithInvite: true,
+                    ),
+                    icon: Icon(PhosphorIcons.link()),
+                    label: Text('beta.enterInvite'.tr()),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        _buildSearchAndTrips(),
+      ],
     );
   }
 
@@ -830,10 +781,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                   ),
             ),
           ),
-
-          // Squad avatar cluster (+2 overflow)
-          _buildSquadCluster(),
-          const SizedBox(width: 12),
 
           // Language toggle button — nen fill, vien 1px line, icon inkSoft
           GestureDetector(
@@ -924,487 +871,6 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
   /// Trước đây là 3 ảnh stock hardcode + nhãn "+2" cố định, hiện cả với tài
   /// khoản chưa có chuyến nào. Nay lấy thành viên thật của chuyến gần nhất;
   /// chưa có chuyến thì ẩn hẳn.
-  Widget _buildSquadCluster() {
-    return Consumer(
-      builder: (context, ref, _) {
-        final members = ref
-            .watch(tripsProvider)
-            .maybeWhen(
-              data: (trips) => featuredTrip(trips)?.members ?? const [],
-              orElse: () => const [],
-            );
-        if (members.isEmpty) return const SizedBox.shrink();
-
-        const maxShown = 2;
-        final shown = members.take(maxShown).toList();
-        final overflow = members.length - shown.length;
-        final overflowLabel = overflow > 99 ? '99+' : '+$overflow';
-        final overflowWidth = overflowLabel.length <= 2 ? 32.0 : 44.0;
-        final width =
-            shown.length * 20.0 + (overflow > 0 ? overflowWidth : 12.0);
-
-        return SizedBox(
-          width: width,
-          height: 32,
-          child: Stack(
-            children: [
-              for (int i = 0; i < shown.length; i++)
-                Positioned(
-                  left: i * 20.0,
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _fill,
-                      border: Border.all(color: _paper, width: 1.5),
-                    ),
-                    child: ClipOval(
-                      child: shown[i].avatarUrl == null
-                          ? Center(
-                              child: Text(
-                                shown[i].name.isNotEmpty
-                                    ? shown[i].name[0].toUpperCase()
-                                    : '?',
-                                style: AppFonts.mono(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: _ink,
-                                ),
-                              ),
-                            )
-                          : CachedNetworkImage(
-                              // Giải mã đúng cỡ hiển thị, không giữ ảnh gốc 4000px trong RAM.
-                              memCacheWidth: 1080,
-                              imageUrl: shown[i].avatarUrl!,
-                              fit: BoxFit.cover,
-                              placeholder: (c, url) => Container(color: _bg),
-                              errorWidget: (c, url, e) => Icon(
-                                PhosphorIcons.user(),
-                                size: 16,
-                                color: _ink,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-              if (overflow > 0)
-                Positioned(
-                  left: shown.length * 20.0,
-                  child: Container(
-                    width: overflowWidth,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: _fill,
-                      border: Border.all(color: _paper, width: 1.5),
-                    ),
-                    child: Center(
-                      child: Text(
-                        overflowLabel,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: AppFonts.mono(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: _ink,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // ─── TRIP COVER CARD ─────────────────────────────────────────────────────────
-
-  // Thẻ chuyến ở home — đọc chuyến THẬT của user (tripsProvider), không hardcode.
-  Widget _buildTripCoverCard(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Consumer(
-        builder: (context, ref, _) {
-          final tripsAsync = ref.watch(tripsProvider);
-          return tripsAsync.when(
-            loading: () => _tripCoverShell(
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-            // Loi tai du lieu KHONG duoc ve thanh trang thai rong.
-            //
-            // Truoc day nhanh `error` dung chung widget voi nhanh rong, nen khi
-            // API hong app van bao "Chua co chuyen nao" — che mat loi that va
-            // lam nguoi dung tuong minh chua tao chuyen (BUG-003).
-            error: (e, _) => _tripCoverError(context, ref),
-            data: (trips) => trips.isEmpty
-                ? _tripCoverEmpty(context)
-                : _tripCoverReal(context, featuredTrip(trips)!),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _tripCoverShell({required Widget child, VoidCallback? onTap}) {
-    return PressableCard(
-      onTap: onTap,
-      color: _paper,
-      radius: GenZTokens.radiusCard,
-      padding: EdgeInsets.zero,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          GenZTokens.radiusCard - GenZTokens.borderWidth,
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 280),
-          child: child,
-        ),
-      ),
-    );
-  }
-
-  Widget _tripCoverReal(BuildContext context, Trip t) {
-    final (daysLabel, daysLeft) = _countdown(t);
-    final vibe = TripVibe.of(t.vibe);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Ảnh bìa tan dần xuống màu nền (concept A/B) — không khung, không lớp đen.
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(GenZTokens.radiusCard),
-            ),
-            child: SizedBox(
-              height: 230,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  TripCoverImage(source: t.coverImage),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: const [0.45, 0.8, 1.0],
-                        colors: [
-                          _bg.withValues(alpha: 0),
-                          _bg.withValues(alpha: 0.7),
-                          _bg,
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: PillTag(
-                      text: 'dashboard.member_count'.tr(
-                        namedArgs: {'count': '${t.memberCount}'},
-                      ),
-                      icon: PhosphorIcons.users(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Text(
-            t.name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppFonts.heading(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: _ink,
-              letterSpacing: -0.8,
-              height: 1.1,
-            ),
-          ),
-          if (t.destination != null && t.destination!.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Icon(PhosphorIcons.mapPin(), size: 16, color: _inkSoft),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    t.destination!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppFonts.body(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: _inkSoft,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              PillTag(
-                text: daysLabel,
-                icon: PhosphorIcons.clock(),
-                selected: daysLeft >= 0,
-              ),
-              if (_weatherData != null)
-                PillTag(
-                  text:
-                      '${_weatherData!.temp.toStringAsFixed(0)}°C · ${_weatherData!.description}',
-                  icon: _weatherData!.icon,
-                ),
-              PillTag(text: t.inviteCode, icon: PhosphorIcons.hash()),
-              if (vibe != null)
-                PillTag(text: vibe.label, icon: vibe.icon, color: vibe.color),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Tên, điểm đến và các nhãn của chuyến — nằm dưới ảnh đã tan.
-  Widget _tripInfo(BuildContext context, Trip t) {
-    final (daysLabel, daysLeft) = _countdown(t);
-    final vibe = TripVibe.of(t.vibe);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => TripHubScreen(trip: t, isDarkMode: isDarkMode),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          PillTag(
-            text: 'dashboard.member_count'.tr(
-              namedArgs: {'count': '${t.memberCount}'},
-            ),
-            icon: PhosphorIcons.users(),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            t.name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppFonts.heading(
-              fontSize: 28,
-              fontWeight: FontWeight.w800,
-              color: _ink,
-              letterSpacing: -0.8,
-              height: 1.1,
-            ),
-          ),
-          if (t.destination != null && t.destination!.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Icon(PhosphorIcons.mapPin(), size: 16, color: _inkSoft),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    t.destination!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppFonts.body(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: _inkSoft,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              PillTag(
-                text: daysLabel,
-                icon: PhosphorIcons.clock(),
-                selected: daysLeft >= 0,
-              ),
-              if (_weatherData != null)
-                PillTag(
-                  text:
-                      '${_weatherData!.temp.toStringAsFixed(0)}°C · ${_weatherData!.description}',
-                  icon: _weatherData!.icon,
-                ),
-              PillTag(text: t.inviteCode, icon: PhosphorIcons.hash()),
-              if (vibe != null)
-                PillTag(text: vibe.label, icon: vibe.icon, color: vibe.color),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Tai chuyen that bai → the nho gon (chieu cao khong qua 160, nen paper, vien line, icon danger).
-  Widget _tripCoverError(BuildContext context, WidgetRef ref) {
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 160),
-      decoration: BoxDecoration(
-        color: _paper,
-        borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-        border: Border.all(color: _line, width: GenZTokens.borderWidthThin),
-      ),
-      padding: const EdgeInsets.all(GenZTokens.space4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(GenZTokens.space3),
-            decoration: BoxDecoration(
-              color: _danger.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              PhosphorIcons.warningCircle(),
-              size: 24,
-              color: _danger,
-            ),
-          ),
-          const SizedBox(width: GenZTokens.space4),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'trips.load_failed'.tr(),
-                  style: AppFonts.heading(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: _ink,
-                  ),
-                ),
-                const SizedBox(height: GenZTokens.space1),
-                Text(
-                  'common.tap_to_retry'.tr(),
-                  style: AppFonts.body(fontSize: 12, color: _inkSoft),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: GenZTokens.space3),
-          TextButton.icon(
-            onPressed: () => ref.invalidate(tripsProvider),
-            icon: Icon(
-              PhosphorIcons.arrowClockwise(),
-              size: 16,
-              color: _accent,
-            ),
-            label: Text(
-              'common.retry'.tr(),
-              style: AppFonts.heading(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: _accent,
-              ),
-            ),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Chưa có chuyến → "vé lên máy bay còn trống": FROM bạn → TO ???, đường
-  // xé răng cưa, các ô GATE/SEAT/SQUAD bỏ trống và mã vạch ở cuống. Tối giản:
-  // nền giấy, chữ mono, một nút màu nhấn duy nhất (thay bản minh hoạ + list
-  // 3 bước trông như template).
-  Widget _tripCoverEmpty(BuildContext context) {
-    void create() => CreateTripSheet.show(context, isDarkMode);
-    return _tripCoverShell(
-      onTap: create,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Center(
-              child: ExcludeSemantics(
-                child: TripIllustrationView(
-                  TripIllustration.travelers,
-                  height: 150,
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              'dashboard.no_trips_title'.tr(),
-              style: AppFonts.heading(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.5,
-                color: _ink,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'dashboard.no_trips_subtitle'.tr(),
-              style: AppFonts.body(fontSize: 15, height: 1.4, color: _inkSoft),
-            ),
-            const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: create,
-                icon: Icon(PhosphorIcons.plus(), size: 18),
-                label: Text(
-                  'dashboard.create_trip'.tr(),
-                  style: AppFonts.heading(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: _onAccent,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _accent,
-                  foregroundColor: _onAccent,
-                  elevation: 0,
-                  minimumSize: const Size(0, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-  // ─── ROAST PANEL ─────────────────────────────────────────────────────────────
-
   Widget _buildRoastPanel(BuildContext context) {
     // Đọc tổng hợp chi tiêu THẬT. Trước đây khối này hiện cứng
     // "TỔNG: 500K", câu roast bịa tên người và thanh tiến độ 80% — kể cả với
@@ -1581,9 +1047,8 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => MemoryWallScreen(
-                                  isDarkMode: isDarkMode,
-                                ),
+                                builder: (_) =>
+                                    MemoryWallScreen(isDarkMode: isDarkMode),
                               ),
                             ),
                             child: _buildPolaroidCard(
@@ -1709,10 +1174,7 @@ class _HomeDashboardPageState extends ConsumerState<HomeDashboardPage> {
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            author,
-            style: AppFonts.body(fontSize: 14, color: _inkSoft),
-          ),
+          Text(author, style: AppFonts.body(fontSize: 14, color: _inkSoft)),
           const SizedBox(height: 4),
           Row(
             children: [
@@ -1772,5 +1234,3 @@ class _InkCircleButton extends StatelessWidget {
     );
   }
 }
-
-
