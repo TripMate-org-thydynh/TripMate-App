@@ -11,7 +11,6 @@ import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../application/trips_providers.dart';
 import '../domain/trip.dart';
-import 'trip_hub_screen.dart';
 
 /// Tham gia một chuyến bằng mã mời hoặc link chia sẻ.
 ///
@@ -101,13 +100,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
       final messenger = ScaffoldMessenger.of(context);
       // Thay màn hiện tại bằng hub của chuyến vừa tham gia — back không rơi
       // ngược về form join nữa.
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              TripHubScreen(trip: trip, isDarkMode: widget.isDarkMode),
-        ),
-      );
+      context.go('/dashboard/trip/${trip.id}', extra: trip);
       messenger.showSnackBar(
         SnackBar(
           content: Text(
@@ -222,10 +215,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                     Text(
                       'trips.join_sub'.tr(),
                       textAlign: TextAlign.center,
-                      style: AppFonts.body(
-                        fontSize: 13,
-                        color: _inkSoft,
-                      ),
+                      style: AppFonts.body(fontSize: 13, color: _inkSoft),
                     ),
                   ],
                 ),
@@ -249,10 +239,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                 ),
                 decoration: InputDecoration(
                   hintText: 'trips.join_code_hint'.tr(),
-                  hintStyle: AppFonts.body(
-                    fontSize: 15,
-                    color: _inkSoft,
-                  ),
+                  hintStyle: AppFonts.body(fontSize: 15, color: _inkSoft),
                   filled: true,
                   fillColor: _fill,
                   contentPadding: const EdgeInsets.symmetric(
@@ -301,10 +288,7 @@ class _JoinTripScreenState extends ConsumerState<JoinTripScreen> {
                     Expanded(
                       child: Text(
                         _error!,
-                        style: AppFonts.body(
-                          fontSize: 13,
-                          color: _danger,
-                        ),
+                        style: AppFonts.body(fontSize: 13, color: _danger),
                       ),
                     ),
                   ],

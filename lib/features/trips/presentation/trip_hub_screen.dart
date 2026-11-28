@@ -7,6 +7,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/capabilities_provider.dart';
+import '../../../core/theme/theme_provider.dart';
+import '../../dashboard/presentation/pages/live_trip_page.dart';
+import '../../itinerary_templates/presentation/publish_template_sheet.dart';
 import '../../../core/utils/app_share.dart';
 import '../../../core/widgets/gen_z_widgets.dart';
 import '../../../core/widgets/trip_cover_image.dart';
@@ -17,6 +21,7 @@ import '../../fund/presentation/trip_fund_screen.dart';
 import '../../invites/presentation/trip_invites_screen.dart';
 import '../../journal/presentation/trip_journal_screen.dart';
 import '../../moments/presentation/pages/trip_moments_feed_screen.dart';
+import '../../moments/presentation/pages/trip_pictureboard_screen.dart';
 import '../../notes/presentation/trip_notes_screen.dart';
 import '../../packing/presentation/trip_packing_screen.dart';
 import '../../reservations/presentation/trip_reservations_screen.dart';
@@ -279,12 +284,14 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
   @override
   Widget build(BuildContext context) {
     final trip = _trip;
+    final publishPolicy = ref.watch(capabilityProvider('publishTemplate'));
     return Scaffold(
       backgroundColor: _bgOf(context),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             backgroundColor: _bgOf(context),
+            title: Text('beta.overview'.tr()),
             pinned: true,
             expandedHeight: 180,
             iconTheme: IconThemeData(color: _textPri),
@@ -386,6 +393,91 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    (DateTime.now().isBefore(trip.startDate)
+                            ? 'beta.beforeTrip'
+                            : DateTime.now().isAfter(trip.endDate)
+                            ? 'beta.afterTrip'
+                            : 'beta.duringTrip')
+                        .tr(),
+                    style: AppFonts.body(fontSize: 16, color: _textSec),
+                  ),
+                  const SizedBox(height: 14),
+                  if (trip.inviteCode.isNotEmpty &&
+                      DateTime.now().isBefore(trip.startDate))
+                    FilledButton.icon(
+                      onPressed: () => AppShare.shareText(
+                        context,
+                        'trips.share_body'.tr(
+                          namedArgs: {
+                            'name': trip.name,
+                            'code': trip.inviteCode,
+                          },
+                        ),
+                      ),
+                      icon: Icon(PhosphorIcons.shareNetwork()),
+                      label: Text('trips.hub_invite_squad'.tr()),
+                    ),
+                  const SizedBox(height: 12),
+                  if (DateTime.now().isAfter(trip.endDate) &&
+                      !publishPolicy.hidden)
+                    OutlinedButton.icon(
+                      icon: Icon(PhosphorIcons.shareNetwork()),
+                      onPressed: publishPolicy.canWrite
+                          ? () => PublishTemplateSheet.show(
+                              context,
+                              tripId: trip.id,
+                              defaultTitle: trip.name,
+                              isDarkMode: isDarkMode,
+                            )
+                          : () => ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(publishPolicy.label(context)),
+                              ),
+                            ),
+                      label: Text('templates.publish_action'.tr()),
+                    ),
+                  ...[
+                    (
+                      PhosphorIcons.calendarBlank(),
+                      'itinerary.title'.tr(),
+                      'hub.itinerary_sub'.tr(),
+                      TripItineraryScreen(
+                        tripId: trip.id,
+                        isDarkMode: isDarkMode,
+                      ),
+                    ),
+                    (
+                      PhosphorIcons.scales(),
+                      'expense.split_title'.tr(),
+                      'hub.balances'.tr(),
+                      TripBalancesScreen(
+                        tripId: trip.id,
+                        tripName: trip.name,
+                        isDarkMode: isDarkMode,
+                      ),
+                    ),
+                    (
+                      PhosphorIcons.camera(),
+                      'moments.title'.tr(),
+                      'hub.moments'.tr(),
+                      TripPictureboardScreen(
+                        tripId: trip.id,
+                        isDarkMode: isDarkMode,
+                      ),
+                    ),
+                  ].map(
+                    (action) => ListTile(
+                      leading: Icon(action.$1, color: _accent),
+                      title: Text(action.$2),
+                      subtitle: Text(action.$3),
+                      trailing: Icon(PhosphorIcons.caretRight()),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(builder: (_) => action.$4),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                   Row(
                     children: [
                       _stat(
@@ -500,7 +592,7 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                   ],
                   const SizedBox(height: 24),
                   Text(
-                    'trips.manage'.tr(),
+                    'beta.moreTools'.tr(),
                     style: AppFonts.heading(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
@@ -525,13 +617,15 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                         children: [
                           _tile(
                             context,
-                            PhosphorIcons.scales(PhosphorIconsStyle.fill),
-                            'expense.split_title'.tr(),
-                            'hub.balances'.tr(),
-                            () => TripBalancesScreen(
-                              tripId: trip.id,
-                              tripName: trip.name,
+                            PhosphorIcons.usersThree(),
+                            'Crew',
+                            'live.updates'.tr(),
+                            () => LiveTripPage(
+                              trip: trip,
                               isDarkMode: isDarkMode,
+                              onThemeToggle: () => ref
+                                  .read(themeProvider.notifier)
+                                  .toggleTheme(),
                             ),
                           ),
                           _tile(
@@ -566,18 +660,6 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                           ),
                           _tile(
                             context,
-                            PhosphorIcons.calendarBlank(
-                              PhosphorIconsStyle.fill,
-                            ),
-                            'itinerary.title'.tr(),
-                            'hub.itinerary_sub'.tr(),
-                            () => TripItineraryScreen(
-                              tripId: trip.id,
-                              isDarkMode: isDarkMode,
-                            ),
-                          ),
-                          _tile(
-                            context,
                             PhosphorIcons.mapTrifold(PhosphorIconsStyle.fill),
                             'hub.map'.tr(),
                             'hub.map_sub'.tr(),
@@ -589,7 +671,7 @@ class _TripHubScreenState extends ConsumerState<TripHubScreen> {
                           _tile(
                             context,
                             PhosphorIcons.camera(PhosphorIconsStyle.fill),
-                            'moments.title'.tr(),
+                            'beta.momentFeed'.tr(),
                             'hub.moments'.tr(),
                             () => TripMomentsFeedScreen(
                               tripId: trip.id,

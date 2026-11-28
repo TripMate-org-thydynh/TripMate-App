@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 
 import '../../../core/app_messenger.dart';
+import '../../../core/providers/capabilities_provider.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../gamification/data/games_repository.dart';
@@ -15,11 +16,13 @@ import '../widgets/matey_message_body.dart';
 class MateyAiEmotionalChaosScreen extends ConsumerStatefulWidget {
   final bool? isDarkMode;
   final VoidCallback? onThemeToggle;
+  final bool embedded;
 
   const MateyAiEmotionalChaosScreen({
     super.key,
     this.isDarkMode,
     this.onThemeToggle,
+    this.embedded = false,
   });
 
   @override
@@ -60,13 +63,13 @@ class _MateyAiEmotionalChaosScreenState
 
   Future<void> _sendMessage() async {
     final text = _textController.text.trim();
-    if (text.isEmpty || _isThinking) return;
+    if (text.isEmpty ||
+        _isThinking ||
+        !ref.read(capabilityProvider('matey')).canWrite) {
+      return;
+    }
     setState(() {
-      _messages.add({
-        'type': 'user',
-        'text': text,
-        'time': 'ai.just_now'.tr(),
-      });
+      _messages.add({'type': 'user', 'text': text, 'time': 'ai.just_now'.tr()});
       _textController.clear();
       _isThinking = true;
     });
@@ -101,15 +104,16 @@ class _MateyAiEmotionalChaosScreenState
       });
 
       final buf = StringBuffer();
-      await for (final piece in ref
-          .read(mateyChatProvider)
-          .askStream(
-            prompt: text,
-            tripId: tripId,
-            history: history.length > 6
-                ? history.sublist(history.length - 6)
-                : history,
-          )) {
+      await for (final piece
+          in ref
+              .read(mateyChatProvider)
+              .askStream(
+                prompt: text,
+                tripId: tripId,
+                history: history.length > 6
+                    ? history.sublist(history.length - 6)
+                    : history,
+              )) {
         if (!mounted) return;
         buf.write(piece);
         setState(() => _messages[slot]['text'] = buf.toString());
@@ -205,10 +209,7 @@ class _MateyAiEmotionalChaosScreenState
                           padding: const EdgeInsets.all(16),
                           child: Text(
                             'errors.load_failed'.tr(),
-                            style: AppFonts.body(
-                              fontSize: 13,
-                              color: danger,
-                            ),
+                            style: AppFonts.body(fontSize: 13, color: danger),
                           ),
                         ),
                       ),
@@ -231,8 +232,7 @@ class _MateyAiEmotionalChaosScreenState
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: prompts.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(height: 8),
+                          separatorBuilder: (_, _) => const SizedBox(height: 8),
                           itemBuilder: (_, index) {
                             final p = prompts[index];
                             return ListTile(
@@ -291,10 +291,23 @@ class _MateyAiEmotionalChaosScreenState
 
   @override
   Widget build(BuildContext context) {
+    final policy = ref.watch(capabilityProvider('matey'));
+    if (!policy.canRead) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Matey')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(policy.label(context)),
+          ),
+        ),
+      );
+    }
     final isDark = _isDarkMode;
     final accent = Theme.of(context).colorScheme.primary;
-    final accentSoft =
-        isDark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
+    final accentSoft = isDark
+        ? GenZTokens.accentSoftDark
+        : GenZTokens.accentSoft;
     final onAccent = Theme.of(context).colorScheme.onPrimary;
 
     final backgroundColor = isDark ? GenZTokens.creamDark : GenZTokens.cream;
@@ -321,12 +334,7 @@ class _MateyAiEmotionalChaosScreenState
                     ),
                     child: Column(
                       children: [
-                        _buildOrbHero(
-                          accent,
-                          accentSoft,
-                          textPrimary,
-                          line,
-                        ),
+                        _buildOrbHero(accent, accentSoft, textPrimary, line),
 
                         const SizedBox(height: 16),
 
@@ -342,6 +350,51 @@ class _MateyAiEmotionalChaosScreenState
                                 height: 1.5,
                               ),
                             ),
+                          ),
+                        if (_messages.isEmpty && policy.canWrite)
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              for (final task in [
+                                (
+                                  'Chỉnh lịch trình',
+                                  'Refine my itinerary',
+                                  'Gợi ý cách chỉnh lịch trình của chuyến đi này.',
+                                  'Suggest improvements to this trip itinerary.',
+                                ),
+                                (
+                                  'Xem lại kế hoạch',
+                                  'Review my plan',
+                                  'Xem giúp những phần cả nhóm còn cần chốt.',
+                                  'Review what the group still needs to decide.',
+                                ),
+                                (
+                                  'Nếu trời mưa?',
+                                  'What if it rains?',
+                                  'Đề xuất phương án trong nhà nếu trời mưa.',
+                                  'Suggest an indoor backup plan for rain.',
+                                ),
+                              ])
+                                ActionChip(
+                                  label: Text(
+                                    context.locale.languageCode == 'vi'
+                                        ? task.$1
+                                        : task.$2,
+                                  ),
+                                  onPressed: () {
+                                    _textController.text =
+                                        context.locale.languageCode == 'vi'
+                                        ? task.$3
+                                        : task.$4;
+                                    _textController.selection =
+                                        TextSelection.collapsed(
+                                          offset: _textController.text.length,
+                                        );
+                                  },
+                                ),
+                            ],
                           ),
 
                         ListView.builder(
@@ -386,18 +439,25 @@ class _MateyAiEmotionalChaosScreenState
           ),
 
           Positioned(
-            bottom: 96,
+            bottom: widget.embedded ? 12 : 96,
             left: 20,
             right: 20,
-            child: _buildMessageInput(
-              surface,
-              line,
-              accent,
-              onAccent,
-              textPrimary,
-              textSecondary,
-              isDark,
-            ),
+            child: policy.canWrite
+                ? _buildMessageInput(
+                    surface,
+                    line,
+                    accent,
+                    onAccent,
+                    textPrimary,
+                    textSecondary,
+                    isDark,
+                  )
+                : Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(policy.label(context)),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -420,15 +480,16 @@ class _MateyAiEmotionalChaosScreenState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: Icon(
-              PhosphorIcons.caretLeft(PhosphorIconsStyle.bold),
-              color: textPrimary,
-              size: 20,
+          if (!widget.embedded)
+            IconButton(
+              icon: Icon(
+                PhosphorIcons.caretLeft(PhosphorIconsStyle.bold),
+                color: textPrimary,
+                size: 20,
+              ),
+              onPressed: () => Navigator.pop(context),
+              tooltip: 'common.back'.tr(),
             ),
-            onPressed: () => Navigator.pop(context),
-            tooltip: 'common.back'.tr(),
-          ),
           Text(
             'trip.mate',
             style: AppFonts.heading(
@@ -474,10 +535,7 @@ class _MateyAiEmotionalChaosScreenState
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: accentSoft,
-            border: Border.all(
-              color: line,
-              width: GenZTokens.borderWidthThin,
-            ),
+            border: Border.all(color: line, width: GenZTokens.borderWidthThin),
           ),
           child: Center(
             child: Icon(
@@ -547,10 +605,7 @@ class _MateyAiEmotionalChaosScreenState
               padding: const EdgeInsets.only(left: 4),
               child: Text(
                 msg['time'] as String,
-                style: AppFonts.body(
-                  fontSize: 12,
-                  color: textSecondary,
-                ),
+                style: AppFonts.body(fontSize: 12, color: textSecondary),
               ),
             ),
           ],
@@ -604,10 +659,7 @@ class _MateyAiEmotionalChaosScreenState
             const SizedBox(height: 6),
             Text(
               msg['time'] as String,
-              style: AppFonts.body(
-                fontSize: 12,
-                color: textSecondary,
-              ),
+              style: AppFonts.body(fontSize: 12, color: textSecondary),
             ),
           ],
         ),
@@ -615,11 +667,7 @@ class _MateyAiEmotionalChaosScreenState
     );
   }
 
-  Widget _buildTypingIndicator(
-    Color surface,
-    Color line,
-    Color accent,
-  ) {
+  Widget _buildTypingIndicator(Color surface, Color line, Color accent) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
@@ -628,10 +676,7 @@ class _MateyAiEmotionalChaosScreenState
         decoration: BoxDecoration(
           color: surface,
           borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
-          border: Border.all(
-            color: line,
-            width: GenZTokens.borderWidthThin,
-          ),
+          border: Border.all(color: line, width: GenZTokens.borderWidthThin),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -714,10 +759,7 @@ class _MateyAiEmotionalChaosScreenState
           Container(
             width: 42,
             height: 42,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: accent,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: Icon(

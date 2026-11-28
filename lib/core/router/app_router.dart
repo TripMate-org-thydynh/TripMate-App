@@ -11,6 +11,10 @@ import '../../features/dashboard/presentation/auth_flow_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
 import '../../features/onboarding/presentation/vibe_quiz_screen.dart';
 import '../../features/trips/presentation/join_trip_screen.dart';
+import '../../features/trips/presentation/trip_hub_screen.dart';
+import '../../features/trips/application/trips_providers.dart';
+import '../../features/trips/domain/trip.dart';
+import '../../features/itinerary_templates/presentation/template_detail_screen.dart';
 import '../../features/moments/presentation/pages/trip_recap_reel_screen.dart';
 
 /// Mã mời đến từ deep link khi người dùng CHƯA đăng nhập.
@@ -19,6 +23,7 @@ import '../../features/moments/presentation/pages/trip_recap_reel_screen.dart';
 /// `/auth` thì mã sẽ mất. Giữ lại đây để sau khi đăng nhập xong đưa thẳng
 /// người dùng vào màn tham gia chuyến với mã đã điền sẵn.
 final pendingJoinCodeProvider = StateProvider<String?>((ref) => null);
+final pendingTripPathProvider = StateProvider<String?>((ref) => null);
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -67,6 +72,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           GoRoute(
+            path: 'trip/:tripId',
+            builder: (context, state) => _TripOverviewRoute(
+              id: state.pathParameters['tripId']!,
+              initialTrip: state.extra is Trip ? state.extra as Trip : null,
+            ),
+          ),
+          GoRoute(
             path: 'viewer',
             builder: (context, state) => const MomentViewerScreen(),
           ),
@@ -81,6 +93,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             },
           ),
         ],
+      ),
+      GoRoute(
+        path: '/mau/:templateId',
+        builder: (context, state) => TemplateDetailScreen(
+          templateId: state.pathParameters['templateId']!,
+          isDarkMode: ref.watch(themeProvider) == ThemeMode.dark,
+        ),
       ),
       // Deep link từ link mời: https://tripmate.app/join/<code>
       // hoặc tripmate://join/<code>.
@@ -123,7 +142,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     errorBuilder: (context, state) {
       final isDark = ref.watch(themeProvider) == ThemeMode.dark;
       final uri = state.uri;
-      final code = uri.pathSegments.length == 1 ? uri.pathSegments.single : null;
+      final code = uri.pathSegments.length == 1
+          ? uri.pathSegments.single
+          : null;
       // Đường dẫn 1 đoạn (vd. tripmate.app/AB12CD) vẫn coi là mã mời; còn lại
       // là 404 thật — trước đây mọi link sai đều đẩy thẳng về dashboard hoặc
       // bị hiểu nhầm thành mã mời, người dùng không biết link đã hỏng.
@@ -143,6 +164,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (authState.isLoading) return null;
 
       final uri = state.uri;
+      if (uri.scheme == 'tripmate' &&
+          uri.host == 'template' &&
+          uri.pathSegments.length == 1 &&
+          RegExp(r'^[0-9a-fA-F-]{36}$').hasMatch(uri.pathSegments.single)) {
+        return '/mau/${uri.pathSegments.single}';
+      }
       final isRecapUri = uri.scheme == 'tripmate' && uri.host == 'recap';
       if (isRecapUri &&
           !state.matchedLocation.startsWith('/dashboard/recap/')) {
@@ -155,19 +182,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isLoggingIn = state.matchedLocation == '/auth';
       final isSplash = state.matchedLocation == '/splash';
       final isOnboarding = state.matchedLocation == '/onboarding';
+      final isEditingQuiz = isOnboarding && uri.queryParameters['edit'] == '1';
       final isJoining =
           state.matchedLocation.startsWith('/join/') ||
           (uri.scheme == 'tripmate' && uri.host == 'join') ||
           (state.pathParameters['code'] != null);
       final isAuthenticated = authState.isAuthenticated;
+      final isTripIntent =
+          state.matchedLocation.startsWith('/dashboard/trip/') ||
+          state.matchedLocation.startsWith('/mau/');
 
       if (isAuthenticated) {
         // Splash owns the transition after its animation and session loading.
         if (isSplash) return null;
-        // Đã đăng nhập nhưng chưa làm vibe quiz → vào onboarding
-        if (!authState.onboardingDone) {
-          return isOnboarding ? null : '/onboarding';
-        }
+        if (isEditingQuiz) return null;
         // Vừa đăng nhập xong mà trước đó có deep link mời → vào thẳng màn join.
         final pending = ref.read(pendingJoinCodeProvider);
         if (pending != null && !isJoining) {
@@ -177,11 +205,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
           return '/join/$pending';
         }
-        // Completed onboarding users skip authentication and onboarding.
+        final pendingTripPath = ref.read(pendingTripPathProvider);
+        if (pendingTripPath != null) {
+          Future.microtask(
+            () => ref.read(pendingTripPathProvider.notifier).state = null,
+          );
+          if (uri.path != pendingTripPath) return pendingTripPath;
+        }
         if (isLoggingIn || isOnboarding) {
           return '/dashboard';
         }
       } else {
+        if (isTripIntent) {
+          Future.microtask(
+            () => ref.read(pendingTripPathProvider.notifier).state = uri.path,
+          );
+        }
         // Chưa đăng nhập mà mở link mời → nhớ mã rồi bắt đăng nhập trước.
         if (isJoining) {
           final code = state.pathParameters['code'];
@@ -206,3 +245,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   ApiService.routerNavigatorKey = router.routerDelegate.navigatorKey;
   return router;
 });
+
+class _TripOverviewRoute extends ConsumerWidget {
+  const _TripOverviewRoute({required this.id, this.initialTrip});
+
+  final String id;
+  final Trip? initialTrip;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+    final cached = initialTrip;
+    if (cached != null && cached.id == id) {
+      return TripHubScreen(key: ValueKey(id), trip: cached, isDarkMode: isDark);
+    }
+    return ref
+        .watch(tripDetailProvider(id))
+        .when(
+          data: (trip) =>
+              TripHubScreen(key: ValueKey(id), trip: trip, isDarkMode: isDark),
+          loading: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
+          error: (_, _) =>
+              NotFoundScreen(onHome: () => context.go('/dashboard')),
+        );
+  }
+}

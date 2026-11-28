@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/app_messenger.dart';
@@ -10,10 +11,8 @@ import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../trip_planner/data/itinerary_repository.dart';
 import '../../trips/application/trips_providers.dart';
-import '../../trips/data/trips_repository.dart';
 import '../../trips/domain/trip.dart';
 import '../../trips/presentation/pick_trip_sheet.dart';
-import '../../trips/presentation/trip_hub_screen.dart';
 import '../data/itinerary_templates_repository.dart';
 import '../domain/itinerary_template.dart';
 import 'ai_customize_screen.dart';
@@ -74,9 +73,10 @@ class _UseTemplateSheetState extends ConsumerState<UseTemplateSheet> {
 
   Future<void> _submit() async {
     final nav = Navigator.of(context);
+    final router = GoRouter.of(context);
     if (!_newTrip && _target == null) {
       await _pickTrip();
-      if (_target == null) return;
+      if (!mounted || _target == null) return;
     }
     setState(() => _busy = true);
     try {
@@ -88,23 +88,21 @@ class _UseTemplateSheetState extends ConsumerState<UseTemplateSheet> {
             name: _newTrip ? _name.text : null,
             startDate: _newTrip ? _start : null,
           );
+      if (!mounted) return;
       HapticFeedback.mediumImpact();
       ref.invalidate(tripsProvider);
       ref.invalidate(tripItineraryProvider(tripId));
       ref.invalidate(templateDetailProvider(widget.template.id));
-      final trip = await ref.read(tripsRepositoryProvider).fetchTrip(tripId);
       showGlobalSnack(
         'templates.copied'.tr(
-          namedArgs: {'n': '${widget.template.stopCount}', 'trip': trip.name},
+          namedArgs: {
+            'n': '${widget.template.stopCount}',
+            'trip': _newTrip ? _name.text : _target!.name,
+          },
         ),
       );
       nav.pop();
-      nav.push(
-        MaterialPageRoute(
-          builder: (_) =>
-              TripHubScreen(trip: trip, isDarkMode: widget.isDarkMode),
-        ),
-      );
+      router.go('/dashboard/trip/$tripId');
     } catch (e) {
       if (mounted) setState(() => _busy = false);
       showGlobalSnack(

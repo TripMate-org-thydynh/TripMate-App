@@ -896,6 +896,25 @@
     "welcome": "Chào mừng đến với TripMate!",
     "save": "Lưu"
   },
+  "beta": {
+    "home": "Home",
+    "trips": "Chuyến đi",
+    "welcome": "Mình đi đâu tiếp?",
+    "welcomeBody": "Chọn một lịch trình có sẵn, tạo chuyến mới hoặc nhập mã của bạn bè.",
+    "openTrip": "Mở chuyến",
+    "retryTrips": "Tải lại chuyến đi",
+    "useTemplate": "Dùng lịch trình mẫu",
+    "enterInvite": "Nhập mã mời",
+    "overview": "Tổng quan",
+    "moreTools": "Công cụ chuyến đi",
+    "beforeTrip": "Rủ bạn tham gia và chốt các điểm dừng trước ngày đi.",
+    "duringTrip": "Xem lịch hôm nay và cập nhật chi phí của nhóm.",
+    "afterTrip": "Quyết toán và xem lại ảnh cả nhóm đã góp.",
+    "billDrafts": "Bill cả nhóm",
+    "billDraftsInfo": "Chụp bill, rồi để mọi người tự chọn món.",
+    "pictureboard": "Bảng ảnh",
+    "momentFeed": "Bài đăng của nhóm"
+  },
   "hub": {
     "balances": "Số dư & quyết toán",
     "chat_sub": "Trò chuyện realtime",

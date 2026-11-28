@@ -9,6 +9,8 @@ import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../data/itinerary_templates_repository.dart';
 import '../domain/itinerary_template.dart';
+import '../../trip_planner/data/itinerary_repository.dart';
+import '../../trip_planner/domain/itinerary_item.dart';
 
 /// Đăng lịch trình của chuyến hiện tại thành mẫu cho người khác nhân bản.
 class PublishTemplateSheet extends ConsumerStatefulWidget {
@@ -49,7 +51,6 @@ class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
   final _desc = TextEditingController();
   final Set<String> _tags = {};
   bool _public = true;
-  bool _notes = false;
   bool _busy = false;
 
   @override
@@ -94,13 +95,20 @@ class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
             title: _title.text.trim(),
             description: _desc.text,
             isPublic: _public,
-            includeNotes: _notes,
+            includeNotes: false,
             tags: _tags.toList(),
           );
+      if (!mounted) return;
       HapticFeedback.mediumImpact();
       ref.invalidate(myTemplatesProvider);
       ref.invalidate(publicTemplatesProvider);
-      showGlobalSnack('templates.published'.tr());
+      showGlobalSnack(
+        _public
+            ? (context.locale.languageCode == 'vi'
+                  ? 'Đã gửi mẫu để duyệt.'
+                  : 'Template submitted for review.')
+            : 'templates.published'.tr(),
+      );
       nav.pop();
     } catch (e) {
       if (mounted) setState(() => _busy = false);
@@ -243,8 +251,7 @@ class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
                               : _line,
                         ),
                         shape: const StadiumBorder(),
-                        materialTapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                   ],
                 ),
@@ -255,11 +262,33 @@ class _PublishTemplateSheetState extends ConsumerState<PublishTemplateSheet> {
                   _public,
                   (v) => setState(() => _public = v),
                 ),
-                _switch(
-                  'templates.notes_switch'.tr(),
-                  'templates.notes_switch_hint'.tr(),
-                  _notes,
-                  (v) => setState(() => _notes = v),
+                ExpansionTile(
+                  title: Text(
+                    context.locale.languageCode == 'vi'
+                        ? 'Xem nội dung sẽ chia sẻ'
+                        : 'Preview shared stops',
+                  ),
+                  subtitle: Text(
+                    context.locale.languageCode == 'vi'
+                        ? 'Chỉ chép tên điểm, giờ và thời lượng.'
+                        : 'Only stop names, times, and durations are copied.',
+                  ),
+                  children: [
+                    for (final item
+                        in ref
+                                .watch(tripItineraryProvider(widget.tripId))
+                                .valueOrNull
+                                ?.values
+                                .expand((day) => day) ??
+                            const <ItineraryItem>[])
+                      ListTile(
+                        dense: true,
+                        title: Text(item.placeName),
+                        subtitle: Text(
+                          '${item.day} · ${item.startTime} · ${item.durationMinutes} min',
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 SizedBox(

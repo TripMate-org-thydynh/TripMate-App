@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/app_messenger.dart';
@@ -11,8 +12,6 @@ import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../premium/presentation/paywall_sheet.dart';
 import '../../trips/application/trips_providers.dart';
-import '../../trips/data/trips_repository.dart';
-import '../../trips/presentation/trip_hub_screen.dart';
 import '../domain/itinerary_template.dart';
 
 /// Một điểm dừng trong bản AI đề xuất.
@@ -170,7 +169,6 @@ class _AiCustomizeScreenState extends ConsumerState<AiCustomizeScreen> {
     final stops = _stops;
     if (stops == null || stops.isEmpty) return;
     setState(() => _creating = true);
-    final nav = Navigator.of(context);
     try {
       final data = await ref.read(apiClientProvider).postData(
         '/itinerary-templates/${widget.template.id}/duplicate',
@@ -181,19 +179,14 @@ class _AiCustomizeScreenState extends ConsumerState<AiCustomizeScreen> {
         },
       );
       final tripId = (data as Map)['tripId'] as String;
+      if (!mounted) return;
       ref.invalidate(tripsProvider);
-      final trip = await ref.read(tripsRepositoryProvider).fetchTrip(tripId);
       showGlobalSnack(
         'templates.copied'.tr(
-          namedArgs: {'n': '${stops.length}', 'trip': trip.name},
+          namedArgs: {'n': '${stops.length}', 'trip': widget.template.title},
         ),
       );
-      nav.pushReplacement(
-        MaterialPageRoute(
-          builder: (_) =>
-              TripHubScreen(trip: trip, isDarkMode: widget.isDarkMode),
-        ),
-      );
+      context.go('/dashboard/trip/$tripId');
     } catch (e) {
       if (mounted) setState(() => _creating = false);
       showGlobalSnack(

@@ -7,16 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:tripmate/core/theme/app_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/gen_z_tokens.dart';
-import '../../../core/utils/app_share.dart';
 import '../application/trips_providers.dart';
+import '../domain/trip.dart';
 
 /// Bottom sheet: Tạo chuyến mới hoặc Tham gia bằng mã mời — wired vào BE thật.
 class CreateTripSheet extends ConsumerStatefulWidget {
   final bool isDarkMode;
+  final bool startWithInvite;
 
   /// Điểm đến điền sẵn (từ ô tìm kiếm / trang điểm đến ở home).
   final String? initialDestination;
@@ -24,19 +26,21 @@ class CreateTripSheet extends ConsumerStatefulWidget {
     super.key,
     required this.isDarkMode,
     this.initialDestination,
+    this.startWithInvite = false,
   });
 
   static Future<void> show(
     BuildContext context,
     bool isDarkMode, {
     String? initialDestination,
-  }) {
+    bool startWithInvite = false,
+  }) async {
     // Sheet nhảy/lệch khi chạm ô nhập vì 3 thứ cộng dồn: padding đáy đổi
     // đột ngột theo viewInsets (không animate), sheet không giới hạn chiều
     // cao nên bị đẩy sát lên mép trên, và SafeArea bên trong cộng thêm inset
     // đáy lần nữa. Giờ: dùng useSafeArea, AnimatedPadding easeOutCubic theo
     // bàn phím, giới hạn chiều cao, SafeArea trong sheet bỏ cạnh dưới.
-    return showModalBottomSheet(
+    final trip = await showModalBottomSheet<Trip>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -60,11 +64,15 @@ class CreateTripSheet extends ConsumerStatefulWidget {
             child: CreateTripSheet(
               isDarkMode: isDarkMode,
               initialDestination: initialDestination,
+              startWithInvite: startWithInvite,
             ),
           ),
         );
       },
     );
+    if (trip != null && context.mounted) {
+      context.push('/dashboard/trip/${trip.id}', extra: trip);
+    }
   }
 
   @override
@@ -125,8 +133,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
   Color get _textPri => _ink;
   Color get _textSec => _dark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
   Color get _accent => _dark ? GenZTokens.accentDark : GenZTokens.accent;
-  Color get _onAccent =>
-      _dark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
+  Color get _onAccent => _dark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
   Color get _accentSoft =>
       _dark ? GenZTokens.accentSoftDark : GenZTokens.accentSoft;
   Color get _danger => _dark ? GenZTokens.dangerDark : GenZTokens.danger;
@@ -134,6 +141,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
   @override
   void initState() {
     super.initState();
+    _tab = widget.startWithInvite ? 1 : 0;
     final dest = widget.initialDestination?.trim();
     if (dest != null && dest.isNotEmpty) _destination.text = dest;
   }
@@ -193,27 +201,20 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
               isPublic: _isPublic,
             );
         if (!mounted) return;
-        Navigator.pop(context);
-        // Mời squad ngay: chia sẻ mã mời chuyến vừa tạo.
-        await AppShare.shareText(
-          context,
-          'trips.share_body'.tr(
-            namedArgs: {'name': trip.name, 'code': trip.inviteCode},
-          ),
-          subject: 'invites.share_subject'.tr(namedArgs: {'trip': trip.name}),
-        );
+        Navigator.pop(context, trip);
       } else {
         if (_code.text.trim().isEmpty) {
           _snack('trips.need_code'.tr(), error: true);
           setState(() => _busy = false);
           return;
         }
-        await ref
+        final trip = await ref
             .read(tripsProvider.notifier)
             .joinByAnyCode(_code.text.trim());
-        if (mounted) Navigator.pop(context);
+        if (mounted) Navigator.pop(context, trip);
       }
     } on ApiException catch (e) {
+      if (!mounted) return;
       // Vượt hạn mức thì mở paywall thay vì báo lỗi.
       //
       // Đây là lúc duy nhất người dùng thực sự cần nghe về gói trả phí: họ vừa
@@ -231,6 +232,7 @@ class _CreateTripSheetState extends ConsumerState<CreateTripSheet> {
       _snack(e.message, error: true);
       setState(() => _busy = false);
     } catch (e) {
+      if (!mounted) return;
       _snack('trips.generic_error_retry'.tr(), error: true);
       setState(() => _busy = false);
     }

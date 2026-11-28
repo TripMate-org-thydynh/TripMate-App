@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../core/providers/capabilities_provider.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/gen_z_tokens.dart';
 import '../../../core/widgets/state_views.dart';
@@ -29,6 +30,8 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
   String _query = '';
   String? _selectedTag;
   String _sort = 'popular';
+  int? _days;
+  int? _budgetTo;
 
   @override
   void dispose() {
@@ -86,8 +89,19 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
   }
 
   Widget _explore() {
+    final hasBudgetFilter = ref.watch(
+      capabilitiesProvider.select(
+        (policies) => policies.containsKey('publishTemplate'),
+      ),
+    );
     final async = ref.watch(
-      publicTemplatesProvider((query: _query, tag: _selectedTag, sort: _sort)),
+      publicTemplatesProvider((
+        query: _query,
+        tag: _selectedTag,
+        sort: _sort,
+        days: _days,
+        budgetTo: hasBudgetFilter ? _budgetTo : null,
+      )),
     );
     return RefreshIndicator(
       onRefresh: () async {
@@ -131,6 +145,66 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
             ),
           ),
           const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Wrap(
+              spacing: 16,
+              children: [
+                DropdownButton<int>(
+                  value: _days,
+                  hint: Text(
+                    context.locale.languageCode == 'vi' ? 'Số ngày' : 'Days',
+                  ),
+                  onChanged: (days) => setState(() => _days = days),
+                  items: [
+                    DropdownMenuItem(
+                      child: Text(
+                        context.locale.languageCode == 'vi'
+                            ? 'Mọi số ngày'
+                            : 'Any duration',
+                      ),
+                    ),
+                    for (final days in [2, 3, 4])
+                      DropdownMenuItem(
+                        value: days,
+                        child: Text('$days ${'common.day_unit'.tr()}'),
+                      ),
+                  ],
+                ),
+                if (hasBudgetFilter)
+                  DropdownButton<int>(
+                    value: _budgetTo,
+                    hint: Text(
+                      context.locale.languageCode == 'vi'
+                          ? 'Ngân sách/người'
+                          : 'Budget/person',
+                    ),
+                    onChanged: (budget) => setState(() => _budgetTo = budget),
+                    items: [
+                      DropdownMenuItem(
+                        child: Text(
+                          context.locale.languageCode == 'vi'
+                              ? 'Mọi ngân sách'
+                              : 'Any budget',
+                        ),
+                      ),
+                      for (final budget in [
+                        1_000_000,
+                        1_500_000,
+                        2_000_000,
+                        3_000_000,
+                      ])
+                        DropdownMenuItem(
+                          value: budget,
+                          child: Text(
+                            '${NumberFormat.decimalPattern(context.locale.languageCode).format(budget)} ₫',
+                          ),
+                        ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
           _tagChips(),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
@@ -195,7 +269,10 @@ class _TemplateExploreScreenState extends ConsumerState<TemplateExploreScreen> {
   }
 
   Widget _featuredSection() {
-    if (_query.isNotEmpty || _selectedTag != null) {
+    if (_query.isNotEmpty ||
+        _selectedTag != null ||
+        _days != null ||
+        _budgetTo != null) {
       return const SizedBox.shrink();
     }
     final async = ref.watch(featuredTemplatesProvider);

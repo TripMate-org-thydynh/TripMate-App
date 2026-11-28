@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_exception.dart';
 import '../domain/moment.dart';
 
 /// Repository cho Moments — `/trips/:tripId/moments`.
@@ -85,6 +86,34 @@ class MomentsRepository {
     }
   }
 
+  Future<({List<Moment> items, String? nextCursor})> gallery(
+    String tripId, {
+    String? cursor,
+  }) async {
+    try {
+      final data =
+          await _client.getData(
+                '${_base(tripId)}/gallery',
+                query: {'cursor': ?cursor},
+              )
+              as Map;
+      final items = (data['items'] as List)
+          .whereType<Map>()
+          .map((item) => Moment.fromJson(item.cast<String, dynamic>()))
+          .toList();
+      return (items: items, nextCursor: data['nextCursor'] as String?);
+    } on ApiException catch (error) {
+      if (cursor != null || ![400, 404].contains(error.statusCode)) rethrow;
+      // The previous server routes /gallery through its moment-details route.
+      final data = await _client.getData(_base(tripId)) as List;
+      final items = data
+          .whereType<Map>()
+          .map((item) => Moment.fromJson(item.cast<String, dynamic>()))
+          .toList();
+      return (items: items, nextCursor: null);
+    }
+  }
+
   /// Kỷ niệm mới nhất trên MỌI chuyến của user — dùng cho scrapbook màn Home.
   Future<List<RecentMoment>> fetchRecent() async {
     final data = await _client.getData('/users/me/moments/recent');
@@ -162,15 +191,19 @@ class MomentsRepository {
   }
 
   /// Bật/tắt yêu thích trên bảng ảnh kỷ niệm.
-  Future<bool?> toggleFavorite(String tripId, String momentId) async {
-    final res = await _client.postData(
-      '${_base(tripId)}/$momentId/favorite',
-      const {},
-    );
-    if (res is Map && res['isFavorite'] is bool) {
-      return res['isFavorite'] as bool;
+  Future<void> setFavorite(
+    String tripId,
+    String momentId,
+    bool isFavorite,
+  ) async {
+    try {
+      await _client.putData('${_base(tripId)}/$momentId/favorite', {
+        'isFavorite': isFavorite,
+      });
+    } on ApiException catch (error) {
+      if (error.statusCode != 404) rethrow;
+      await updateBoardLayout(tripId, momentId, isFavorite: isFavorite);
     }
-    return null;
   }
 
   /// Ghost Cam: bao nhiêu ảnh đang chờ tráng và tráng lúc nào.

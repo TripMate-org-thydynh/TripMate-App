@@ -10,6 +10,8 @@ class AppNotification {
   final String body;
   final bool isRead;
   final DateTime createdAt;
+  final String? tripId;
+  final String? receiptDraftId;
 
   const AppNotification({
     required this.id,
@@ -18,6 +20,8 @@ class AppNotification {
     required this.body,
     this.isRead = false,
     required this.createdAt,
+    this.tripId,
+    this.receiptDraftId,
   });
 
   factory AppNotification.fromJson(Map<String, dynamic> j) => AppNotification(
@@ -26,6 +30,8 @@ class AppNotification {
     title: j['title'] as String? ?? '',
     body: j['body'] as String? ?? '',
     isRead: j['isRead'] as bool? ?? false,
+    tripId: j['tripId'] as String?,
+    receiptDraftId: (j['data'] as Map?)?['receiptDraftId'] as String?,
     createdAt:
         DateTime.tryParse(j['createdAt']?.toString() ?? '') ?? DateTime.now(),
   );

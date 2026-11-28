@@ -120,12 +120,25 @@ class HomeFeedRepository {
   final ApiClient _client;
   HomeFeedRepository(this._client);
 
-  Future<List<SquadActivity>> fetchActivities() async {
-    final data = await _client.getData('/users/me/activities/recent');
+  Future<List<SquadActivity>> fetchActivities({
+    String? tripId,
+    String? tripName,
+  }) async {
+    final data = await _client.getData(
+      tripId == null
+          ? '/users/me/activities/recent'
+          : '/trips/$tripId/activities',
+    );
     if (data is List) {
       return data
           .whereType<Map>()
-          .map((e) => SquadActivity.fromJson(e.cast<String, dynamic>()))
+          .map(
+            (e) => SquadActivity.fromJson({
+              ...e.cast<String, dynamic>(),
+              'tripName': ?tripName,
+              if (e['user'] case final Map user) 'actorName': user['name'],
+            }),
+          )
           .toList();
     }
     return const [];
@@ -163,6 +176,13 @@ final homeFeedRepositoryProvider = Provider<HomeFeedRepository>((ref) {
 final squadActivitiesProvider = FutureProvider<List<SquadActivity>>((ref) {
   return ref.watch(homeFeedRepositoryProvider).fetchActivities();
 });
+
+final tripSquadActivitiesProvider = FutureProvider.autoDispose
+    .family<List<SquadActivity>, ({String id, String name})>(
+      (ref, trip) => ref
+          .watch(homeFeedRepositoryProvider)
+          .fetchActivities(tripId: trip.id, tripName: trip.name),
+    );
 
 final upNextProvider = FutureProvider<UpNextItem?>((ref) {
   return ref.watch(homeFeedRepositoryProvider).fetchUpNext();

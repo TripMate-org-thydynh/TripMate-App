@@ -896,6 +896,25 @@
     "welcome": "Welcome to TripMate!",
     "save": "Save"
   },
+  "beta": {
+    "home": "Home",
+    "trips": "Trips",
+    "welcome": "Where to next?",
+    "welcomeBody": "Pick a ready-made itinerary, start a trip, or enter a friend's invite code.",
+    "openTrip": "Open trip",
+    "retryTrips": "Reload trips",
+    "useTemplate": "Use an itinerary template",
+    "enterInvite": "Enter invite code",
+    "overview": "Overview",
+    "moreTools": "Trip tools",
+    "beforeTrip": "Invite friends and confirm your stops before you leave.",
+    "duringTrip": "Check today's plans and add group expenses.",
+    "afterTrip": "Settle up and look back at the photos everyone shared.",
+    "billDrafts": "Group bills",
+    "billDraftsInfo": "Scan a receipt and let everyone claim their items.",
+    "pictureboard": "Photo board",
+    "momentFeed": "Group posts"
+  },
   "hub": {
     "balances": "Balances & settlement",
     "chat_sub": "Real-time chat",

@@ -60,6 +60,8 @@ class DestinationScreen extends ConsumerWidget {
         query: destination.name,
         tag: null,
         sort: 'popular',
+        days: null,
+        budgetTo: null,
       )),
     );
 
@@ -108,8 +110,9 @@ class DestinationScreen extends ConsumerWidget {
                   child: InkWell(
                     onTap: () => Navigator.of(context).maybePop(),
                     child: Tooltip(
-                      message:
-                          MaterialLocalizations.of(context).backButtonTooltip,
+                      message: MaterialLocalizations.of(
+                        context,
+                      ).backButtonTooltip,
                       child: SizedBox(
                         width: 44,
                         height: 44,
@@ -166,7 +169,11 @@ class DestinationScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   destination.blurb,
-                  style: AppFonts.body(fontSize: 15, height: 1.45, color: inkSoft),
+                  style: AppFonts.body(
+                    fontSize: 15,
+                    height: 1.45,
+                    color: inkSoft,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -177,11 +184,18 @@ class DestinationScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(PhosphorIcons.calendarBlank(), color: inkSoft, size: 20),
+                            Icon(
+                              PhosphorIcons.calendarBlank(),
+                              color: inkSoft,
+                              size: 20,
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               'destinations.best_season'.tr(),
-                              style: AppFonts.body(fontSize: 12, color: inkSoft),
+                              style: AppFonts.body(
+                                fontSize: 12,
+                                color: inkSoft,
+                              ),
                             ),
                             const SizedBox(height: 2),
                             Text(
@@ -203,32 +217,46 @@ class DestinationScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(
-                              weather.valueOrNull?.icon ?? PhosphorIcons.cloud(),
+                              weather.valueOrNull?.icon ??
+                                  PhosphorIcons.cloud(),
                               color: weather.valueOrNull?.color ?? inkSoft,
                               size: 20,
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'destinations.weather_now'.tr(),
-                              style: AppFonts.body(fontSize: 12, color: inkSoft),
+                              style: AppFonts.body(
+                                fontSize: 12,
+                                color: inkSoft,
+                              ),
                             ),
                             const SizedBox(height: 2),
                             weather.when(
                               loading: () => Text(
                                 'dashboard.weather_checking'.tr(),
-                                style: AppFonts.body(fontSize: 13, color: inkSoft),
+                                style: AppFonts.body(
+                                  fontSize: 13,
+                                  color: inkSoft,
+                                ),
                               ),
                               error: (_, _) => Text(
                                 'weather.unavailable'.tr(),
-                                style: AppFonts.body(fontSize: 13, color: inkSoft),
+                                style: AppFonts.body(
+                                  fontSize: 13,
+                                  color: inkSoft,
+                                ),
                               ),
                               data: (w) => w == null
                                   ? Text(
                                       'weather.unavailable'.tr(),
-                                      style: AppFonts.body(fontSize: 13, color: inkSoft),
+                                      style: AppFonts.body(
+                                        fontSize: 13,
+                                        color: inkSoft,
+                                      ),
                                     )
                                   : Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '${w.temp.toStringAsFixed(0)}°C',
@@ -242,7 +270,10 @@ class DestinationScreen extends ConsumerWidget {
                                           w.description,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: AppFonts.body(fontSize: 13, color: inkSoft),
+                                          style: AppFonts.body(
+                                            fontSize: 13,
+                                            color: inkSoft,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -265,14 +296,21 @@ class DestinationScreen extends ConsumerWidget {
                               child: Material(
                                 color: paper,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                                  borderRadius: BorderRadius.circular(
+                                    GenZTokens.radiusCard,
+                                  ),
                                   side: BorderSide(color: line),
                                 ),
                                 child: ListTile(
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(GenZTokens.radiusCard),
+                                    borderRadius: BorderRadius.circular(
+                                      GenZTokens.radiusCard,
+                                    ),
                                   ),
-                                  leading: Icon(PhosphorIcons.path(), color: inkSoft),
+                                  leading: Icon(
+                                    PhosphorIcons.path(),
+                                    color: inkSoft,
+                                  ),
                                   title: Text(
                                     t.title,
                                     maxLines: 1,
@@ -287,9 +325,16 @@ class DestinationScreen extends ConsumerWidget {
                                     'destinations.template_days'.tr(
                                       namedArgs: {'days': '${t.dayCount}'},
                                     ),
-                                    style: AppFonts.body(fontSize: 13, color: inkSoft),
+                                    style: AppFonts.body(
+                                      fontSize: 13,
+                                      color: inkSoft,
+                                    ),
                                   ),
-                                  trailing: Icon(PhosphorIcons.caretRight(), color: inkSoft, size: 18),
+                                  trailing: Icon(
+                                    PhosphorIcons.caretRight(),
+                                    color: inkSoft,
+                                    size: 18,
+                                  ),
                                   onTap: () => Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (_) => TemplateDetailScreen(
@@ -358,7 +403,9 @@ class DestinationScreen extends ConsumerWidget {
             ),
             icon: Icon(PhosphorIcons.airplaneTakeoff(), size: 18),
             label: Text(
-              'destinations.plan_cta'.tr(namedArgs: {'place': destination.name}),
+              'destinations.plan_cta'.tr(
+                namedArgs: {'place': destination.name},
+              ),
               style: AppFonts.heading(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,

@@ -109,15 +109,16 @@ class _FakeMomentsRepository extends MomentsRepository {
   }
 
   @override
-  Future<bool?> toggleFavorite(String tripId, String momentId) async {
+  Future<void> setFavorite(
+    String tripId,
+    String momentId,
+    bool isFavorite,
+  ) async {
     favoriteToggleCalls++;
     final idx = store.indexWhere((m) => m.id == momentId);
     if (idx >= 0) {
-      final next = !store[idx].isFavorite;
-      store[idx] = store[idx].copyWith(isFavorite: next);
-      return next;
+      store[idx] = store[idx].copyWith(isFavorite: isFavorite);
     }
-    return null;
   }
 }
 

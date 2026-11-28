@@ -7,16 +7,19 @@ import '../../../gamification/data/games_repository.dart';
 import '../../../trips/application/trips_providers.dart';
 import '../../data/home_feed_repository.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../trips/domain/trip.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LiveTripPage extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final VoidCallback onThemeToggle;
+  final Trip? trip;
 
   const LiveTripPage({
     super.key,
     required this.isDarkMode,
     required this.onThemeToggle,
+    this.trip,
   });
 
   @override
@@ -99,6 +102,10 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
   @override
   Widget build(BuildContext context) {
     final isDark = widget.isDarkMode;
+    final trip = widget.trip;
+    final activitiesProvider = trip == null
+        ? squadActivitiesProvider
+        : tripSquadActivitiesProvider((id: trip.id, name: trip.name));
     final accent = isDark ? GenZTokens.accentDark : GenZTokens.accent;
     final onAccent = isDark ? GenZTokens.onAccentDark : GenZTokens.onAccent;
     final success = isDark ? GenZTokens.successDark : GenZTokens.success;
@@ -108,9 +115,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
     final fill = isDark ? GenZTokens.fillDark : GenZTokens.fill;
     final line = isDark ? GenZTokens.lineDark : GenZTokens.line;
     final textPrimary = isDark ? GenZTokens.inkDark : GenZTokens.ink;
-    final textSecondary = isDark
-        ? GenZTokens.inkSoftDark
-        : GenZTokens.inkSoft;
+    final textSecondary = isDark ? GenZTokens.inkSoftDark : GenZTokens.inkSoft;
 
     if (_particlesController.isAnimating) {
       for (var p in _particles) {
@@ -122,6 +127,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
 
     return Scaffold(
       backgroundColor: bgColor,
+      appBar: trip == null ? null : AppBar(title: Text(trip.name)),
       body: Stack(
         children: [
           SafeArea(
@@ -299,7 +305,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                   // cứng ("Minh Nhật is at The Hill Station"...) hiện cho mọi tài khoản.
                   Consumer(
                     builder: (context, ref, _) {
-                      final async = ref.watch(squadActivitiesProvider);
+                      final async = ref.watch(activitiesProvider);
                       return async.when(
                         loading: () => const Padding(
                           padding: EdgeInsets.symmetric(vertical: 24),
@@ -329,7 +335,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
                               ),
                               TextButton(
                                 onPressed: () =>
-                                    ref.invalidate(squadActivitiesProvider),
+                                    ref.invalidate(activitiesProvider),
                                 child: Text('general.retry'.tr()),
                               ),
                             ],
@@ -382,6 +388,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
 
   /// Tên chuyến gần nhất của user. Trước đây header hardcode "Đà Lạt Chill".
   String _tripName() {
+    if (widget.trip != null) return widget.trip!.name;
     return ref
         .watch(tripsProvider)
         .maybeWhen(
@@ -393,6 +400,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
 
   /// Số thành viên thật. Trước đây luôn là "6 idiots".
   int _memberCount() {
+    if (widget.trip != null) return widget.trip!.memberCount;
     return ref
         .watch(tripsProvider)
         .maybeWhen(
@@ -404,7 +412,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
   /// "Vibe energy" = tiến độ XP thật của chuyến, cộng thêm phần thưởng khi lắc
   /// máy. Trước đây con số này cố định 85% cho mọi tài khoản.
   double _vibeEnergy() {
-    final tripId = ref.watch(activeTripIdProvider);
+    final tripId = widget.trip?.id ?? ref.watch(activeTripIdProvider);
     if (tripId == null) return _shakeBonus.clamp(0.0, 1.0);
     final base = ref
         .watch(squadXpProvider(tripId))
@@ -467,9 +475,7 @@ class _LiveTripPageState extends ConsumerState<LiveTripPage>
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: fill,
-              borderRadius: BorderRadius.circular(
-                GenZTokens.radiusButton,
-              ),
+              borderRadius: BorderRadius.circular(GenZTokens.radiusButton),
               border: Border.all(
                 color: line,
                 width: GenZTokens.borderWidthThin,
